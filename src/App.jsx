@@ -290,11 +290,22 @@ export default function App() {
         <button 
           onClick={() => setSidebarOpen(true)}
           style={{
-            background: '#ffffff', border: '1.5px solid #cbd5e1', width: '40px', height: '40px',
-            borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155',
-            boxShadow: '0 2px 4px rgba(15, 23, 42, 0.04)'
+            background: '#f8fafc', 
+            border: '1.5px solid #94a3b8', 
+            width: '42px', 
+            height: '42px',
+            borderRadius: '12px', 
+            fontSize: '22px', 
+            fontWeight: '900', 
+            cursor: 'pointer',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            color: '#0f172a',
+            boxShadow: '0 2px 5px rgba(15, 23, 42, 0.08)',
+            lineHeight: 1
           }}
+          title="פתח תפריט"
         >
           ☰
         </button>
@@ -323,12 +334,12 @@ export default function App() {
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', zIndex: 2500, backdropFilter: 'blur(6px)' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.45)', zIndex: 2500, backdropFilter: 'blur(6px)' }}
         />
       )}
       <aside style={{
         position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px',
-        background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
+        background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 40px rgba(0,0,0,0.12)',
         transition: 'right 0.35s cubic-bezier(0.16, 1, 0.3, 1)', padding: '32px 24px',
         display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #cbd5e1'
       }}>
@@ -336,7 +347,8 @@ export default function App() {
           <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#0f172a' }}>תפריט מהיר</h3>
           <button 
             onClick={() => setSidebarOpen(false)}
-            style={{ border: '1.5px solid #cbd5e1', background: '#f8fafc', width: '34px', height: '34px', borderRadius: '50%', fontWeight: '700', cursor: 'pointer', color: '#64748b' }}
+            style={modalCloseBtn}
+            title="סגור תפריט"
           >
             ✕
           </button>
@@ -580,16 +592,16 @@ export default function App() {
               </div>
 
               {showUploadBox && (
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1.5px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
-                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff' }}>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}>
                       {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
                     </select>
                   </div>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
                   </div>
                   <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                   <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
@@ -824,17 +836,20 @@ const modalContentStyle = {
 };
 
 const modalCloseBtn = {
-  border: '1.5px solid #cbd5e1',
-  background: '#f8fafc',
-  width: '32px',
-  height: '32px',
+  border: '1.5px solid #94a3b8',
+  background: '#ffffff',
+  width: '36px',
+  height: '36px',
   borderRadius: '50%',
-  fontWeight: '700',
+  fontWeight: '900',
+  fontSize: '15px',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: '#64748b'
+  color: '#0f172a',
+  boxShadow: '0 2px 5px rgba(15, 23, 42, 0.08)',
+  lineHeight: 1
 };
 
 const gridModalBtn = {
