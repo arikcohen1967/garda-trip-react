@@ -424,7 +424,7 @@ export default function App() {
       {modalType === 'around' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '700' }}>📍 Around Me</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
@@ -445,7 +445,7 @@ export default function App() {
       {modalType === 'emergency' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#ff3b30' }}>🆘 מספרי חירום באיטליה</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
@@ -466,7 +466,7 @@ export default function App() {
       {modalType === 'tickets' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box', width: '100%' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '14px', marginBottom: '16px' }}>
                 <div>
@@ -536,7 +536,8 @@ export default function App() {
                 תיקייה: {activeFolder}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
+              {/* Files List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
                 {ticketFiles.length === 0 ? (
                   <div style={{ textAlign: 'center', color: '#86868b', padding: '24px', fontSize: '13px' }}>אין עדיין כרטיסים בתקייה זו.</div>
                 ) : (
@@ -555,14 +556,16 @@ export default function App() {
                         background: '#fff', 
                         border: '1.5px solid rgba(0,0,0,0.08)', 
                         cursor: 'pointer', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)' 
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                        boxSizing: 'border-box',
+                        width: '100%'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
                         <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#f2f2f7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
                           {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
                         </div>
-                        <div style={{ minWidth: 0, textAlign: 'right' }}>
+                        <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
                           <b style={{ display: 'block', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.title || x.name}</b>
                           <small style={{ color: '#86868b', fontSize: '11px', display: 'block' }}>
                             {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round(x.size / 1024)} KB`)))}
@@ -590,7 +593,7 @@ export default function App() {
       {modalType === 'viewer' && viewerItem && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '17px', fontWeight: '700' }}>{viewerItem.title || viewerItem.name}</span>
                 <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
