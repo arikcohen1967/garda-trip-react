@@ -24,7 +24,7 @@ const MAPS_SVG = (
 const tripDays = [
   {
     date: "2026-09-30",
-    label: "יום 1 · 30/09",
+    label: "רביעי · 30/09",
     fullLabel: "רביעי · 30.09.2026",
     title: "נחיתה והגעה למלון",
     icon: "✈️",
@@ -36,7 +36,7 @@ const tripDays = [
   },
   {
     date: "2026-10-01",
-    label: "יום 2 · 01/10",
+    label: "חמישי · 01/10",
     fullLabel: "חמישי · 01.10.2026",
     title: "Gardaland – יום פארק מלא",
     icon: "🎢",
@@ -50,7 +50,7 @@ const tripDays = [
   },
   {
     date: "2026-10-02",
-    label: "יום 3 · 02/10",
+    label: "שישי · 02/10",
     fullLabel: "שישי · 02.10.2026",
     title: "סובב אגם גארדה + ראפטינג",
     icon: "🚣",
@@ -63,7 +63,7 @@ const tripDays = [
   },
   {
     date: "2026-10-03",
-    label: "יום 4 · 03/10",
+    label: "שבת · 03/10",
     fullLabel: "שבת · 03.10.2026",
     title: "Movieland + Medieval Times",
     icon: "🎬",
@@ -75,7 +75,7 @@ const tripDays = [
   },
   {
     date: "2026-10-04",
-    label: "יום 5 · 04/10",
+    label: "ראשון · 04/10",
     fullLabel: "ראשון · 04.10.2026",
     title: "ונציה – יום מלא",
     icon: "🛶",
@@ -87,7 +87,7 @@ const tripDays = [
   },
   {
     date: "2026-10-05",
-    label: "יום 6 · 05/10",
+    label: "שני · 05/10",
     fullLabel: "שני · 05.10.2026",
     title: "Borghetto sul Mincio + Valeggio",
     icon: "🏘️",
@@ -99,7 +99,7 @@ const tripDays = [
   },
   {
     date: "2026-10-06",
-    label: "יום 7 · 06/10",
+    label: "שלישי · 06/10",
     fullLabel: "שלישי · 06.10.2026",
     title: "ורונה + הטיסה הביתה",
     icon: "❤️",
