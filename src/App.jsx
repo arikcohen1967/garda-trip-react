@@ -117,7 +117,7 @@ const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '
 export default function App() {
   const [activeDay, setActiveDay] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [modalType, setModalType] = useState(null); // 'around' | 'emergency' | 'tickets' | 'viewer'
+  const [modalType, setModalType] = useState(null);
   const [viewerItem, setViewerItem] = useState(null);
 
   // Tickets State
@@ -496,7 +496,12 @@ export default function App() {
             )}
 
             <h3 style={{ fontSize: '15px', margin: '8px 0 10px', fontWeight: '700' }}>תקיות הטיול</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
+              gap: '10px', 
+              marginBottom: '20px' 
+            }}>
               {folders.map((f, i) => (
                 <div 
                   key={i} 
@@ -506,7 +511,8 @@ export default function App() {
                     background: activeFolder === f ? '#1d1d1f' : '#ffffff',
                     color: activeFolder === f ? '#ffffff' : '#1d1d1f',
                     border: activeFolder === f ? '1.5px solid #1d1d1f' : '1.5px solid rgba(0,0,0,0.1)',
-                    cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+                    cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                    display: 'flex', flexDirection: 'column', justifyContent: 'center'
                   }}
                 >
                   <strong style={{ display: 'block', fontSize: '13px', marginBottom: '2px' }}>{f}</strong>
@@ -519,26 +525,47 @@ export default function App() {
               תיקייה: {activeFolder}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            {/* List of files in selected folder */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
               {ticketFiles.length === 0 ? (
-                <div style={{ gridColumn: 'span 2', textAlign: 'center', color: '#86868b', padding: '24px', fontSize: '13px' }}>אין עדיין כרטיסים בתקייה זו.</div>
+                <div style={{ textAlign: 'center', color: '#86868b', padding: '24px', fontSize: '13px' }}>אין עדיין כרטיסים בתקייה זו.</div>
               ) : (
                 ticketFiles.map((x) => (
                   <div 
                     key={x.id} 
                     onClick={() => { setViewerItem(x); setModalType('viewer'); }}
-                    style={{ display: 'flex', flexDirection: 'row-reverse', alignItems: 'center', gap: '10px', padding: '12px', borderRadius: '14px', background: '#fff', border: '1.5px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}
+                    style={{ 
+                      display: 'flex', 
+                      flexDirection: 'row', 
+                      alignItems: 'center', 
+                      justifyContent: 'space-between',
+                      gap: '12px', 
+                      padding: '14px', 
+                      borderRadius: '16px', 
+                      background: '#fff', 
+                      border: '1.5px solid rgba(0,0,0,0.08)', 
+                      cursor: 'pointer', 
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.03)' 
+                    }}
                   >
-                    <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#e5e5ea', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
-                      {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                      <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#f2f2f7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                        {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
+                      </div>
+                      <div style={{ minWidth: 0, textAlign: 'right' }}>
+                        <b style={{ display: 'block', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.title || x.name}</b>
+                        <small style={{ color: '#86868b', fontSize: '11px', display: 'block' }}>
+                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round(x.size / 1024)} KB`)))}
+                        </small>
+                      </div>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0, textAlign: 'right' }}>
-                      <b style={{ display: 'block', fontSize: '12px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.title || x.name}</b>
-                      <small style={{ color: '#86868b', fontSize: '10px', display: 'block', marginBottom: '4px' }}>
-                        {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round(x.size / 1024)} KB`)))}
-                      </small>
-                      <button onClick={(e) => deleteFile(x.id, e)} style={{ background: 'rgba(255,59,48,0.08)', color: '#ff3b30', border: 0, padding: '2px 6px', borderRadius: '6px', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}>מחק</button>
-                    </div>
+
+                    <button 
+                      onClick={(e) => deleteFile(x.id, e)} 
+                      style={{ background: 'rgba(255,59,48,0.08)', color: '#ff3b30', border: 0, padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
+                    >
+                      מחק
+                    </button>
                   </div>
                 ))
               )}
