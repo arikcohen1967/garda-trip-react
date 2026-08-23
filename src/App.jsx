@@ -424,14 +424,18 @@ export default function App() {
       {modalType === 'around' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
-            <h3 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: '700' }}>📍 Around Me</h3>
-            <p style={{ fontSize: '13px', color: '#86868b', marginBottom: '20px' }}>בחר קטגוריה לצפייה במפה סביבך:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={gridModalBtn}>🛒 <span>סופרמרקטים</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={gridModalBtn}>⛽ <span>תחנות דלק</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={gridModalBtn}>🍝 <span>מסעדות</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={gridModalBtn}>💊 <span>סופרפארם / בית מרקחת</span></button>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '700' }}>📍 Around Me</h3>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+              </div>
+              <p style={{ fontSize: '13px', color: '#86868b', marginBottom: '20px' }}>בחר קטגוריה לצפייה במפה סביבך:</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={gridModalBtn}>🛒 <span>סופרמרקטים</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={gridModalBtn}>⛽ <span>תחנות דלק</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={gridModalBtn}>🍝 <span>מסעדות</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={gridModalBtn}>💊 <span>סופרפארם / בית מרקחת</span></button>
+              </div>
             </div>
           </div>
         </div>
@@ -441,14 +445,18 @@ export default function App() {
       {modalType === 'emergency' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
-            <h3 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: '700', color: '#ff3b30' }}>🆘 מספרי חירום באיטליה</h3>
-            <p style={{ fontSize: '13px', color: '#86868b', marginBottom: '20px' }}>לחץ לחיוג מהיר:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <a href="tel:112" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚨 <span>חירום כללי<br/><b>112</b></span></a>
-              <a href="tel:118" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚑 <span>אמבולנס<br/><b>118</b></span></a>
-              <a href="tel:115" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚒 <span>כבאות<br/><b>115</b></span></a>
-              <a href="tel:113" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>👮 <span>משטרה<br/><b>113</b></span></a>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#ff3b30' }}>🆘 מספרי חירום באיטליה</h3>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+              </div>
+              <p style={{ fontSize: '13px', color: '#86868b', marginBottom: '20px' }}>לחץ לחיוג מהיר:</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <a href="tel:112" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚨 <span>חירום כללי<br/><b>112</b></span></a>
+                <a href="tel:118" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚑 <span>אמבולנס<br/><b>118</b></span></a>
+                <a href="tel:115" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚒 <span>כבאות<br/><b>115</b></span></a>
+                <a href="tel:113" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>👮 <span>משטרה<br/><b>113</b></span></a>
+              </div>
             </div>
           </div>
         </div>
@@ -458,119 +466,122 @@ export default function App() {
       {modalType === 'tickets' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
-            
-            <div style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '14px', marginBottom: '16px' }}>
-              <small style={{ color: '#86868b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Digital Wallet</small>
-              <h2 style={{ margin: '4px 0 0', fontSize: '22px', fontWeight: '800' }}>🎟️ כרטיסים ומסמכים</h2>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
-              <button onClick={() => setShowUploadBox(!showUploadBox)} style={{ padding: '14px', borderRadius: '14px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: 'none', background: '#1d1d1f', color: '#fff' }}>
-                ➕ הוסף כרטיס חדש
-              </button>
-              <button onClick={addNewFolder} style={{ padding: '14px', borderRadius: '14px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: '1px solid rgba(0,0,0,0.12)', background: '#fff', color: '#1d1d1f' }}>
-                📁 תקייה חדשה
-              </button>
-            </div>
-
-            {showUploadBox && (
-              <div style={{ background: '#f2f2f7', padding: '18px', borderRadius: '16px', border: '1.5px solid rgba(0,0,0,0.1)', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '14px', marginBottom: '16px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', fontWeight: '700', color: '#86868b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
-                  <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.15)', background: '#fff' }}>
-                    {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
-                  </select>
+                  <small style={{ color: '#86868b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block' }}>Digital Wallet</small>
+                  <h2 style={{ margin: '4px 0 0', fontSize: '20px', fontWeight: '800' }}>🎟️ כרטיסים ומסמכים</h2>
                 </div>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: '700', color: '#86868b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                  <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.15)', background: '#fff', boxSizing: 'border-box' }} />
-                </div>
-                <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
-                <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <button onClick={() => document.getElementById('cameraInput').click()} style={uploadBtnStyle}>📷 צלם במצלמה</button>
-                  <button onClick={() => document.getElementById('fileInput').click()} style={uploadBtnStyle}>📁 בחר קובץ מהמכשיר</button>
-                </div>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
-            )}
 
-            <h3 style={{ fontSize: '15px', margin: '8px 0 10px', fontWeight: '700' }}>תקיות הטיול</h3>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
-              gap: '10px', 
-              marginBottom: '20px' 
-            }}>
-              {folders.map((f, i) => (
-                <div 
-                  key={i} 
-                  onClick={() => setActiveFolder(f)}
-                  style={{
-                    padding: '12px 14px', borderRadius: '14px',
-                    background: activeFolder === f ? '#1d1d1f' : '#ffffff',
-                    color: activeFolder === f ? '#ffffff' : '#1d1d1f',
-                    border: activeFolder === f ? '1.5px solid #1d1d1f' : '1.5px solid rgba(0,0,0,0.1)',
-                    cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-                    display: 'flex', flexDirection: 'column', justifyContent: 'center'
-                  }}
-                >
-                  <strong style={{ display: 'block', fontSize: '13px', marginBottom: '2px' }}>{f}</strong>
-                  <small style={{ color: activeFolder === f ? 'rgba(255,255,255,0.7)' : '#86868b', fontSize: '11px' }}>הצג קבצים</small>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                <button onClick={() => setShowUploadBox(!showUploadBox)} style={{ padding: '14px', borderRadius: '14px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: 'none', background: '#1d1d1f', color: '#fff' }}>
+                  ➕ הוסף כרטיס
+                </button>
+                <button onClick={addNewFolder} style={{ padding: '14px', borderRadius: '14px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: '1px solid rgba(0,0,0,0.12)', background: '#fff', color: '#1d1d1f' }}>
+                  📁 תקייה חדשה
+                </button>
+              </div>
+
+              {showUploadBox && (
+                <div style={{ background: '#f2f2f7', padding: '18px', borderRadius: '16px', border: '1.5px solid rgba(0,0,0,0.1)', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#86868b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.15)', background: '#fff' }}>
+                      {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#86868b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.15)', background: '#fff', boxSizing: 'border-box' }} />
+                  </div>
+                  <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
+                  <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <button onClick={() => document.getElementById('cameraInput').click()} style={uploadBtnStyle}>📷 צלם במצלמה</button>
+                    <button onClick={() => document.getElementById('fileInput').click()} style={uploadBtnStyle}>📁 בחר קובץ מהמכשיר</button>
+                  </div>
                 </div>
-              ))}
-            </div>
+              )}
 
-            <div style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '8px', marginBottom: '12px', fontWeight: '700', fontSize: '14px' }}>
-              תיקייה: {activeFolder}
-            </div>
-
-            {/* List of files in selected folder */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
-              {ticketFiles.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#86868b', padding: '24px', fontSize: '13px' }}>אין עדיין כרטיסים בתקייה זו.</div>
-              ) : (
-                ticketFiles.map((x) => (
+              <h3 style={{ fontSize: '15px', margin: '8px 0 10px', fontWeight: '700' }}>תקיות הטיול</h3>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
+                gap: '10px', 
+                marginBottom: '20px' 
+              }}>
+                {folders.map((f, i) => (
                   <div 
-                    key={x.id} 
-                    onClick={() => { setViewerItem(x); setModalType('viewer'); }}
-                    style={{ 
-                      display: 'flex', 
-                      flexDirection: 'row', 
-                      alignItems: 'center', 
-                      justifyContent: 'space-between',
-                      gap: '12px', 
-                      padding: '14px', 
-                      borderRadius: '16px', 
-                      background: '#fff', 
-                      border: '1.5px solid rgba(0,0,0,0.08)', 
-                      cursor: 'pointer', 
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.03)' 
+                    key={i} 
+                    onClick={() => setActiveFolder(f)}
+                    style={{
+                      padding: '12px 14px', borderRadius: '14px',
+                      background: activeFolder === f ? '#1d1d1f' : '#ffffff',
+                      color: activeFolder === f ? '#ffffff' : '#1d1d1f',
+                      border: activeFolder === f ? '1.5px solid #1d1d1f' : '1.5px solid rgba(0,0,0,0.1)',
+                      cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                      display: 'flex', flexDirection: 'column', justifyContent: 'center'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-                      <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#f2f2f7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
-                        {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
-                      </div>
-                      <div style={{ minWidth: 0, textAlign: 'right' }}>
-                        <b style={{ display: 'block', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.title || x.name}</b>
-                        <small style={{ color: '#86868b', fontSize: '11px', display: 'block' }}>
-                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round(x.size / 1024)} KB`)))}
-                        </small>
-                      </div>
-                    </div>
-
-                    <button 
-                      onClick={(e) => deleteFile(x.id, e)} 
-                      style={{ background: 'rgba(255,59,48,0.08)', color: '#ff3b30', border: 0, padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
-                    >
-                      מחק
-                    </button>
+                    <strong style={{ display: 'block', fontSize: '13px', marginBottom: '2px' }}>{f}</strong>
+                    <small style={{ color: activeFolder === f ? 'rgba(255,255,255,0.7)' : '#86868b', fontSize: '11px' }}>הצג קבצים</small>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
 
+              <div style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '8px', marginBottom: '12px', fontWeight: '700', fontSize: '14px' }}>
+                תיקייה: {activeFolder}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
+                {ticketFiles.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: '#86868b', padding: '24px', fontSize: '13px' }}>אין עדיין כרטיסים בתקייה זו.</div>
+                ) : (
+                  ticketFiles.map((x) => (
+                    <div 
+                      key={x.id} 
+                      onClick={() => { setViewerItem(x); setModalType('viewer'); }}
+                      style={{ 
+                        display: 'flex', 
+                        flexDirection: 'row', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between',
+                        gap: '12px', 
+                        padding: '14px', 
+                        borderRadius: '16px', 
+                        background: '#fff', 
+                        border: '1.5px solid rgba(0,0,0,0.08)', 
+                        cursor: 'pointer', 
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)' 
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#f2f2f7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                          {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
+                        </div>
+                        <div style={{ minWidth: 0, textAlign: 'right' }}>
+                          <b style={{ display: 'block', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.title || x.name}</b>
+                          <small style={{ color: '#86868b', fontSize: '11px', display: 'block' }}>
+                            {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round(x.size / 1024)} KB`)))}
+                          </small>
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={(e) => deleteFile(x.id, e)} 
+                        style={{ background: 'rgba(255,59,48,0.08)', color: '#ff3b30', border: 0, padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
+                      >
+                        מחק
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+            </div>
           </div>
         </div>
       )}
@@ -578,74 +589,76 @@ export default function App() {
       {/* MODAL: Full Viewer */}
       {modalType === 'viewer' && viewerItem && (
         <div style={modalStyle}>
-          <div style={{ ...modalContentStyle, padding: '20px 20px 40px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
-              <span style={{ fontSize: '17px', fontWeight: '700' }}>{viewerItem.title || viewerItem.name}</span>
-              <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
+          <div style={modalContentStyle}>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
+                <span style={{ fontSize: '17px', fontWeight: '700' }}>{viewerItem.title || viewerItem.name}</span>
+                <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
+              </div>
+
+              {viewerItem.isFlightInfo && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
+                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>✈️ פרטי טיסה – ישראייר</h3>
+                  <p><b>מספר הזמנה (Docket):</b> <span dir="ltr">4623652</span></p>
+                  <p><b>טיסת הלוך (30.09.2026):</b><br/>שעה: <span dir="ltr">13:15</span> מתל אביב (טרמינל 1) ➔ <span dir="ltr">16:05</span> בוורונה<br/>טיסה: <span dir="ltr">6H 357</span> (Economy)</p>
+                  <p><b>טיסת חזור (06.10.2026):</b><br/>שעה: <span dir="ltr">21:35</span> מוורונה ➔ <span dir="ltr">02:05</span> בתל אביב (07.10)<br/>טיסה: <span dir="ltr">6H 352</span> (Economy)</p>
+                  <hr style={{ border: 0, borderTop: '1px solid rgba(0,0,0,0.1)', margin: '15px 0' }}/>
+                  <b>נוסעים בהזמנה:</b>
+                  <ul style={{ paddingRight: '20px', margin: '6px 0' }}>
+                    <li>Arik Cohen (28/12/1967)</li>
+                    <li>Amit Cohen (01/07/2014)</li>
+                    <li>Yuly Cohen (01/07/2014)</li>
+                    <li>Lian Cohen (14/10/2015)</li>
+                    <li>Harel Vilnai Cohen (04/09/1997)</li>
+                  </ul>
+                </div>
+              )}
+
+              {viewerItem.isInsuranceInfo && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
+                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🛡️ ביטוח נסיעות לחו"ל – AIG</h3>
+                  <p><b>מספר פוליסה:</b> <span dir="ltr">170270213826</span></p>
+                  <p><b>מוקד חירום רפואי 24/7 (עברית):</b></p>
+                  <ul style={{ paddingRight: '20px', margin: '6px 0' }}>
+                    <li>WhatsApp: <a href="https://wa.me/972549940911" target="_blank" rel="noreferrer" style={{ color: '#0071e3' }} dir="ltr">+972-54-9940911</a></li>
+                    <li>טלפון ישיר: <a href="tel:+97239191155" style={{ color: '#0071e3' }} dir="ltr">+972-3-9191155</a></li>
+                  </ul>
+                  <hr style={{ border: 0, borderTop: '1px solid rgba(0,0,0,0.1)', margin: '15px 0' }}/>
+                  <a href="https://www.aig.co.il/t/6b66x6" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#0071e3', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '10px' }}>כניסה לאזור האישי של AIG</a>
+                </div>
+              )}
+
+              {viewerItem.isCarVoucher && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
+                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🚗 שובר השכרת רכב – Booking.com (Ecovia)</h3>
+                  <p><b>מספר הזמנה:</b> <span dir="ltr">724715780</span></p>
+                  <p><b>רכב:</b> Intermediate SUV – Citroen C5 Aircross או דומה (אוטומטי)</p>
+                  <p><b>איסוף:</b> 30.09.2026 ב-17:30 – נמל התעופה ורונה</p>
+                  <p><b>החזרה:</b> 06.10.2026 ב-17:30 – נמל התעופה ורונה</p>
+                  <p><b>נהג ראשי:</b> <span dir="ltr">Cohen Arik (+972502022768)</span></p>
+                  <p><b>ביטוח:</b> <span style={{ color: '#34c759', fontWeight: '700' }}>הגנה מלאה כלולה (Full Protection)</span></p>
+                  <a href="https://www.booking.com" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#003580', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>📱 פתח ב-Booking.com</a>
+                </div>
+              )}
+
+              {viewerItem.isHotelInfo && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
+                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🏡 הזמנת מלון – Bio Agriturismo Vojon</h3>
+                  <p><b>סטטוס הזמנה:</b> <span style={{ color: '#34c759', fontWeight: '700' }}>Confirmed (מאושר)</span></p>
+                  <p><b>כתובת:</b> <span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
+                  <p><b>תאריכים:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
+                  <p><b>טלפון:</b> <a href="tel:+393792027060" style={{ color: '#0071e3' }} dir="ltr">+39 379 202 7060</a></p>
+                  
+                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#fff', border: '1.5px solid #33ccff', color: '#0077b6', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>
+                    {WAZE_SVG} נווט למלון ב-Waze
+                  </a>
+                </div>
+              )}
+
+              {viewerItem.blob && (viewerItem.type || '').startsWith('image/') && (
+                <img src={URL.createObjectURL(viewerItem.blob)} alt="מסמך" style={{ width: '100%', borderRadius: '12px', marginTop: '10px' }} />
+              )}
             </div>
-
-            {viewerItem.isFlightInfo && (
-              <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>✈️ פרטי טיסה – ישראייר</h3>
-                <p><b>מספר הזמנה (Docket):</b> <span dir="ltr">4623652</span></p>
-                <p><b>טיסת הלוך (30.09.2026):</b><br/>שעה: <span dir="ltr">13:15</span> מתל אביב (טרמינל 1) ➔ <span dir="ltr">16:05</span> בוורונה<br/>טיסה: <span dir="ltr">6H 357</span> (Economy)</p>
-                <p><b>טיסת חזור (06.10.2026):</b><br/>שעה: <span dir="ltr">21:35</span> מוורונה ➔ <span dir="ltr">02:05</span> בתל אביב (07.10)<br/>טיסה: <span dir="ltr">6H 352</span> (Economy)</p>
-                <hr style={{ border: 0, borderTop: '1px solid rgba(0,0,0,0.1)', margin: '15px 0' }}/>
-                <b>נוסעים בהזמנה:</b>
-                <ul style={{ paddingRight: '20px', margin: '6px 0' }}>
-                  <li>Arik Cohen (28/12/1967)</li>
-                  <li>Amit Cohen (01/07/2014)</li>
-                  <li>Yuly Cohen (01/07/2014)</li>
-                  <li>Lian Cohen (14/10/2015)</li>
-                  <li>Harel Vilnai Cohen (04/09/1997)</li>
-                </ul>
-              </div>
-            )}
-
-            {viewerItem.isInsuranceInfo && (
-              <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🛡️ ביטוח נסיעות לחו"ל – AIG</h3>
-                <p><b>מספר פוליסה:</b> <span dir="ltr">170270213826</span></p>
-                <p><b>מוקד חירום רפואי 24/7 (עברית):</b></p>
-                <ul style={{ paddingRight: '20px', margin: '6px 0' }}>
-                  <li>WhatsApp: <a href="https://wa.me/972549940911" target="_blank" rel="noreferrer" style={{ color: '#0071e3' }} dir="ltr">+972-54-9940911</a></li>
-                  <li>טלפון ישיר: <a href="tel:+97239191155" style={{ color: '#0071e3' }} dir="ltr">+972-3-9191155</a></li>
-                </ul>
-                <hr style={{ border: 0, borderTop: '1px solid rgba(0,0,0,0.1)', margin: '15px 0' }}/>
-                <a href="https://www.aig.co.il/t/6b66x6" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#0071e3', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '10px' }}>כניסה לאזור האישי של AIG</a>
-              </div>
-            )}
-
-            {viewerItem.isCarVoucher && (
-              <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🚗 שובר השכרת רכב – Booking.com (Ecovia)</h3>
-                <p><b>מספר הזמנה:</b> <span dir="ltr">724715780</span></p>
-                <p><b>רכב:</b> Intermediate SUV – Citroen C5 Aircross או דומה (אוטומטי)</p>
-                <p><b>איסוף:</b> 30.09.2026 ב-17:30 – נמל התעופה ורונה</p>
-                <p><b>החזרה:</b> 06.10.2026 ב-17:30 – נמל התעופה ורונה</p>
-                <p><b>נהג ראשי:</b> <span dir="ltr">Cohen Arik (+972502022768)</span></p>
-                <p><b>ביטוח:</b> <span style={{ color: '#34c759', fontWeight: '700' }}>הגנה מלאה כלולה (Full Protection)</span></p>
-                <a href="https://www.booking.com" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#003580', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>📱 פתח ב-Booking.com</a>
-              </div>
-            )}
-
-            {viewerItem.isHotelInfo && (
-              <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🏡 הזמנת מלון – Bio Agriturismo Vojon</h3>
-                <p><b>סטטוס הזמנה:</b> <span style={{ color: '#34c759', fontWeight: '700' }}>Confirmed (מאושר)</span></p>
-                <p><b>כתובת:</b> <span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
-                <p><b>תאריכים:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
-                <p><b>טלפון:</b> <a href="tel:+393792027060" style={{ color: '#0071e3' }} dir="ltr">+39 379 202 7060</a></p>
-                
-                <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#fff', border: '1.5px solid #33ccff', color: '#0077b6', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>
-                  {WAZE_SVG} נווט למלון ב-Waze
-                </a>
-              </div>
-            )}
-
-            {viewerItem.blob && (viewerItem.type || '').startsWith('image/') && (
-              <img src={URL.createObjectURL(viewerItem.blob)} alt="מסמך" style={{ width: '100%', borderRadius: '12px', marginTop: '10px' }} />
-            )}
           </div>
         </div>
       )}
@@ -689,20 +702,28 @@ const navBtnStyle = {
 
 const modalStyle = {
   position: 'fixed',
-  inset: 0,
-  background: '#ffffff',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  width: '100vw',
+  height: '100vh',
+  background: '#f5f5f7',
   zIndex: 2000,
-  display: 'flex',
-  flexDirection: 'column',
-  overflowY: 'auto'
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  WebkitOverflowScrolling: 'touch',
+  direction: 'rtl'
 };
 
 const modalContentStyle = {
   width: '100%',
   maxWidth: '600px',
-  margin: 'auto',
-  padding: '24px 20px 40px',
-  position: 'relative'
+  margin: '0 auto',
+  padding: '16px 16px 40px',
+  boxSizing: 'border-box',
+  minHeight: '100vh',
+  background: '#f5f5f7'
 };
 
 const modalCloseBtn = {
