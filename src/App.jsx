@@ -304,8 +304,8 @@ export default function App() {
 
         <button 
           onClick={() => {
-            setActiveFolder('🏡 מלון');
-            setModalType('tickets');
+            setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
+            setModalType('viewer');
           }}
           style={{
             background: '#fff', border: '1px solid rgba(0,0,0,0.12)', padding: '6px 12px',
@@ -596,7 +596,7 @@ export default function App() {
             <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '17px', fontWeight: '700' }}>{viewerItem.title || viewerItem.name}</span>
-                <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
 
               {viewerItem.isFlightInfo && (
