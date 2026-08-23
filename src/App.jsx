@@ -271,13 +271,13 @@ export default function App() {
   const day = tripDays[activeDay];
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
+    <div style={{ background: '#f1f5f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
       
       {/* Header */}
       <header style={{
         padding: '14px 20px',
-        background: 'rgba(255, 255, 255, 0.92)',
-        borderBottom: '1px solid #e2e8f0',
+        background: 'rgba(255, 255, 255, 0.95)',
+        borderBottom: '1.5px solid #cbd5e1',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -285,15 +285,15 @@ export default function App() {
         top: 0,
         zIndex: 900,
         backdropFilter: 'blur(16px)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+        boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)'
       }}>
         <button 
           onClick={() => setSidebarOpen(true)}
           style={{
-            background: '#ffffff', border: '1px solid #e2e8f0', width: '40px', height: '40px',
+            background: '#ffffff', border: '1.5px solid #cbd5e1', width: '40px', height: '40px',
             borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+            boxShadow: '0 2px 4px rgba(15, 23, 42, 0.04)'
           }}
         >
           ☰
@@ -310,9 +310,9 @@ export default function App() {
             setModalType('viewer');
           }}
           style={{
-            background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '7px 14px',
+            background: '#f8fafc', border: '1.5px solid #cbd5e1', padding: '7px 14px',
             borderRadius: '20px', fontSize: '11px', fontWeight: '700', color: '#334155', cursor: 'pointer',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: '4px'
+            boxShadow: '0 2px 4px rgba(15, 23, 42, 0.04)', display: 'flex', alignItems: 'center', gap: '4px'
           }}
         >
           🏡 Bio Vojon
@@ -328,15 +328,15 @@ export default function App() {
       )}
       <aside style={{
         position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px',
-        background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 40px rgba(0,0,0,0.08)',
+        background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
         transition: 'right 0.35s cubic-bezier(0.16, 1, 0.3, 1)', padding: '32px 24px',
-        display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1px solid #e2e8f0'
+        display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #cbd5e1'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '16px', marginBottom: '8px' }}>
           <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#0f172a' }}>תפריט מהיר</h3>
           <button 
             onClick={() => setSidebarOpen(false)}
-            style={{ border: '1px solid #e2e8f0', background: '#f8fafc', width: '34px', height: '34px', borderRadius: '50%', fontWeight: '700', cursor: 'pointer', color: '#64748b' }}
+            style={{ border: '1.5px solid #cbd5e1', background: '#f8fafc', width: '34px', height: '34px', borderRadius: '50%', fontWeight: '700', cursor: 'pointer', color: '#64748b' }}
           >
             ✕
           </button>
@@ -345,7 +345,7 @@ export default function App() {
         <button onClick={() => { setSidebarOpen(false); setModalType('around'); }} style={sidebarBtnStyle}><span>📍</span> סביבי (Around Me)</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}><span>🚗</span> שמירת מיקום חניה</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}><span>🎟️</span> ארנק כרטיסים ומסמכים</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={{ ...sidebarBtnStyle, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca' }}><span>🆘</span> מספרי חירום</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={{ ...sidebarBtnStyle, background: '#fef2f2', color: '#dc2626', borderColor: '#fca5a5' }}><span>🆘</span> מספרי חירום</button>
       </aside>
 
       {/* Main Container */}
@@ -362,12 +362,12 @@ export default function App() {
                 padding: '9px 16px',
                 borderRadius: '12px',
                 background: activeDay === i ? '#0f172a' : '#ffffff',
-                color: activeDay === i ? '#ffffff' : '#64748b',
-                border: activeDay === i ? '1px solid #0f172a' : '1px solid #e2e8f0',
+                color: activeDay === i ? '#ffffff' : '#475569',
+                border: activeDay === i ? '1.5px solid #0f172a' : '1.5px solid #cbd5e1',
                 fontSize: '12px',
                 fontWeight: '700',
                 cursor: 'pointer',
-                boxShadow: activeDay === i ? '0 4px 12px rgba(15, 23, 42, 0.15)' : '0 1px 3px rgba(0,0,0,0.03)',
+                boxShadow: activeDay === i ? '0 4px 12px rgba(15, 23, 42, 0.2)' : '0 2px 4px rgba(15, 23, 42, 0.04)',
                 transition: 'all 0.15s ease'
               }}
             >
@@ -377,31 +377,31 @@ export default function App() {
         </div>
 
         {/* Selected Day Content */}
-        <section style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
+        <section style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 16px rgba(15, 23, 42, 0.06)' }}>
+          <div style={{ borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
             <span style={{ fontSize: '12px', fontWeight: '700', color: '#2563eb' }}>{day.fullLabel}</span>
             <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>{day.icon} {day.title}</h2>
           </div>
 
-          <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', lineHeight: '1.4', color: '#065f46', fontWeight: '600', marginBottom: '18px' }}>
+          <div style={{ background: '#ecfdf5', border: '1.5px solid #86efac', padding: '12px 16px', borderRadius: '14px', fontSize: '13px', lineHeight: '1.4', color: '#065f46', fontWeight: '600', marginBottom: '18px', boxShadow: '0 2px 6px rgba(16, 185, 129, 0.08)' }}>
             <b>🎯 אתגר היום:</b> {day.challenge}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {day.stops.map((stop, idx) => (
-              <div key={idx} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+              <div key={idx} style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '16px', padding: '16px', boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#0f172a', background: '#f1f5f9', padding: '4px 8px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>{stop.time}</span>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#0f172a', background: '#f8fafc', padding: '4px 8px', borderRadius: '8px', border: '1.5px solid #cbd5e1' }}>{stop.time}</span>
                   <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#0f172a' }}>{stop.name}</h3>
                 </div>
-                <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 14px', lineHeight: '1.45' }}>{stop.note}</p>
+                <p style={{ fontSize: '13px', color: '#475569', margin: '4px 0 14px', lineHeight: '1.45' }}>{stop.note}</p>
 
                 {stop.food && (
-                  <div style={{ fontSize: '12px', background: '#fffbeb', color: '#92400e', padding: '12px 14px', borderRadius: '12px', marginBottom: '14px', border: '1px solid #fde68a', display: 'flex', flexDirection: 'column', gap: '8px', fontWeight: '600' }}>
+                  <div style={{ fontSize: '12px', background: '#fffbeb', color: '#92400e', padding: '12px 14px', borderRadius: '12px', marginBottom: '14px', border: '1.5px solid #fcd34d', display: 'flex', flexDirection: 'column', gap: '8px', fontWeight: '600', boxShadow: '0 2px 6px rgba(217, 119, 6, 0.06)' }}>
                     <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ffffff', color: '#0284c7', fontWeight: '700', fontSize: '12px', padding: '7px 12px', borderRadius: '10px', textDecoration: 'none', border: '1px solid #bae6fd', alignSelf: 'flex-start', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ffffff', color: '#0284c7', fontWeight: '700', fontSize: '12px', padding: '7px 12px', borderRadius: '10px', textDecoration: 'none', border: '1.5px solid #7dd3fc', alignSelf: 'flex-start', boxShadow: '0 2px 4px rgba(2, 132, 199, 0.08)' }}
                     >
                       {WAZE_SVG} נווט למסעדה ב-Waze
                     </a>
@@ -409,7 +409,7 @@ export default function App() {
                 )}
 
                 {/* Navigation Buttons */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1.5px solid #f1f5f9' }}>
                   <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} style={navBtnStyle}>
                     {WAZE_SVG} ניווט ב-Waze
                   </a>
@@ -418,7 +418,7 @@ export default function App() {
                   </a>
                 </div>
 
-                {/* Parked Car Button (Option 1 in Apple Maps) */}
+                {/* Parked Car Button */}
                 <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
                   <a 
                     href="https://maps.apple.com/?q=Parked%20Car" 
@@ -432,13 +432,14 @@ export default function App() {
                       gap: '6px',
                       padding: '8px 12px',
                       borderRadius: '10px',
-                      background: '#f8fafc',
-                      color: '#2563eb',
-                      border: '1px solid #e2e8f0',
+                      background: '#eff6ff',
+                      color: '#1d4ed8',
+                      border: '1.5px solid #93c5fd',
                       fontSize: '12px',
                       fontWeight: '700',
                       textDecoration: 'none',
-                      boxSizing: 'border-box'
+                      boxSizing: 'border-box',
+                      boxShadow: '0 1px 3px rgba(37, 99, 235, 0.05)'
                     }}
                   >
                     🚗 שמור/מצא רכב חונה (Apple Maps)
@@ -446,14 +447,15 @@ export default function App() {
                   <button 
                     onClick={() => setModalType('parking')}
                     style={{
-                      border: '1px solid #e2e8f0',
-                      background: '#f8fafc',
-                      color: '#2563eb',
+                      border: '1.5px solid #93c5fd',
+                      background: '#ffffff',
+                      color: '#1d4ed8',
                       borderRadius: '10px',
                       padding: '0 10px',
                       fontSize: '12px',
                       fontWeight: '700',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      boxShadow: '0 1px 3px rgba(37, 99, 235, 0.05)'
                     }}
                     title="הסבר שמירת חניה"
                   >
@@ -471,8 +473,8 @@ export default function App() {
       {modalType === 'parking' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#2563eb' }}>🚗 איך שומרים את הרכב ב-Apple Maps</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
@@ -501,7 +503,7 @@ export default function App() {
                     fontWeight: '700',
                     textDecoration: 'none',
                     marginTop: '16px',
-                    boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)'
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
                   }}
                 >
                   🗺️ פתח עכשיו את Apple Maps
@@ -516,8 +518,8 @@ export default function App() {
       {modalType === 'around' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>📍 סביבי (Around Me)</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
@@ -537,17 +539,17 @@ export default function App() {
       {modalType === 'emergency' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#dc2626' }}>🆘 מספרי חירום באיטליה</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
               <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '18px' }}>לחץ לחיוג מהיר ומיידי:</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <a href="tel:112" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>🚨 <span>חירום כללי<br/><b>112</b></span></a>
-                <a href="tel:118" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>🚑 <span>אמבולנס<br/><b>118</b></span></a>
-                <a href="tel:115" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>🚒 <span>כבאות<br/><b>115</b></span></a>
-                <a href="tel:113" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>👮 <span>משטרה<br/><b>113</b></span></a>
+                <a href="tel:112" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fca5a5', textDecoration: 'none' }}>🚨 <span>חירום כללי<br/><b>112</b></span></a>
+                <a href="tel:118" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fca5a5', textDecoration: 'none' }}>🚑 <span>אמבולנס<br/><b>118</b></span></a>
+                <a href="tel:115" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fca5a5', textDecoration: 'none' }}>🚒 <span>כבאות<br/><b>115</b></span></a>
+                <a href="tel:113" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fca5a5', textDecoration: 'none' }}>👮 <span>משטרה<br/><b>113</b></span></a>
               </div>
             </div>
           </div>
@@ -558,9 +560,9 @@ export default function App() {
       {modalType === 'tickets' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box', width: '100%' }}>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
                 <div>
                   <small style={{ color: '#2563eb', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>ארנק דיגיטלי</small>
                   <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>🎟️ כרטיסים ומסמכים</h2>
@@ -572,22 +574,22 @@ export default function App() {
                 <button onClick={() => setShowUploadBox(!showUploadBox)} style={{ padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: 'none', background: '#0f172a', color: '#fff', boxShadow: '0 2px 6px rgba(15, 23, 42, 0.15)' }}>
                   ➕ הוסף כרטיס
                 </button>
-                <button onClick={addNewFolder} style={{ padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#334155' }}>
+                <button onClick={addNewFolder} style={{ padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: '1.5px solid #cbd5e1', background: '#f8fafc', color: '#334155' }}>
                   📁 תקייה חדשה
                 </button>
               </div>
 
               {showUploadBox && (
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #e2e8f0', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1.5px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
-                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff' }}>
                       {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
                     </select>
                   </div>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
                   </div>
                   <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                   <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
@@ -613,18 +615,18 @@ export default function App() {
                       padding: '10px 12px', borderRadius: '12px',
                       background: activeFolder === f ? '#0f172a' : '#f8fafc',
                       color: activeFolder === f ? '#ffffff' : '#334155',
-                      border: activeFolder === f ? '1px solid #0f172a' : '1px solid #e2e8f0',
-                      cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                      border: activeFolder === f ? '1.5px solid #0f172a' : '1.5px solid #cbd5e1',
+                      cursor: 'pointer', boxShadow: '0 2px 4px rgba(15, 23, 42, 0.03)',
                       display: 'flex', flexDirection: 'column', justifyContent: 'center'
                     }}
                   >
                     <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px' }}>{f}</strong>
-                    <small style={{ color: activeFolder === f ? 'rgba(255,255,255,0.7)' : '#94a3b8', fontSize: '10px', fontWeight: '600' }}>הצג קבצים</small>
+                    <small style={{ color: activeFolder === f ? 'rgba(255,255,255,0.7)' : '#64748b', fontSize: '10px', fontWeight: '600' }}>הצג קבצים</small>
                   </div>
                 ))}
               </div>
 
-              <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '8px', marginBottom: '12px', fontWeight: '800', fontSize: '13px', color: '#0f172a' }}>
+              <div style={{ borderBottom: '1.5px solid #f1f5f9', paddingBottom: '8px', marginBottom: '12px', fontWeight: '800', fontSize: '13px', color: '#0f172a' }}>
                 תכולת תיקייה: {activeFolder}
               </div>
 
@@ -646,15 +648,15 @@ export default function App() {
                         padding: '12px', 
                         borderRadius: '14px', 
                         background: '#ffffff', 
-                        border: '1px solid #e2e8f0', 
+                        border: '1.5px solid #cbd5e1', 
                         cursor: 'pointer', 
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
+                        boxShadow: '0 2px 6px rgba(15, 23, 42, 0.04)',
                         boxSizing: 'border-box',
                         width: '100%'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#f1f5f9', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
                           {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
                         </div>
                         <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
@@ -667,7 +669,7 @@ export default function App() {
 
                       <button 
                         onClick={(e) => deleteFile(x.id, e)} 
-                        style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '5px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
+                        style={{ background: '#fef2f2', color: '#dc2626', border: '1.5px solid #fca5a5', padding: '5px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
                       >
                         מחק
                       </button>
@@ -685,8 +687,8 @@ export default function App() {
       {modalType === 'viewer' && viewerItem && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>{viewerItem.title || viewerItem.name}</span>
                 <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
               </div>
@@ -697,7 +699,7 @@ export default function App() {
                   <p><b>מספר הזמנה (Docket):</b> <span dir="ltr">4623652</span></p>
                   <p><b>טיסת הלוך (30.09.2026):</b><br/>שעה: <span dir="ltr">13:15</span> מתל אביב (טרמינל 1) ➔ <span dir="ltr">16:05</span> בוורונה<br/>טיסה: <span dir="ltr">6H 357</span> (Economy)</p>
                   <p><b>טיסת חזור (06.10.2026):</b><br/>שעה: <span dir="ltr">21:35</span> מוורונה ➔ <span dir="ltr">02:05</span> בתל אביב (07.10)<br/>טיסה: <span dir="ltr">6H 352</span> (Economy)</p>
-                  <hr style={{ border: 0, borderTop: '1px solid #f1f5f9', margin: '14px 0' }}/>
+                  <hr style={{ border: 0, borderTop: '1.5px solid #f1f5f9', margin: '14px 0' }}/>
                   <b>נוסעים בהזמנה:</b>
                   <ul style={{ paddingRight: '20px', margin: '6px 0', color: '#475569' }}>
                     <li>Arik Cohen (28/12/1967)</li>
@@ -718,8 +720,8 @@ export default function App() {
                     <li>WhatsApp: <a href="https://wa.me/972549940911" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }} dir="ltr">+972-54-9940911</a></li>
                     <li>טלפון ישיר: <a href="tel:+97239191155" style={{ color: '#2563eb' }} dir="ltr">+972-3-9191155</a></li>
                   </ul>
-                  <hr style={{ border: 0, borderTop: '1px solid #f1f5f9', margin: '14px 0' }}/>
-                  <a href="https://www.aig.co.il/t/6b66x6" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#2563eb', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '10px' }}>כניסה לאזור האישי של AIG</a>
+                  <hr style={{ border: 0, borderTop: '1.5px solid #f1f5f9', margin: '14px 0' }}/>
+                  <a href="https://www.aig.co.il/t/6b66x6" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#2563eb', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '10px', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)' }}>כניסה לאזור האישי של AIG</a>
                 </div>
               )}
 
@@ -732,7 +734,7 @@ export default function App() {
                   <p><b>החזרה:</b> 06.10.2026 ב-17:30 – נמל התעופה ורונה</p>
                   <p><b>נהג ראשי:</b> <span dir="ltr">Cohen Arik (+972502022768)</span></p>
                   <p><b>ביטוח:</b> <span style={{ color: '#059669', fontWeight: '700' }}>הגנה מלאה כלולה (Full Protection)</span></p>
-                  <a href="https://www.booking.com" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#0284c7', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>📱 פתח ב-Booking.com</a>
+                  <a href="https://www.booking.com" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#0284c7', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '14px', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)' }}>📱 פתח ב-Booking.com</a>
                 </div>
               )}
 
@@ -744,14 +746,14 @@ export default function App() {
                   <p><b>תאריכים:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
                   <p><b>טלפון:</b> <a href="tel:+393792027060" style={{ color: '#2563eb' }} dir="ltr">+39 379 202 7060</a></p>
                   
-                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#fff', border: '1px solid #38bdf8', color: '#0284c7', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', marginTop: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#fff', border: '1.5px solid #38bdf8', color: '#0284c7', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', marginTop: '14px', boxShadow: '0 2px 6px rgba(2, 132, 199, 0.1)' }}>
                     {WAZE_SVG} נווט למלון ב-Waze
                   </a>
                 </div>
               )}
 
               {viewerItem.blob && (viewerItem.type || '').startsWith('image/') && (
-                <img src={URL.createObjectURL(viewerItem.blob)} alt="מסמך" style={{ width: '100%', borderRadius: '12px', marginTop: '10px' }} />
+                <img src={URL.createObjectURL(viewerItem.blob)} alt="מסמך" style={{ width: '100%', borderRadius: '12px', marginTop: '10px', border: '1.5px solid #cbd5e1' }} />
               )}
             </div>
           </div>
@@ -764,7 +766,7 @@ export default function App() {
 
 const sidebarBtnStyle = {
   background: '#f8fafc',
-  border: '1px solid #e2e8f0',
+  border: '1.5px solid #cbd5e1',
   padding: '12px 14px',
   borderRadius: '12px',
   fontWeight: '700',
@@ -775,7 +777,7 @@ const sidebarBtnStyle = {
   alignItems: 'center',
   gap: '10px',
   color: '#334155',
-  boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+  boxShadow: '0 2px 4px rgba(15, 23, 42, 0.03)'
 };
 
 const navBtnStyle = {
@@ -790,8 +792,8 @@ const navBtnStyle = {
   justifyContent: 'center',
   gap: '6px',
   cursor: 'pointer',
-  border: '1px solid #e2e8f0',
-  boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+  border: '1.5px solid #cbd5e1',
+  boxShadow: '0 2px 4px rgba(15, 23, 42, 0.03)',
   textDecoration: 'none'
 };
 
@@ -803,7 +805,7 @@ const modalStyle = {
   bottom: 0,
   width: '100vw',
   height: '100vh',
-  background: '#f8fafc',
+  background: '#f1f5f9',
   zIndex: 2000,
   overflowY: 'auto',
   overflowX: 'hidden',
@@ -818,12 +820,12 @@ const modalContentStyle = {
   padding: '16px 16px 40px',
   boxSizing: 'border-box',
   minHeight: '100vh',
-  background: '#f8fafc'
+  background: '#f1f5f9'
 };
 
 const modalCloseBtn = {
-  border: '1px solid #e2e8f0',
-  background: '#f1f5f9',
+  border: '1.5px solid #cbd5e1',
+  background: '#f8fafc',
   width: '32px',
   height: '32px',
   borderRadius: '50%',
@@ -839,7 +841,7 @@ const gridModalBtn = {
   padding: '14px',
   borderRadius: '12px',
   background: '#ffffff',
-  border: '1px solid #e2e8f0',
+  border: '1.5px solid #cbd5e1',
   fontWeight: '700',
   fontSize: '13px',
   textAlign: 'center',
@@ -849,7 +851,7 @@ const gridModalBtn = {
   alignItems: 'center',
   gap: '6px',
   color: '#334155',
-  boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+  boxShadow: '0 2px 4px rgba(15, 23, 42, 0.03)'
 };
 
 const uploadBtnStyle = {
@@ -858,7 +860,7 @@ const uploadBtnStyle = {
   borderRadius: '10px',
   background: '#ffffff',
   color: '#334155',
-  border: '1px solid #cbd5e1',
+  border: '1.5px solid #cbd5e1',
   fontWeight: '700',
   cursor: 'pointer',
   fontSize: '12px'
