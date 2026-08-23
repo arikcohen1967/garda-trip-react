@@ -13,11 +13,11 @@ const WAZE_SVG = (
 
 const MAPS_SVG = (
   <svg viewBox="0 0 512 512" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-    <rect width="512" height="512" rx="110" fill="#e2fbe5"/>
-    <path d="M120 392l80-160 160-80-80 160z" fill="#34c759"/>
-    <path d="M200 232l152-72-72 152-80-80z" fill="#007aff"/>
+    <rect width="512" height="512" rx="110" fill="#f1f5f9"/>
+    <path d="M120 392l80-160 160-80-80 160z" fill="#10b981"/>
+    <path d="M200 232l152-72-72 152-80-80z" fill="#3b82f6"/>
     <circle cx="260" cy="260" r="50" fill="#fff"/>
-    <polygon points="260,225 240,290 260,275 280,290" fill="#007aff"/>
+    <polygon points="260,225 240,290 260,275 280,290" fill="#2563eb"/>
   </svg>
 );
 
@@ -25,25 +25,25 @@ const tripDays = [
   {
     date: "2026-09-30",
     label: "רביעי · 30/09",
-    fullLabel: "רביעי · 30.09.2026",
+    fullLabel: "יום רביעי · 30 בספטמבר 2026",
     title: "נחיתה והגעה למלון",
     icon: "✈️",
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ורכב שכור." },
-      { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
+      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
   {
     date: "2026-10-01",
     label: "חמישי · 01/10",
-    fullLabel: "חמישי · 01.10.2026",
+    fullLabel: "יום חמישי · 01 באוקטובר 2026",
     title: "Gardaland – יום פארק מלא",
     icon: "🎢",
     challenge: "לבחור יחד את שלושת המתקנים הכי טובים של היום.",
     stops: [
-      { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני הכניסה." },
-      { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בסוף היום." },
+      { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
+      { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
       { time: "13:00", name: "ארוחת צהריים בפארק", dest: "Gardaland Resort", note: "אוכל מהיר, פיצות והמבורגרים בתוך הפארק.", food: { name: "🍔 Aladino Pizza & Burger (בתוך הפארק)", dest: "Gardaland Resort" } },
       { time: "19:00", name: "ארוחת ערב", dest: "Osteria Sottoportego, Peschiera del Garda", note: "פסטות מעולות ואווירה על המים בפסקיירה דל גארדה.", food: { name: "🍝 Osteria Sottoportego", dest: "Osteria Sottoportego, Peschiera del Garda" } }
     ]
@@ -51,63 +51,63 @@ const tripDays = [
   {
     date: "2026-10-02",
     label: "שישי · 02/10",
-    fullLabel: "שישי · 02.10.2026",
+    fullLabel: "יום שישי · 02 באוקטובר 2026",
     title: "סובב אגם גארדה + ראפטינג",
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית אחת עם האגם ואחת מהראפטינג.",
     stops: [
-      { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית ועצירה במלצ׳סינה." },
+      { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
       { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
-      { time: "14:30", name: "יציאה לראפטינג ב-Valdadige", dest: "Visit Valdadige, Via San Martino, Volargne, Italy", note: "ראפטינג משפחתי על נהר האדיג׳ה." }
+      { time: "14:30", name: "יציאה לראפטינג ב-Valdadige", dest: "Visit Valdadige, Via San Martino, Volargne, Italy", note: "ראפטינג משפחתי חווייתי על נהר האדיג׳ה." }
     ]
   },
   {
     date: "2026-10-03",
     label: "שבת · 03/10",
-    fullLabel: "שבת · 03.10.2026",
+    fullLabel: "יום שבת · 03 באוקטובר 2026",
     title: "Movieland + Medieval Times",
     icon: "🎬",
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט.",
     stops: [
-      { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום סרטים ואקשן." },
-      { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
+      { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
+      { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
     ]
   },
   {
     date: "2026-10-04",
     label: "ראשון · 04/10",
-    fullLabel: "ראשון · 04.10.2026",
+    fullLabel: "יום ראשון · 04 באוקטובר 2026",
     title: "ונציה – יום מלא",
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי.",
     stops: [
-      { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר למרכז." },
+      { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
       { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
     ]
   },
   {
     date: "2026-10-05",
     label: "שני · 05/10",
-    fullLabel: "שני · 05.10.2026",
+    fullLabel: "יום שני · 05 באוקטובר 2026",
     title: "Borghetto sul Mincio + Valeggio",
     icon: "🏘️",
     challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים.",
     stops: [
-      { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי בין הנהר והגשרים." },
+      { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
       { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio" } }
     ]
   },
   {
     date: "2026-10-06",
     label: "שלישי · 06/10",
-    fullLabel: "שלישי · 06.10.2026",
+    fullLabel: "יום שלישי · 06 באוקטובר 2026",
     title: "ורונה + הטיסה הביתה",
     icon: "❤️",
     challenge: "לבחור יחד את רגע השיא של כל הטיול.",
     stops: [
-      { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה והבית של יוליה." },
+      { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "Verona Villafranca Airport", note: "טיסה חזרה הביתה." }
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "Verona Villafranca Airport", note: "התארגנות וטיסה חזרה הביתה." }
     ]
   }
 ];
@@ -271,35 +271,37 @@ export default function App() {
   const day = tripDays[activeDay];
 
   return (
-    <div style={{ background: '#f5f5f7', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif', color: '#1d1d1f', direction: 'rtl', paddingBottom: '40px' }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
       
       {/* Header */}
       <header style={{
-        padding: '16px 20px',
-        background: 'rgba(255, 255, 255, 0.88)',
-        borderBottom: '1px solid rgba(0,0,0,0.1)',
+        padding: '14px 20px',
+        background: 'rgba(255, 255, 255, 0.92)',
+        borderBottom: '1px solid #e2e8f0',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
         top: 0,
         zIndex: 900,
-        backdropFilter: 'blur(20px)'
+        backdropFilter: 'blur(16px)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
       }}>
         <button 
           onClick={() => setSidebarOpen(true)}
           style={{
-            background: '#fff', border: '1px solid rgba(0,0,0,0.12)', width: '42px', height: '42px',
-            borderRadius: '14px', fontSize: '20px', fontWeight: 'bold', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            background: '#ffffff', border: '1px solid #e2e8f0', width: '40px', height: '40px',
+            borderRadius: '12px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
           }}
         >
           ☰
         </button>
 
         <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 2px' }}>אגם גארדה וונציה</h1>
-          <p style={{ fontSize: '11px', color: '#86868b', margin: 0, fontWeight: '500' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
+          <h1 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 2px', color: '#0f172a', letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
+          <p style={{ fontSize: '11px', color: '#64748b', margin: 0, fontWeight: '600' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
         </div>
 
         <button 
@@ -308,9 +310,9 @@ export default function App() {
             setModalType('viewer');
           }}
           style={{
-            background: '#fff', border: '1px solid rgba(0,0,0,0.12)', padding: '6px 12px',
-            borderRadius: '20px', fontSize: '11px', fontWeight: '600', color: '#1d1d1f', cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '7px 14px',
+            borderRadius: '20px', fontSize: '11px', fontWeight: '700', color: '#334155', cursor: 'pointer',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: '4px'
           }}
         >
           🏡 Bio Vojon
@@ -321,53 +323,52 @@ export default function App() {
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 2500, backdropFilter: 'blur(8px)' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', zIndex: 2500, backdropFilter: 'blur(6px)' }}
         />
       )}
       <aside style={{
         position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px',
-        background: 'rgba(255,255,255,0.96)', zIndex: 2600, boxShadow: '-20px 0 50px rgba(0,0,0,0.15)',
+        background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 40px rgba(0,0,0,0.08)',
         transition: 'right 0.35s cubic-bezier(0.16, 1, 0.3, 1)', padding: '32px 24px',
-        display: 'flex', flexDirection: 'column', gap: '14px', backdropFilter: 'blur(25px)',
-        borderLeft: '1px solid rgba(0,0,0,0.1)'
+        display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1px solid #e2e8f0'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '14px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>ניווט מהיר</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '8px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#0f172a' }}>תפריט מהיר</h3>
           <button 
             onClick={() => setSidebarOpen(false)}
-            style={{ border: '1px solid rgba(0,0,0,0.12)', background: '#f5f5f7', width: '34px', height: '34px', borderRadius: '50%', fontWeight: '700', cursor: 'pointer' }}
+            style={{ border: '1px solid #e2e8f0', background: '#f8fafc', width: '34px', height: '34px', borderRadius: '50%', fontWeight: '700', cursor: 'pointer', color: '#64748b' }}
           >
             ✕
           </button>
         </div>
-        <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}><span>📅</span> הצג מסלול ימים</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('around'); }} style={sidebarBtnStyle}><span>📍</span> Around Me</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}><span>🚗</span> שמירת מיקום רכב חונה</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}><span>🎟️</span> ארנק כרטיסים</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={{ ...sidebarBtnStyle, background: 'rgba(255, 59, 48, 0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)' }}><span>🆘</span> מספרי חירום</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}><span>📅</span> מסלול ימי הטיול</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('around'); }} style={sidebarBtnStyle}><span>📍</span> סביבי (Around Me)</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}><span>🚗</span> שמירת מיקום חניה</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}><span>🎟️</span> ארנק כרטיסים ומסמכים</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={{ ...sidebarBtnStyle, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca' }}><span>🆘</span> מספרי חירום</button>
       </aside>
 
       {/* Main Container */}
       <main style={{ padding: '16px', maxWidth: '600px', margin: 'auto' }}>
         
         {/* Day Selector Tabs */}
-        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '16px', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '16px', scrollbarWidth: 'none' }}>
           {tripDays.map((d, i) => (
             <button
               key={i}
               onClick={() => setActiveDay(i)}
               style={{
                 flex: '0 0 auto',
-                padding: '10px 18px',
-                borderRadius: '14px',
-                background: activeDay === i ? '#1d1d1f' : '#ffffff',
-                color: activeDay === i ? '#ffffff' : '#86868b',
-                border: activeDay === i ? '1px solid #1d1d1f' : '1px solid rgba(0,0,0,0.12)',
+                padding: '9px 16px',
+                borderRadius: '12px',
+                background: activeDay === i ? '#0f172a' : '#ffffff',
+                color: activeDay === i ? '#ffffff' : '#64748b',
+                border: activeDay === i ? '1px solid #0f172a' : '1px solid #e2e8f0',
                 fontSize: '12px',
                 fontWeight: '700',
                 cursor: 'pointer',
-                boxShadow: activeDay === i ? '0 6px 16px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.03)',
-                transition: 'all 0.2s ease'
+                boxShadow: activeDay === i ? '0 4px 12px rgba(15, 23, 42, 0.15)' : '0 1px 3px rgba(0,0,0,0.03)',
+                transition: 'all 0.15s ease'
               }}
             >
               {d.label}
@@ -376,31 +377,31 @@ export default function App() {
         </div>
 
         {/* Selected Day Content */}
-        <section style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-          <div style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '14px', marginBottom: '14px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: '#0071e3' }}>{day.fullLabel}</span>
-            <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800' }}>{day.icon} {day.title}</h2>
+        <section style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+          <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: '#2563eb' }}>{day.fullLabel}</span>
+            <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>{day.icon} {day.title}</h2>
           </div>
 
-          <div style={{ background: 'rgba(52, 199, 89, 0.08)', border: '1px solid rgba(52, 199, 89, 0.25)', padding: '14px 16px', borderRadius: '14px', fontSize: '13px', lineHeight: '1.4', color: '#1b5e20', fontWeight: '500', marginBottom: '16px' }}>
-            <b>אתגר:</b> {day.challenge}
+          <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', lineHeight: '1.4', color: '#065f46', fontWeight: '600', marginBottom: '18px' }}>
+            <b>🎯 אתגר היום:</b> {day.challenge}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {day.stops.map((stop, idx) => (
-              <div key={idx} style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '16px', padding: '18px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+              <div key={idx} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#1d1d1f', background: '#f5f5f7', padding: '5px 10px', borderRadius: '8px', border: '1.5px solid rgba(0,0,0,0.08)' }}>{stop.time}</span>
-                  <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0 }}>{stop.name}</h3>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#0f172a', background: '#f1f5f9', padding: '4px 8px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>{stop.time}</span>
+                  <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#0f172a' }}>{stop.name}</h3>
                 </div>
-                <p style={{ fontSize: '13px', color: '#86868b', margin: '6px 0 14px', lineHeight: '1.4' }}>{stop.note}</p>
+                <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 14px', lineHeight: '1.45' }}>{stop.note}</p>
 
                 {stop.food && (
-                  <div style={{ fontSize: '12px', background: 'rgba(255, 149, 0, 0.08)', color: '#b45309', padding: '14px', borderRadius: '14px', marginBottom: '14px', border: '1px solid rgba(255, 149, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '8px', fontWeight: '500' }}>
-                    <span><b>המלצה קולינרית:</b> {stop.food.name}</span>
+                  <div style={{ fontSize: '12px', background: '#fffbeb', color: '#92400e', padding: '12px 14px', borderRadius: '12px', marginBottom: '14px', border: '1px solid #fde68a', display: 'flex', flexDirection: 'column', gap: '8px', fontWeight: '600' }}>
+                    <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ffffff', color: '#0077b6', fontWeight: '700', fontSize: '12px', padding: '8px 14px', borderRadius: '10px', textDecoration: 'none', border: '1px solid #33ccff', alignSelf: 'flex-start' }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ffffff', color: '#0284c7', fontWeight: '700', fontSize: '12px', padding: '7px 12px', borderRadius: '10px', textDecoration: 'none', border: '1px solid #bae6fd', alignSelf: 'flex-start', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}
                     >
                       {WAZE_SVG} נווט למסעדה ב-Waze
                     </a>
@@ -408,17 +409,17 @@ export default function App() {
                 )}
 
                 {/* Navigation Buttons */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
                   <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} style={navBtnStyle}>
-                    {WAZE_SVG} Waze
+                    {WAZE_SVG} ניווט ב-Waze
                   </a>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" style={navBtnStyle}>
-                    {MAPS_SVG} Maps
+                    {MAPS_SVG} ניווט במפות
                   </a>
                 </div>
 
                 {/* Parked Car Button (Option 1 in Apple Maps) */}
-                <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
+                <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
                   <a 
                     href="https://maps.apple.com/?q=Parked%20Car" 
                     target="_blank" 
@@ -428,12 +429,12 @@ export default function App() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '8px',
-                      padding: '9px 12px',
-                      borderRadius: '12px',
-                      background: 'rgba(0, 122, 255, 0.06)',
-                      color: '#0071e3',
-                      border: '1px solid rgba(0, 122, 255, 0.2)',
+                      gap: '6px',
+                      padding: '8px 12px',
+                      borderRadius: '10px',
+                      background: '#f8fafc',
+                      color: '#2563eb',
+                      border: '1px solid #e2e8f0',
                       fontSize: '12px',
                       fontWeight: '700',
                       textDecoration: 'none',
@@ -445,12 +446,12 @@ export default function App() {
                   <button 
                     onClick={() => setModalType('parking')}
                     style={{
-                      border: '1px solid rgba(0, 122, 255, 0.2)',
-                      background: '#fff',
-                      color: '#0071e3',
-                      borderRadius: '12px',
-                      padding: '0 12px',
-                      fontSize: '13px',
+                      border: '1px solid #e2e8f0',
+                      background: '#f8fafc',
+                      color: '#2563eb',
+                      borderRadius: '10px',
+                      padding: '0 10px',
+                      fontSize: '12px',
                       fontWeight: '700',
                       cursor: 'pointer'
                     }}
@@ -470,14 +471,14 @@ export default function App() {
       {modalType === 'parking' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px' }}>
-                <h3 style={{ margin: 0, fontSize: '19px', fontWeight: '700', color: '#0071e3' }}>🚗 איך שומרים את הרכב ב-Apple Maps</h3>
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#2563eb' }}>🚗 איך שומרים את הרכב ב-Apple Maps</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
               
-              <div style={{ fontSize: '14px', lineHeight: '1.7', color: '#1d1d1f' }}>
-                <p><b>1. אוטומטית (מומלץ):</b><br/>
+              <div style={{ fontSize: '14px', lineHeight: '1.7', color: '#334155' }}>
+                <p><b>1. אוטומטית (הכי נוח):</b><br/>
                 אם האייפון מחובר ל-Bluetooth או ל-CarPlay ברכב השכור, ברגע שמכבים מנוע ומתנתקים – האייפון שומר <b>אוטומטית</b> את מיקום החניה.</p>
                 
                 <p><b>2. ידנית בלחיצה אחת:</b><br/>
@@ -495,11 +496,12 @@ export default function App() {
                     textAlign: 'center',
                     padding: '12px',
                     borderRadius: '12px',
-                    background: '#0071e3',
+                    background: '#2563eb',
                     color: '#fff',
                     fontWeight: '700',
                     textDecoration: 'none',
-                    marginTop: '16px'
+                    marginTop: '16px',
+                    boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)'
                   }}
                 >
                   🗺️ פתח עכשיו את Apple Maps
@@ -514,17 +516,17 @@ export default function App() {
       {modalType === 'around' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '700' }}>📍 Around Me</h3>
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>📍 סביבי (Around Me)</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
-              <p style={{ fontSize: '13px', color: '#86868b', marginBottom: '20px' }}>בחר קטגוריה לצפייה במפה סביבך:</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '18px' }}>בחר קטגוריה לצפייה במפה סביב מיקומך הנוכחי:</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={gridModalBtn}>🛒 <span>סופרמרקטים</span></button>
                 <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={gridModalBtn}>⛽ <span>תחנות דלק</span></button>
-                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={gridModalBtn}>🍝 <span>מסעדות</span></button>
-                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={gridModalBtn}>💊 <span>סופרפארם / בית מרקחת</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={gridModalBtn}>🍝 <span>מסעדות ופיצריות</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={gridModalBtn}>💊 <span>בית מרקחת / פארם</span></button>
               </div>
             </div>
           </div>
@@ -535,17 +537,17 @@ export default function App() {
       {modalType === 'emergency' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#ff3b30' }}>🆘 מספרי חירום באיטליה</h3>
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#dc2626' }}>🆘 מספרי חירום באיטליה</h3>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
-              <p style={{ fontSize: '13px', color: '#86868b', marginBottom: '20px' }}>לחץ לחיוג מהיר:</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <a href="tel:112" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚨 <span>חירום כללי<br/><b>112</b></span></a>
-                <a href="tel:118" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚑 <span>אמבולנס<br/><b>118</b></span></a>
-                <a href="tel:115" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>🚒 <span>כבאות<br/><b>115</b></span></a>
-                <a href="tel:113" style={{ ...gridModalBtn, background: 'rgba(255,59,48,0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)', textDecoration: 'none' }}>👮 <span>משטרה<br/><b>113</b></span></a>
+              <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '18px' }}>לחץ לחיוג מהיר ומיידי:</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <a href="tel:112" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>🚨 <span>חירום כללי<br/><b>112</b></span></a>
+                <a href="tel:118" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>🚑 <span>אמבולנס<br/><b>118</b></span></a>
+                <a href="tel:115" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>🚒 <span>כבאות<br/><b>115</b></span></a>
+                <a href="tel:113" style={{ ...gridModalBtn, background: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', textDecoration: 'none' }}>👮 <span>משטרה<br/><b>113</b></span></a>
               </div>
             </div>
           </div>
@@ -556,36 +558,36 @@ export default function App() {
       {modalType === 'tickets' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box', width: '100%' }}>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '14px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
                 <div>
-                  <small style={{ color: '#86868b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block' }}>Digital Wallet</small>
-                  <h2 style={{ margin: '4px 0 0', fontSize: '20px', fontWeight: '800' }}>🎟️ כרטיסים ומסמכים</h2>
+                  <small style={{ color: '#2563eb', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>ארנק דיגיטלי</small>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>🎟️ כרטיסים ומסמכים</h2>
                 </div>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
-                <button onClick={() => setShowUploadBox(!showUploadBox)} style={{ padding: '14px', borderRadius: '14px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: 'none', background: '#1d1d1f', color: '#fff' }}>
+                <button onClick={() => setShowUploadBox(!showUploadBox)} style={{ padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: 'none', background: '#0f172a', color: '#fff', boxShadow: '0 2px 6px rgba(15, 23, 42, 0.15)' }}>
                   ➕ הוסף כרטיס
                 </button>
-                <button onClick={addNewFolder} style={{ padding: '14px', borderRadius: '14px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: '1px solid rgba(0,0,0,0.12)', background: '#fff', color: '#1d1d1f' }}>
+                <button onClick={addNewFolder} style={{ padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#334155' }}>
                   📁 תקייה חדשה
                 </button>
               </div>
 
               {showUploadBox && (
-                <div style={{ background: '#f2f2f7', padding: '18px', borderRadius: '16px', border: '1.5px solid rgba(0,0,0,0.1)', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #e2e8f0', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#86868b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
-                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.15)', background: '#fff' }}>
+                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}>
                       {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#86868b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.15)', background: '#fff', boxSizing: 'border-box' }} />
+                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
                   </div>
                   <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                   <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
@@ -596,40 +598,40 @@ export default function App() {
                 </div>
               )}
 
-              <h3 style={{ fontSize: '15px', margin: '8px 0 10px', fontWeight: '700' }}>תקיות הטיול</h3>
+              <h3 style={{ fontSize: '14px', margin: '8px 0 10px', fontWeight: '800', color: '#334155' }}>תקיות הטיול</h3>
               <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
-                gap: '10px', 
-                marginBottom: '20px' 
+                gap: '8px', 
+                marginBottom: '18px' 
               }}>
                 {folders.map((f, i) => (
                   <div 
                     key={i} 
                     onClick={() => setActiveFolder(f)}
                     style={{
-                      padding: '12px 14px', borderRadius: '14px',
-                      background: activeFolder === f ? '#1d1d1f' : '#ffffff',
-                      color: activeFolder === f ? '#ffffff' : '#1d1d1f',
-                      border: activeFolder === f ? '1.5px solid #1d1d1f' : '1.5px solid rgba(0,0,0,0.1)',
-                      cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                      padding: '10px 12px', borderRadius: '12px',
+                      background: activeFolder === f ? '#0f172a' : '#f8fafc',
+                      color: activeFolder === f ? '#ffffff' : '#334155',
+                      border: activeFolder === f ? '1px solid #0f172a' : '1px solid #e2e8f0',
+                      cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
                       display: 'flex', flexDirection: 'column', justifyContent: 'center'
                     }}
                   >
-                    <strong style={{ display: 'block', fontSize: '13px', marginBottom: '2px' }}>{f}</strong>
-                    <small style={{ color: activeFolder === f ? 'rgba(255,255,255,0.7)' : '#86868b', fontSize: '11px' }}>הצג קבצים</small>
+                    <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px' }}>{f}</strong>
+                    <small style={{ color: activeFolder === f ? 'rgba(255,255,255,0.7)' : '#94a3b8', fontSize: '10px', fontWeight: '600' }}>הצג קבצים</small>
                   </div>
                 ))}
               </div>
 
-              <div style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '8px', marginBottom: '12px', fontWeight: '700', fontSize: '14px' }}>
-                תיקייה: {activeFolder}
+              <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '8px', marginBottom: '12px', fontWeight: '800', fontSize: '13px', color: '#0f172a' }}>
+                תכולת תיקייה: {activeFolder}
               </div>
 
               {/* Files List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                 {ticketFiles.length === 0 ? (
-                  <div style={{ textAlign: 'center', color: '#86868b', padding: '24px', fontSize: '13px' }}>אין עדיין כרטיסים בתקייה זו.</div>
+                  <div style={{ textAlign: 'center', color: '#94a3b8', padding: '24px', fontSize: '13px', fontWeight: '500' }}>אין עדיין כרטיסים בתקייה זו.</div>
                 ) : (
                   ticketFiles.map((x) => (
                     <div 
@@ -641,23 +643,23 @@ export default function App() {
                         alignItems: 'center', 
                         justifyContent: 'space-between',
                         gap: '12px', 
-                        padding: '14px', 
-                        borderRadius: '16px', 
-                        background: '#fff', 
-                        border: '1.5px solid rgba(0,0,0,0.08)', 
+                        padding: '12px', 
+                        borderRadius: '14px', 
+                        background: '#ffffff', 
+                        border: '1px solid #e2e8f0', 
                         cursor: 'pointer', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
                         boxSizing: 'border-box',
                         width: '100%'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#f2f2f7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
                           {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
                         </div>
                         <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
-                          <b style={{ display: 'block', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.title || x.name}</b>
-                          <small style={{ color: '#86868b', fontSize: '11px', display: 'block' }}>
+                          <b style={{ display: 'block', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#0f172a' }}>{x.title || x.name}</b>
+                          <small style={{ color: '#64748b', fontSize: '11px', display: 'block', fontWeight: '500' }}>
                             {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round(x.size / 1024)} KB`)))}
                           </small>
                         </div>
@@ -665,7 +667,7 @@ export default function App() {
 
                       <button 
                         onClick={(e) => deleteFile(x.id, e)} 
-                        style={{ background: 'rgba(255,59,48,0.08)', color: '#ff3b30', border: 0, padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
+                        style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '5px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
                       >
                         מחק
                       </button>
@@ -683,21 +685,21 @@ export default function App() {
       {modalType === 'viewer' && viewerItem && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '17px', fontWeight: '700' }}>{viewerItem.title || viewerItem.name}</span>
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
+                <span style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>{viewerItem.title || viewerItem.name}</span>
                 <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
               </div>
 
               {viewerItem.isFlightInfo && (
-                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>✈️ פרטי טיסה – ישראייר</h3>
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: '#334155' }}>
+                  <h3 style={{ color: '#2563eb', margin: '0 0 10px', fontSize: '16px' }}>✈️ פרטי טיסה – ישראייר</h3>
                   <p><b>מספר הזמנה (Docket):</b> <span dir="ltr">4623652</span></p>
                   <p><b>טיסת הלוך (30.09.2026):</b><br/>שעה: <span dir="ltr">13:15</span> מתל אביב (טרמינל 1) ➔ <span dir="ltr">16:05</span> בוורונה<br/>טיסה: <span dir="ltr">6H 357</span> (Economy)</p>
                   <p><b>טיסת חזור (06.10.2026):</b><br/>שעה: <span dir="ltr">21:35</span> מוורונה ➔ <span dir="ltr">02:05</span> בתל אביב (07.10)<br/>טיסה: <span dir="ltr">6H 352</span> (Economy)</p>
-                  <hr style={{ border: 0, borderTop: '1px solid rgba(0,0,0,0.1)', margin: '15px 0' }}/>
+                  <hr style={{ border: 0, borderTop: '1px solid #f1f5f9', margin: '14px 0' }}/>
                   <b>נוסעים בהזמנה:</b>
-                  <ul style={{ paddingRight: '20px', margin: '6px 0' }}>
+                  <ul style={{ paddingRight: '20px', margin: '6px 0', color: '#475569' }}>
                     <li>Arik Cohen (28/12/1967)</li>
                     <li>Amit Cohen (01/07/2014)</li>
                     <li>Yuly Cohen (01/07/2014)</li>
@@ -708,41 +710,41 @@ export default function App() {
               )}
 
               {viewerItem.isInsuranceInfo && (
-                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🛡️ ביטוח נסיעות לחו"ל – AIG</h3>
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: '#334155' }}>
+                  <h3 style={{ color: '#2563eb', margin: '0 0 10px', fontSize: '16px' }}>🛡️ ביטוח נסיעות לחו"ל – AIG</h3>
                   <p><b>מספר פוליסה:</b> <span dir="ltr">170270213826</span></p>
                   <p><b>מוקד חירום רפואי 24/7 (עברית):</b></p>
                   <ul style={{ paddingRight: '20px', margin: '6px 0' }}>
-                    <li>WhatsApp: <a href="https://wa.me/972549940911" target="_blank" rel="noreferrer" style={{ color: '#0071e3' }} dir="ltr">+972-54-9940911</a></li>
-                    <li>טלפון ישיר: <a href="tel:+97239191155" style={{ color: '#0071e3' }} dir="ltr">+972-3-9191155</a></li>
+                    <li>WhatsApp: <a href="https://wa.me/972549940911" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }} dir="ltr">+972-54-9940911</a></li>
+                    <li>טלפון ישיר: <a href="tel:+97239191155" style={{ color: '#2563eb' }} dir="ltr">+972-3-9191155</a></li>
                   </ul>
-                  <hr style={{ border: 0, borderTop: '1px solid rgba(0,0,0,0.1)', margin: '15px 0' }}/>
-                  <a href="https://www.aig.co.il/t/6b66x6" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#0071e3', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '10px' }}>כניסה לאזור האישי של AIG</a>
+                  <hr style={{ border: 0, borderTop: '1px solid #f1f5f9', margin: '14px 0' }}/>
+                  <a href="https://www.aig.co.il/t/6b66x6" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#2563eb', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '10px' }}>כניסה לאזור האישי של AIG</a>
                 </div>
               )}
 
               {viewerItem.isCarVoucher && (
-                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🚗 שובר השכרת רכב – Booking.com (Ecovia)</h3>
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: '#334155' }}>
+                  <h3 style={{ color: '#2563eb', margin: '0 0 10px', fontSize: '16px' }}>🚗 שובר השכרת רכב – Booking.com (Ecovia)</h3>
                   <p><b>מספר הזמנה:</b> <span dir="ltr">724715780</span></p>
                   <p><b>רכב:</b> Intermediate SUV – Citroen C5 Aircross או דומה (אוטומטי)</p>
                   <p><b>איסוף:</b> 30.09.2026 ב-17:30 – נמל התעופה ורונה</p>
                   <p><b>החזרה:</b> 06.10.2026 ב-17:30 – נמל התעופה ורונה</p>
                   <p><b>נהג ראשי:</b> <span dir="ltr">Cohen Arik (+972502022768)</span></p>
-                  <p><b>ביטוח:</b> <span style={{ color: '#34c759', fontWeight: '700' }}>הגנה מלאה כלולה (Full Protection)</span></p>
-                  <a href="https://www.booking.com" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#003580', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>📱 פתח ב-Booking.com</a>
+                  <p><b>ביטוח:</b> <span style={{ color: '#059669', fontWeight: '700' }}>הגנה מלאה כלולה (Full Protection)</span></p>
+                  <a href="https://www.booking.com" target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px', background: '#0284c7', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>📱 פתח ב-Booking.com</a>
                 </div>
               )}
 
               {viewerItem.isHotelInfo && (
-                <div style={{ lineHeight: '1.8', fontSize: '14px' }}>
-                  <h3 style={{ color: '#0071e3', margin: '0 0 10px' }}>🏡 הזמנת מלון – Bio Agriturismo Vojon</h3>
-                  <p><b>סטטוס הזמנה:</b> <span style={{ color: '#34c759', fontWeight: '700' }}>Confirmed (מאושר)</span></p>
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: '#334155' }}>
+                  <h3 style={{ color: '#2563eb', margin: '0 0 10px', fontSize: '16px' }}>🏡 הזמנת מלון – Bio Agriturismo Vojon</h3>
+                  <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '700' }}>Confirmed (מאושר)</span></p>
                   <p><b>כתובת:</b> <span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
                   <p><b>תאריכים:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
-                  <p><b>טלפון:</b> <a href="tel:+393792027060" style={{ color: '#0071e3' }} dir="ltr">+39 379 202 7060</a></p>
+                  <p><b>טלפון:</b> <a href="tel:+393792027060" style={{ color: '#2563eb' }} dir="ltr">+39 379 202 7060</a></p>
                   
-                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#fff', border: '1.5px solid #33ccff', color: '#0077b6', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', marginTop: '14px' }}>
+                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#fff', border: '1px solid #38bdf8', color: '#0284c7', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', marginTop: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
                     {WAZE_SVG} נווט למלון ב-Waze
                   </a>
                 </div>
@@ -761,35 +763,35 @@ export default function App() {
 }
 
 const sidebarBtnStyle = {
-  background: '#ffffff',
-  border: '1px solid rgba(0,0,0,0.12)',
-  padding: '14px 16px',
-  borderRadius: '16px',
+  background: '#f8fafc',
+  border: '1px solid #e2e8f0',
+  padding: '12px 14px',
+  borderRadius: '12px',
   fontWeight: '700',
-  fontSize: '14px',
+  fontSize: '13px',
   textAlign: 'right',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
-  gap: '12px',
-  color: '#1d1d1f',
-  boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+  gap: '10px',
+  color: '#334155',
+  boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
 };
 
 const navBtnStyle = {
-  fontSize: '13px',
+  fontSize: '12px',
   fontWeight: '700',
-  color: '#1d1d1f',
-  background: '#ffffff',
-  padding: '10px',
-  borderRadius: '12px',
+  color: '#334155',
+  background: '#f8fafc',
+  padding: '9px',
+  borderRadius: '10px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '8px',
+  gap: '6px',
   cursor: 'pointer',
-  border: '1px solid rgba(0,0,0,0.12)',
-  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+  border: '1px solid #e2e8f0',
+  boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
   textDecoration: 'none'
 };
 
@@ -801,7 +803,7 @@ const modalStyle = {
   bottom: 0,
   width: '100vw',
   height: '100vh',
-  background: '#f5f5f7',
+  background: '#f8fafc',
   zIndex: 2000,
   overflowY: 'auto',
   overflowX: 'hidden',
@@ -816,28 +818,28 @@ const modalContentStyle = {
   padding: '16px 16px 40px',
   boxSizing: 'border-box',
   minHeight: '100vh',
-  background: '#f5f5f7'
+  background: '#f8fafc'
 };
 
 const modalCloseBtn = {
-  border: '1px solid rgba(0,0,0,0.12)',
-  background: '#f5f5f7',
-  width: '36px',
-  height: '36px',
+  border: '1px solid #e2e8f0',
+  background: '#f1f5f9',
+  width: '32px',
+  height: '32px',
   borderRadius: '50%',
   fontWeight: '700',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: '#1d1d1f'
+  color: '#64748b'
 };
 
 const gridModalBtn = {
-  padding: '16px',
-  borderRadius: '14px',
+  padding: '14px',
+  borderRadius: '12px',
   background: '#ffffff',
-  border: '1px solid rgba(0,0,0,0.12)',
+  border: '1px solid #e2e8f0',
   fontWeight: '700',
   fontSize: '13px',
   textAlign: 'center',
@@ -845,19 +847,19 @@ const gridModalBtn = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  gap: '8px',
-  color: '#1d1d1f',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+  gap: '6px',
+  color: '#334155',
+  boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
 };
 
 const uploadBtnStyle = {
   width: '100%',
-  padding: '12px',
-  borderRadius: '12px',
+  padding: '11px',
+  borderRadius: '10px',
   background: '#ffffff',
-  color: '#1d1d1f',
-  border: '1px solid rgba(0,0,0,0.15)',
+  color: '#334155',
+  border: '1px solid #cbd5e1',
   fontWeight: '700',
   cursor: 'pointer',
-  fontSize: '13px'
+  fontSize: '12px'
 };
