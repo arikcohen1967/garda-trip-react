@@ -43,7 +43,7 @@ const tripDays = [
     challenge: "לבחור יחד את שלושת המתקנים הכי טובים של היום.",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני הכניסה." },
-      { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "לשמור באפליקציה את מיקום הרכב." },
+      { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בסוף היום." },
       { time: "13:00", name: "ארוחת צהריים בפארק", dest: "Gardaland Resort", note: "אוכל מהיר, פיצות והמבורגרים בתוך הפארק.", food: { name: "🍔 Aladino Pizza & Burger (בתוך הפארק)", dest: "Gardaland Resort" } },
       { time: "19:00", name: "ארוחת ערב", dest: "Osteria Sottoportego, Peschiera del Garda", note: "פסטות מעולות ואווירה על המים בפסקיירה דל גארדה.", food: { name: "🍝 Osteria Sottoportego", dest: "Osteria Sottoportego, Peschiera del Garda" } }
     ]
@@ -342,6 +342,7 @@ export default function App() {
         </div>
         <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}><span>📅</span> הצג מסלול ימים</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('around'); }} style={sidebarBtnStyle}><span>📍</span> Around Me</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}><span>🚗</span> שמירת מיקום רכב חונה</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}><span>🎟️</span> ארנק כרטיסים</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={{ ...sidebarBtnStyle, background: 'rgba(255, 59, 48, 0.06)', color: '#ff3b30', borderColor: 'rgba(255,59,48,0.25)' }}><span>🆘</span> מספרי חירום</button>
       </aside>
@@ -406,6 +407,7 @@ export default function App() {
                   </div>
                 )}
 
+                {/* Navigation Buttons */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
                   <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} style={navBtnStyle}>
                     {WAZE_SVG} Waze
@@ -414,11 +416,99 @@ export default function App() {
                     {MAPS_SVG} Maps
                   </a>
                 </div>
+
+                {/* Parked Car Button (Option 1 in Apple Maps) */}
+                <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
+                  <a 
+                    href="https://maps.apple.com/?q=Parked%20Car" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '9px 12px',
+                      borderRadius: '12px',
+                      background: 'rgba(0, 122, 255, 0.06)',
+                      color: '#0071e3',
+                      border: '1px solid rgba(0, 122, 255, 0.2)',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      textDecoration: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    🚗 שמור/מצא רכב חונה (Apple Maps)
+                  </a>
+                  <button 
+                    onClick={() => setModalType('parking')}
+                    style={{
+                      border: '1px solid rgba(0, 122, 255, 0.2)',
+                      background: '#fff',
+                      color: '#0071e3',
+                      borderRadius: '12px',
+                      padding: '0 12px',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      cursor: 'pointer'
+                    }}
+                    title="הסבר שמירת חניה"
+                  >
+                    ℹ️
+                  </button>
+                </div>
+
               </div>
             ))}
           </div>
         </section>
       </main>
+
+      {/* MODAL: Parking Guide */}
+      {modalType === 'parking' && (
+        <div style={modalStyle}>
+          <div style={modalContentStyle}>
+            <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px' }}>
+                <h3 style={{ margin: 0, fontSize: '19px', fontWeight: '700', color: '#0071e3' }}>🚗 איך שומרים את הרכב ב-Apple Maps</h3>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+              </div>
+              
+              <div style={{ fontSize: '14px', lineHeight: '1.7', color: '#1d1d1f' }}>
+                <p><b>1. אוטומטית (מומלץ):</b><br/>
+                אם האייפון מחובר ל-Bluetooth או ל-CarPlay ברכב השכור, ברגע שמכבים מנוע ומתנתקים – האייפון שומר <b>אוטומטית</b> את מיקום החניה.</p>
+                
+                <p><b>2. ידנית בלחיצה אחת:</b><br/>
+                פותחים את אפליקציית Apple Maps ➔ לוחצים על <b>הנקודה הכחולה</b> (המיקום שלכם) ➔ ובוחרים ב-<b>"סמן מיקום רכב חונה" (Mark as Parked Car)</b>.</p>
+
+                <p><b>3. איך חוזרים לרכב?</b><br/>
+                פותחים את Apple Maps, לוחצים על הנעץ <b>Parked Car</b> ובוחרים בניווט רגלי 🚶‍♂️.</p>
+                
+                <a 
+                  href="https://maps.apple.com/?q=Parked%20Car" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  style={{
+                    display: 'block',
+                    textAlign: 'center',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    background: '#0071e3',
+                    color: '#fff',
+                    fontWeight: '700',
+                    textDecoration: 'none',
+                    marginTop: '16px'
+                  }}
+                >
+                  🗺️ פתח עכשיו את Apple Maps
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: Around Me */}
       {modalType === 'around' && (
@@ -596,7 +686,7 @@ export default function App() {
             <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '20px', padding: '22px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '17px', fontWeight: '700' }}>{viewerItem.title || viewerItem.name}</span>
-                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+                <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
               </div>
 
               {viewerItem.isFlightInfo && (
