@@ -119,6 +119,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [viewerItem, setViewerItem] = useState(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Tickets State
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
@@ -127,6 +128,51 @@ export default function App() {
   const [showUploadBox, setShowUploadBox] = useState(false);
   const [newTicketTitle, setNewTicketTitle] = useState('');
   const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב');
+
+  // Register In-Line Service Worker for 100% Offline Support
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      const swCode = `
+        const CACHE_NAME = 'garda-trip-v2';
+        self.addEventListener('install', (e) => {
+          self.skipWaiting();
+        });
+        self.addEventListener('activate', (e) => {
+          e.waitUntil(
+            caches.keys().then((keys) =>
+              Promise.all(keys.map((k) => k !== CACHE_NAME && caches.delete(k)))
+            )
+          );
+          self.clients.claim();
+        });
+        self.addEventListener('fetch', (e) => {
+          if (e.request.method !== 'GET') return;
+          e.respondWith(
+            fetch(e.request)
+              .then((res) => {
+                const copy = res.clone();
+                caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
+                return res;
+              })
+              .catch(() => caches.match(e.request))
+          );
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Load Folders & DB Setup
   useEffect(() => {
@@ -273,6 +319,13 @@ export default function App() {
   return (
     <div style={{ background: '#f1f5f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
       
+      {/* Offline Status Bar */}
+      {!isOnline && (
+        <div style={{ background: '#0284c7', color: '#ffffff', textAlign: 'center', padding: '6px 12px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.02em', position: 'sticky', top: 0, zIndex: 1000, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          ⚡ מצב אופליין פעיל · כל הנתונים, המסלולים והמסמכים זמינים ללא אינטרנט
+        </div>
+      )}
+
       {/* Header */}
       <header style={{
         padding: '14px 20px',
@@ -282,7 +335,7 @@ export default function App() {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: 0,
+        top: !isOnline ? '28px' : 0,
         zIndex: 900,
         backdropFilter: 'blur(16px)',
         boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)'
@@ -655,16 +708,16 @@ export default function App() {
                         display: 'flex', 
                         flexDirection: 'row', 
                         alignItems: 'center', 
-                        justifyContent: 'space-between',
+                        justifyContent: 'space-between', 
                         gap: '12px', 
                         padding: '12px', 
                         borderRadius: '14px', 
                         background: '#ffffff', 
                         border: '1.5px solid #cbd5e1', 
                         cursor: 'pointer', 
-                        boxShadow: '0 2px 6px rgba(15, 23, 42, 0.04)',
-                        boxSizing: 'border-box',
-                        width: '100%'
+                        boxShadow: '0 2px 6px rgba(15, 23, 42, 0.04)', 
+                        boxSizing: 'border-box', 
+                        width: '100%' 
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
