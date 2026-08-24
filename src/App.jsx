@@ -208,7 +208,7 @@ export default function App() {
     if (callback) callback();
   };
 
-  // Slow Swipe-to-Close Touch Handlers
+  // Swipe-to-Close Touch Handlers
   const touchStartXRef = useRef(0);
   const touchCurrentXRef = useRef(0);
 
@@ -223,7 +223,6 @@ export default function App() {
 
   const handleTouchEnd = (onCloseCallback) => {
     const diff = touchCurrentXRef.current - touchStartXRef.current;
-    // Increased threshold to 120px for a slower, deliberate swipe feel
     if (diff > 120) {
       onCloseCallback();
     }
@@ -508,7 +507,7 @@ export default function App() {
     }
   };
 
-  // 100% Guaranteed Native Speech Synthesis Engine for Italian Audio
+  // 100% Reliable Italian Speech Engine
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
@@ -1090,7 +1089,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook with Slow Swipe-to-Close */}
+      {/* MODAL: Italian Phrasebook with Professional Redesign & Swipe-to-Close */}
       {modalType === 'phrasebook' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1099,8 +1098,9 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl', transition: 'transform 0.4s ease' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl', transition: 'transform 0.4s ease' }}>
               
+              {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={modalCloseBtn}>✕</button>
                 <div style={{ textAlign: 'center', flex: 1, padding: '0 8px' }}>
@@ -1112,16 +1112,24 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Professional Clean Translator Box */}
               <div style={{
-                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                borderRadius: '20px', padding: '16px 14px', color: '#ffffff', marginBottom: '20px', boxSizing: 'border-box', width: '100%'
+                background: '#ffffff',
+                border: '1.5px solid #cbd5e1',
+                borderRadius: '20px',
+                padding: '16px 14px',
+                color: '#1e293b',
+                marginBottom: '20px',
+                boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+                boxSizing: 'border-box',
+                width: '100%'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>תרגום מהיר בעברית 🇮🇱 ➔ 🇮🇹</span>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#2563eb' }}>תרגום מהיר בעברית 🇮🇱 ➔ 🇮🇹</span>
                   {(hebrewInput || italianOutput) && (
                     <button 
                       onClick={() => handleGlobalClick(() => { setHebrewInput(''); setItalianOutput(''); })}
-                      style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#e2e8f0', borderRadius: '8px', padding: '3px 8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                      style={{ background: '#f1f5f9', border: '1.5px solid #cbd5e1', color: '#475569', borderRadius: '8px', padding: '3px 8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
                     >
                       נקה ✕
                     </button>
@@ -1139,42 +1147,43 @@ export default function App() {
                     onKeyDown={(e) => { if (e.key === 'Enter') handleGlobalClick(() => translateText(hebrewInput)); }}
                     style={{
                       flex: 1, minWidth: 0, padding: '12px 14px', borderRadius: '12px',
-                      border: '1.5px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)',
-                      color: '#ffffff', fontSize: '14px', fontWeight: '600', outline: 'none', direction: 'rtl', textAlign: 'right', boxSizing: 'border-box'
+                      border: '1.5px solid #cbd5e1', background: '#f8fafc',
+                      color: '#0f172a', fontSize: '14px', fontWeight: '600', outline: 'none', direction: 'rtl', textAlign: 'right', boxSizing: 'border-box'
                     }}
                   />
                   <button 
                     onClick={() => handleGlobalClick(() => translateText(hebrewInput))}
                     style={{
-                      background: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '12px',
-                      padding: '0 16px', height: '44px', fontSize: '13px', fontWeight: '800', cursor: 'pointer', flexShrink: 0
+                      background: '#0f172a', color: '#ffffff', border: 'none', borderRadius: '12px',
+                      padding: '0 16px', height: '44px', fontSize: '13px', fontWeight: '800', cursor: 'pointer', flexShrink: 0,
+                      boxShadow: '0 2px 6px rgba(15, 23, 42, 0.15)'
                     }}
                   >
                     תרגם
                   </button>
                 </div>
 
-                <div style={{ fontSize: '11px', color: '#93c5fd', textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
-                  🎙️ טיפ: לחץ על תיבת הטקסט והשתמש במיקרופון של מקלדת הטלפון!
+                <div style={{ fontSize: '11px', color: '#64748b', textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
+                  🎙️ טיפ: לחץ על תיבת הטקסט והשתמש במיקרופון של מקלדת הטלפון להכתבה חלקה!
                 </div>
 
                 {isTranslating && (
-                  <div style={{ textAlign: 'center', color: '#38bdf8', fontSize: '12px', fontWeight: '800', marginBottom: '8px' }}>
+                  <div style={{ textAlign: 'center', color: '#2563eb', fontSize: '12px', fontWeight: '800', marginBottom: '8px' }}>
                     ⏳ מתרגם לאיטלקית...
                   </div>
                 )}
 
                 <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '6px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
-                  <button onClick={() => handleGlobalClick(() => translateText('איפה השירותים?'))} style={quickChipStyle}>🚻 איפה השירותים?</button>
-                  <button onClick={() => handleGlobalClick(() => translateText('חשבון בבקשה'))} style={quickChipStyle}>🧾 חשבון בבקשה</button>
-                  <button onClick={() => handleGlobalClick(() => translateText('כמה זה עולה?'))} style={quickChipStyle}>💶 כמה זה עולה?</button>
-                  <button onClick={() => handleGlobalClick(() => translateText('שולחן ל-5 אנשים'))} style={quickChipStyle}>🍽️ שולחן ל-5</button>
-                  <button onClick={() => handleGlobalClick(() => translateText('אפשר לשלם באשראי?'))} style={quickChipStyle}>💳 כרטיס אשראי?</button>
+                  <button onClick={() => handleGlobalClick(() => translateText('איפה השירותים?'))} style={quickChipStyleLight}>🚻 איפה השירותים?</button>
+                  <button onClick={() => handleGlobalClick(() => translateText('חשבון בבקשה'))} style={quickChipStyleLight}>🧾 חשבון בבקשה</button>
+                  <button onClick={() => handleGlobalClick(() => translateText('כמה זה עולה?'))} style={quickChipStyleLight}>💶 כמה זה עולה?</button>
+                  <button onClick={() => handleGlobalClick(() => translateText('שולחן ל-5 אנשים'))} style={quickChipStyleLight}>🍽️ שולחן ל-5</button>
+                  <button onClick={() => handleGlobalClick(() => translateText('אפשר לשלם באשראי?'))} style={quickChipStyleLight}>💳 כרטיס אשראי?</button>
                 </div>
 
                 {italianOutput && (
                   <div style={{
-                    background: 'rgba(255, 255, 255, 0.96)', borderRadius: '14px', padding: '12px 14px',
+                    background: '#f8fafc', borderRadius: '14px', padding: '12px 14px', border: '1.5px solid #cbd5e1',
                     color: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '8px', boxSizing: 'border-box', width: '100%'
                   }}>
                     <button 
@@ -1767,7 +1776,7 @@ const navBtnStyle = {
 
 const modalStyle = {
   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-  width: '100vw', height: '100vh', background: '#ffffff',
+  width: '100vw', maxWidth: '100vw', height: '100vh', background: '#ffffff',
   zIndex: 2000, overflowY: 'auto', overflowX: 'hidden',
   WebkitOverflowScrolling: 'touch', direction: 'rtl', boxSizing: 'border-box'
 };
@@ -1805,5 +1814,12 @@ const quickChipStyle = {
   flex: '0 0 auto', padding: '6px 10px', borderRadius: '8px',
   background: 'rgba(255, 255, 255, 0.12)', color: '#e2e8f0',
   border: '1px solid rgba(255, 255, 255, 0.2)', fontSize: '11px', fontWeight: '700',
+  cursor: 'pointer', whiteSpace: 'nowrap'
+};
+
+const quickChipStyleLight = {
+  flex: '0 0 auto', padding: '6px 10px', borderRadius: '8px',
+  background: '#f8fafc', color: '#334155',
+  border: '1.5px solid #cbd5e1', fontSize: '11px', fontWeight: '700',
   cursor: 'pointer', whiteSpace: 'nowrap'
 };
