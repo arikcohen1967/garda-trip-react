@@ -183,6 +183,27 @@ export default function App() {
   const [translationHistory, setTranslationHistory] = useState([]);
   const audioContextRef = useRef(null);
 
+  // Swipe-to-Close Touch Handlers
+  const touchStartXRef = useRef(0);
+  const touchCurrentXRef = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchCurrentXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchCurrentXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (onCloseCallback) => {
+    const diff = touchCurrentXRef.current - touchStartXRef.current;
+    // Swipe Right to Close (Threshold 80px)
+    if (diff > 80) {
+      onCloseCallback();
+    }
+  };
+
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -293,7 +314,7 @@ export default function App() {
   const loadFiles = async (folder) => {
     const db = await openDb();
     const tx = db.transaction('files', 'readonly');
-    const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
+    const req = tx.objectStore('files').index('folder').getAll(folder);
     req.onsuccess = () => {
       const res = req.result || [];
       setTicketFiles(res.sort((a, b) => b.created - a.created));
@@ -462,7 +483,7 @@ export default function App() {
     }
   };
 
-  // High-Reliability Audio Engine with Context Resume (Fixes silent audio on mobile)
+  // Reliable Italian Speech Engine
   const speakItalian = async (text) => {
     if (!text || !text.trim()) return;
     setIsPlayingAudio(true);
@@ -671,19 +692,24 @@ export default function App() {
         </button>
       </header>
 
-      {/* Sidebar Drawer */}
+      {/* Sidebar Drawer with Swipe-to-Close */}
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.3)', zIndex: 2500 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.25)', zIndex: 2500 }}
         />
       )}
-      <aside style={{
-        position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px',
-        background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
-        transition: 'right 0.3s ease', padding: '32px 24px',
-        display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #e2e8f0'
-      }}>
+      <aside 
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
+        style={{
+          position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px',
+          background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
+          transition: 'right 0.3s ease', padding: '32px 24px',
+          display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #e2e8f0'
+        }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '16px', marginBottom: '8px' }}>
           <button onClick={() => setSidebarOpen(false)} style={modalCloseBtn}>✕</button>
           <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#0f172a' }}>תפריט מהיר</h3>
@@ -836,9 +862,14 @@ export default function App() {
         </section>
       </main>
 
-      {/* MODAL: Interactive Daily Quest */}
+      {/* MODAL: Interactive Daily Quest with Swipe-to-Close */}
       {modalType === 'questModal' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%' }}>
               
@@ -937,9 +968,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Challenges & Jokes Log */}
+      {/* MODAL: Challenges & Jokes Log with Swipe-to-Close */}
       {modalType === 'challengesLog' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%' }}>
               
@@ -1040,9 +1076,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook */}
+      {/* MODAL: Italian Phrasebook with Swipe-to-Close */}
       {modalType === 'phrasebook' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl' }}>
               
@@ -1241,9 +1282,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Gallery */}
+      {/* MODAL: Gallery with Swipe-to-Close */}
       {modalType === 'gallery' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%' }}>
               
@@ -1420,9 +1466,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Parking Guide */}
+      {/* MODAL: Parking Guide with Swipe-to-Close */}
       {modalType === 'parking' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
@@ -1440,9 +1491,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Around Me */}
+      {/* MODAL: Around Me with Swipe-to-Close */}
       {modalType === 'around' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
@@ -1461,9 +1517,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Emergency */}
+      {/* MODAL: Emergency with Swipe-to-Close */}
       {modalType === 'emergency' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
@@ -1482,9 +1543,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Tickets & Wallet */}
+      {/* MODAL: Tickets & Wallet with Swipe-to-Close */}
       {modalType === 'tickets' && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(null))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%' }}>
               
@@ -1587,9 +1653,14 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Full Viewer */}
+      {/* MODAL: Full Viewer with Swipe-to-Close */}
       {modalType === 'viewer' && viewerItem && (
-        <div style={modalStyle}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => handleTouchEnd(() => setModalType(viewerItem.isHotelInfo ? null : 'tickets'))}
+          style={modalStyle}
+        >
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
