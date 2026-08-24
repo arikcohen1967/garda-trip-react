@@ -173,16 +173,18 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State (Real-Time Live Streaming Transcription)
+  // Translator & Speech State
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [voiceStatusText, setVoiceStatusText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
   const recognitionInstanceRef = useRef(null);
+  const audioPlayerRef = useRef(null);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -463,31 +465,62 @@ export default function App() {
     }
   };
 
-  // Safe Italian Speech Engine with Automatic Session Flush
+  // High-Reliability Dual Audio Playback (Native Audio Stream + Fallback TTS)
   const speakItalian = (text) => {
-    if (!text) return;
+    if (!text || !text.trim()) return;
+    setIsPlayingAudio(true);
+
     try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'it-IT';
-        utterance.rate = 0.85;
-
-        const voices = window.speechSynthesis.getVoices();
-        const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
-        if (itVoice) utterance.voice = itVoice;
-
-        utterance.onend = () => {
-          try { window.speechSynthesis.cancel(); } catch (e) {}
-        };
-        utterance.onerror = () => {
-          try { window.speechSynthesis.cancel(); } catch (e) {}
-        };
-
-        window.speechSynthesis.speak(utterance);
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current = null;
       }
+
+      // Stream native Italian MP3 audio directly
+      const cleanQuery = encodeURIComponent(text.trim());
+      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=it&client=tw-ob&q=${cleanQuery}`;
+      const audio = new Audio(audioUrl);
+      audioPlayerRef.current = audio;
+
+      audio.onended = () => {
+        setIsPlayingAudio(false);
+      };
+
+      audio.onerror = () => {
+        // Fallback to local SpeechSynthesis if network audio is blocked
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'it-IT';
+          utterance.rate = 0.85;
+
+          const voices = window.speechSynthesis.getVoices();
+          const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
+          if (itVoice) utterance.voice = itVoice;
+
+          utterance.onend = () => setIsPlayingAudio(false);
+          utterance.onerror = () => setIsPlayingAudio(false);
+          window.speechSynthesis.speak(utterance);
+        } else {
+          setIsPlayingAudio(false);
+        }
+      };
+
+      audio.play().catch(() => {
+        // Retry with SpeechSynthesis upon user gesture
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'it-IT';
+          utterance.onend = () => setIsPlayingAudio(false);
+          window.speechSynthesis.speak(utterance);
+        } else {
+          setIsPlayingAudio(false);
+        }
+      });
     } catch (e) {
-      console.log('Audio speech error', e);
+      console.log('Audio error:', e);
+      setIsPlayingAudio(false);
     }
   };
 
@@ -541,6 +574,9 @@ export default function App() {
 
   // Real-Time Live Speech Recognition (Words appear live while speaking)
   const toggleListening = () => {
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+    }
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
@@ -577,7 +613,7 @@ export default function App() {
         const recognition = new SpeechRecognition();
         recognition.lang = 'he-IL';
         recognition.continuous = false;
-        recognition.interimResults = true; // Enables live streaming words as you speak!
+        recognition.interimResults = true;
         recognition.maxAlternatives = 1;
 
         let finalTranscript = '';
@@ -769,7 +805,6 @@ export default function App() {
         display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #cbd5e1'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '16px', marginBottom: '8px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#0f172a' }}>תפריט מהיר</h3>
           <button 
             onClick={() => setSidebarOpen(false)}
             style={modalCloseBtn}
@@ -777,6 +812,7 @@ export default function App() {
           >
             ✕
           </button>
+          <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#0f172a' }}>תפריט מהיר</h3>
         </div>
         <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}><span>📅</span> מסלול ימי הטיול</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('challengesLog'); }} style={{ ...sidebarBtnStyle, background: '#fef3c7', color: '#b45309', borderColor: '#fcd34d', fontWeight: '800' }}><span>🏆</span> יומן אתגרים ובדיחות</button>
@@ -1380,7 +1416,7 @@ export default function App() {
                     <button 
                       onClick={() => speakItalian(italianOutput)}
                       style={{
-                        background: '#059669',
+                        background: isPlayingAudio ? '#10b981' : '#059669',
                         color: '#ffffff',
                         border: 'none',
                         borderRadius: '10px',
@@ -1391,10 +1427,11 @@ export default function App() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        boxShadow: '0 2px 8px rgba(5, 150, 105, 0.25)'
                       }}
                     >
-                      🔊 השמע
+                      {isPlayingAudio ? '🔊 משמיע...' : '🔊 השמע'}
                     </button>
                     <div style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
                       <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '700', display: 'block' }}>איטלקית:</span>
@@ -1557,11 +1594,12 @@ export default function App() {
             <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box', width: '100%' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
-                <div>
-                  <small style={{ color: '#a21caf', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>יומן וזיכרונות</small>
-                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>📸 אלבום המסע המשפחתי</h2>
-                </div>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+                <div style={{ textAlign: 'center', flex: 1 }}>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>📸 אלבום המסע המשפחתי</h2>
+                  <small style={{ color: '#a21caf', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>יומן וזיכרונות</small>
+                </div>
+                <div style={{ width: '36px' }}></div>
               </div>
 
               <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
