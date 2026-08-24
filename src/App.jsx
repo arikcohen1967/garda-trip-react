@@ -1163,7 +1163,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook & Live Translator with Native Keyboard Dictation */}
+      {/* MODAL: Italian Phrasebook & Live Translator */}
       {modalType === 'phrasebook' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -1174,14 +1174,14 @@ export default function App() {
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
                 <div style={{ textAlign: 'center', flex: 1, padding: '0 8px' }}>
                   <h2 style={{ margin: 0, fontSize: '17px', fontWeight: '900', color: '#0f172a' }}>שיחון איטלקי חכם</h2>
-                  <small style={{ color: '#059669', fontWeight: '700', fontSize: '11px' }}>תרגום קולי + חיפוש ביטויים מהיר</small>
+                  <small style={{ color: '#059669', fontWeight: '700', fontSize: '11px' }}>תרגום מהיר + הכתבה קולית מהמקלדת</small>
                 </div>
                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#ecfdf5', border: '1.5px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
                   🇮🇹
                 </div>
               </div>
 
-              {/* Modern Voice Translator Box */}
+              {/* Modern Translator Box */}
               <div style={{
                 background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                 borderRadius: '20px',
@@ -1192,7 +1192,7 @@ export default function App() {
                 boxSizing: 'border-box'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>הקלד או השתמש במיקרופון המקלדת 🎙️</span>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>תרגום מהיר בעברית 🇮🇱 ➔ 🇮🇹</span>
                   {(hebrewInput || italianOutput) && (
                     <button 
                       onClick={() => { setHebrewInput(''); setItalianOutput(''); }}
@@ -1203,13 +1203,13 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Input Row with Native Keyboard Dictation Support */}
+                {/* Input Row with Native Keyboard Dictation support */}
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px' }}>
                   <input 
                     id="hebrewInputBox"
                     type="text"
                     inputMode="text"
-                    placeholder="הקלד או לחץ על מיקרופון המקלדת..."
+                    placeholder="הקלד כאן (או לחץ על מיקרופון המקלדת)..."
                     value={hebrewInput}
                     onChange={(e) => setHebrewInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
@@ -1241,7 +1241,7 @@ export default function App() {
                       fontSize: '13px',
                       fontWeight: '800',
                       cursor: 'pointer',
-                      flexShrink: 0,
+                      flexShrink: '0',
                       boxShadow: '0 2px 8px rgba(56, 189, 248, 0.3)'
                     }}
                   >
@@ -1250,7 +1250,7 @@ export default function App() {
                 </div>
 
                 <div style={{ fontSize: '11px', color: '#93c5fd', textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
-                  💡 טיפ: לחץ על תיבת הטקסט והשתמש במיקרופון המובנה של המקלדת להכתבה קולית מושלמת בעברית!
+                  🎙️ טיפ: לחץ על תיבת הטקסט והשתמש במיקרופון של מקלדת הטלפון להכתבה קולית חלקה!
                 </div>
 
                 {isTranslating && (
@@ -1318,8 +1318,8 @@ export default function App() {
                   <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', display: 'block', marginBottom: '6px' }}>שאלות אחרונות שתרגמת:</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {translationHistory.map(item => (
-                      <div key={item.id} style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-                        <button onClick={() => speakItalian(item.it)} style={{ background: '#ecfdf5', border: '1px solid #86efac', borderRadius: '8px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }} title="השמע שוב">
+                      <div key={item.id} style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '10px', border: '1.5px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                        <button onClick={() => speakItalian(item.it)} style={{ background: '#ecfdf5', border: '1.5px solid #86efac', borderRadius: '8px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }} title="השמע שוב">
                           🔊
                         </button>
                         <div style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
@@ -1499,7 +1499,7 @@ export default function App() {
                     <select 
                       value={galleryAuthor} 
                       onChange={(e) => setGalleryAuthor(e.target.value)}
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', fontWeight: '600' }}
                     >
                       <option value="אריק">אריק</option>
                       <option value="עמית">עמית</option>
@@ -1541,7 +1541,7 @@ export default function App() {
                     flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                     background: galleryDayFilter === 'all' ? '#a21caf' : '#f8fafc',
                     color: galleryDayFilter === 'all' ? '#fff' : '#475569',
-                    border: '1px solid #cbd5e1'
+                    border: '1.5px solid #cbd5e1'
                   }}
                 >
                   הכל ({galleryItems.length})
@@ -1554,7 +1554,7 @@ export default function App() {
                       flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                       background: String(galleryDayFilter) === String(i) ? '#a21caf' : '#f8fafc',
                       color: String(galleryDayFilter) === String(i) ? '#fff' : '#475569',
-                      border: '1px solid #cbd5e1'
+                      border: '1.5px solid #cbd5e1'
                     }}
                   >
                     {d.label}
@@ -2065,7 +2065,7 @@ const galleryActionBtn = {
   padding: '10px 6px',
   borderRadius: '10px',
   background: '#ffffff',
-  border: '1.5px solid #f0abfc',
+  border: '1px solid #f0abfc',
   color: '#86198f',
   fontWeight: '700',
   fontSize: '11px',
