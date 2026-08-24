@@ -319,53 +319,84 @@ export default function App() {
   return (
     <div style={{ background: '#f1f5f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
       
-      {/* Offline Status Bar */}
+      {/* Offline Alert Top Bar */}
       {!isOnline && (
-        <div style={{ background: '#0284c7', color: '#ffffff', textAlign: 'center', padding: '6px 12px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.02em', position: 'sticky', top: 0, zIndex: 1000, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          ⚡ מצב אופליין פעיל · כל הנתונים, המסלולים והמסמכים זמינים ללא אינטרנט
+        <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '7px 12px', fontSize: '11px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, boxShadow: '0 2px 6px rgba(220, 38, 38, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
+          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, המלון והכרטיסים זמינים כרגיל!
         </div>
       )}
 
       {/* Header */}
       <header style={{
-        padding: '14px 20px',
+        padding: '12px 16px',
         background: 'rgba(255, 255, 255, 0.95)',
         borderBottom: '1.5px solid #cbd5e1',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: !isOnline ? '28px' : 0,
+        top: !isOnline ? '30px' : 0,
         zIndex: 900,
         backdropFilter: 'blur(16px)',
         boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)'
       }}>
-        <button 
-          onClick={() => setSidebarOpen(true)}
-          style={{
-            background: '#f8fafc', 
-            border: '1.5px solid #94a3b8', 
-            width: '42px', 
-            height: '42px',
-            borderRadius: '12px', 
-            fontSize: '22px', 
-            fontWeight: '900', 
-            cursor: 'pointer',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            color: '#0f172a',
-            boxShadow: '0 2px 5px rgba(15, 23, 42, 0.08)',
-            lineHeight: 1
-          }}
-          title="פתח תפריט"
-        >
-          ☰
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button 
+            onClick={() => setSidebarOpen(true)}
+            style={{
+              background: '#f8fafc', 
+              border: '1.5px solid #94a3b8', 
+              width: '38px', 
+              height: '38px',
+              borderRadius: '10px', 
+              fontSize: '20px', 
+              fontWeight: '900', 
+              cursor: 'pointer',
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              color: '#0f172a',
+              boxShadow: '0 2px 4px rgba(15, 23, 42, 0.06)',
+              lineHeight: 1
+            }}
+            title="פתח תפריט"
+          >
+            ☰
+          </button>
+
+          {/* Traffic Light Online/Offline Indicator */}
+          <div 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              background: isOnline ? '#f0fdf4' : '#fef2f2',
+              border: `1.5px solid ${isOnline ? '#86efac' : '#fca5a5'}`,
+              padding: '4px 8px',
+              borderRadius: '20px',
+              fontSize: '10px',
+              fontWeight: '800',
+              color: isOnline ? '#166534' : '#991b1b',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+            }}
+            title={isOnline ? 'מחובר לאינטרנט' : 'עובד באופליין מלא'}
+          >
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: isOnline ? '#22c55e' : '#ef4444',
+              display: 'inline-block',
+              boxShadow: isOnline ? '0 0 6px #22c55e' : '0 0 6px #ef4444'
+            }}></span>
+            <span>{isOnline ? 'אונליין' : 'אופליין'}</span>
+          </div>
+        </div>
 
         <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 2px', color: '#0f172a', letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
-          <p style={{ fontSize: '11px', color: '#64748b', margin: 0, fontWeight: '600' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
+          <h1 style={{ fontSize: '15px', fontWeight: '800', margin: '0 0 2px', color: '#0f172a', letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
+          <p style={{ fontSize: '10px', color: '#64748b', margin: 0, fontWeight: '600' }}>30.09 - 06.10.2026</p>
         </div>
 
         <button 
@@ -374,12 +405,12 @@ export default function App() {
             setModalType('viewer');
           }}
           style={{
-            background: '#f8fafc', border: '1.5px solid #cbd5e1', padding: '7px 14px',
-            borderRadius: '20px', fontSize: '11px', fontWeight: '700', color: '#334155', cursor: 'pointer',
+            background: '#f8fafc', border: '1.5px solid #cbd5e1', padding: '6px 11px',
+            borderRadius: '16px', fontSize: '11px', fontWeight: '700', color: '#334155', cursor: 'pointer',
             boxShadow: '0 2px 4px rgba(15, 23, 42, 0.04)', display: 'flex', alignItems: 'center', gap: '4px'
           }}
         >
-          🏡 Bio Vojon
+          🏡 Vojon
         </button>
       </header>
 
