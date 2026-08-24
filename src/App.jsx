@@ -173,7 +173,7 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State
+  // Translator State
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -462,7 +462,7 @@ export default function App() {
     }
   };
 
-  // 100% Reliable Dual Audio Playback (Native Audio Stream + Fallback TTS)
+  // Reliable Italian Speech Engine
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     setIsPlayingAudio(true);
@@ -1140,7 +1140,7 @@ export default function App() {
                         <>
                           <b style={{ fontSize: '14px', color: '#0f172a', display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
                           {log?.completed && (
-                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
+                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1.5px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
                               <b>💬 תיעוד ובדיחה:</b> "{log.text}"
                               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
                                 נכתב על ידי: {log.author} · שעה: {log.time}
@@ -1163,7 +1163,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook & Live Translator with Pixel-Perfect Mobile Layout */}
+      {/* MODAL: Italian Phrasebook & Live Translator with Native Keyboard Dictation */}
       {modalType === 'phrasebook' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -1192,7 +1192,7 @@ export default function App() {
                 boxSizing: 'border-box'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>תרגום חי (דיבור או הקלדה)</span>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>הקלד או השתמש במיקרופון המקלדת 🎙️</span>
                   {(hebrewInput || italianOutput) && (
                     <button 
                       onClick={() => { setHebrewInput(''); setItalianOutput(''); }}
@@ -1203,25 +1203,25 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Input Row with Live Speech Streaming */}
+                {/* Input Row with Native Keyboard Dictation Support */}
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px' }}>
                   <input 
                     id="hebrewInputBox"
                     type="text"
                     inputMode="text"
-                    placeholder="הקלד או דבר והמילים יופיעו כאן..."
+                    placeholder="הקלד או לחץ על מיקרופון המקלדת..."
                     value={hebrewInput}
                     onChange={(e) => setHebrewInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
                     style={{
                       flex: 1,
                       minWidth: 0,
-                      padding: '11px 12px',
+                      padding: '12px 14px',
                       borderRadius: '12px',
                       border: '1.5px solid rgba(255,255,255,0.25)',
                       background: 'rgba(255,255,255,0.08)',
                       color: '#ffffff',
-                      fontSize: '13px',
+                      fontSize: '14px',
                       fontWeight: '600',
                       outline: 'none',
                       direction: 'rtl',
@@ -1230,51 +1230,28 @@ export default function App() {
                     }}
                   />
                   <button 
-                    onClick={toggleListening}
-                    style={{
-                      background: isListening ? '#ef4444' : '#10b981',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '12px',
-                      width: '42px',
-                      height: '42px',
-                      fontSize: '18px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: isListening ? '0 0 16px #ef4444' : '0 4px 12px rgba(16, 185, 129, 0.35)',
-                      flexShrink: 0
-                    }}
-                    title={isListening ? 'מקליט... לחץ לסיום' : 'לחץ להקלטה'}
-                  >
-                    {isListening ? '⏹️' : '🎙️'}
-                  </button>
-                  <button 
                     onClick={() => translateText(hebrewInput)}
                     style={{
                       background: '#38bdf8',
                       color: '#0f172a',
                       border: 'none',
                       borderRadius: '12px',
-                      padding: '0 12px',
-                      height: '42px',
-                      fontSize: '12px',
+                      padding: '0 16px',
+                      height: '44px',
+                      fontSize: '13px',
                       fontWeight: '800',
                       cursor: 'pointer',
-                      flexShrink: 0
+                      flexShrink: 0,
+                      boxShadow: '0 2px 8px rgba(56, 189, 248, 0.3)'
                     }}
                   >
                     תרגם
                   </button>
                 </div>
 
-                {/* Status text */}
-                {voiceStatusText && (
-                  <div style={{ fontSize: '11px', color: isListening ? '#f87171' : '#cbd5e1', textAlign: 'center', marginBottom: '8px', fontWeight: '700' }}>
-                    {voiceStatusText}
-                  </div>
-                )}
+                <div style={{ fontSize: '11px', color: '#93c5fd', textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
+                  💡 טיפ: לחץ על תיבת הטקסט והשתמש במיקרופון המובנה של המקלדת להכתבה קולית מושלמת בעברית!
+                </div>
 
                 {isTranslating && (
                   <div style={{ textAlign: 'center', color: '#38bdf8', fontSize: '12px', fontWeight: '800', marginBottom: '8px' }}>
@@ -1522,7 +1499,7 @@ export default function App() {
                     <select 
                       value={galleryAuthor} 
                       onChange={(e) => setGalleryAuthor(e.target.value)}
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600' }}
                     >
                       <option value="אריק">אריק</option>
                       <option value="עמית">עמית</option>
@@ -1804,7 +1781,7 @@ export default function App() {
                   </div>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
                   </div>
                   <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                   <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
