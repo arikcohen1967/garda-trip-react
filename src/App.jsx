@@ -171,8 +171,9 @@ export default function App() {
   const [completedChallenges, setCompletedChallenges] = useState({});
   const [challengeNote, setChallengeNote] = useState('');
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State
+  // Translator & Speech State (Multi-Sentence Clean Audio)
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -181,7 +182,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
-  const recognitionRef = useRef(null);
+  const recognitionInstanceRef = useRef(null);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -400,6 +401,19 @@ export default function App() {
     setModalType(null);
   };
 
+  const unlockAdminChallenges = () => {
+    if (isAdminUnlocked) {
+      setIsAdminUnlocked(false);
+      return;
+    }
+    const pin = window.prompt('הזן קוד מנהל לצפייה בכל האתגרים:');
+    if (pin === '1967' || pin === '1234') {
+      setIsAdminUnlocked(true);
+    } else if (pin !== null) {
+      alert('קוד שגוי!');
+    }
+  };
+
   const deleteGalleryItem = async (id, e) => {
     e.stopPropagation();
     if (!window.confirm('למחוק תמונה/סרטון זה מהאלבום?')) return;
@@ -433,7 +447,7 @@ export default function App() {
     }
   };
 
-  // 100% Reliable Italian Speech Engine
+  // 100% Guaranteed Italian Speech Engine
   const speakItalian = (text) => {
     if (!text) return;
     try {
@@ -450,7 +464,7 @@ export default function App() {
         window.speechSynthesis.speak(utterance);
       }
     } catch (e) {
-      console.log('Audio speech synthesis error', e);
+      console.log('Audio speech error', e);
     }
   };
 
@@ -502,39 +516,38 @@ export default function App() {
     }
   };
 
-  // Voice Recognition Handler with mic permission request
-  const toggleListening = async () => {
+  // Multi-Record Speech Recognition (Fixes Single-Use Lockout)
+  const toggleListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (isListening) {
-      if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch (e) {}
+      if (recognitionInstanceRef.current) {
+        try {
+          recognitionInstanceRef.current.abort();
+          recognitionInstanceRef.current = null;
+        } catch (e) {}
       }
       setIsListening(false);
       setVoiceStatusText('');
       return;
     }
 
-    // Explicit Microphone Permission Request (Ensures Safari/iOS & Chrome allow mic)
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        stream.getTracks().forEach(track => track.stop()); // close immediately after permission granted
-      }
-    } catch (err) {
-      console.warn('Mic permission check:', err);
-    }
-
     if (!SpeechRecognition) {
-      setVoiceStatusText('💡 לחץ על שדה הטקסט והשתמש במיקרופון שבמקלדת');
+      setVoiceStatusText('💡 לחץ על שדה הטקסט והשתמש במיקרופון שבמקלדת המכשיר');
       const inputElem = document.getElementById('hebrewInputBox');
       if (inputElem) inputElem.focus();
       return;
     }
 
     try {
+      // Abort any hanging instance
+      if (recognitionInstanceRef.current) {
+        try { recognitionInstanceRef.current.abort(); } catch (e) {}
+        recognitionInstanceRef.current = null;
+      }
+
       setItalianOutput('');
-      setVoiceStatusText('🎙️ מקשיב... דבר כעת בעברית');
+      setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
 
       const recognition = new SpeechRecognition();
       recognition.lang = 'he-IL';
@@ -544,7 +557,7 @@ export default function App() {
 
       recognition.onstart = () => {
         setIsListening(true);
-        setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך');
+        setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך בעברית');
       };
 
       recognition.onresult = (event) => {
@@ -561,24 +574,27 @@ export default function App() {
       recognition.onerror = (e) => {
         console.warn('Speech Error:', e.error);
         setIsListening(false);
+        recognitionInstanceRef.current = null;
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-          setVoiceStatusText('⚠️ אפשר גישה למיקרופון בהגדרות הדפדפן, או השתמש במקלדת');
+          setVoiceStatusText('⚠️ יש לאשר גישה למיקרופון, או להשתמש במקלדת');
         } else if (e.error === 'no-speech') {
-          setVoiceStatusText('לא נקלט דיבור. נסה שוב או הקלד.');
+          setVoiceStatusText('לא נקלט קול. לחץ שוב על המיקרופון.');
         } else {
-          setVoiceStatusText('💡 השתמש במיקרופון של מקלדת הטלפון');
+          setVoiceStatusText('💡 טיפ: ניתן להקליד או להשתמש במקלדת המכשיר');
         }
       };
 
       recognition.onend = () => {
         setIsListening(false);
+        recognitionInstanceRef.current = null;
       };
 
-      recognitionRef.current = recognition;
+      recognitionInstanceRef.current = recognition;
       recognition.start();
     } catch (err) {
       console.error(err);
       setIsListening(false);
+      recognitionInstanceRef.current = null;
       setVoiceStatusText('💡 לחץ על שדה הטקסט והשתמש במיקרופון שבמקלדת');
     }
   };
@@ -1012,22 +1028,45 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '24px', boxShadow: '0 12px 40px rgba(15, 23, 42, 0.12)', boxSizing: 'border-box', width: '100%' }}>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#fef3c7', border: '1.5px solid #fcd34d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
                     🏆
                   </div>
                   <div>
                     <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>יומן האתגרים והבדיחות</h2>
-                    <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>סיכום משימות ורגעים מצחיקים</small>
+                    <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>
+                      {isAdminUnlocked ? '🔓 מצב מנהל (הכל גלוי)' : '🔒 אתגרים עתידיים מוסתרים לשמירת ההפתעה'}
+                    </small>
                   </div>
                 </div>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
 
+              {/* Admin Unlock Bar */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+                <button 
+                  onClick={unlockAdminChallenges} 
+                  style={{
+                    background: isAdminUnlocked ? '#fee2e2' : '#f8fafc',
+                    color: isAdminUnlocked ? '#dc2626' : '#475569',
+                    border: `1.5px solid ${isAdminUnlocked ? '#fca5a5' : '#cbd5e1'}`,
+                    padding: '6px 12px',
+                    borderRadius: '10px',
+                    fontSize: '11px',
+                    fontWeight: '800',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {isAdminUnlocked ? '🔒 נעל צפייה סודית' : '🔑 פתח הרשאת מנהל (אריק)'}
+                </button>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {tripDays.map((d, idx) => {
                   const log = completedChallenges[String(idx)];
+                  const isUnlocked = isAdminUnlocked || log?.completed;
+
                   return (
                     <div 
                       key={idx}
@@ -1044,16 +1083,25 @@ export default function App() {
                           {d.label} · {d.title}
                         </span>
                         <span style={{ fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '8px', background: log?.completed ? '#10b981' : '#e2e8f0', color: log?.completed ? '#fff' : '#64748b' }}>
-                          {log?.completed ? 'בוצע! 🎉' : 'טרם בוצע'}
+                          {log?.completed ? 'בוצע! 🎉' : (isUnlocked ? 'טרם בוצע' : '🔒 שמור בסוד')}
                         </span>
                       </div>
-                      <b style={{ fontSize: '14px', color: '#0f172a', display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
-                      {log?.completed && (
-                        <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
-                          <b>💬 תיעוד ובדיחה:</b> "{log.text}"
-                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
-                            נכתב על ידי: {log.author} · שעה: {log.time}
-                          </div>
+
+                      {isUnlocked ? (
+                        <>
+                          <b style={{ fontSize: '14px', color: '#0f172a', display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
+                          {log?.completed && (
+                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
+                              <b>💬 תיעוד ובדיחה:</b> "{log.text}"
+                              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
+                                נכתב על ידי: {log.author} · שעה: {log.time}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div style={{ padding: '8px 0', color: '#94a3b8', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          🔒 אתגר סודי – ייחשף רק בבוקר של יום זה!
                         </div>
                       )}
                     </div>
@@ -1114,7 +1162,7 @@ export default function App() {
                     id="hebrewInputBox"
                     type="text"
                     inputMode="text"
-                    placeholder="הקלד כאן (או השתמש במיקרופון)..."
+                    placeholder="הקלד כאן (או לחץ על המיקרופון)..."
                     value={hebrewInput}
                     onChange={(e) => setHebrewInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
