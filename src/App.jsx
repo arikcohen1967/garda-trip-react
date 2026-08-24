@@ -401,7 +401,6 @@ export default function App() {
     setModalType(null);
   };
 
-  // Reset single challenge
   const resetSingleChallenge = (dayIdx) => {
     if (!window.confirm(`לאפס את האתגר של ${tripDays[dayIdx]?.label} ולהחזיר למצב לא מבוצע?`)) return;
     const updated = { ...completedChallenges };
@@ -411,7 +410,6 @@ export default function App() {
     if (modalType === 'questModal') setModalType(null);
   };
 
-  // Reset all challenges (Admin function)
   const resetAllChallenges = () => {
     if (!window.confirm('האם אתה בטוח שברצונך לאפס את כל המשימות והאתגרים של כל הימים?')) return;
     setCompletedChallenges({});
@@ -465,7 +463,7 @@ export default function App() {
     }
   };
 
-  // 100% Guaranteed Italian Speech Engine
+  // Reliable Italian Speech Engine
   const speakItalian = (text) => {
     if (!text) return;
     try {
@@ -497,7 +495,6 @@ export default function App() {
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
-      speakItalian(italianText);
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
     };
@@ -535,7 +532,7 @@ export default function App() {
     }
   };
 
-  // Multi-Record Speech Recognition
+  // Speech Recognition
   const toggleListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -552,7 +549,7 @@ export default function App() {
     }
 
     if (!SpeechRecognition) {
-      setVoiceStatusText('💡 לחץ על שדה הטקסט והשתמש במיקרופון שבמקלדת המכשיר');
+      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון המקלדת');
       const inputElem = document.getElementById('hebrewInputBox');
       if (inputElem) inputElem.focus();
       return;
@@ -575,7 +572,7 @@ export default function App() {
 
       recognition.onstart = () => {
         setIsListening(true);
-        setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך בעברית');
+        setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך');
       };
 
       recognition.onresult = (event) => {
@@ -596,9 +593,9 @@ export default function App() {
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
           setVoiceStatusText('⚠️ יש לאשר גישה למיקרופון, או להשתמש במקלדת');
         } else if (e.error === 'no-speech') {
-          setVoiceStatusText('לא נקלט קול. לחץ שוב על המיקרופון.');
+          setVoiceStatusText('לא נקלט קול. לחץ שוב.');
         } else {
-          setVoiceStatusText('💡 טיפ: ניתן להקליד או להשתמש במקלדת המכשיר');
+          setVoiceStatusText('💡 השתמש במיקרופון של מקלדת הטלפון');
         }
       };
 
@@ -613,7 +610,7 @@ export default function App() {
       console.error(err);
       setIsListening(false);
       recognitionInstanceRef.current = null;
-      setVoiceStatusText('💡 לחץ על שדה הטקסט והשתמש במיקרופון שבמקלדת');
+      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת');
     }
   };
 
@@ -1181,39 +1178,36 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook & Live Translator with Quick Chips */}
+      {/* MODAL: Italian Phrasebook & Live Translator with Pixel-Perfect Mobile Layout */}
       {modalType === 'phrasebook' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '24px', boxShadow: '0 12px 40px rgba(15, 23, 42, 0.12)', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '20px 16px', boxShadow: '0 12px 40px rgba(15, 23, 42, 0.12)', boxSizing: 'border-box', width: '100%', direction: 'rtl' }}>
               
               {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '18px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#ecfdf5', border: '1.5px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-                    🇮🇹
-                  </div>
-                  <div>
-                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>שיחון איטלקי חכם</h2>
-                    <small style={{ color: '#059669', fontWeight: '700', fontSize: '11px' }}>תרגום קולי + חיפוש ביטויים מהיר</small>
-                  </div>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+                <div style={{ textAlign: 'center', flex: 1, padding: '0 8px' }}>
+                  <h2 style={{ margin: 0, fontSize: '17px', fontWeight: '900', color: '#0f172a' }}>שיחון איטלקי חכם</h2>
+                  <small style={{ color: '#059669', fontWeight: '700', fontSize: '11px' }}>תרגום קולי + חיפוש ביטויים מהיר</small>
+                </div>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#ecfdf5', border: '1.5px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                  🇮🇹
+                </div>
               </div>
 
               {/* Modern Voice Translator Box */}
               <div style={{
                 background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                 borderRadius: '20px',
-                padding: '18px',
+                padding: '16px 14px',
                 color: '#ffffff',
-                marginBottom: '22px',
+                marginBottom: '20px',
                 boxShadow: '0 8px 24px rgba(15, 23, 42, 0.25)',
-                position: 'relative',
-                overflow: 'hidden'
+                boxSizing: 'border-box'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8', letterSpacing: '0.04em' }}>תרגום חי (דיבור או הקלדה)</span>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>תרגום חי (דיבור או הקלדה)</span>
                   {(hebrewInput || italianOutput) && (
                     <button 
                       onClick={() => { setHebrewInput(''); setItalianOutput(''); setVoiceStatusText(''); }}
@@ -1224,25 +1218,29 @@ export default function App() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                {/* Input Row */}
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px' }}>
                   <input 
                     id="hebrewInputBox"
                     type="text"
                     inputMode="text"
-                    placeholder="הקלד כאן (או לחץ על המיקרופון)..."
+                    placeholder="הקלד כאן בעברית..."
                     value={hebrewInput}
                     onChange={(e) => setHebrewInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
                     style={{
                       flex: 1,
-                      padding: '12px 14px',
-                      borderRadius: '14px',
-                      border: '1.5px solid rgba(255,255,255,0.2)',
+                      minWidth: 0,
+                      padding: '11px 12px',
+                      borderRadius: '12px',
+                      border: '1.5px solid rgba(255,255,255,0.25)',
                       background: 'rgba(255,255,255,0.08)',
                       color: '#ffffff',
-                      fontSize: '14px',
+                      fontSize: '13px',
                       fontWeight: '600',
                       outline: 'none',
+                      direction: 'rtl',
+                      textAlign: 'right',
                       boxSizing: 'border-box'
                     }}
                   />
@@ -1252,16 +1250,15 @@ export default function App() {
                       background: isListening ? '#ef4444' : '#10b981',
                       color: '#fff',
                       border: 'none',
-                      borderRadius: '14px',
-                      width: '46px',
-                      height: '46px',
-                      fontSize: '20px',
+                      borderRadius: '12px',
+                      width: '42px',
+                      height: '42px',
+                      fontSize: '18px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       boxShadow: isListening ? '0 0 16px #ef4444' : '0 4px 12px rgba(16, 185, 129, 0.35)',
-                      transition: 'all 0.2s ease',
                       flexShrink: 0
                     }}
                     title={isListening ? 'מקליט... לחץ לסיום' : 'לחץ להקלטה'}
@@ -1274,9 +1271,10 @@ export default function App() {
                       background: '#38bdf8',
                       color: '#0f172a',
                       border: 'none',
-                      borderRadius: '14px',
-                      padding: '0 16px',
-                      fontSize: '13px',
+                      borderRadius: '12px',
+                      padding: '0 12px',
+                      height: '42px',
+                      fontSize: '12px',
                       fontWeight: '800',
                       cursor: 'pointer',
                       flexShrink: 0
@@ -1288,19 +1286,19 @@ export default function App() {
 
                 {/* Status text */}
                 {voiceStatusText && (
-                  <div style={{ fontSize: '11px', color: isListening ? '#f87171' : '#cbd5e1', textAlign: 'center', marginBottom: '10px', fontWeight: '700' }}>
+                  <div style={{ fontSize: '11px', color: isListening ? '#f87171' : '#cbd5e1', textAlign: 'center', marginBottom: '8px', fontWeight: '700' }}>
                     {voiceStatusText}
                   </div>
                 )}
 
                 {isTranslating && (
-                  <div style={{ textAlign: 'center', color: '#38bdf8', fontSize: '12px', fontWeight: '800', marginBottom: '10px' }}>
+                  <div style={{ textAlign: 'center', color: '#38bdf8', fontSize: '12px', fontWeight: '800', marginBottom: '8px' }}>
                     ⏳ מתרגם לאיטלקית...
                   </div>
                 )}
 
                 {/* Quick Speech Chips */}
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '6px', marginBottom: '8px', scrollbarWidth: 'none' }}>
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '6px', scrollbarWidth: 'none' }}>
                   <button onClick={() => translateText('איפה השירותים?')} style={quickChipStyle}>🚻 איפה השירותים?</button>
                   <button onClick={() => translateText('חשבון בבקשה')} style={quickChipStyle}>🧾 חשבון בבקשה</button>
                   <button onClick={() => translateText('כמה זה עולה?')} style={quickChipStyle}>💶 כמה זה עולה?</button>
@@ -1308,63 +1306,63 @@ export default function App() {
                   <button onClick={() => translateText('אפשר לשלם באשראי?')} style={quickChipStyle}>💳 כרטיס אשראי?</button>
                 </div>
 
+                {/* Translated Output Result */}
                 {italianOutput && (
                   <div style={{
-                    background: 'rgba(255, 255, 255, 0.95)',
+                    background: 'rgba(255, 255, 255, 0.96)',
                     borderRadius: '14px',
-                    padding: '14px',
+                    padding: '12px 14px',
                     color: '#0f172a',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    gap: '12px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    marginTop: '8px'
+                    gap: '10px',
+                    marginTop: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                   }}>
-                    <div style={{ flex: 1, textAlign: 'right' }}>
-                      <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block' }}>איטלקית:</span>
-                      <strong style={{ fontSize: '17px', color: '#0f172a', display: 'block', direction: 'ltr', textAlign: 'left', fontWeight: '800' }}>
-                        {italianOutput}
-                      </strong>
-                    </div>
                     <button 
                       onClick={() => speakItalian(italianOutput)}
                       style={{
                         background: '#059669',
                         color: '#ffffff',
                         border: 'none',
-                        borderRadius: '12px',
-                        padding: '10px 14px',
+                        borderRadius: '10px',
+                        padding: '8px 12px',
                         fontSize: '13px',
                         fontWeight: '800',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
-                        flexShrink: 0,
-                        boxShadow: '0 2px 8px rgba(5, 150, 105, 0.3)'
+                        gap: '4px',
+                        flexShrink: 0
                       }}
                     >
                       🔊 השמע
                     </button>
+                    <div style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
+                      <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '700', display: 'block' }}>איטלקית:</span>
+                      <strong style={{ fontSize: '15px', color: '#0f172a', display: 'block', direction: 'ltr', textAlign: 'left', fontWeight: '800', wordBreak: 'break-word' }}>
+                        {italianOutput}
+                      </strong>
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Translation History */}
               {translationHistory.length > 0 && (
-                <div style={{ marginBottom: '20px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#64748b', display: 'block', marginBottom: '8px' }}>שאלות אחרונות ששאלת:</span>
+                <div style={{ marginBottom: '18px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', display: 'block', marginBottom: '6px' }}>שאלות אחרונות שתרגמת:</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {translationHistory.map(item => (
-                      <div key={item.id} style={{ background: '#f8fafc', padding: '9px 12px', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <span style={{ fontSize: '12px', fontWeight: '700', color: '#334155' }}>{item.he}</span>
-                          <span style={{ fontSize: '12px', color: '#059669', display: 'block', direction: 'ltr', textAlign: 'left', fontWeight: '700' }}>{item.it}</span>
-                        </div>
-                        <button onClick={() => speakItalian(item.it)} style={{ background: '#ecfdf5', border: '1px solid #86efac', borderRadius: '8px', padding: '5px 8px', cursor: 'pointer', fontSize: '13px' }} title="השמע שוב">
+                      <div key={item.id} style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                        <button onClick={() => speakItalian(item.it)} style={{ background: '#ecfdf5', border: '1px solid #86efac', borderRadius: '8px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }} title="השמע שוב">
                           🔊
                         </button>
+                        <div style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
+                          <span style={{ fontSize: '12px', fontWeight: '700', color: '#334155', display: 'block' }}>{item.he}</span>
+                          <span style={{ fontSize: '12px', color: '#059669', display: 'block', direction: 'ltr', textAlign: 'left', fontWeight: '700' }}>{item.it}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1372,35 +1370,37 @@ export default function App() {
               )}
 
               {/* Ready Phrases Section Header */}
-              <div style={{ borderTop: '1.5px solid #f1f5f9', paddingTop: '16px', marginBottom: '14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>📚 מאגר משפטים מהיר</h3>
+              <div style={{ borderTop: '1.5px solid #f1f5f9', paddingTop: '14px', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0f172a' }}>📚 מאגר משפטים מהיר</h3>
                   <small style={{ color: '#64748b', fontWeight: '700', fontSize: '11px' }}>{filteredPhrases.length} תוצאות</small>
                 </div>
 
                 {/* Smart Search Bar */}
-                <div style={{ position: 'relative', marginBottom: '12px' }}>
+                <div style={{ position: 'relative', marginBottom: '10px' }}>
                   <input 
                     type="text"
-                    placeholder="🔍 חיפוש חכם בעברית (לדוגמה: חשבון, גלידה, מים, שירותים...)"
+                    placeholder="🔍 חיפוש בעברית (חשבון, גלידה, מים...)"
                     value={phraseSearch}
                     onChange={(e) => setPhraseSearch(e.target.value)}
                     style={{
                       width: '100%',
-                      padding: '11px 36px 11px 14px',
-                      borderRadius: '12px',
+                      padding: '10px 12px 10px 32px',
+                      borderRadius: '10px',
                       border: '1.5px solid #cbd5e1',
                       background: '#f8fafc',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       fontWeight: '600',
                       boxSizing: 'border-box',
-                      outline: 'none'
+                      outline: 'none',
+                      direction: 'rtl',
+                      textAlign: 'right'
                     }}
                   />
                   {phraseSearch && (
                     <button 
                       onClick={() => setPhraseSearch('')}
-                      style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', fontSize: '14px', cursor: 'pointer', fontWeight: '700' }}
+                      style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', fontSize: '13px', cursor: 'pointer', fontWeight: '700' }}
                     >
                       ✕
                     </button>
@@ -1408,16 +1408,16 @@ export default function App() {
                 </div>
 
                 {/* Category Pills */}
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}>
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '6px', scrollbarWidth: 'none' }}>
                   {categories.map((cat, i) => (
                     <button
                       key={i}
                       onClick={() => setSelectedCategory(cat)}
                       style={{
                         flex: '0 0 auto',
-                        padding: '7px 14px',
-                        borderRadius: '10px',
-                        fontSize: '12px',
+                        padding: '6px 11px',
+                        borderRadius: '8px',
+                        fontSize: '11px',
                         fontWeight: '700',
                         cursor: 'pointer',
                         background: selectedCategory === cat ? '#0f172a' : '#ffffff',
@@ -1435,8 +1435,8 @@ export default function App() {
               {/* Filtered Phrases List */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {filteredPhrases.length === 0 ? (
-                  <div style={{ textAlign: 'center', color: '#94a3b8', padding: '24px', fontSize: '13px', fontWeight: '600' }}>
-                    לא נמצאו משפטים התואמים לחיפוש "{phraseSearch}".<br/>נסה להשתמש בתיבת התרגום החי למעלה!
+                  <div style={{ textAlign: 'center', color: '#94a3b8', padding: '20px', fontSize: '12px', fontWeight: '600' }}>
+                    לא נמצאו משפטים התואמים לחיפוש "{phraseSearch}".
                   </div>
                 ) : (
                   filteredPhrases.map((phrase, idx) => (
@@ -1446,43 +1446,43 @@ export default function App() {
                       style={{
                         background: '#ffffff',
                         border: '1.5px solid #e2e8f0',
-                        borderRadius: '14px',
-                        padding: '12px 14px',
+                        borderRadius: '12px',
+                        padding: '10px 12px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
+                        gap: '10px',
                         cursor: 'pointer',
-                        boxShadow: '0 2px 5px rgba(15, 23, 42, 0.03)',
-                        transition: 'all 0.15s ease'
+                        boxShadow: '0 1px 3px rgba(15, 23, 42, 0.03)',
+                        boxSizing: 'border-box'
                       }}
                     >
-                      <div style={{ flex: 1, paddingLeft: '10px' }}>
-                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a', display: 'block' }}>{phrase.he}</span>
-                        <strong style={{ fontSize: '14px', color: '#059669', display: 'block', margin: '2px 0', direction: 'ltr', textAlign: 'left', fontWeight: '800' }}>{phrase.it}</strong>
-                        <small style={{ fontSize: '11px', color: '#64748b', fontWeight: '600' }}>הגייה: {phrase.pro}</small>
-                      </div>
-
                       <button 
                         onClick={(e) => { e.stopPropagation(); speakItalian(phrase.it); }}
                         style={{
                           background: '#f0fdf4',
                           border: '1.5px solid #86efac',
-                          borderRadius: '10px',
-                          width: '40px',
-                          height: '40px',
-                          fontSize: '17px',
+                          borderRadius: '8px',
+                          width: '36px',
+                          height: '36px',
+                          fontSize: '15px',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,
-                          color: '#166534',
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                          color: '#166534'
                         }}
                         title="השמע הגייה"
                       >
                         🔊
                       </button>
+
+                      <div style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
+                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a', display: 'block' }}>{phrase.he}</span>
+                        <strong style={{ fontSize: '13px', color: '#059669', display: 'block', margin: '1px 0', direction: 'ltr', textAlign: 'left', fontWeight: '800' }}>{phrase.it}</strong>
+                        <small style={{ fontSize: '10px', color: '#64748b', fontWeight: '600', display: 'block' }}>הגייה: {phrase.pro}</small>
+                      </div>
                     </div>
                   ))
                 )}
