@@ -1163,7 +1163,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook & Live Translator */}
+      {/* MODAL: Italian Phrasebook & Live Translator with Clean White Background */}
       {modalType === 'phrasebook' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -1241,7 +1241,7 @@ export default function App() {
                       fontSize: '13px',
                       fontWeight: '800',
                       cursor: 'pointer',
-                      flexShrink: '0',
+                      flexShrink: 0,
                       boxShadow: '0 2px 8px rgba(56, 189, 248, 0.3)'
                     }}
                   >
@@ -1499,7 +1499,7 @@ export default function App() {
                     <select 
                       value={galleryAuthor} 
                       onChange={(e) => setGalleryAuthor(e.target.value)}
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600' }}
                     >
                       <option value="אריק">אריק</option>
                       <option value="עמית">עמית</option>
@@ -1541,7 +1541,7 @@ export default function App() {
                     flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                     background: galleryDayFilter === 'all' ? '#a21caf' : '#f8fafc',
                     color: galleryDayFilter === 'all' ? '#fff' : '#475569',
-                    border: '1.5px solid #cbd5e1'
+                    border: '1px solid #cbd5e1'
                   }}
                 >
                   הכל ({galleryItems.length})
@@ -1554,7 +1554,7 @@ export default function App() {
                       flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                       background: String(galleryDayFilter) === String(i) ? '#a21caf' : '#f8fafc',
                       color: String(galleryDayFilter) === String(i) ? '#fff' : '#475569',
-                      border: '1.5px solid #cbd5e1'
+                      border: '1px solid #cbd5e1'
                     }}
                   >
                     {d.label}
@@ -1848,7 +1848,7 @@ export default function App() {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#f1f5f9', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#f1f5f9', border: '1.5px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
                           {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
                         </div>
                         <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
