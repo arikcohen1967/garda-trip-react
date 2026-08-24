@@ -1163,7 +1163,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook & Live Translator with Clean White Background */}
+      {/* MODAL: Italian Phrasebook & Live Translator */}
       {modalType === 'phrasebook' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -1541,7 +1541,7 @@ export default function App() {
                     flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                     background: galleryDayFilter === 'all' ? '#a21caf' : '#f8fafc',
                     color: galleryDayFilter === 'all' ? '#fff' : '#475569',
-                    border: '1px solid #cbd5e1'
+                    border: '1.5px solid #cbd5e1'
                   }}
                 >
                   הכל ({galleryItems.length})
@@ -1554,7 +1554,7 @@ export default function App() {
                       flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                       background: String(galleryDayFilter) === String(i) ? '#a21caf' : '#f8fafc',
                       color: String(galleryDayFilter) === String(i) ? '#fff' : '#475569',
-                      border: '1px solid #cbd5e1'
+                      border: '1.5px solid #cbd5e1'
                     }}
                   >
                     {d.label}
@@ -1775,13 +1775,13 @@ export default function App() {
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
-                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff' }}>
                       {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
                     </select>
                   </div>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
                   </div>
                   <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                   <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
