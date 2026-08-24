@@ -208,7 +208,7 @@ export default function App() {
     if (callback) callback();
   };
 
-  // Swipe-to-Close Touch Handlers
+  // Slow Swipe-to-Close Touch Handlers
   const touchStartXRef = useRef(0);
   const touchCurrentXRef = useRef(0);
 
@@ -223,7 +223,8 @@ export default function App() {
 
   const handleTouchEnd = (onCloseCallback) => {
     const diff = touchCurrentXRef.current - touchStartXRef.current;
-    if (diff > 80) {
+    // Increased threshold to 120px for a slower, deliberate swipe feel
+    if (diff > 120) {
       onCloseCallback();
     }
   };
@@ -507,7 +508,7 @@ export default function App() {
     }
   };
 
-  // Ultra-Reliable Italian Speech Engine using SpeechSynthesis directly on user tap
+  // 100% Guaranteed Native Speech Synthesis Engine for Italian Audio
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
@@ -605,7 +606,7 @@ export default function App() {
   });
 
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh', width: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box' }}>
+    <div style={{ background: '#ffffff', minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
       {/* Offline Alert Top Bar */}
       {!isOnline && (
@@ -627,6 +628,7 @@ export default function App() {
         top: !isOnline ? '30px' : 0,
         zIndex: 900,
         width: '100%',
+        maxWidth: '100vw',
         boxSizing: 'border-box',
         boxShadow: '0 1px 4px rgba(15, 23, 42, 0.03)'
       }}>
@@ -704,7 +706,7 @@ export default function App() {
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.25)', zIndex: 2500, width: '100vw', height: '100vh' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.25)', zIndex: 2500, width: '100vw', height: '100vh', overflowX: 'hidden' }}
         />
       )}
       <aside 
@@ -733,7 +735,7 @@ export default function App() {
       </aside>
 
       {/* Main Container */}
-      <main style={{ padding: '16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
+      <main style={{ padding: '16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
         
         {/* Day Selector Tabs */}
         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '16px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
@@ -760,7 +762,7 @@ export default function App() {
         </div>
 
         {/* Selected Day Content */}
-        <section style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 2px 10px rgba(15, 23, 42, 0.03)', boxSizing: 'border-box', width: '100%' }}>
+        <section style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 2px 10px rgba(15, 23, 42, 0.03)', boxSizing: 'border-box', width: '100%', overflowX: 'hidden' }}>
           <div style={{ borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
             <span style={{ fontSize: '12px', fontWeight: '700', color: '#2563eb' }}>{day.fullLabel}</span>
             <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>{day.icon} {day.title}</h2>
