@@ -181,7 +181,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
-  const audioPlayerRef = useRef(null);
+  const audioContextRef = useRef(null);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -462,37 +462,31 @@ export default function App() {
     }
   };
 
-  // Reliable Italian Speech Engine
-  const speakItalian = (text) => {
+  // High-Reliability Audio Engine with Context Resume (Fixes silent audio on mobile)
+  const speakItalian = async (text) => {
     if (!text || !text.trim()) return;
     setIsPlayingAudio(true);
 
     try {
-      if (audioPlayerRef.current) {
-        audioPlayerRef.current.pause();
-        audioPlayerRef.current = null;
+      if (!audioContextRef.current) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) audioContextRef.current = new AudioCtx();
+      }
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        await audioContextRef.current.resume();
       }
 
       const cleanQuery = encodeURIComponent(text.trim());
       const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=it&client=tw-ob&q=${cleanQuery}`;
       const audio = new Audio(audioUrl);
-      audioPlayerRef.current = audio;
 
-      audio.onended = () => {
-        setIsPlayingAudio(false);
-      };
-
+      audio.onended = () => setIsPlayingAudio(false);
       audio.onerror = () => {
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.lang = 'it-IT';
           utterance.rate = 0.85;
-
-          const voices = window.speechSynthesis.getVoices();
-          const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
-          if (itVoice) utterance.voice = itVoice;
-
           utterance.onend = () => setIsPlayingAudio(false);
           utterance.onerror = () => setIsPlayingAudio(false);
           window.speechSynthesis.speak(utterance);
@@ -501,20 +495,18 @@ export default function App() {
         }
       };
 
-      audio.play().catch(() => {
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = 'it-IT';
-          utterance.onend = () => setIsPlayingAudio(false);
-          window.speechSynthesis.speak(utterance);
-        } else {
-          setIsPlayingAudio(false);
-        }
-      });
+      await audio.play();
     } catch (e) {
-      console.log('Audio error:', e);
-      setIsPlayingAudio(false);
+      console.log('Audio playback error:', e);
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'it-IT';
+        utterance.onend = () => setIsPlayingAudio(false);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setIsPlayingAudio(false);
+      }
     }
   };
 
@@ -1279,7 +1271,7 @@ export default function App() {
                     <select 
                       value={galleryDayFilter === 'all' ? activeDay : galleryDayFilter} 
                       onChange={(e) => setGalleryDayFilter(e.target.value)}
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600' }}
                     >
                       {tripDays.map((d, i) => (
                         <option key={i} value={i}>{d.label} - {d.title}</option>
@@ -1292,7 +1284,7 @@ export default function App() {
                     <select 
                       value={galleryAuthor} 
                       onChange={(e) => setGalleryAuthor(e.target.value)}
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600' }}
                     >
                       <option value="אריק">אריק</option>
                       <option value="עמית">עמית</option>
@@ -1308,7 +1300,7 @@ export default function App() {
                     <input 
                       type="text" placeholder="לדוגמה: על הרכבת הרים בגרדלנד!" value={galleryCaption} 
                       onChange={(e) => setGalleryCaption(e.target.value)} 
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', boxSizing: 'border-box' }} 
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', boxSizing: 'border-box' }} 
                     />
                   </div>
 
@@ -1330,7 +1322,7 @@ export default function App() {
                   style={{
                     flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                     background: galleryDayFilter === 'all' ? '#a21caf' : '#f8fafc',
-                    color: galleryDayFilter === 'all' ? '#fff' : '#475569', border: '1px solid #cbd5e1'
+                    color: galleryDayFilter === 'all' ? '#fff' : '#475569', border: '1.5px solid #cbd5e1'
                   }}
                 >
                   הכל ({galleryItems.length})
@@ -1342,7 +1334,7 @@ export default function App() {
                     style={{
                       flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
                       background: String(galleryDayFilter) === String(i) ? '#a21caf' : '#f8fafc',
-                      color: String(galleryDayFilter) === String(i) ? '#fff' : '#475569', border: '1px solid #cbd5e1'
+                      color: String(galleryDayFilter) === String(i) ? '#fff' : '#475569', border: '1.5px solid #cbd5e1'
                     }}
                   >
                     {d.label}
@@ -1351,7 +1343,7 @@ export default function App() {
               </div>
 
               {filteredGallery.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '36px 16px', fontSize: '13px', fontWeight: '500', background: '#f8fafc', borderRadius: '14px', border: '1px dashed #cbd5e1' }}>
+                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '36px 16px', fontSize: '13px', fontWeight: '500', background: '#f8fafc', borderRadius: '14px', border: '1.5px dashed #cbd5e1' }}>
                   📸 אין עדיין תמונות או סרטונים ביום זה.<br/>לחצו על <b>"הוסף תמונה / סרטון"</b> כדי להעלות את התמונה הראשונה!
                 </div>
               ) : (
@@ -1514,7 +1506,7 @@ export default function App() {
               </div>
 
               {showUploadBox && (
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1.5px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
                     <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff' }}>
