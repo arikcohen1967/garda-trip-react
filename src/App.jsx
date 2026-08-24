@@ -129,6 +129,14 @@ export default function App() {
   const [newTicketTitle, setNewTicketTitle] = useState('');
   const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב');
 
+  // Album / Gallery State
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [galleryDayFilter, setGalleryDayFilter] = useState('all');
+  const [galleryCaption, setGalleryCaption] = useState('');
+  const [galleryAuthor, setGalleryAuthor] = useState('אריק');
+  const [showGalleryUpload, setShowGalleryUpload] = useState(false);
+  const [lightboxItem, setLightboxItem] = useState(null);
+
   // Register In-Line Service Worker for 100% Offline Support
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -138,7 +146,7 @@ export default function App() {
 
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       const swCode = `
-        const CACHE_NAME = 'garda-trip-v2';
+        const CACHE_NAME = 'garda-trip-v3';
         self.addEventListener('install', (e) => {
           self.skipWaiting();
         });
@@ -181,6 +189,7 @@ export default function App() {
       if (Array.isArray(saved) && saved.length) setFolders(saved);
     } catch (e) {}
     initTickets();
+    loadGallery();
   }, []);
 
   useEffect(() => {
@@ -189,12 +198,16 @@ export default function App() {
 
   const openDb = () => {
     return new Promise((resolve, reject) => {
-      const req = indexedDB.open('gardaTicketsDB', 1);
-      req.onupgradeneeded = () => {
+      const req = indexedDB.open('gardaTripMasterDB', 2);
+      req.onupgradeneeded = (e) => {
         const db = req.result;
         if (!db.objectStoreNames.contains('files')) {
           const st = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
           st.createIndex('folder', 'folder', { unique: false });
+        }
+        if (!db.objectStoreNames.contains('gallery')) {
+          const gst = db.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
+          gst.createIndex('dayIndex', 'dayIndex', { unique: false });
         }
       };
       req.onsuccess = () => resolve(req.result);
@@ -269,6 +282,16 @@ export default function App() {
     };
   };
 
+  const loadGallery = async () => {
+    const db = await openDb();
+    const tx = db.transaction('gallery', 'readonly');
+    const req = tx.objectStore('gallery').getAll();
+    req.onsuccess = () => {
+      const res = req.result || [];
+      setGalleryItems(res.sort((a, b) => b.created - a.created));
+    };
+  };
+
   const handleFileUpload = async (e) => {
     const files = [...e.target.files];
     if (!files.length) return;
@@ -290,6 +313,45 @@ export default function App() {
       setNewTicketTitle('');
       setShowUploadBox(false);
       loadFiles(activeFolder);
+    };
+  };
+
+  const handleGalleryUpload = async (e) => {
+    const files = [...e.target.files];
+    if (!files.length) return;
+    const db = await openDb();
+    const tx = db.transaction('gallery', 'readwrite');
+    const store = tx.objectStore('gallery');
+
+    files.forEach(file => {
+      store.add({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        dayIndex: galleryDayFilter === 'all' ? activeDay : Number(galleryDayFilter),
+        caption: galleryCaption || '',
+        author: galleryAuthor || 'משפחה',
+        created: Date.now(),
+        blob: file
+      });
+    });
+
+    tx.oncomplete = () => {
+      setGalleryCaption('');
+      setShowGalleryUpload(false);
+      loadGallery();
+    };
+  };
+
+  const deleteGalleryItem = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm('למחוק תמונה/סרטון זה מהאלבום?')) return;
+    const db = await openDb();
+    const tx = db.transaction('gallery', 'readwrite');
+    tx.objectStore('gallery').delete(id);
+    tx.oncomplete = () => {
+      if (lightboxItem && lightboxItem.id === id) setLightboxItem(null);
+      loadGallery();
     };
   };
 
@@ -316,6 +378,10 @@ export default function App() {
 
   const day = tripDays[activeDay];
 
+  const filteredGallery = galleryDayFilter === 'all'
+    ? galleryItems
+    : galleryItems.filter(item => String(item.dayIndex) === String(galleryDayFilter));
+
   return (
     <div style={{ background: '#f1f5f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
       
@@ -323,7 +389,7 @@ export default function App() {
       {!isOnline && (
         <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '7px 12px', fontSize: '11px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, boxShadow: '0 2px 6px rgba(220, 38, 38, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
-          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, המלון והכרטיסים זמינים כרגיל!
+          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, המלון, הכרטיסים והאלבום זמינים כרגיל!
         </div>
       )}
 
@@ -438,6 +504,7 @@ export default function App() {
           </button>
         </div>
         <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}><span>📅</span> מסלול ימי הטיול</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('gallery'); }} style={{ ...sidebarBtnStyle, background: '#fdf4ff', color: '#a21caf', borderColor: '#f0abfc' }}><span>📸</span> יומן ואלבום תמונות משפחתי</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('around'); }} style={sidebarBtnStyle}><span>📍</span> סביבי (Around Me)</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}><span>🚗</span> שמירת מיקום חניה</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}><span>🎟️</span> ארנק כרטיסים ומסמכים</button>
@@ -564,6 +631,211 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {/* MODAL: Family Gallery & Photo Album */}
+      {modalType === 'gallery' && (
+        <div style={modalStyle}>
+          <div style={modalContentStyle}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box', width: '100%' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
+                <div>
+                  <small style={{ color: '#a21caf', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>יומן וזיכרונות</small>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>📸 אלבום המסע המשפחתי</h2>
+                </div>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                <button 
+                  onClick={() => setShowGalleryUpload(!showGalleryUpload)} 
+                  style={{ flex: 1, padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: 'none', background: '#a21caf', color: '#fff', boxShadow: '0 2px 6px rgba(162, 28, 175, 0.25)' }}
+                >
+                  📷 {showGalleryUpload ? 'סגור העלאה' : 'הוסף תמונה / סרטון'}
+                </button>
+              </div>
+
+              {showGalleryUpload && (
+                <div style={{ background: '#fdf4ff', padding: '16px', borderRadius: '14px', border: '1.5px solid #f0abfc', marginBottom: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#86198f', display: 'block', marginBottom: '4px' }}>שייך ליום במסלול:</label>
+                    <select 
+                      value={galleryDayFilter === 'all' ? activeDay : galleryDayFilter} 
+                      onChange={(e) => setGalleryDayFilter(e.target.value)}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                    >
+                      {tripDays.map((d, i) => (
+                        <option key={i} value={i}>{d.label} - {d.title}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#86198f', display: 'block', marginBottom: '4px' }}>מי מעלה?</label>
+                    <select 
+                      value={galleryAuthor} 
+                      onChange={(e) => setGalleryAuthor(e.target.value)}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                    >
+                      <option value="אריק">אריק</option>
+                      <option value="עמית">עמית</option>
+                      <option value="יולי">יולי</option>
+                      <option value="ליאן">ליאן</option>
+                      <option value="הראל">הראל</option>
+                      <option value="משפחה">כולנו יחד 👨‍👩‍👧‍👧</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#86198f', display: 'block', marginBottom: '4px' }}>תיאור קצר או כותרת (לא חובה):</label>
+                    <input 
+                      type="text" 
+                      placeholder="לדוגמה: על הרכבת הרים בגרדלנד!" 
+                      value={galleryCaption} 
+                      onChange={(e) => setGalleryCaption(e.target.value)} 
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #f0abfc', background: '#fff', boxSizing: 'border-box' }} 
+                    />
+                  </div>
+
+                  <input type="file" id="cameraPhoto" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleGalleryUpload} />
+                  <input type="file" id="cameraVideo" accept="video/*" capture="environment" style={{ display: 'none' }} onChange={handleGalleryUpload} />
+                  <input type="file" id="galleryMulti" accept="image/*,video/*" multiple style={{ display: 'none' }} onChange={handleGalleryUpload} />
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '4px' }}>
+                    <button onClick={() => document.getElementById('cameraPhoto').click()} style={galleryActionBtn}>📸 צלם תמונה</button>
+                    <button onClick={() => document.getElementById('cameraVideo').click()} style={galleryActionBtn}>🎥 צלם וידאו</button>
+                    <button onClick={() => document.getElementById('galleryMulti').click()} style={galleryActionBtn}>📁 בחר מהגלריה</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Day Filter Pills */}
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '14px', scrollbarWidth: 'none' }}>
+                <button
+                  onClick={() => setGalleryDayFilter('all')}
+                  style={{
+                    flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                    background: galleryDayFilter === 'all' ? '#a21caf' : '#f8fafc',
+                    color: galleryDayFilter === 'all' ? '#fff' : '#475569',
+                    border: '1px solid #cbd5e1'
+                  }}
+                >
+                  הכל ({galleryItems.length})
+                </button>
+                {tripDays.map((d, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setGalleryDayFilter(String(i))}
+                    style={{
+                      flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                      background: String(galleryDayFilter) === String(i) ? '#a21caf' : '#f8fafc',
+                      color: String(galleryDayFilter) === String(i) ? '#fff' : '#475569',
+                      border: '1px solid #cbd5e1'
+                    }}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Photos & Videos Grid */}
+              {filteredGallery.length === 0 ? (
+                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '36px 16px', fontSize: '13px', fontWeight: '500', background: '#f8fafc', borderRadius: '14px', border: '1px dashed #cbd5e1' }}>
+                  📸 אין עדיין תמונות או סרטונים ביום זה.<br/>לחצו על <b>"הוסף תמונה / סרטון"</b> כדי להעלות את התמונה הראשונה!
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                  {filteredGallery.map((item) => {
+                    const isVideo = (item.type || '').startsWith('video/');
+                    const mediaUrl = item.blob ? URL.createObjectURL(item.blob) : '';
+                    return (
+                      <div 
+                        key={item.id}
+                        onClick={() => setLightboxItem(item)}
+                        style={{
+                          background: '#ffffff',
+                          borderRadius: '12px',
+                          border: '1.5px solid #e2e8f0',
+                          overflow: 'hidden',
+                          boxShadow: '0 2px 6px rgba(15, 23, 42, 0.04)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          position: 'relative'
+                        }}
+                      >
+                        <div style={{ width: '100%', height: '120px', background: '#0f172a', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {isVideo ? (
+                            <video src={mediaUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <img src={mediaUrl} alt={item.caption || 'תמונה מהטיול'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          )}
+                          {isVideo && (
+                            <div style={{ position: 'absolute', background: 'rgba(0,0,0,0.6)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '14px' }}>
+                              ▶
+                            </div>
+                          )}
+                          <span style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(15, 23, 42, 0.75)', color: '#fff', fontSize: '9px', fontWeight: '700', padding: '2px 6px', borderRadius: '6px', backdropFilter: 'blur(4px)' }}>
+                            {tripDays[item.dayIndex]?.label || 'כללי'}
+                          </span>
+                        </div>
+                        <div style={{ padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {item.caption || item.name}
+                          </span>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10px', color: '#64748b', fontWeight: '600' }}>
+                            <span>צילם/ה: {item.author}</span>
+                            <button 
+                              onClick={(e) => deleteGalleryItem(item.id, e)}
+                              style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', padding: '2px', fontWeight: '700' }}
+                            >
+                              מחק
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Gallery Lightbox Viewer */}
+      {lightboxItem && (
+        <div 
+          onClick={() => setLightboxItem(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.92)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', backdropFilter: 'blur(8px)' }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ maxWidth: '500px', width: '100%', background: '#ffffff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}
+          >
+            <div style={{ position: 'relative', background: '#000', maxHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {(lightboxItem.type || '').startsWith('video/') ? (
+                <video src={URL.createObjectURL(lightboxItem.blob)} controls autoPlay style={{ width: '100%', maxHeight: '65vh' }} />
+              ) : (
+                <img src={URL.createObjectURL(lightboxItem.blob)} alt={lightboxItem.caption} style={{ width: '100%', maxHeight: '65vh', objectFit: 'contain' }} />
+              )}
+              <button 
+                onClick={() => setLightboxItem(null)} 
+                style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontWeight: '900', fontSize: '14px' }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ padding: '16px', textAlign: 'right' }}>
+              <h4 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>{lightboxItem.caption || lightboxItem.name}</h4>
+              <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontWeight: '600' }}>
+                יום: {tripDays[lightboxItem.dayIndex]?.fullLabel || 'כללי'} · צילום: {lightboxItem.author}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: Parking Guide */}
       {modalType === 'parking' && (
@@ -963,4 +1235,20 @@ const uploadBtnStyle = {
   fontWeight: '700',
   cursor: 'pointer',
   fontSize: '12px'
+};
+
+const galleryActionBtn = {
+  padding: '10px 6px',
+  borderRadius: '10px',
+  background: '#ffffff',
+  border: '1px solid #f0abfc',
+  color: '#86198f',
+  fontWeight: '700',
+  fontSize: '11px',
+  cursor: 'pointer',
+  boxShadow: '0 1px 3px rgba(162, 28, 175, 0.08)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center'
 };
