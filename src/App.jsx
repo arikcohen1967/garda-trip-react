@@ -119,8 +119,10 @@ const QUICK_PHRASES = [
   { cat: '🍕 מסעדה וקפה', he: 'שולחן ל-5 אנשים בבקשה', it: 'Un tavolo per cinque persone, per favore', pro: 'אוּן טָאבוֹלוֹ פֶּר צִ׳ינְקְוֶוה פֶּרְסוֹנֶה' },
   { cat: '🍕 מסעדה וקפה', he: 'בקבוק מים רגילים / מוגזים', it: 'Acqua naturale / gassata per favore', pro: 'אָקְוָוה נָטוּרָלֶה / גָאסָאטָה' },
   { cat: '🍕 מסעדה וקפה', he: 'איפה השירותים?', it: "Dov'è il bagno?", pro: 'דוֹבֶה אִיל בָּאנְיוֹ?' },
+  { cat: '🍕 מסעדה וקפה', he: 'טעים מאוד!', it: 'Molto buono!', pro: 'מוֹלְטוֹ בּוּאוֹנוֹ!' },
   { cat: '🍦 גלידה ופינוקים', he: 'גביע / כוסית של 2 טעמים', it: 'Un cono / una coppetta da due gusti', pro: 'אוּן קוֹנוֹ / קוֹפֶּטָה דָה דוּאֶה גוּסְטִי' },
   { cat: '🍦 גלידה ופינוקים', he: 'אפשר לטעום?', it: 'Posso assaggiare?', pro: 'פּוֹסוֹ אַסַאגָ׳ארֶה?' },
+  { cat: '🍦 גלידה ופינוקים', he: 'פיסטוק ושוקולד בבקשה', it: 'Pistacchio e cioccolato per favore', pro: 'פִּיסְטָאקְיוֹ אֶה צ׳וֹקוֹלָאטוֹ' },
   { cat: '🛒 קניות וחניה', he: 'כמה זה עולה?', it: 'Quanto costa?', pro: 'קְוָואנְטוֹ קוֹסְטָה?' },
   { cat: '🛒 קניות וחניה', he: 'אפשר לשלם באשראי?', it: 'Posso pagare con la carta?', pro: 'פּוֹסוֹ פָּאגָארֶה קוֹן לָה קָארְטָה?' },
   { cat: '🛒 קניות וחניה', he: 'איפה המדחן?', it: 'Dov’è il parcometro?', pro: 'דוֹבֶה אִיל פָּארְקוֹמֶטְרוֹ?' },
@@ -159,45 +161,19 @@ export default function App() {
   const [isListening, setIsListening] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('הכל');
+  const [voiceSupported, setVoiceSupported] = useState(true);
   const recognitionRef = useRef(null);
 
-  // Register In-Line Service Worker for 100% Offline Support
+  // Register Service Worker
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-      const swCode = `
-        const CACHE_NAME = 'garda-trip-v4';
-        self.addEventListener('install', (e) => {
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', (e) => {
-          e.waitUntil(
-            caches.keys().then((keys) =>
-              Promise.all(keys.map((k) => k !== CACHE_NAME && caches.delete(k)))
-            )
-          );
-          self.clients.claim();
-        });
-        self.addEventListener('fetch', (e) => {
-          if (e.request.method !== 'GET') return;
-          e.respondWith(
-            fetch(e.request)
-              .then((res) => {
-                const copy = res.clone();
-                caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
-                return res;
-              })
-              .catch(() => caches.match(e.request))
-          );
-        });
-      `;
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(swUrl).catch(() => {});
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      setVoiceSupported(false);
     }
 
     return () => {
@@ -223,7 +199,7 @@ export default function App() {
   const openDb = () => {
     return new Promise((resolve, reject) => {
       const req = indexedDB.open('gardaTripMasterDB', 2);
-      req.onupgradeneeded = (e) => {
+      req.onupgradeneeded = () => {
         const db = req.result;
         if (!db.objectStoreNames.contains('files')) {
           const st = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
@@ -400,48 +376,84 @@ export default function App() {
     }
   };
 
-  // Italian Speech Synthesis
+  // Robust Italian Speech Engine (Works on iPhone, Android, PC)
   const speakItalian = (text) => {
-    if (!('speechSynthesis' in window)) {
-      alert('דפדפן זה אינו תומך בהקראה קולית');
-      return;
+    if (!text) return;
+    try {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'it-IT';
+        utterance.rate = 0.85;
+
+        // Try to find native Italian voice
+        const voices = window.speechSynthesis.getVoices();
+        const itVoice = voices.find(v => v.lang.includes('it') || v.lang.includes('IT'));
+        if (itVoice) utterance.voice = itVoice;
+
+        window.speechSynthesis.speak(utterance);
+      } else {
+        // Fallback Web Audio
+        const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&tl=it&client=tw-ob&q=${encodeURIComponent(text)}`);
+        audio.play().catch(() => {});
+      }
+    } catch (e) {
+      console.log('Audio error', e);
     }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'it-IT';
-    utterance.rate = 0.9;
-    window.speechSynthesis.speak(utterance);
   };
 
-  // Translation Function (Hebrew -> Italian)
+  // Dual Translation Engine (Online Google + Offline Fallback Dictionary)
   const translateText = async (textToTranslate) => {
-    if (!textToTranslate || !textToTranslate.trim()) return;
+    const query = (textToTranslate || hebrewInput || '').trim();
+    if (!query) return;
+
     setIsTranslating(true);
+    setHebrewInput(query);
+
+    // 1. Offline match check
+    const matched = QUICK_PHRASES.find(p => query.includes(p.he) || p.he.includes(query));
+    if (matched) {
+      setItalianOutput(matched.it);
+      speakItalian(matched.it);
+      setIsTranslating(false);
+      return;
+    }
+
+    // 2. High-speed Google Translate API
     try {
-      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=he|it`);
+      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=iw&tl=it&dt=t&q=${encodeURIComponent(query)}`);
       const data = await res.json();
-      if (data && data.responseData && data.responseData.translatedText) {
-        const clean = data.responseData.translatedText;
-        setItalianOutput(clean);
-        speakItalian(clean);
+      if (data && data[0] && data[0][0] && data[0][0][0]) {
+        const translated = data[0][0][0];
+        setItalianOutput(translated);
+        speakItalian(translated);
       } else {
-        setItalianOutput('שגיאה בתרגום');
+        fallbackTranslate(query);
       }
     } catch (err) {
-      // Fallback offline dictionary match
-      const matched = QUICK_PHRASES.find(p => textToTranslate.includes(p.he) || p.he.includes(textToTranslate));
-      if (matched) {
-        setItalianOutput(matched.it);
-        speakItalian(matched.it);
-      } else {
-        setItalianOutput('תרגום חי דורש חיבור לרשת');
-      }
+      fallbackTranslate(query);
     } finally {
       setIsTranslating(false);
     }
   };
 
-  // Voice Recognition (Hebrew Speech-to-Text)
+  const fallbackTranslate = async (query) => {
+    try {
+      const res2 = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=he|it`);
+      const data2 = await res2.json();
+      if (data2 && data2.responseData && data2.responseData.translatedText) {
+        const translated = data2.responseData.translatedText;
+        setItalianOutput(translated);
+        speakItalian(translated);
+      } else {
+        setItalianOutput('שגיאה בתרגום');
+      }
+    } catch (e) {
+      setItalianOutput('זמין במצב מקוון');
+    }
+  };
+
+  // Voice Recognition (Speech-to-Text)
   const toggleListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -450,27 +462,46 @@ export default function App() {
     }
 
     if (isListening) {
-      if (recognitionRef.current) recognitionRef.current.stop();
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
       setIsListening(false);
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'he-IL';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'he-IL';
+      recognition.continuous = false;
+      recognition.interimResults = false;
 
-    recognition.onstart = () => setIsListening(true);
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setHebrewInput(transcript);
-      translateText(transcript);
-    };
-    recognition.onerror = () => setIsListening(false);
-    recognition.onend = () => setIsListening(false);
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
 
-    recognitionRef.current = recognition;
-    recognition.start();
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setHebrewInput(transcript);
+          translateText(transcript);
+        }
+      };
+
+      recognition.onerror = (e) => {
+        console.error('Speech error', e);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error(err);
+      setIsListening(false);
+    }
   };
 
   const day = tripDays[activeDay];
@@ -752,48 +783,56 @@ export default function App() {
               {/* Live Voice Translation Box */}
               <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px', padding: '16px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(34, 197, 94, 0.08)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: '#166534' }}>🎙️ דבר בעברית ותרגם לאיטלקית:</span>
+                  <span style={{ fontSize: '13px', fontWeight: '800', color: '#166534' }}>🎙️ הקלד או לחץ על המיקרופון:</span>
                   {isTranslating && <small style={{ color: '#15803d', fontWeight: '700' }}>מתרגם...</small>}
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                   <input 
                     type="text"
-                    placeholder="הקלד או לחץ על המיקרופון..."
+                    placeholder="לדוגמה: איפה השירותים?"
                     value={hebrewInput}
                     onChange={(e) => setHebrewInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
-                    style={{ flex: 1, padding: '10px 12px', borderRadius: '10px', border: '1px solid #86efac', fontSize: '13px', background: '#fff' }}
+                    style={{ flex: 1, padding: '10px 12px', borderRadius: '10px', border: '1.5px solid #86efac', fontSize: '13px', background: '#fff', boxSizing: 'border-box' }}
                   />
-                  <button 
-                    onClick={toggleListening}
-                    style={{
-                      background: isListening ? '#ef4444' : '#16a34a',
-                      color: '#fff', border: 'none', borderRadius: '10px', width: '44px', height: '42px',
-                      fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
-                    }}
-                    title={isListening ? 'מקליט... לחץ לסיום' : 'לחץ ודבר בעברית'}
-                  >
-                    {isListening ? '⏹️' : '🎙️'}
-                  </button>
+                  {voiceSupported && (
+                    <button 
+                      onClick={toggleListening}
+                      style={{
+                        background: isListening ? '#ef4444' : '#16a34a',
+                        color: '#fff', border: 'none', borderRadius: '10px', width: '44px', height: '42px',
+                        fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)', flexShrink: 0
+                      }}
+                      title={isListening ? 'מקליט... לחץ לסיום' : 'לחץ ודבר בעברית'}
+                    >
+                      {isListening ? '⏹️' : '🎙️'}
+                    </button>
+                  )}
                   <button 
                     onClick={() => translateText(hebrewInput)}
-                    style={{ background: '#0f172a', color: '#fff', border: 'none', borderRadius: '10px', padding: '0 14px', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}
+                    style={{ background: '#0f172a', color: '#fff', border: 'none', borderRadius: '10px', padding: '0 14px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 }}
                   >
                     תרגם
                   </button>
                 </div>
 
+                {isListening && (
+                  <div style={{ textAlign: 'center', color: '#dc2626', fontSize: '12px', fontWeight: '700', marginBottom: '8px' }}>
+                    🔴 מקליט... דבר כעת בעברית
+                  </div>
+                )}
+
                 {italianOutput && (
-                  <div style={{ background: '#ffffff', borderRadius: '12px', padding: '12px 14px', border: '1.5px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '12px', padding: '12px 14px', border: '1.5px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '8px' }}>
                     <div style={{ textAlign: 'right', flex: 1 }}>
                       <span style={{ fontSize: '11px', color: '#64748b', display: 'block', fontWeight: '600' }}>איטלקית:</span>
                       <strong style={{ fontSize: '15px', color: '#0f172a', display: 'block', direction: 'ltr', textAlign: 'left' }}>{italianOutput}</strong>
                     </div>
                     <button 
                       onClick={() => speakItalian(italianOutput)}
-                      style={{ background: '#ecfdf5', border: '1.5px solid #86efac', borderRadius: '10px', padding: '8px 12px', fontSize: '16px', cursor: 'pointer', color: '#166534', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      style={{ background: '#ecfdf5', border: '1.5px solid #86efac', borderRadius: '10px', padding: '8px 12px', fontSize: '14px', cursor: 'pointer', color: '#166534', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}
                       title="השמע באיטלקית"
                     >
                       🔊 השמע
