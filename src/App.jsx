@@ -1163,7 +1163,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook & Live Translator */}
+      {/* MODAL: Italian Phrasebook & Live Translator with Clean White Background */}
       {modalType === 'phrasebook' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -1997,7 +1997,7 @@ const modalStyle = {
   bottom: 0,
   width: '100vw',
   height: '100vh',
-  background: '#f1f5f9',
+  background: '#ffffff',
   zIndex: 2000,
   overflowY: 'auto',
   overflowX: 'hidden',
@@ -2012,7 +2012,7 @@ const modalContentStyle = {
   padding: '16px 16px 40px',
   boxSizing: 'border-box',
   minHeight: '100vh',
-  background: '#f1f5f9'
+  background: '#ffffff'
 };
 
 const modalCloseBtn = {
