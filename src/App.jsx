@@ -183,27 +183,6 @@ export default function App() {
   const [translationHistory, setTranslationHistory] = useState([]);
   const audioContextRef = useRef(null);
 
-  // Swipe-to-Close Touch Handlers
-  const touchStartXRef = useRef(0);
-  const touchCurrentXRef = useRef(0);
-
-  const handleTouchStart = (e) => {
-    touchStartXRef.current = e.touches[0].clientX;
-    touchCurrentXRef.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchCurrentXRef.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (onCloseCallback) => {
-    const diff = touchCurrentXRef.current - touchStartXRef.current;
-    // Swipe Right to Close (Threshold 80px)
-    if (diff > 80) {
-      onCloseCallback();
-    }
-  };
-
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -483,7 +462,7 @@ export default function App() {
     }
   };
 
-  // Reliable Italian Speech Engine
+  // Reliable Italian Speech Engine with Mobile AudioContext Resuming
   const speakItalian = async (text) => {
     if (!text || !text.trim()) return;
     setIsPlayingAudio(true);
@@ -1782,7 +1761,7 @@ const uploadBtnStyle = {
 };
 
 const galleryActionBtn = {
-  padding: '10px 6px', borderRadius: '10px', background: '#ffffff', border: '1px solid #f0abfc',
+  padding: '10px 6px', borderRadius: '10px', background: '#ffffff', border: '1.5px solid #f0abfc',
   color: '#86198f', fontWeight: '700', fontSize: '11px', cursor: 'pointer',
   display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'
 };
