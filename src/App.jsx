@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const WAZE_SVG = (
   <svg viewBox="0 0 512 512" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
@@ -114,6 +114,22 @@ const tripDays = [
 
 const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
+const QUICK_PHRASES = [
+  { cat: '🍕 מסעדה וקפה', he: 'חשבון בבקשה', it: 'Il conto, per favore', pro: 'אִיל קוֹנְטוֹ, פֶּר פָבוֹרֶה' },
+  { cat: '🍕 מסעדה וקפה', he: 'שולחן ל-5 אנשים בבקשה', it: 'Un tavolo per cinque persone, per favore', pro: 'אוּן טָאבוֹלוֹ פֶּר צִ׳ינְקְוֶוה פֶּרְסוֹנֶה' },
+  { cat: '🍕 מסעדה וקפה', he: 'בקבוק מים רגילים / מוגזים', it: 'Acqua naturale / gassata per favore', pro: 'אָקְוָוה נָטוּרָלֶה / גָאסָאטָה' },
+  { cat: '🍕 מסעדה וקפה', he: 'איפה השירותים?', it: "Dov'è il bagno?", pro: 'דוֹבֶה אִיל בָּאנְיוֹ?' },
+  { cat: '🍦 גלידה ופינוקים', he: 'גביע / כוסית של 2 טעמים', it: 'Un cono / una coppetta da due gusti', pro: 'אוּן קוֹנוֹ / קוֹפֶּטָה דָה דוּאֶה גוּסְטִי' },
+  { cat: '🍦 גלידה ופינוקים', he: 'אפשר לטעום?', it: 'Posso assaggiare?', pro: 'פּוֹסוֹ אַסַאגָ׳ארֶה?' },
+  { cat: '🛒 קניות וחניה', he: 'כמה זה עולה?', it: 'Quanto costa?', pro: 'קְוָואנְטוֹ קוֹסְטָה?' },
+  { cat: '🛒 קניות וחניה', he: 'אפשר לשלם באשראי?', it: 'Posso pagare con la carta?', pro: 'פּוֹסוֹ פָּאגָארֶה קוֹן לָה קָארְטָה?' },
+  { cat: '🛒 קניות וחניה', he: 'איפה המדחן?', it: 'Dov’è il parcometro?', pro: 'דוֹבֶה אִיל פָּארְקוֹמֶטְרוֹ?' },
+  { cat: '👋 בסיסי ונימוס', he: 'שלום / ביי', it: 'Ciao!', pro: 'צ׳או' },
+  { cat: '👋 בסיסי ונימוס', he: 'בוקר טוב / ערב טוב', it: 'Buongiorno / Buonasera', pro: 'בּוּאוֹן ג׳וֹרְנוֹ / בּוּאוֹנָה סֶרָה' },
+  { cat: '👋 בסיסי ונימוס', he: 'תודה רבה', it: 'Grazie mille!', pro: 'גְרָאצְיֶה מִילֶה' },
+  { cat: '👋 בסיסי ונימוס', he: 'סליחה / מחילה', it: 'Scusi / Permesso', pro: 'סְקוּזִי / פֶּרְמֶסוֹ' }
+];
+
 export default function App() {
   const [activeDay, setActiveDay] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -137,6 +153,14 @@ export default function App() {
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
   const [lightboxItem, setLightboxItem] = useState(null);
 
+  // Translator & Speech State
+  const [hebrewInput, setHebrewInput] = useState('');
+  const [italianOutput, setItalianOutput] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('הכל');
+  const recognitionRef = useRef(null);
+
   // Register In-Line Service Worker for 100% Offline Support
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -146,7 +170,7 @@ export default function App() {
 
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       const swCode = `
-        const CACHE_NAME = 'garda-trip-v3';
+        const CACHE_NAME = 'garda-trip-v4';
         self.addEventListener('install', (e) => {
           self.skipWaiting();
         });
@@ -376,11 +400,89 @@ export default function App() {
     }
   };
 
+  // Italian Speech Synthesis
+  const speakItalian = (text) => {
+    if (!('speechSynthesis' in window)) {
+      alert('דפדפן זה אינו תומך בהקראה קולית');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'it-IT';
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Translation Function (Hebrew -> Italian)
+  const translateText = async (textToTranslate) => {
+    if (!textToTranslate || !textToTranslate.trim()) return;
+    setIsTranslating(true);
+    try {
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=he|it`);
+      const data = await res.json();
+      if (data && data.responseData && data.responseData.translatedText) {
+        const clean = data.responseData.translatedText;
+        setItalianOutput(clean);
+        speakItalian(clean);
+      } else {
+        setItalianOutput('שגיאה בתרגום');
+      }
+    } catch (err) {
+      // Fallback offline dictionary match
+      const matched = QUICK_PHRASES.find(p => textToTranslate.includes(p.he) || p.he.includes(textToTranslate));
+      if (matched) {
+        setItalianOutput(matched.it);
+        speakItalian(matched.it);
+      } else {
+        setItalianOutput('תרגום חי דורש חיבור לרשת');
+      }
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  // Voice Recognition (Hebrew Speech-to-Text)
+  const toggleListening = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('זיהוי קולי אינו נתמך בדפדפן זה. ניתן להקליד ישירות בתיבה.');
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'he-IL';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setHebrewInput(transcript);
+      translateText(transcript);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
   const day = tripDays[activeDay];
 
   const filteredGallery = galleryDayFilter === 'all'
     ? galleryItems
     : galleryItems.filter(item => String(item.dayIndex) === String(galleryDayFilter));
+
+  const categories = ['הכל', '🍕 מסעדה וקפה', '🍦 גלידה ופינוקים', '🛒 קניות וחניה', '👋 בסיסי ונימוס'];
+  const filteredPhrases = selectedCategory === 'הכל'
+    ? QUICK_PHRASES
+    : QUICK_PHRASES.filter(p => p.cat === selectedCategory);
 
   return (
     <div style={{ background: '#f1f5f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
@@ -389,7 +491,7 @@ export default function App() {
       {!isOnline && (
         <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '7px 12px', fontSize: '11px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, boxShadow: '0 2px 6px rgba(220, 38, 38, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
-          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, המלון, הכרטיסים והאלבום זמינים כרגיל!
+          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, המלון, הכרטיסים והשיחון זמינים כרגיל!
         </div>
       )}
 
@@ -504,6 +606,7 @@ export default function App() {
           </button>
         </div>
         <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}><span>📅</span> מסלול ימי הטיול</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('phrasebook'); }} style={{ ...sidebarBtnStyle, background: '#f0fdf4', color: '#15803d', borderColor: '#86efac' }}><span>🇮🇹</span> שיחון איטלקי + הקראה קולית</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('gallery'); }} style={{ ...sidebarBtnStyle, background: '#fdf4ff', color: '#a21caf', borderColor: '#f0abfc' }}><span>📸</span> יומן ואלבום תמונות משפחתי</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('around'); }} style={sidebarBtnStyle}><span>📍</span> סביבי (Around Me)</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}><span>🚗</span> שמירת מיקום חניה</button>
@@ -631,6 +734,146 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {/* MODAL: Italian Phrasebook & Live Voice Translator */}
+      {modalType === 'phrasebook' && (
+        <div style={modalStyle}>
+          <div style={modalContentStyle}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box', width: '100%' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
+                <div>
+                  <small style={{ color: '#16a34a', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>דיבור ותרגום מהיר</small>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>🇮🇹 שיחון איטלקי חכם</h2>
+                </div>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+              </div>
+
+              {/* Live Voice Translation Box */}
+              <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px', padding: '16px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(34, 197, 94, 0.08)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '800', color: '#166534' }}>🎙️ דבר בעברית ותרגם לאיטלקית:</span>
+                  {isTranslating && <small style={{ color: '#15803d', fontWeight: '700' }}>מתרגם...</small>}
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                  <input 
+                    type="text"
+                    placeholder="הקלד או לחץ על המיקרופון..."
+                    value={hebrewInput}
+                    onChange={(e) => setHebrewInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
+                    style={{ flex: 1, padding: '10px 12px', borderRadius: '10px', border: '1px solid #86efac', fontSize: '13px', background: '#fff' }}
+                  />
+                  <button 
+                    onClick={toggleListening}
+                    style={{
+                      background: isListening ? '#ef4444' : '#16a34a',
+                      color: '#fff', border: 'none', borderRadius: '10px', width: '44px', height: '42px',
+                      fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+                    }}
+                    title={isListening ? 'מקליט... לחץ לסיום' : 'לחץ ודבר בעברית'}
+                  >
+                    {isListening ? '⏹️' : '🎙️'}
+                  </button>
+                  <button 
+                    onClick={() => translateText(hebrewInput)}
+                    style={{ background: '#0f172a', color: '#fff', border: 'none', borderRadius: '10px', padding: '0 14px', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}
+                  >
+                    תרגם
+                  </button>
+                </div>
+
+                {italianOutput && (
+                  <div style={{ background: '#ffffff', borderRadius: '12px', padding: '12px 14px', border: '1.5px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                    <div style={{ textAlign: 'right', flex: 1 }}>
+                      <span style={{ fontSize: '11px', color: '#64748b', display: 'block', fontWeight: '600' }}>איטלקית:</span>
+                      <strong style={{ fontSize: '15px', color: '#0f172a', display: 'block', direction: 'ltr', textAlign: 'left' }}>{italianOutput}</strong>
+                    </div>
+                    <button 
+                      onClick={() => speakItalian(italianOutput)}
+                      style={{ background: '#ecfdf5', border: '1.5px solid #86efac', borderRadius: '10px', padding: '8px 12px', fontSize: '16px', cursor: 'pointer', color: '#166534', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      title="השמע באיטלקית"
+                    >
+                      🔊 השמע
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Ready Phrases Section */}
+              <div style={{ borderBottom: '1.5px solid #f1f5f9', paddingBottom: '10px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: '800', fontSize: '14px', color: '#0f172a' }}>📚 משפטים שימושיים מוכנים</span>
+              </div>
+
+              {/* Categories Tabs */}
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '14px', scrollbarWidth: 'none' }}>
+                {categories.map((cat, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedCategory(cat)}
+                    style={{
+                      flex: '0 0 auto', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                      background: selectedCategory === cat ? '#16a34a' : '#f8fafc',
+                      color: selectedCategory === cat ? '#fff' : '#475569',
+                      border: '1px solid #cbd5e1'
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Phrases List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {filteredPhrases.map((phrase, idx) => (
+                  <div 
+                    key={idx}
+                    style={{
+                      background: '#ffffff',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '14px',
+                      padding: '12px 14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      boxShadow: '0 2px 4px rgba(15, 23, 42, 0.03)'
+                    }}
+                  >
+                    <div style={{ flex: 1, paddingLeft: '10px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a', display: 'block' }}>{phrase.he}</span>
+                      <strong style={{ fontSize: '14px', color: '#16a34a', display: 'block', margin: '2px 0', direction: 'ltr', textAlign: 'left' }}>{phrase.it}</strong>
+                      <small style={{ fontSize: '11px', color: '#64748b', fontWeight: '600' }}>הגייה: {phrase.pro}</small>
+                    </div>
+
+                    <button 
+                      onClick={() => speakItalian(phrase.it)}
+                      style={{
+                        background: '#f0fdf4',
+                        border: '1.5px solid #86efac',
+                        borderRadius: '10px',
+                        width: '38px',
+                        height: '38px',
+                        fontSize: '16px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}
+                      title="השמע הגייה"
+                    >
+                      🔊
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: Family Gallery & Photo Album */}
       {modalType === 'gallery' && (
