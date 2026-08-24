@@ -114,7 +114,7 @@ const tripDays = [
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "Verona Villafranca Airport", note: "התארגנות וטיסה חזרה הביתה." }
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "VeronaVillafranca Airport", note: "התארגנות וטיסה חזרה הביתה." }
     ]
   }
 ];
@@ -178,7 +178,6 @@ export default function App() {
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [voiceStatusText, setVoiceStatusText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
@@ -188,7 +187,7 @@ export default function App() {
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOffline(false);
+    const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
@@ -465,62 +464,32 @@ export default function App() {
     }
   };
 
-  // High-Reliability Dual Audio Playback (Native Audio Stream + Fallback TTS)
+  // Safe Italian Speech Engine
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
-    setIsPlayingAudio(true);
-
     try {
       if (audioPlayerRef.current) {
         audioPlayerRef.current.pause();
         audioPlayerRef.current = null;
       }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
 
-      // Stream native Italian MP3 audio directly
       const cleanQuery = encodeURIComponent(text.trim());
       const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=it&client=tw-ob&q=${cleanQuery}`;
       const audio = new Audio(audioUrl);
       audioPlayerRef.current = audio;
 
-      audio.onended = () => {
-        setIsPlayingAudio(false);
-      };
-
-      audio.onerror = () => {
-        // Fallback to local SpeechSynthesis if network audio is blocked
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = 'it-IT';
-          utterance.rate = 0.85;
-
-          const voices = window.speechSynthesis.getVoices();
-          const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
-          if (itVoice) utterance.voice = itVoice;
-
-          utterance.onend = () => setIsPlayingAudio(false);
-          utterance.onerror = () => setIsPlayingAudio(false);
-          window.speechSynthesis.speak(utterance);
-        } else {
-          setIsPlayingAudio(false);
-        }
-      };
-
       audio.play().catch(() => {
-        // Retry with SpeechSynthesis upon user gesture
         if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.lang = 'it-IT';
-          utterance.onend = () => setIsPlayingAudio(false);
           window.speechSynthesis.speak(utterance);
-        } else {
-          setIsPlayingAudio(false);
         }
       });
     } catch (e) {
       console.log('Audio error:', e);
-      setIsPlayingAudio(false);
     }
   };
 
@@ -572,7 +541,7 @@ export default function App() {
     }
   };
 
-  // Real-Time Live Speech Recognition (Words appear live while speaking)
+  // Real-Time Live Speech Recognition
   const toggleListening = () => {
     if (audioPlayerRef.current) {
       audioPlayerRef.current.pause();
@@ -608,7 +577,7 @@ export default function App() {
     setTimeout(() => {
       try {
         setItalianOutput('');
-        setVoiceStatusText('🎙️ מקשיב... דבר כעת בעברית');
+        setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
 
         const recognition = new SpeechRecognition();
         recognition.lang = 'he-IL';
@@ -1232,7 +1201,7 @@ export default function App() {
                           {log?.completed && (
                             <button 
                               onClick={() => resetSingleChallenge(idx)}
-                              style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', borderRadius: '8px', padding: '3px 6px', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}
+                              style={{ background: '#fef2f2', border: '1.5px solid #fca5a5', color: '#dc2626', borderRadius: '8px', padding: '3px 6px', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}
                               title="איפוס אתגר זה"
                             >
                               איפוס ✕
@@ -1248,7 +1217,7 @@ export default function App() {
                         <>
                           <b style={{ fontSize: '14px', color: '#0f172a', display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
                           {log?.completed && (
-                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
+                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1.5px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
                               <b>💬 תיעוד ובדיחה:</b> "{log.text}"
                               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
                                 נכתב על ידי: {log.author} · שעה: {log.time}
@@ -1594,12 +1563,11 @@ export default function App() {
             <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box', width: '100%' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
-                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
-                <div style={{ textAlign: 'center', flex: 1 }}>
-                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>📸 אלבום המסע המשפחתי</h2>
+                <div>
                   <small style={{ color: '#a21caf', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>יומן וזיכרונות</small>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>📸 אלבום המסע המשפחתי</h2>
                 </div>
-                <div style={{ width: '36px' }}></div>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
 
               <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
@@ -2014,7 +1982,7 @@ export default function App() {
             <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '22px', boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>{viewerItem.title || viewerItem.name}</span>
-                <button onClick={() => setModalType('tickets')} style={modalCloseBtn}>✕</button>
+                <button onClick={() => setModalType(viewerItem.isHotelInfo ? null : 'tickets')} style={modalCloseBtn}>✕</button>
               </div>
 
               {viewerItem.isFlightInfo && (
