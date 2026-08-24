@@ -173,7 +173,7 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State (Continuous Audio Session Reset)
+  // Translator & Speech State
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -463,7 +463,7 @@ export default function App() {
     }
   };
 
-  // Reliable Italian Speech Engine with Audio Session Flushing
+  // Reliable Italian Speech Engine
   const speakItalian = (text) => {
     if (!text) return;
     try {
@@ -478,7 +478,6 @@ export default function App() {
         if (itVoice) utterance.voice = itVoice;
 
         utterance.onend = () => {
-          // Release session on iOS
           try { window.speechSynthesis.cancel(); } catch (e) {}
         };
 
@@ -537,9 +536,8 @@ export default function App() {
     }
   };
 
-  // Resettable Speech-to-Text Handler with Active Session Flush
+  // Speech Recognition
   const toggleListening = () => {
-    // 1. If currently speaking TTS, cancel it immediately to free audio hardware on iOS
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -565,7 +563,6 @@ export default function App() {
       return;
     }
 
-    // Clean any prior instance
     if (recognitionInstanceRef.current) {
       try { recognitionInstanceRef.current.abort(); } catch (e) {}
       recognitionInstanceRef.current = null;
@@ -811,47 +808,84 @@ export default function App() {
             <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* CLICKABLE DAILY QUEST / MORNING SURPRISE BUTTON */}
+          {/* CLICKABLE DAILY QUEST / MORNING SURPRISE PREMIUM CARD */}
           <div 
             onClick={() => setModalType('questModal')}
             style={{
-              background: isCurrentDayCompleted ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)' : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+              background: isCurrentDayCompleted 
+                ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)' 
+                : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%)',
               border: `2px solid ${isCurrentDayCompleted ? '#10b981' : '#f59e0b'}`,
-              padding: '14px 18px',
-              borderRadius: '16px',
-              fontSize: '13px',
-              lineHeight: '1.4',
-              color: isCurrentDayCompleted ? '#065f46' : '#92400e',
-              fontWeight: '700',
-              marginBottom: '18px',
-              boxShadow: '0 4px 14px rgba(245, 158, 11, 0.15)',
+              borderRadius: '20px',
+              padding: '16px 18px',
+              marginBottom: '20px',
+              boxShadow: isCurrentDayCompleted 
+                ? '0 4px 14px rgba(16, 185, 129, 0.12)' 
+                : '0 6px 20px rgba(245, 158, 11, 0.2)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: '12px',
-              transition: 'transform 0.15s ease'
+              transition: 'all 0.2s ease',
+              position: 'relative',
+              overflow: 'hidden'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '24px' }}>{isCurrentDayCompleted ? '🏆' : '🎁'}</span>
-              <div>
-                <span style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', color: isCurrentDayCompleted ? '#059669' : '#b45309', fontWeight: '900' }}>
-                  {isCurrentDayCompleted ? 'האתגר בוצע בהצלחה!' : 'הפתעת הבוקר · אתגר היום!'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+              <div style={{
+                width: '46px',
+                height: '46px',
+                borderRadius: '14px',
+                background: isCurrentDayCompleted ? '#10b981' : '#f59e0b',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '22px',
+                flexShrink: 0,
+                boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+              }}>
+                {isCurrentDayCompleted ? '🏆' : '🎁'}
+              </div>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <span style={{
+                  display: 'inline-block',
+                  fontSize: '11px',
+                  fontWeight: '900',
+                  color: isCurrentDayCompleted ? '#059669' : '#b45309',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  marginBottom: '2px'
+                }}>
+                  {isCurrentDayCompleted ? 'אתגר היום הושלם בהצלחה!' : '✨ הפתעת הבוקר והאתגר היומי!'}
                 </span>
-                <b style={{ fontSize: '14px', color: '#0f172a' }}>{day.challenge}</b>
+                <strong style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  color: '#0f172a',
+                  fontWeight: '800',
+                  lineHeight: '1.3',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {day.challenge}
+                </strong>
               </div>
             </div>
+
             <span style={{
               background: isCurrentDayCompleted ? '#059669' : '#0f172a',
               color: '#ffffff',
-              padding: '7px 12px',
-              borderRadius: '10px',
-              fontSize: '11px',
+              padding: '8px 14px',
+              borderRadius: '12px',
+              fontSize: '12px',
               fontWeight: '800',
-              flexShrink: 0
+              flexShrink: 0,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
             }}>
-              {isCurrentDayCompleted ? 'צפה / ערוך / אפס ✏️' : 'בצע משימה 🚀'}
+              {isCurrentDayCompleted ? 'צפה / אפס ✏️' : 'פתח משימה 🚀'}
             </span>
           </div>
 
@@ -944,16 +978,14 @@ export default function App() {
             <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '24px', boxShadow: '0 12px 40px rgba(15, 23, 42, 0.12)', boxSizing: 'border-box', width: '100%' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '18px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#fef3c7', border: '1.5px solid #fcd34d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
-                    🎁
-                  </div>
-                  <div>
-                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>הפתעת הבוקר והאתגר!</h2>
-                    <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>{day.fullLabel}</small>
-                  </div>
-                </div>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+                <div style={{ textAlign: 'center', flex: 1 }}>
+                  <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>הפתעת הבוקר והאתגר!</h2>
+                  <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>{day.fullLabel}</small>
+                </div>
+                <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#fef3c7', border: '1.5px solid #fcd34d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+                  🎁
+                </div>
               </div>
 
               <div style={{ background: '#fffbeb', border: '2px solid #fcd34d', borderRadius: '18px', padding: '18px', marginBottom: '20px', textAlign: 'center' }}>
@@ -962,7 +994,7 @@ export default function App() {
                 <p style={{ margin: 0, fontSize: '13px', color: '#78350f', lineHeight: '1.5', fontWeight: '600' }}>{day.challengeDesc}</p>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>מי ביצע / מתעד?</label>
                   <select 
@@ -1042,7 +1074,7 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Reset Single Challenge Button */}
+                {/* Reset Button (Only appears if already completed) */}
                 {isCurrentDayCompleted && (
                   <button 
                     onClick={() => resetSingleChallenge(activeDay)}
@@ -1050,12 +1082,13 @@ export default function App() {
                       background: '#fef2f2',
                       color: '#dc2626',
                       border: '1.5px solid #fca5a5',
-                      padding: '11px',
+                      padding: '12px',
                       borderRadius: '12px',
                       fontWeight: '800',
-                      fontSize: '12px',
+                      fontSize: '13px',
                       cursor: 'pointer',
-                      marginTop: '6px'
+                      marginTop: '4px',
+                      boxShadow: '0 2px 6px rgba(220, 38, 38, 0.08)'
                     }}
                   >
                     🔄 אפס משימה זו (החזר לטרם בוצע)
@@ -1075,18 +1108,16 @@ export default function App() {
             <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '24px', boxShadow: '0 12px 40px rgba(15, 23, 42, 0.12)', boxSizing: 'border-box', width: '100%' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#fef3c7', border: '1.5px solid #fcd34d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-                    🏆
-                  </div>
-                  <div>
-                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>יומן האתגרים והבדיחות</h2>
-                    <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>
-                      {isAdminUnlocked ? '🔓 מצב מנהל (הכל גלוי)' : '🔒 אתגרים עתידיים מוסתרים לשמירת ההפתעה'}
-                    </small>
-                  </div>
-                </div>
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+                <div style={{ textAlign: 'center', flex: 1 }}>
+                  <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>יומן האתגרים והבדיחות</h2>
+                  <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>
+                    {isAdminUnlocked ? '🔓 מצב מנהל (הכל גלוי)' : '🔒 אתגרים עתידיים מוסתרים לשמירת ההפתעה'}
+                  </small>
+                </div>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#fef3c7', border: '1.5px solid #fcd34d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                  🏆
+                </div>
               </div>
 
               {/* Admin Unlock Bar & Reset All */}
@@ -1143,9 +1174,6 @@ export default function App() {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: '800', color: log?.completed ? '#059669' : '#64748b' }}>
-                          {d.label} · {d.title}
-                        </span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <span style={{ fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '8px', background: log?.completed ? '#10b981' : '#e2e8f0', color: log?.completed ? '#fff' : '#64748b' }}>
                             {log?.completed ? 'בוצע! 🎉' : (isUnlocked ? 'טרם בוצע' : '🔒 שמור בסוד')}
@@ -1160,6 +1188,9 @@ export default function App() {
                             </button>
                           )}
                         </div>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: log?.completed ? '#059669' : '#64748b' }}>
+                          {d.label} · {d.title}
+                        </span>
                       </div>
 
                       {isUnlocked ? (
