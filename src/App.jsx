@@ -507,52 +507,33 @@ export default function App() {
     }
   };
 
-  // Reliable Italian Speech Engine with Mobile AudioContext Resume
-  const speakItalian = async (text) => {
+  // Ultra-Reliable Italian Speech Engine using SpeechSynthesis directly on user tap
+  const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
     setIsPlayingAudio(true);
 
     try {
-      if (!audioContextRef.current) {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx) audioContextRef.current = new AudioCtx();
-      }
-      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-        await audioContextRef.current.resume();
-      }
-
-      const cleanQuery = encodeURIComponent(text.trim());
-      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=it&client=tw-ob&q=${cleanQuery}`;
-      const audio = new Audio(audioUrl);
-
-      audio.onended = () => setIsPlayingAudio(false);
-      audio.onerror = () => {
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = 'it-IT';
-          utterance.rate = 0.85;
-          utterance.onend = () => setIsPlayingAudio(false);
-          utterance.onerror = () => setIsPlayingAudio(false);
-          window.speechSynthesis.speak(utterance);
-        } else {
-          setIsPlayingAudio(false);
-        }
-      };
-
-      await audio.play();
-    } catch (e) {
-      console.log('Audio playback error:', e);
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(text.trim());
         utterance.lang = 'it-IT';
+        utterance.rate = 0.85;
+
+        const voices = window.speechSynthesis.getVoices();
+        const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
+        if (itVoice) utterance.voice = itVoice;
+
         utterance.onend = () => setIsPlayingAudio(false);
+        utterance.onerror = () => setIsPlayingAudio(false);
+
         window.speechSynthesis.speak(utterance);
       } else {
         setIsPlayingAudio(false);
       }
+    } catch (e) {
+      console.log('Speech synthesis error:', e);
+      setIsPlayingAudio(false);
     }
   };
 
@@ -624,11 +605,11 @@ export default function App() {
   });
 
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px', overflowX: 'hidden' }}>
+    <div style={{ background: '#ffffff', minHeight: '100vh', width: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box' }}>
       
       {/* Offline Alert Top Bar */}
       {!isOnline && (
-        <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '7px 12px', fontSize: '11px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, boxShadow: '0 2px 6px rgba(220, 38, 38, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+        <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '7px 12px', fontSize: '11px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, width: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
           מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, האתגרים והשיחון זמינים כרגיל!
         </div>
@@ -645,6 +626,8 @@ export default function App() {
         position: 'sticky',
         top: !isOnline ? '30px' : 0,
         zIndex: 900,
+        width: '100%',
+        boxSizing: 'border-box',
         boxShadow: '0 1px 4px rgba(15, 23, 42, 0.03)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -717,11 +700,11 @@ export default function App() {
         </button>
       </header>
 
-      {/* Sidebar Drawer with Swipe-to-Close */}
+      {/* Sidebar Drawer with Slow Swipe-to-Close */}
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.25)', zIndex: 2500 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.25)', zIndex: 2500, width: '100vw', height: '100vh' }}
         />
       )}
       <aside 
@@ -729,9 +712,9 @@ export default function App() {
         onTouchMove={handleTouchMove}
         onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
         style={{
-          position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px',
+          position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px', maxWidth: '80vw',
           background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
-          transition: 'right 0.3s ease', padding: '32px 24px',
+          transition: 'right 0.4s ease', padding: '32px 24px',
           display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #e2e8f0', boxSizing: 'border-box'
         }}
       >
@@ -750,10 +733,10 @@ export default function App() {
       </aside>
 
       {/* Main Container */}
-      <main style={{ padding: '16px', maxWidth: '600px', margin: 'auto' }}>
+      <main style={{ padding: '16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
         {/* Day Selector Tabs */}
-        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '16px', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '16px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
           {tripDays.map((d, i) => (
             <button
               key={i}
@@ -777,7 +760,7 @@ export default function App() {
         </div>
 
         {/* Selected Day Content */}
-        <section style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 2px 10px rgba(15, 23, 42, 0.03)' }}>
+        <section style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxShadow: '0 2px 10px rgba(15, 23, 42, 0.03)', boxSizing: 'border-box', width: '100%' }}>
           <div style={{ borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
             <span style={{ fontSize: '12px', fontWeight: '700', color: '#2563eb' }}>{day.fullLabel}</span>
             <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>{day.icon} {day.title}</h2>
@@ -797,7 +780,8 @@ export default function App() {
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: '12px',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              width: '100%'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
@@ -830,7 +814,7 @@ export default function App() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {day.stops.map((stop, idx) => (
-              <div key={idx} style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '16px', padding: '16px' }}>
+              <div key={idx} style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '16px', padding: '16px', boxSizing: 'border-box', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <span style={{ fontSize: '11px', fontWeight: '800', color: '#0f172a', background: '#f8fafc', padding: '4px 8px', borderRadius: '8px', border: '1.5px solid #e2e8f0' }}>{stop.time}</span>
                   <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#0f172a' }}>{stop.name}</h3>
@@ -838,7 +822,7 @@ export default function App() {
                 <p style={{ fontSize: '13px', color: '#475569', margin: '4px 0 14px', lineHeight: '1.45' }}>{stop.note}</p>
 
                 {stop.food && (
-                  <div style={{ fontSize: '12px', background: '#fffbeb', color: '#92400e', padding: '12px 14px', borderRadius: '12px', marginBottom: '14px', border: '1.5px solid #fcd34d', display: 'flex', flexDirection: 'column', gap: '8px', fontWeight: '600' }}>
+                  <div style={{ fontSize: '12px', background: '#fffbeb', color: '#92400e', padding: '12px 14px', borderRadius: '12px', marginBottom: '14px', border: '1.5px solid #fcd34d', display: 'flex', flexDirection: 'column', gap: '8px', fontWeight: '600', boxSizing: 'border-box' }}>
                     <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
@@ -870,7 +854,7 @@ export default function App() {
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                       padding: '8px 12px', borderRadius: '10px', background: '#eff6ff', color: '#1d4ed8',
-                      border: '1.5px solid #bfdbfe', fontSize: '12px', fontWeight: '700', textDecoration: 'none'
+                      border: '1.5px solid #bfdbfe', fontSize: '12px', fontWeight: '700', textDecoration: 'none', boxSizing: 'border-box'
                     }}
                   >
                     🚗 שמור/מצא רכב חונה (Apple Maps)
@@ -890,7 +874,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* MODAL: Interactive Daily Quest with Swipe-to-Close */}
+      {/* MODAL: Interactive Daily Quest with Slow Swipe-to-Close */}
       {modalType === 'questModal' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -899,7 +883,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '18px' }}>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={modalCloseBtn}>✕</button>
@@ -912,7 +896,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: '18px', padding: '18px', marginBottom: '20px', textAlign: 'center' }}>
+              <div style={{ background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: '18px', padding: '18px', marginBottom: '20px', textAlign: 'center', boxSizing: 'border-box' }}>
                 <span style={{ fontSize: '32px', display: 'block', marginBottom: '6px' }}>🎯</span>
                 <h3 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: '900', color: '#92400e' }}>{day.challenge}</h3>
                 <p style={{ margin: 0, fontSize: '13px', color: '#78350f', lineHeight: '1.5', fontWeight: '600' }}>{day.challengeDesc}</p>
@@ -924,7 +908,7 @@ export default function App() {
                   <select 
                     value={challengeAuthor} 
                     onChange={(e) => setChallengeAuthor(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #cbd5e1', background: '#f8fafc', fontWeight: '700' }}
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #cbd5e1', background: '#f8fafc', fontWeight: '700', boxSizing: 'border-box' }}
                   >
                     <option value="אריק">אריק</option>
                     <option value="עמית">עמית</option>
@@ -984,7 +968,7 @@ export default function App() {
                 {isCurrentDayCompleted && (
                   <button 
                     onClick={() => handleGlobalClick(() => resetSingleChallenge(activeDay))}
-                    style={{ background: '#fef2f2', color: '#dc2626', border: '1.5px solid #fca5a5', padding: '12px', borderRadius: '12px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}
+                    style={{ background: '#fef2f2', color: '#dc2626', border: '1.5px solid #fca5a5', padding: '12px', borderRadius: '12px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', marginTop: '4px', width: '100%', boxSizing: 'border-box' }}
                   >
                     🔄 אפס משימה זו (החזר לטרם בוצע)
                   </button>
@@ -996,7 +980,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Challenges & Jokes Log with Swipe-to-Close */}
+      {/* MODAL: Challenges & Jokes Log with Slow Swipe-to-Close */}
       {modalType === 'challengesLog' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1005,7 +989,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '14px' }}>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={modalCloseBtn}>✕</button>
@@ -1054,7 +1038,7 @@ export default function App() {
                       style={{
                         background: log?.completed ? '#ecfdf5' : '#f8fafc',
                         border: `1.5px solid ${log?.completed ? '#86efac' : '#cbd5e1'}`,
-                        borderRadius: '16px', padding: '16px'
+                        borderRadius: '16px', padding: '16px', boxSizing: 'border-box', width: '100%'
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -1081,7 +1065,7 @@ export default function App() {
                         <>
                           <b style={{ fontSize: '14px', color: '#0f172a', display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
                           {log?.completed && (
-                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1.5px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
+                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1.5px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4', boxSizing: 'border-box' }}>
                               <b>💬 תיעוד ובדיחה:</b> "{log.text}"
                               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
                                 נכתב על ידי: {log.author} · שעה: {log.time}
@@ -1104,7 +1088,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook with Swipe-to-Close */}
+      {/* MODAL: Italian Phrasebook with Slow Swipe-to-Close */}
       {modalType === 'phrasebook' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1113,7 +1097,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl', transition: 'transform 0.4s ease' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={modalCloseBtn}>✕</button>
@@ -1128,7 +1112,7 @@ export default function App() {
 
               <div style={{
                 background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                borderRadius: '20px', padding: '16px 14px', color: '#ffffff', marginBottom: '20px', boxSizing: 'border-box'
+                borderRadius: '20px', padding: '16px 14px', color: '#ffffff', marginBottom: '20px', boxSizing: 'border-box', width: '100%'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>תרגום מהיר בעברית 🇮🇱 ➔ 🇮🇹</span>
@@ -1142,7 +1126,7 @@ export default function App() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px', boxSizing: 'border-box', width: '100%' }}>
                   <input 
                     id="hebrewInputBox"
                     type="text"
@@ -1178,7 +1162,7 @@ export default function App() {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '6px', scrollbarWidth: 'none' }}>
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '6px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
                   <button onClick={() => handleGlobalClick(() => translateText('איפה השירותים?'))} style={quickChipStyle}>🚻 איפה השירותים?</button>
                   <button onClick={() => handleGlobalClick(() => translateText('חשבון בבקשה'))} style={quickChipStyle}>🧾 חשבון בבקשה</button>
                   <button onClick={() => handleGlobalClick(() => translateText('כמה זה עולה?'))} style={quickChipStyle}>💶 כמה זה עולה?</button>
@@ -1189,7 +1173,7 @@ export default function App() {
                 {italianOutput && (
                   <div style={{
                     background: 'rgba(255, 255, 255, 0.96)', borderRadius: '14px', padding: '12px 14px',
-                    color: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '8px'
+                    color: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '8px', boxSizing: 'border-box', width: '100%'
                   }}>
                     <button 
                       onClick={() => speakItalian(italianOutput)}
@@ -1212,11 +1196,11 @@ export default function App() {
               </div>
 
               {translationHistory.length > 0 && (
-                <div style={{ marginBottom: '18px' }}>
+                <div style={{ marginBottom: '18px', width: '100%', boxSizing: 'border-box' }}>
                   <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', display: 'block', marginBottom: '6px' }}>שאלות אחרונות שתרגמת:</span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', boxSizing: 'border-box' }}>
                     {translationHistory.map(item => (
-                      <div key={item.id} style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '10px', border: '1.5px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                      <div key={item.id} style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '10px', border: '1.5px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', boxSizing: 'border-box', width: '100%' }}>
                         <button onClick={() => speakItalian(item.it)} style={{ background: '#ecfdf5', border: '1.5px solid #86efac', borderRadius: '8px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }} title="השמע שוב">
                           🔊
                         </button>
@@ -1230,13 +1214,13 @@ export default function App() {
                 </div>
               )}
 
-              <div style={{ borderTop: '1.5px solid #f1f5f9', paddingTop: '14px', marginBottom: '12px' }}>
+              <div style={{ borderTop: '1.5px solid #f1f5f9', paddingTop: '14px', marginBottom: '12px', width: '100%', boxSizing: 'border-box' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0f172a' }}>📚 מאגר משפטים מהיר</h3>
                   <small style={{ color: '#64748b', fontWeight: '700', fontSize: '11px' }}>{filteredPhrases.length} תוצאות</small>
                 </div>
 
-                <div style={{ position: 'relative', marginBottom: '10px' }}>
+                <div style={{ position: 'relative', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}>
                   <input 
                     type="text"
                     placeholder="🔍 חיפוש בעברית (חשבון, גלידה, מים...)"
@@ -1253,7 +1237,7 @@ export default function App() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '6px', scrollbarWidth: 'none' }}>
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '6px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
                   {categories.map((cat, i) => (
                     <button
                       key={i}
@@ -1271,7 +1255,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
                 {filteredPhrases.length === 0 ? (
                   <div style={{ textAlign: 'center', color: '#94a3b8', padding: '20px', fontSize: '12px', fontWeight: '600' }}>
                     לא נמצאו משפטים התואמים לחיפוש "{phraseSearch}".
@@ -1284,7 +1268,7 @@ export default function App() {
                       style={{
                         background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '12px',
                         padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        gap: '10px', cursor: 'pointer', boxSizing: 'border-box'
+                        gap: '10px', cursor: 'pointer', boxSizing: 'border-box', width: '100%'
                       }}
                     >
                       <button 
@@ -1319,7 +1303,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
                 <div>
@@ -1339,13 +1323,13 @@ export default function App() {
               </div>
 
               {showGalleryUpload && (
-                <div style={{ background: '#fdf4ff', padding: '16px', borderRadius: '14px', border: '1.5px solid #f0abfc', marginBottom: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ background: '#fdf4ff', padding: '16px', borderRadius: '14px', border: '1.5px solid #f0abfc', marginBottom: '18px', display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box', width: '100%' }}>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#86198f', display: 'block', marginBottom: '4px' }}>שייך ליום במסלול:</label>
                     <select 
                       value={galleryDayFilter === 'all' ? activeDay : galleryDayFilter} 
                       onChange={(e) => setGalleryDayFilter(e.target.value)}
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600', boxSizing: 'border-box' }}
                     >
                       {tripDays.map((d, i) => (
                         <option key={i} value={i}>{d.label} - {d.title}</option>
@@ -1358,7 +1342,7 @@ export default function App() {
                     <select 
                       value={galleryAuthor} 
                       onChange={(e) => setGalleryAuthor(e.target.value)}
-                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #f0abfc', background: '#fff', fontWeight: '600', boxSizing: 'border-box' }}
                     >
                       <option value="אריק">אריק</option>
                       <option value="עמית">עמית</option>
@@ -1390,7 +1374,7 @@ export default function App() {
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '14px', scrollbarWidth: 'none' }}>
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '14px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
                 <button
                   onClick={() => handleGlobalClick(() => setGalleryDayFilter('all'))}
                   style={{
@@ -1417,11 +1401,11 @@ export default function App() {
               </div>
 
               {filteredGallery.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '36px 16px', fontSize: '13px', fontWeight: '500', background: '#f8fafc', borderRadius: '14px', border: '1.5px dashed #cbd5e1' }}>
+                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '36px 16px', fontSize: '13px', fontWeight: '500', background: '#f8fafc', borderRadius: '14px', border: '1.5px dashed #cbd5e1', boxSizing: 'border-box', width: '100%' }}>
                   📸 אין עדיין תמונות או סרטונים ביום זה.<br/>לחצו על <b>"הוסף תמונה / סרטון"</b> כדי להעלות את התמונה הראשונה!
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', width: '100%', boxSizing: 'border-box' }}>
                   {filteredGallery.map((item) => {
                     const isVideo = (item.type || '').startsWith('video/');
                     const mediaUrl = item.blob ? URL.createObjectURL(item.blob) : '';
@@ -1431,7 +1415,7 @@ export default function App() {
                         onClick={() => handleGlobalClick(() => setLightboxItem(item))}
                         style={{
                           background: '#ffffff', borderRadius: '12px', border: '1.5px solid #e2e8f0',
-                          overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column', position: 'relative'
+                          overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column', position: 'relative', boxSizing: 'border-box'
                         }}
                       >
                         <div style={{ width: '100%', height: '120px', background: '#0f172a', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1473,9 +1457,9 @@ export default function App() {
       {lightboxItem && (
         <div 
           onClick={() => handleGlobalClick(() => setLightboxItem(null))}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.92)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.92)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', boxSizing: 'border-box', width: '100vw', height: '100vh' }}
         >
-          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px', width: '100%', background: '#ffffff', borderRadius: '16px', overflow: 'hidden' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px', width: '100%', background: '#ffffff', borderRadius: '16px', overflow: 'hidden', boxSizing: 'border-box' }}>
             <div style={{ position: 'relative', background: '#000', maxHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {(lightboxItem.type || '').startsWith('video/') ? (
                 <video src={URL.createObjectURL(lightboxItem.blob)} controls autoPlay style={{ width: '100%', maxHeight: '65vh' }} />
@@ -1503,7 +1487,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#2563eb' }}>🚗 איך שומרים את הרכב ב-Apple Maps</h3>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={modalCloseBtn}>✕</button>
@@ -1528,7 +1512,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>📍 סביבי (Around Me)</h3>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={modalCloseBtn}>✕</button>
@@ -1554,7 +1538,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#dc2626' }}>🆘 מספרי חירום באיטליה</h3>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={modalCloseBtn}>✕</button>
@@ -1580,7 +1564,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '16px' }}>
                 <div>
@@ -1600,10 +1584,10 @@ export default function App() {
               </div>
 
               {showUploadBox && (
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1.5px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1.5px solid #cbd5e1', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box', width: '100%' }}>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
-                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff' }}>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }}>
                       {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
                     </select>
                   </div>
@@ -1621,7 +1605,7 @@ export default function App() {
               )}
 
               <h3 style={{ fontSize: '14px', margin: '8px 0 10px', fontWeight: '800', color: '#334155' }}>תקיות הטיול</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '8px', marginBottom: '18px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '8px', marginBottom: '18px', width: '100%', boxSizing: 'border-box' }}>
                 {folders.map((f, i) => (
                   <div 
                     key={i} 
@@ -1631,7 +1615,7 @@ export default function App() {
                       background: activeFolder === f ? '#0f172a' : '#f8fafc',
                       color: activeFolder === f ? '#ffffff' : '#334155',
                       border: activeFolder === f ? '1.5px solid #0f172a' : '1.5px solid #cbd5e1',
-                      cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                      cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box'
                     }}
                   >
                     <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px' }}>{f}</strong>
@@ -1644,7 +1628,7 @@ export default function App() {
                 תכולת תיקייה: {activeFolder}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
                 {ticketFiles.length === 0 ? (
                   <div style={{ textAlign: 'center', color: '#94a3b8', padding: '24px', fontSize: '13px', fontWeight: '500' }}>אין עדיין כרטיסים בתקייה זו.</div>
                 ) : (
@@ -1690,7 +1674,7 @@ export default function App() {
           style={modalStyle}
         >
           <div style={modalContentStyle}>
-            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box' }}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', transition: 'transform 0.4s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '12px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>{viewerItem.title || viewerItem.name}</span>
                 <button onClick={() => handleGlobalClick(() => setModalType(viewerItem.isHotelInfo ? null : 'tickets'))} style={modalCloseBtn}>✕</button>
@@ -1770,49 +1754,49 @@ export default function App() {
 const sidebarBtnStyle = {
   background: '#f8fafc', border: '1.5px solid #cbd5e1', padding: '12px 14px',
   borderRadius: '12px', fontWeight: '700', fontSize: '13px', textAlign: 'right',
-  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', color: '#334155'
+  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', color: '#334155', boxSizing: 'border-box', width: '100%'
 };
 
 const navBtnStyle = {
   fontSize: '12px', fontWeight: '700', color: '#334155', background: '#f8fafc',
   padding: '9px', borderRadius: '10px', display: 'flex', alignItems: 'center',
-  justifyContent: 'center', gap: '6px', cursor: 'pointer', border: '1.5px solid #cbd5e1', textDecoration: 'none'
+  justifyContent: 'center', gap: '6px', cursor: 'pointer', border: '1.5px solid #cbd5e1', textDecoration: 'none', boxSizing: 'border-box'
 };
 
 const modalStyle = {
   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
   width: '100vw', height: '100vh', background: '#ffffff',
   zIndex: 2000, overflowY: 'auto', overflowX: 'hidden',
-  WebkitOverflowScrolling: 'touch', direction: 'rtl'
+  WebkitOverflowScrolling: 'touch', direction: 'rtl', boxSizing: 'border-box'
 };
 
 const modalContentStyle = {
   width: '100%', maxWidth: '600px', margin: '0 auto',
   padding: '16px 16px 40px', boxSizing: 'border-box',
-  minHeight: '100vh', background: '#ffffff'
+  minHeight: '100vh', background: '#ffffff', overflowX: 'hidden'
 };
 
 const modalCloseBtn = {
   border: '1.5px solid #94a3b8', background: '#ffffff', width: '36px', height: '36px',
   borderRadius: '50%', fontWeight: '900', fontSize: '15px', cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0f172a', lineHeight: 1
+  display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0f172a', lineHeight: 1, flexShrink: 0
 };
 
 const gridModalBtn = {
   padding: '14px', borderRadius: '12px', background: '#ffffff', border: '1.5px solid #cbd5e1',
   fontWeight: '700', fontSize: '13px', textAlign: 'center', cursor: 'pointer',
-  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', color: '#334155'
+  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', color: '#334155', boxSizing: 'border-box', width: '100%'
 };
 
 const uploadBtnStyle = {
   width: '100%', padding: '11px', borderRadius: '10px', background: '#ffffff',
-  color: '#334155', border: '1.5px solid #cbd5e1', fontWeight: '700', cursor: 'pointer', fontSize: '12px'
+  color: '#334155', border: '1.5px solid #cbd5e1', fontWeight: '700', cursor: 'pointer', fontSize: '12px', boxSizing: 'border-box'
 };
 
 const galleryActionBtn = {
   padding: '10px 6px', borderRadius: '10px', background: '#ffffff', border: '1.5px solid #f0abfc',
   color: '#86198f', fontWeight: '700', fontSize: '11px', cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'
+  display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box'
 };
 
 const quickChipStyle = {
