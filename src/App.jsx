@@ -173,7 +173,7 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State
+  // Translator & Speech State (Continuous Zero-Lock Multi-Record)
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -463,12 +463,12 @@ export default function App() {
     }
   };
 
-  // Reliable Italian Speech Engine
+  // Safe Italian Speech Engine with Automatic Session Flush
   const speakItalian = (text) => {
     if (!text) return;
     try {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // Stop any pending speech
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'it-IT';
         utterance.rate = 0.85;
@@ -478,6 +478,9 @@ export default function App() {
         if (itVoice) utterance.voice = itVoice;
 
         utterance.onend = () => {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        };
+        utterance.onerror = () => {
           try { window.speechSynthesis.cancel(); } catch (e) {}
         };
 
@@ -536,19 +539,19 @@ export default function App() {
     }
   };
 
-  // Speech Recognition
+  // Robust Multi-Record Handler with Force-Cleanup
   const toggleListening = () => {
+    // 1. Force kill any speech synthesis that locks the mic on iOS
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      try { window.speechSynthesis.cancel(); } catch (e) {}
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    // 2. If already recording, stop cleanly
     if (isListening) {
       if (recognitionInstanceRef.current) {
-        try {
-          recognitionInstanceRef.current.abort();
-        } catch (e) {}
+        try { recognitionInstanceRef.current.abort(); } catch (e) {}
         recognitionInstanceRef.current = null;
       }
       setIsListening(false);
@@ -563,63 +566,67 @@ export default function App() {
       return;
     }
 
+    // 3. Destroy previous instance
     if (recognitionInstanceRef.current) {
       try { recognitionInstanceRef.current.abort(); } catch (e) {}
       recognitionInstanceRef.current = null;
     }
 
-    try {
-      setItalianOutput('');
-      setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
+    // 4. Start fresh instance with short 50ms delay to let iOS release audio channel
+    setTimeout(() => {
+      try {
+        setItalianOutput('');
+        setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
 
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'he-IL';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'he-IL';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => {
-        setIsListening(true);
-        setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך');
-      };
+        recognition.onstart = () => {
+          setIsListening(true);
+          setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך בעברית');
+        };
 
-      recognition.onresult = (event) => {
-        if (event.results && event.results[0] && event.results[0][0]) {
-          const transcript = event.results[0][0].transcript;
-          if (transcript) {
-            setHebrewInput(transcript);
-            setVoiceStatusText('✅ זוהה! מתרגם...');
-            translateText(transcript);
+        recognition.onresult = (event) => {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const transcript = event.results[0][0].transcript;
+            if (transcript) {
+              setHebrewInput(transcript);
+              setVoiceStatusText('✅ זוהה! מתרגם...');
+              translateText(transcript);
+            }
           }
-        }
-      };
+        };
 
-      recognition.onerror = (e) => {
-        console.warn('Speech Error:', e.error);
+        recognition.onerror = (e) => {
+          console.warn('Speech Error:', e.error);
+          setIsListening(false);
+          recognitionInstanceRef.current = null;
+          if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+            setVoiceStatusText('⚠️ אפשר גישה למיקרופון בהגדרות הדפדפן, או השתמש במקלדת');
+          } else if (e.error === 'no-speech') {
+            setVoiceStatusText('לא נקלט קול. לחץ שוב על המיקרופון.');
+          } else {
+            setVoiceStatusText('💡 ניתן ללחוץ שוב או להשתמש במיקרופון המקלדת');
+          }
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+          recognitionInstanceRef.current = null;
+        };
+
+        recognitionInstanceRef.current = recognition;
+        recognition.start();
+      } catch (err) {
+        console.error(err);
         setIsListening(false);
         recognitionInstanceRef.current = null;
-        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-          setVoiceStatusText('⚠️ אפשר גישה למיקרופון או השתמש במיקרופון המקלדת');
-        } else if (e.error === 'no-speech') {
-          setVoiceStatusText('לא נקלט קול. לחץ שוב.');
-        } else {
-          setVoiceStatusText('💡 השתמש במיקרופון שבמקלדת הטלפון');
-        }
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-        recognitionInstanceRef.current = null;
-      };
-
-      recognitionInstanceRef.current = recognition;
-      recognition.start();
-    } catch (err) {
-      console.error(err);
-      setIsListening(false);
-      recognitionInstanceRef.current = null;
-      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת המכשיר');
-    }
+        setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת');
+      }
+    }, 60);
   };
 
   const day = tripDays[activeDay];
