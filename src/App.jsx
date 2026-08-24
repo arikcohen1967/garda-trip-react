@@ -173,7 +173,7 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State (Continuous Zero-Lock Multi-Record)
+  // Translator & Speech State (Real-Time Live Streaming Transcription)
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -468,7 +468,7 @@ export default function App() {
     if (!text) return;
     try {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Stop any pending speech
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'it-IT';
         utterance.rate = 0.85;
@@ -539,16 +539,14 @@ export default function App() {
     }
   };
 
-  // Robust Multi-Record Handler with Force-Cleanup
+  // Real-Time Live Speech Recognition (Words appear live while speaking)
   const toggleListening = () => {
-    // 1. Force kill any speech synthesis that locks the mic on iOS
     if ('speechSynthesis' in window) {
       try { window.speechSynthesis.cancel(); } catch (e) {}
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    // 2. If already recording, stop cleanly
     if (isListening) {
       if (recognitionInstanceRef.current) {
         try { recognitionInstanceRef.current.abort(); } catch (e) {}
@@ -566,37 +564,47 @@ export default function App() {
       return;
     }
 
-    // 3. Destroy previous instance
     if (recognitionInstanceRef.current) {
       try { recognitionInstanceRef.current.abort(); } catch (e) {}
       recognitionInstanceRef.current = null;
     }
 
-    // 4. Start fresh instance with short 50ms delay to let iOS release audio channel
     setTimeout(() => {
       try {
         setItalianOutput('');
-        setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
+        setVoiceStatusText('🎙️ מקשיב... דבר כעת בעברית');
 
         const recognition = new SpeechRecognition();
         recognition.lang = 'he-IL';
         recognition.continuous = false;
-        recognition.interimResults = false;
+        recognition.interimResults = true; // Enables live streaming words as you speak!
         recognition.maxAlternatives = 1;
+
+        let finalTranscript = '';
 
         recognition.onstart = () => {
           setIsListening(true);
-          setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך בעברית');
+          setVoiceStatusText('🔴 מקליט... המילים נכתבות בזמן אמת');
         };
 
         recognition.onresult = (event) => {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const transcript = event.results[0][0].transcript;
-            if (transcript) {
-              setHebrewInput(transcript);
-              setVoiceStatusText('✅ זוהה! מתרגם...');
-              translateText(transcript);
+          let interimTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            } else {
+              interimTranscript += event.results[i][0].transcript;
             }
+          }
+
+          const currentLiveText = finalTranscript || interimTranscript;
+          if (currentLiveText) {
+            setHebrewInput(currentLiveText);
+          }
+
+          if (finalTranscript) {
+            setVoiceStatusText('✅ זוהה! מתרגם...');
+            translateText(finalTranscript);
           }
         };
 
@@ -1267,13 +1275,13 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Input Row */}
+                {/* Input Row with Live Speech Streaming */}
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px' }}>
                   <input 
                     id="hebrewInputBox"
                     type="text"
                     inputMode="text"
-                    placeholder="הקלד כאן בעברית..."
+                    placeholder="הקלד או דבר והמילים יופיעו כאן..."
                     value={hebrewInput}
                     onChange={(e) => setHebrewInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
