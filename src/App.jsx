@@ -173,7 +173,7 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State (Multi-Sentence Clean Audio)
+  // Translator & Speech State
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -401,6 +401,24 @@ export default function App() {
     setModalType(null);
   };
 
+  // Reset single challenge
+  const resetSingleChallenge = (dayIdx) => {
+    if (!window.confirm(`לאפס את האתגר של ${tripDays[dayIdx]?.label} ולהחזיר למצב לא מבוצע?`)) return;
+    const updated = { ...completedChallenges };
+    delete updated[String(dayIdx)];
+    setCompletedChallenges(updated);
+    localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
+    if (modalType === 'questModal') setModalType(null);
+  };
+
+  // Reset all challenges (Admin function)
+  const resetAllChallenges = () => {
+    if (!window.confirm('האם אתה בטוח שברצונך לאפס את כל המשימות והאתגרים של כל הימים?')) return;
+    setCompletedChallenges({});
+    localStorage.removeItem('garda-challenges-log');
+    alert('כל האתגרים אופסו בהצלחה למצב התחלתי!');
+  };
+
   const unlockAdminChallenges = () => {
     if (isAdminUnlocked) {
       setIsAdminUnlocked(false);
@@ -479,6 +497,7 @@ export default function App() {
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
+      speakItalian(italianText);
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
     };
@@ -516,7 +535,7 @@ export default function App() {
     }
   };
 
-  // Multi-Record Speech Recognition (Fixes Single-Use Lockout)
+  // Multi-Record Speech Recognition
   const toggleListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -540,7 +559,6 @@ export default function App() {
     }
 
     try {
-      // Abort any hanging instance
       if (recognitionInstanceRef.current) {
         try { recognitionInstanceRef.current.abort(); } catch (e) {}
         recognitionInstanceRef.current = null;
@@ -825,7 +843,7 @@ export default function App() {
               fontWeight: '800',
               flexShrink: 0
             }}>
-              {isCurrentDayCompleted ? 'צפה / ערוך ✏️' : 'בצע משימה 🚀'}
+              {isCurrentDayCompleted ? 'צפה / ערוך / אפס ✏️' : 'בצע משימה 🚀'}
             </span>
           </div>
 
@@ -1015,6 +1033,26 @@ export default function App() {
                     ✅ סמן כהושלם
                   </button>
                 </div>
+
+                {/* Reset Single Challenge Button */}
+                {isCurrentDayCompleted && (
+                  <button 
+                    onClick={() => resetSingleChallenge(activeDay)}
+                    style={{
+                      background: '#fef2f2',
+                      color: '#dc2626',
+                      border: '1.5px solid #fca5a5',
+                      padding: '11px',
+                      borderRadius: '12px',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      marginTop: '6px'
+                    }}
+                  >
+                    🔄 אפס משימה זו (החזר לטרם בוצע)
+                  </button>
+                )}
               </div>
 
             </div>
@@ -1043,8 +1081,25 @@ export default function App() {
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
 
-              {/* Admin Unlock Bar */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+              {/* Admin Unlock Bar & Reset All */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '8px' }}>
+                {isAdminUnlocked && (
+                  <button 
+                    onClick={resetAllChallenges}
+                    style={{
+                      background: '#fef2f2',
+                      color: '#dc2626',
+                      border: '1.5px solid #fca5a5',
+                      padding: '6px 12px',
+                      borderRadius: '10px',
+                      fontSize: '11px',
+                      fontWeight: '800',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔄 אפס את כל האתגרים
+                  </button>
+                )}
                 <button 
                   onClick={unlockAdminChallenges} 
                   style={{
@@ -1055,7 +1110,8 @@ export default function App() {
                     borderRadius: '10px',
                     fontSize: '11px',
                     fontWeight: '800',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    marginLeft: 'auto'
                   }}
                 >
                   {isAdminUnlocked ? '🔒 נעל צפייה סודית' : '🔑 פתח הרשאת מנהל (אריק)'}
@@ -1082,9 +1138,20 @@ export default function App() {
                         <span style={{ fontSize: '12px', fontWeight: '800', color: log?.completed ? '#059669' : '#64748b' }}>
                           {d.label} · {d.title}
                         </span>
-                        <span style={{ fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '8px', background: log?.completed ? '#10b981' : '#e2e8f0', color: log?.completed ? '#fff' : '#64748b' }}>
-                          {log?.completed ? 'בוצע! 🎉' : (isUnlocked ? 'טרם בוצע' : '🔒 שמור בסוד')}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '8px', background: log?.completed ? '#10b981' : '#e2e8f0', color: log?.completed ? '#fff' : '#64748b' }}>
+                            {log?.completed ? 'בוצע! 🎉' : (isUnlocked ? 'טרם בוצע' : '🔒 שמור בסוד')}
+                          </span>
+                          {log?.completed && (
+                            <button 
+                              onClick={() => resetSingleChallenge(idx)}
+                              style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', borderRadius: '8px', padding: '3px 6px', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}
+                              title="איפוס אתגר זה"
+                            >
+                              איפוס ✕
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       {isUnlocked ? (
