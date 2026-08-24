@@ -114,7 +114,7 @@ const tripDays = [
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "VeronaVillafranca Airport", note: "התארגנות וטיסה חזרה הביתה." }
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "Verona Villafranca Airport", note: "התארגנות וטיסה חזרה הביתה." }
     ]
   }
 ];
@@ -176,13 +176,11 @@ export default function App() {
   // Translator & Speech State
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
-  const [isListening, setIsListening] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
-  const [voiceStatusText, setVoiceStatusText] = useState('');
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
-  const recognitionInstanceRef = useRef(null);
   const audioPlayerRef = useRef(null);
 
   useEffect(() => {
@@ -464,16 +462,15 @@ export default function App() {
     }
   };
 
-  // Safe Italian Speech Engine
+  // 100% Reliable Dual Audio Playback (Native Audio Stream + Fallback TTS)
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
+    setIsPlayingAudio(true);
+
     try {
       if (audioPlayerRef.current) {
         audioPlayerRef.current.pause();
         audioPlayerRef.current = null;
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
       }
 
       const cleanQuery = encodeURIComponent(text.trim());
@@ -481,15 +478,43 @@ export default function App() {
       const audio = new Audio(audioUrl);
       audioPlayerRef.current = audio;
 
-      audio.play().catch(() => {
+      audio.onended = () => {
+        setIsPlayingAudio(false);
+      };
+
+      audio.onerror = () => {
         if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.lang = 'it-IT';
+          utterance.rate = 0.85;
+
+          const voices = window.speechSynthesis.getVoices();
+          const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
+          if (itVoice) utterance.voice = itVoice;
+
+          utterance.onend = () => setIsPlayingAudio(false);
+          utterance.onerror = () => setIsPlayingAudio(false);
           window.speechSynthesis.speak(utterance);
+        } else {
+          setIsPlayingAudio(false);
+        }
+      };
+
+      audio.play().catch(() => {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'it-IT';
+          utterance.onend = () => setIsPlayingAudio(false);
+          window.speechSynthesis.speak(utterance);
+        } else {
+          setIsPlayingAudio(false);
         }
       });
     } catch (e) {
       console.log('Audio error:', e);
+      setIsPlayingAudio(false);
     }
   };
 
@@ -500,7 +525,6 @@ export default function App() {
 
     setIsTranslating(true);
     setHebrewInput(query);
-    setVoiceStatusText('');
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
@@ -539,107 +563,6 @@ export default function App() {
     } catch (e) {
       callback('זמין במצב מקוון');
     }
-  };
-
-  // Real-Time Live Speech Recognition
-  const toggleListening = () => {
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current.pause();
-    }
-    if ('speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (isListening) {
-      if (recognitionInstanceRef.current) {
-        try { recognitionInstanceRef.current.abort(); } catch (e) {}
-        recognitionInstanceRef.current = null;
-      }
-      setIsListening(false);
-      setVoiceStatusText('');
-      return;
-    }
-
-    if (!SpeechRecognition) {
-      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת המכשיר');
-      const inputElem = document.getElementById('hebrewInputBox');
-      if (inputElem) inputElem.focus();
-      return;
-    }
-
-    if (recognitionInstanceRef.current) {
-      try { recognitionInstanceRef.current.abort(); } catch (e) {}
-      recognitionInstanceRef.current = null;
-    }
-
-    setTimeout(() => {
-      try {
-        setItalianOutput('');
-        setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'he-IL';
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.maxAlternatives = 1;
-
-        let finalTranscript = '';
-
-        recognition.onstart = () => {
-          setIsListening(true);
-          setVoiceStatusText('🔴 מקליט... המילים נכתבות בזמן אמת');
-        };
-
-        recognition.onresult = (event) => {
-          let interimTranscript = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript;
-            } else {
-              interimTranscript += event.results[i][0].transcript;
-            }
-          }
-
-          const currentLiveText = finalTranscript || interimTranscript;
-          if (currentLiveText) {
-            setHebrewInput(currentLiveText);
-          }
-
-          if (finalTranscript) {
-            setVoiceStatusText('✅ זוהה! מתרגם...');
-            translateText(finalTranscript);
-          }
-        };
-
-        recognition.onerror = (e) => {
-          console.warn('Speech Error:', e.error);
-          setIsListening(false);
-          recognitionInstanceRef.current = null;
-          if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-            setVoiceStatusText('⚠️ אפשר גישה למיקרופון בהגדרות הדפדפן, או השתמש במקלדת');
-          } else if (e.error === 'no-speech') {
-            setVoiceStatusText('לא נקלט קול. לחץ שוב על המיקרופון.');
-          } else {
-            setVoiceStatusText('💡 ניתן ללחוץ שוב או להשתמש במיקרופון המקלדת');
-          }
-        };
-
-        recognition.onend = () => {
-          setIsListening(false);
-          recognitionInstanceRef.current = null;
-        };
-
-        recognitionInstanceRef.current = recognition;
-        recognition.start();
-      } catch (err) {
-        console.error(err);
-        setIsListening(false);
-        recognitionInstanceRef.current = null;
-        setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת');
-      }
-    }, 60);
   };
 
   const day = tripDays[activeDay];
@@ -1217,7 +1140,7 @@ export default function App() {
                         <>
                           <b style={{ fontSize: '14px', color: '#0f172a', display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
                           {log?.completed && (
-                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1.5px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
+                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
                               <b>💬 תיעוד ובדיחה:</b> "{log.text}"
                               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
                                 נכתב על ידי: {log.author} · שעה: {log.time}
@@ -1272,7 +1195,7 @@ export default function App() {
                   <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8' }}>תרגום חי (דיבור או הקלדה)</span>
                   {(hebrewInput || italianOutput) && (
                     <button 
-                      onClick={() => { setHebrewInput(''); setItalianOutput(''); setVoiceStatusText(''); }}
+                      onClick={() => { setHebrewInput(''); setItalianOutput(''); }}
                       style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#e2e8f0', borderRadius: '8px', padding: '3px 8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
                     >
                       נקה ✕
@@ -1881,7 +1804,7 @@ export default function App() {
                   </div>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#fff', boxSizing: 'border-box' }} />
                   </div>
                   <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                   <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
@@ -2165,7 +2088,7 @@ const galleryActionBtn = {
   padding: '10px 6px',
   borderRadius: '10px',
   background: '#ffffff',
-  border: '1px solid #f0abfc',
+  border: '1.5px solid #f0abfc',
   color: '#86198f',
   fontWeight: '700',
   fontSize: '11px',
