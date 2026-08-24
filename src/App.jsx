@@ -507,7 +507,7 @@ export default function App() {
     }
   };
 
-  // Reliable Italian Speech Engine with AudioContext Resume & Fallback
+  // Reliable Italian Speech Engine with Mobile AudioContext Resume
   const speakItalian = async (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
@@ -624,7 +624,7 @@ export default function App() {
   });
 
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px' }}>
+    <div style={{ background: '#ffffff', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: '#1e293b', direction: 'rtl', paddingBottom: '40px', overflowX: 'hidden' }}>
       
       {/* Offline Alert Top Bar */}
       {!isOnline && (
@@ -732,7 +732,7 @@ export default function App() {
           position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px',
           background: '#ffffff', zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
           transition: 'right 0.3s ease', padding: '32px 24px',
-          display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #e2e8f0'
+          display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: '1.5px solid #e2e8f0', boxSizing: 'border-box'
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '16px', marginBottom: '8px' }}>
@@ -796,7 +796,8 @@ export default function App() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: '12px'
+              gap: '12px',
+              boxSizing: 'border-box'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
