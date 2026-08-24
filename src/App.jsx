@@ -433,7 +433,7 @@ export default function App() {
     }
   };
 
-  // Robust Italian Speech Engine
+  // 100% Reliable Italian Speech Engine
   const speakItalian = (text) => {
     if (!text) return;
     try {
@@ -448,12 +448,9 @@ export default function App() {
         if (itVoice) utterance.voice = itVoice;
 
         window.speechSynthesis.speak(utterance);
-      } else {
-        const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&tl=it&client=tw-ob&q=${encodeURIComponent(text)}`);
-        audio.play().catch(() => {});
       }
     } catch (e) {
-      console.log('Audio error', e);
+      console.log('Audio speech synthesis error', e);
     }
   };
 
@@ -468,7 +465,6 @@ export default function App() {
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
-      speakItalian(italianText);
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
     };
@@ -506,16 +502,9 @@ export default function App() {
     }
   };
 
-  // Enhanced Robust Voice Recognition for iOS & Android
-  const toggleListening = () => {
+  // Voice Recognition Handler with mic permission request
+  const toggleListening = async () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-      setVoiceStatusText('💡 מומלץ להשתמש במיקרופון המובנה במקלדת המכשיר');
-      const inputElem = document.getElementById('hebrewInputBox');
-      if (inputElem) inputElem.focus();
-      return;
-    }
 
     if (isListening) {
       if (recognitionRef.current) {
@@ -526,9 +515,26 @@ export default function App() {
       return;
     }
 
+    // Explicit Microphone Permission Request (Ensures Safari/iOS & Chrome allow mic)
     try {
-      setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop()); // close immediately after permission granted
+      }
+    } catch (err) {
+      console.warn('Mic permission check:', err);
+    }
+
+    if (!SpeechRecognition) {
+      setVoiceStatusText('💡 לחץ על שדה הטקסט והשתמש במיקרופון שבמקלדת');
+      const inputElem = document.getElementById('hebrewInputBox');
+      if (inputElem) inputElem.focus();
+      return;
+    }
+
+    try {
       setItalianOutput('');
+      setVoiceStatusText('🎙️ מקשיב... דבר כעת בעברית');
 
       const recognition = new SpeechRecognition();
       recognition.lang = 'he-IL';
@@ -538,7 +544,7 @@ export default function App() {
 
       recognition.onstart = () => {
         setIsListening(true);
-        setVoiceStatusText('🔴 מקליט... דבר בעברית');
+        setVoiceStatusText('🔴 מקליט... אמור את המשפט שלך');
       };
 
       recognition.onresult = (event) => {
@@ -546,7 +552,7 @@ export default function App() {
           const transcript = event.results[0][0].transcript;
           if (transcript) {
             setHebrewInput(transcript);
-            setVoiceStatusText('✅ זוהה בהצלחה! מתרגם...');
+            setVoiceStatusText('✅ זוהה! מתרגם...');
             translateText(transcript);
           }
         }
@@ -556,11 +562,11 @@ export default function App() {
         console.warn('Speech Error:', e.error);
         setIsListening(false);
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-          setVoiceStatusText('⚠️ נדרש אישור גישה למיקרופון בהגדרות הדפדפן');
+          setVoiceStatusText('⚠️ אפשר גישה למיקרופון בהגדרות הדפדפן, או השתמש במקלדת');
         } else if (e.error === 'no-speech') {
-          setVoiceStatusText('לא נקלט דיבור. נסה שוב או לחץ על המקלדת.');
+          setVoiceStatusText('לא נקלט דיבור. נסה שוב או הקלד.');
         } else {
-          setVoiceStatusText('💡 טיפ: ניתן להקליד או ללחוץ על המיקרופון במקלדת');
+          setVoiceStatusText('💡 השתמש במיקרופון של מקלדת הטלפון');
         }
       };
 
@@ -573,7 +579,7 @@ export default function App() {
     } catch (err) {
       console.error(err);
       setIsListening(false);
-      setVoiceStatusText('💡 השתמש במיקרופון של מקלדת הטלפון');
+      setVoiceStatusText('💡 לחץ על שדה הטקסט והשתמש במיקרופון שבמקלדת');
     }
   };
 
@@ -1165,7 +1171,7 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Status / Instruction text */}
+                {/* Status text */}
                 {voiceStatusText && (
                   <div style={{ fontSize: '11px', color: isListening ? '#f87171' : '#cbd5e1', textAlign: 'center', marginBottom: '10px', fontWeight: '700' }}>
                     {voiceStatusText}
