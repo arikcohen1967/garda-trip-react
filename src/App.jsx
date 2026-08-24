@@ -177,9 +177,9 @@ export default function App() {
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [voiceStatusText, setVoiceStatusText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
-  const [voiceSupported, setVoiceSupported] = useState(true);
   const [translationHistory, setTranslationHistory] = useState([]);
   const recognitionRef = useRef(null);
 
@@ -188,11 +188,6 @@ export default function App() {
     const handleOffline = () => setIsOffline(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) {
-      setVoiceSupported(false);
-    }
 
     try {
       const savedQuests = JSON.parse(localStorage.getItem('garda-challenges-log')) || {};
@@ -366,7 +361,6 @@ export default function App() {
     };
   };
 
-  // Save Challenge from Quest Modal
   const saveDailyChallenge = async (photoFile = null) => {
     const dayKey = String(activeDay);
     const updated = {
@@ -382,7 +376,6 @@ export default function App() {
     setCompletedChallenges(updated);
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
 
-    // If photo was taken in quest modal, save to Gallery too
     if (photoFile) {
       const db = await openDb();
       const tx = db.transaction('gallery', 'readwrite');
@@ -471,6 +464,7 @@ export default function App() {
 
     setIsTranslating(true);
     setHebrewInput(query);
+    setVoiceStatusText('');
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
@@ -512,44 +506,74 @@ export default function App() {
     }
   };
 
-  // Voice Recognition
+  // Enhanced Robust Voice Recognition for iOS & Android
   const toggleListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
     if (!SpeechRecognition) {
-      alert('זיהוי קולי אינו נתמך בדפדפן זה. ניתן להקליד ישירות בתיבה.');
+      setVoiceStatusText('💡 מומלץ להשתמש במיקרופון המובנה במקלדת המכשיר');
+      const inputElem = document.getElementById('hebrewInputBox');
+      if (inputElem) inputElem.focus();
       return;
     }
 
     if (isListening) {
-      if (recognitionRef.current) recognitionRef.current.stop();
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch (e) {}
+      }
       setIsListening(false);
+      setVoiceStatusText('');
       return;
     }
 
     try {
-      setHebrewInput('');
+      setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
       setItalianOutput('');
 
       const recognition = new SpeechRecognition();
       recognition.lang = 'he-IL';
       recognition.continuous = false;
       recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => setIsListening(true);
+      recognition.onstart = () => {
+        setIsListening(true);
+        setVoiceStatusText('🔴 מקליט... דבר בעברית');
+      };
+
       recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setHebrewInput(transcript);
-          translateText(transcript);
+        if (event.results && event.results[0] && event.results[0][0]) {
+          const transcript = event.results[0][0].transcript;
+          if (transcript) {
+            setHebrewInput(transcript);
+            setVoiceStatusText('✅ זוהה בהצלחה! מתרגם...');
+            translateText(transcript);
+          }
         }
       };
-      recognition.onerror = () => setIsListening(false);
-      recognition.onend = () => setIsListening(false);
+
+      recognition.onerror = (e) => {
+        console.warn('Speech Error:', e.error);
+        setIsListening(false);
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+          setVoiceStatusText('⚠️ נדרש אישור גישה למיקרופון בהגדרות הדפדפן');
+        } else if (e.error === 'no-speech') {
+          setVoiceStatusText('לא נקלט דיבור. נסה שוב או לחץ על המקלדת.');
+        } else {
+          setVoiceStatusText('💡 טיפ: ניתן להקליד או ללחוץ על המיקרופון במקלדת');
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
 
       recognitionRef.current = recognition;
       recognition.start();
     } catch (err) {
+      console.error(err);
       setIsListening(false);
+      setVoiceStatusText('💡 השתמש במיקרופון של מקלדת הטלפון');
     }
   };
 
@@ -865,7 +889,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* MODAL: Interactive Daily Quest (אתגר היום והפתעת הבוקר) */}
+      {/* MODAL: Interactive Daily Quest */}
       {modalType === 'questModal' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -884,14 +908,12 @@ export default function App() {
                 <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
               </div>
 
-              {/* Challenge Card */}
               <div style={{ background: '#fffbeb', border: '2px solid #fcd34d', borderRadius: '18px', padding: '18px', marginBottom: '20px', textAlign: 'center' }}>
                 <span style={{ fontSize: '32px', display: 'block', marginBottom: '6px' }}>🎯</span>
                 <h3 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: '900', color: '#92400e' }}>{day.challenge}</h3>
                 <p style={{ margin: 0, fontSize: '13px', color: '#78350f', lineHeight: '1.5', fontWeight: '600' }}>{day.challengeDesc}</p>
               </div>
 
-              {/* Task Actions */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>מי ביצע / מתעד?</label>
@@ -920,7 +942,6 @@ export default function App() {
                   />
                 </div>
 
-                {/* Photo Trigger from Quest */}
                 <input 
                   type="file" 
                   id="questPhotoInput" 
@@ -979,7 +1000,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Challenges & Jokes Log (יומן האתגרים המשפחתי בתפריט ימין) */}
+      {/* MODAL: Challenges & Jokes Log */}
       {modalType === 'challengesLog' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -1039,7 +1060,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook & Smart Live Translator */}
+      {/* MODAL: Italian Phrasebook & Live Translator with Quick Chips */}
       {modalType === 'phrasebook' && (
         <div style={modalStyle}>
           <div style={modalContentStyle}>
@@ -1070,11 +1091,11 @@ export default function App() {
                 position: 'relative',
                 overflow: 'hidden'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8', letterSpacing: '0.04em' }}>תרגום חי (דיבור / הקלדה)</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#38bdf8', letterSpacing: '0.04em' }}>תרגום חי (דיבור או הקלדה)</span>
                   {(hebrewInput || italianOutput) && (
                     <button 
-                      onClick={() => { setHebrewInput(''); setItalianOutput(''); }}
+                      onClick={() => { setHebrewInput(''); setItalianOutput(''); setVoiceStatusText(''); }}
                       style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#e2e8f0', borderRadius: '8px', padding: '3px 8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
                     >
                       נקה ✕
@@ -1082,10 +1103,12 @@ export default function App() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
                   <input 
+                    id="hebrewInputBox"
                     type="text"
-                    placeholder="שאל בעברית (למשל: איפה השירותים?)"
+                    inputMode="text"
+                    placeholder="הקלד כאן (או השתמש במיקרופון)..."
                     value={hebrewInput}
                     onChange={(e) => setHebrewInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') translateText(hebrewInput); }}
@@ -1102,30 +1125,28 @@ export default function App() {
                       boxSizing: 'border-box'
                     }}
                   />
-                  {voiceSupported && (
-                    <button 
-                      onClick={toggleListening}
-                      style={{
-                        background: isListening ? '#ef4444' : '#10b981',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '14px',
-                        width: '46px',
-                        height: '46px',
-                        fontSize: '20px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: isListening ? '0 0 16px #ef4444' : '0 4px 12px rgba(16, 185, 129, 0.35)',
-                        transition: 'all 0.2s ease',
-                        flexShrink: 0
-                      }}
-                      title={isListening ? 'מקליט... לחץ לסיום' : 'לחץ ודבר בעברית'}
-                    >
-                      {isListening ? '⏹️' : '🎙️'}
-                    </button>
-                  )}
+                  <button 
+                    onClick={toggleListening}
+                    style={{
+                      background: isListening ? '#ef4444' : '#10b981',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '14px',
+                      width: '46px',
+                      height: '46px',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: isListening ? '0 0 16px #ef4444' : '0 4px 12px rgba(16, 185, 129, 0.35)',
+                      transition: 'all 0.2s ease',
+                      flexShrink: 0
+                    }}
+                    title={isListening ? 'מקליט... לחץ לסיום' : 'לחץ להקלטה'}
+                  >
+                    {isListening ? '⏹️' : '🎙️'}
+                  </button>
                   <button 
                     onClick={() => translateText(hebrewInput)}
                     style={{
@@ -1144,9 +1165,10 @@ export default function App() {
                   </button>
                 </div>
 
-                {isListening && (
-                  <div style={{ textAlign: 'center', color: '#f87171', fontSize: '12px', fontWeight: '800', marginBottom: '10px' }}>
-                    🔴 מקליט כעת... אמור את המשפט שלך בעברית
+                {/* Status / Instruction text */}
+                {voiceStatusText && (
+                  <div style={{ fontSize: '11px', color: isListening ? '#f87171' : '#cbd5e1', textAlign: 'center', marginBottom: '10px', fontWeight: '700' }}>
+                    {voiceStatusText}
                   </div>
                 )}
 
@@ -1155,6 +1177,15 @@ export default function App() {
                     ⏳ מתרגם לאיטלקית...
                   </div>
                 )}
+
+                {/* Quick Speech Chips */}
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '6px', marginBottom: '8px', scrollbarWidth: 'none' }}>
+                  <button onClick={() => translateText('איפה השירותים?')} style={quickChipStyle}>🚻 איפה השירותים?</button>
+                  <button onClick={() => translateText('חשבון בבקשה')} style={quickChipStyle}>🧾 חשבון בבקשה</button>
+                  <button onClick={() => translateText('כמה זה עולה?')} style={quickChipStyle}>💶 כמה זה עולה?</button>
+                  <button onClick={() => translateText('שולחן ל-5 אנשים')} style={quickChipStyle}>🍽️ שולחן ל-5</button>
+                  <button onClick={() => translateText('אפשר לשלם באשראי?')} style={quickChipStyle}>💳 כרטיס אשראי?</button>
+                </div>
 
                 {italianOutput && (
                   <div style={{
@@ -1166,7 +1197,8 @@ export default function App() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '12px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    marginTop: '8px'
                   }}>
                     <div style={{ flex: 1, textAlign: 'right' }}>
                       <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block' }}>איטלקית:</span>
@@ -1959,4 +1991,17 @@ const galleryActionBtn = {
   alignItems: 'center',
   justifyContent: 'center',
   textAlign: 'center'
+};
+
+const quickChipStyle = {
+  flex: '0 0 auto',
+  padding: '6px 10px',
+  borderRadius: '8px',
+  background: 'rgba(255, 255, 255, 0.12)',
+  color: '#e2e8f0',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  fontSize: '11px',
+  fontWeight: '700',
+  cursor: 'pointer',
+  whiteSpace: 'nowrap'
 };
