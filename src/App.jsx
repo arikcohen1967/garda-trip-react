@@ -28,7 +28,8 @@ const tripDays = [
     fullLabel: "יום רביעי · 30 בספטמבר 2026",
     title: "נחיתה והגעה למלון",
     icon: "✈️",
-    challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
+    challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה!",
+    challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
       { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
@@ -40,7 +41,8 @@ const tripDays = [
     fullLabel: "יום חמישי · 01 באוקטובר 2026",
     title: "Gardaland – יום פארק מלא",
     icon: "🎢",
-    challenge: "לבחור יחד את שלושת המתקנים הכי טובים של היום.",
+    challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
+    challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
       { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
@@ -54,7 +56,8 @@ const tripDays = [
     fullLabel: "יום שישי · 02 באוקטובר 2026",
     title: "סובב אגם גארדה + ראפטינג",
     icon: "🚣",
-    challenge: "לצלם תמונה משפחתית אחת עם האגם ואחת מהראפטינג.",
+    challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
+    challengeDesc: "משימת אקשן ומים! צלמו את הסירה לפני הירידה למים, וכתבו בדיחה או משפט קורע שקרה במהלך השיט.",
     stops: [
       { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
       { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
@@ -67,7 +70,8 @@ const tripDays = [
     fullLabel: "יום שבת · 03 באוקטובר 2026",
     title: "Movieland + Medieval Times",
     icon: "🎬",
-    challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט.",
+    challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
+    challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
     stops: [
       { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
@@ -79,7 +83,8 @@ const tripDays = [
     fullLabel: "יום ראשון · 04 באוקטובר 2026",
     title: "ונציה – יום מלא",
     icon: "🛶",
-    challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי.",
+    challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
+    challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
       { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
@@ -91,7 +96,8 @@ const tripDays = [
     fullLabel: "יום שני · 05 באוקטובר 2026",
     title: "Borghetto sul Mincio + Valeggio",
     icon: "🏘️",
-    challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים.",
+    challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים העתיקות!",
+    challengeDesc: "תמונה חגיגית על הגשר של בורגטו + טעימה של הטורטליני המפורסם ('קשר האהבה').",
     stops: [
       { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
       { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio" } }
@@ -103,7 +109,8 @@ const tripDays = [
     fullLabel: "יום שלישי · 06 באוקטובר 2026",
     title: "ורונה + הטיסה הביתה",
     icon: "❤️",
-    challenge: "לבחור יחד את רגע השיא של כל הטיול.",
+    challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
+    challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
@@ -160,6 +167,11 @@ export default function App() {
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
   const [lightboxItem, setLightboxItem] = useState(null);
 
+  // Challenges & Completed Quests State
+  const [completedChallenges, setCompletedChallenges] = useState({});
+  const [challengeNote, setChallengeNote] = useState('');
+  const [challengeAuthor, setChallengeAuthor] = useState('אריק');
+
   // Translator & Speech State
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
@@ -181,6 +193,11 @@ export default function App() {
     if (!SpeechRec) {
       setVoiceSupported(false);
     }
+
+    try {
+      const savedQuests = JSON.parse(localStorage.getItem('garda-challenges-log')) || {};
+      setCompletedChallenges(savedQuests);
+    } catch (e) {}
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -349,6 +366,47 @@ export default function App() {
     };
   };
 
+  // Save Challenge from Quest Modal
+  const saveDailyChallenge = async (photoFile = null) => {
+    const dayKey = String(activeDay);
+    const updated = {
+      ...completedChallenges,
+      [dayKey]: {
+        completed: true,
+        text: challengeNote || 'אתגר הושלם בהצלחה! 🎉',
+        author: challengeAuthor || 'משפחה',
+        time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+        date: tripDays[activeDay]?.date
+      }
+    };
+    setCompletedChallenges(updated);
+    localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
+
+    // If photo was taken in quest modal, save to Gallery too
+    if (photoFile) {
+      const db = await openDb();
+      const tx = db.transaction('gallery', 'readwrite');
+      const store = tx.objectStore('gallery');
+      store.add({
+        name: `אתגר: ${tripDays[activeDay]?.title}`,
+        type: photoFile.type,
+        size: photoFile.size,
+        dayIndex: activeDay,
+        caption: `🎯 אתגר היום: ${challengeNote || tripDays[activeDay]?.challenge}`,
+        author: challengeAuthor || 'משפחה',
+        created: Date.now(),
+        blob: photoFile
+      });
+      tx.oncomplete = () => {
+        loadGallery();
+      };
+    }
+
+    setChallengeNote('');
+    alert('🏆 כל הכבוד! האתגר בוצע ונשמר ביומן האתגרים המשפחתי!');
+    setModalType(null);
+  };
+
   const deleteGalleryItem = async (id, e) => {
     e.stopPropagation();
     if (!window.confirm('למחוק תמונה/סרטון זה מהאלבום?')) return;
@@ -496,6 +554,7 @@ export default function App() {
   };
 
   const day = tripDays[activeDay];
+  const isCurrentDayCompleted = completedChallenges[String(activeDay)]?.completed;
 
   const filteredGallery = galleryDayFilter === 'all'
     ? galleryItems
@@ -503,7 +562,6 @@ export default function App() {
 
   const categories = ['הכל', '🍕 מסעדות וקפה', '🍦 גלידה ומתוקים', '🛒 קניות וחניה', '👋 בסיסי ונימוס'];
   
-  // Smart Search across Hebrew, Italian and Phonetics
   const filteredPhrases = QUICK_PHRASES.filter(p => {
     const matchesCategory = selectedCategory === 'הכל' || p.cat === selectedCategory;
     const cleanSearch = phraseSearch.trim().toLowerCase();
@@ -522,7 +580,7 @@ export default function App() {
       {!isOnline && (
         <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '7px 12px', fontSize: '11px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, boxShadow: '0 2px 6px rgba(220, 38, 38, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
-          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, המלון, הכרטיסים והשיחון זמינים כרגיל!
+          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, האתגרים והשיחון זמינים כרגיל!
         </div>
       )}
 
@@ -637,6 +695,7 @@ export default function App() {
           </button>
         </div>
         <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}><span>📅</span> מסלול ימי הטיול</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('challengesLog'); }} style={{ ...sidebarBtnStyle, background: '#fef3c7', color: '#b45309', borderColor: '#fcd34d', fontWeight: '800' }}><span>🏆</span> יומן אתגרים ובדיחות</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('phrasebook'); }} style={{ ...sidebarBtnStyle, background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', color: '#15803d', borderColor: '#86efac', fontWeight: '800' }}><span>🇮🇹</span> שיחון איטלקי חכם + קול</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('gallery'); }} style={{ ...sidebarBtnStyle, background: '#fdf4ff', color: '#a21caf', borderColor: '#f0abfc' }}><span>📸</span> יומן ואלבום תמונות משפחתי</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('around'); }} style={sidebarBtnStyle}><span>📍</span> סביבי (Around Me)</button>
@@ -680,8 +739,48 @@ export default function App() {
             <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800', color: '#0f172a' }}>{day.icon} {day.title}</h2>
           </div>
 
-          <div style={{ background: '#ecfdf5', border: '1.5px solid #86efac', padding: '12px 16px', borderRadius: '14px', fontSize: '13px', lineHeight: '1.4', color: '#065f46', fontWeight: '600', marginBottom: '18px', boxShadow: '0 2px 6px rgba(16, 185, 129, 0.08)' }}>
-            <b>🎯 אתגר היום:</b> {day.challenge}
+          {/* CLICKABLE DAILY QUEST / MORNING SURPRISE BUTTON */}
+          <div 
+            onClick={() => setModalType('questModal')}
+            style={{
+              background: isCurrentDayCompleted ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)' : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+              border: `2px solid ${isCurrentDayCompleted ? '#10b981' : '#f59e0b'}`,
+              padding: '14px 18px',
+              borderRadius: '16px',
+              fontSize: '13px',
+              lineHeight: '1.4',
+              color: isCurrentDayCompleted ? '#065f46' : '#92400e',
+              fontWeight: '700',
+              marginBottom: '18px',
+              boxShadow: '0 4px 14px rgba(245, 158, 11, 0.15)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              transition: 'transform 0.15s ease'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '24px' }}>{isCurrentDayCompleted ? '🏆' : '🎁'}</span>
+              <div>
+                <span style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', color: isCurrentDayCompleted ? '#059669' : '#b45309', fontWeight: '900' }}>
+                  {isCurrentDayCompleted ? 'האתגר בוצע בהצלחה!' : 'הפתעת הבוקר · אתגר היום!'}
+                </span>
+                <b style={{ fontSize: '14px', color: '#0f172a' }}>{day.challenge}</b>
+              </div>
+            </div>
+            <span style={{
+              background: isCurrentDayCompleted ? '#059669' : '#0f172a',
+              color: '#ffffff',
+              padding: '7px 12px',
+              borderRadius: '10px',
+              fontSize: '11px',
+              fontWeight: '800',
+              flexShrink: 0
+            }}>
+              {isCurrentDayCompleted ? 'צפה / ערוך ✏️' : 'בצע משימה 🚀'}
+            </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -765,6 +864,180 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {/* MODAL: Interactive Daily Quest (אתגר היום והפתעת הבוקר) */}
+      {modalType === 'questModal' && (
+        <div style={modalStyle}>
+          <div style={modalContentStyle}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '24px', boxShadow: '0 12px 40px rgba(15, 23, 42, 0.12)', boxSizing: 'border-box', width: '100%' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#fef3c7', border: '1.5px solid #fcd34d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+                    🎁
+                  </div>
+                  <div>
+                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>הפתעת הבוקר והאתגר!</h2>
+                    <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>{day.fullLabel}</small>
+                  </div>
+                </div>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+              </div>
+
+              {/* Challenge Card */}
+              <div style={{ background: '#fffbeb', border: '2px solid #fcd34d', borderRadius: '18px', padding: '18px', marginBottom: '20px', textAlign: 'center' }}>
+                <span style={{ fontSize: '32px', display: 'block', marginBottom: '6px' }}>🎯</span>
+                <h3 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: '900', color: '#92400e' }}>{day.challenge}</h3>
+                <p style={{ margin: 0, fontSize: '13px', color: '#78350f', lineHeight: '1.5', fontWeight: '600' }}>{day.challengeDesc}</p>
+              </div>
+
+              {/* Task Actions */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>מי ביצע / מתעד?</label>
+                  <select 
+                    value={challengeAuthor} 
+                    onChange={(e) => setChallengeAuthor(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #cbd5e1', background: '#f8fafc', fontWeight: '700' }}
+                  >
+                    <option value="אריק">אריק</option>
+                    <option value="עמית">עמית</option>
+                    <option value="יולי">יולי</option>
+                    <option value="ליאן">ליאן</option>
+                    <option value="הראל">הראל</option>
+                    <option value="משפחה">כולנו יחד 👨‍👩‍👧‍👧</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>💬 כתוב בדיחה, משפט קורע או סיכום האתגר:</label>
+                  <textarea 
+                    rows="3"
+                    placeholder="לדוגמה: עמית צעקה הכי חזק ברכבת הרים, וכולנו נשפכנו מצחוק! 😂"
+                    value={challengeNote}
+                    onChange={(e) => setChallengeNote(e.target.value)}
+                    style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1.5px solid #cbd5e1', background: '#fff', fontSize: '13px', boxSizing: 'border-box', outline: 'none' }}
+                  />
+                </div>
+
+                {/* Photo Trigger from Quest */}
+                <input 
+                  type="file" 
+                  id="questPhotoInput" 
+                  accept="image/*" 
+                  capture="environment" 
+                  style={{ display: 'none' }} 
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      saveDailyChallenge(e.target.files[0]);
+                    }
+                  }} 
+                />
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <button 
+                    onClick={() => document.getElementById('questPhotoInput').click()}
+                    style={{
+                      padding: '14px',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #a21caf 0%, #c026d3 100%)',
+                      color: '#fff',
+                      border: 'none',
+                      fontWeight: '800',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      boxShadow: '0 4px 12px rgba(162, 28, 175, 0.25)'
+                    }}
+                  >
+                    📸 צלם לאלבום
+                  </button>
+                  <button 
+                    onClick={() => saveDailyChallenge(null)}
+                    style={{
+                      padding: '14px',
+                      borderRadius: '12px',
+                      background: '#0f172a',
+                      color: '#fff',
+                      border: 'none',
+                      fontWeight: '800',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)'
+                    }}
+                  >
+                    ✅ סמן כהושלם
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Challenges & Jokes Log (יומן האתגרים המשפחתי בתפריט ימין) */}
+      {modalType === 'challengesLog' && (
+        <div style={modalStyle}>
+          <div style={modalContentStyle}>
+            <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '24px', padding: '24px', boxShadow: '0 12px 40px rgba(15, 23, 42, 0.12)', boxSizing: 'border-box', width: '100%' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #f1f5f9', paddingBottom: '14px', marginBottom: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#fef3c7', border: '1.5px solid #fcd34d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                    🏆
+                  </div>
+                  <div>
+                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>יומן האתגרים והבדיחות</h2>
+                    <small style={{ color: '#d97706', fontWeight: '700', fontSize: '11px' }}>סיכום משימות ורגעים מצחיקים</small>
+                  </div>
+                </div>
+                <button onClick={() => setModalType(null)} style={modalCloseBtn}>✕</button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {tripDays.map((d, idx) => {
+                  const log = completedChallenges[String(idx)];
+                  return (
+                    <div 
+                      key={idx}
+                      style={{
+                        background: log?.completed ? '#ecfdf5' : '#f8fafc',
+                        border: `1.5px solid ${log?.completed ? '#86efac' : '#cbd5e1'}`,
+                        borderRadius: '16px',
+                        padding: '16px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: log?.completed ? '#059669' : '#64748b' }}>
+                          {d.label} · {d.title}
+                        </span>
+                        <span style={{ fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '8px', background: log?.completed ? '#10b981' : '#e2e8f0', color: log?.completed ? '#fff' : '#64748b' }}>
+                          {log?.completed ? 'בוצע! 🎉' : 'טרם בוצע'}
+                        </span>
+                      </div>
+                      <b style={{ fontSize: '14px', color: '#0f172a', display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
+                      {log?.completed && (
+                        <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4' }}>
+                          <b>💬 תיעוד ובדיחה:</b> "{log.text}"
+                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
+                            נכתב על ידי: {log.author} · שעה: {log.time}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: Italian Phrasebook & Smart Live Translator */}
       {modalType === 'phrasebook' && (
