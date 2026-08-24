@@ -173,7 +173,7 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator & Speech State
+  // Translator & Speech State (Continuous Audio Session Reset)
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -463,7 +463,7 @@ export default function App() {
     }
   };
 
-  // Reliable Italian Speech Engine
+  // Reliable Italian Speech Engine with Audio Session Flushing
   const speakItalian = (text) => {
     if (!text) return;
     try {
@@ -476,6 +476,11 @@ export default function App() {
         const voices = window.speechSynthesis.getVoices();
         const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
         if (itVoice) utterance.voice = itVoice;
+
+        utterance.onend = () => {
+          // Release session on iOS
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        };
 
         window.speechSynthesis.speak(utterance);
       }
@@ -532,16 +537,21 @@ export default function App() {
     }
   };
 
-  // Speech Recognition
+  // Resettable Speech-to-Text Handler with Active Session Flush
   const toggleListening = () => {
+    // 1. If currently speaking TTS, cancel it immediately to free audio hardware on iOS
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (isListening) {
       if (recognitionInstanceRef.current) {
         try {
           recognitionInstanceRef.current.abort();
-          recognitionInstanceRef.current = null;
         } catch (e) {}
+        recognitionInstanceRef.current = null;
       }
       setIsListening(false);
       setVoiceStatusText('');
@@ -549,18 +559,19 @@ export default function App() {
     }
 
     if (!SpeechRecognition) {
-      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון המקלדת');
+      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת המכשיר');
       const inputElem = document.getElementById('hebrewInputBox');
       if (inputElem) inputElem.focus();
       return;
     }
 
-    try {
-      if (recognitionInstanceRef.current) {
-        try { recognitionInstanceRef.current.abort(); } catch (e) {}
-        recognitionInstanceRef.current = null;
-      }
+    // Clean any prior instance
+    if (recognitionInstanceRef.current) {
+      try { recognitionInstanceRef.current.abort(); } catch (e) {}
+      recognitionInstanceRef.current = null;
+    }
 
+    try {
       setItalianOutput('');
       setVoiceStatusText('🎙️ מקשיב... דבר עכשיו בעברית');
 
@@ -591,11 +602,11 @@ export default function App() {
         setIsListening(false);
         recognitionInstanceRef.current = null;
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-          setVoiceStatusText('⚠️ יש לאשר גישה למיקרופון, או להשתמש במקלדת');
+          setVoiceStatusText('⚠️ אפשר גישה למיקרופון או השתמש במיקרופון המקלדת');
         } else if (e.error === 'no-speech') {
           setVoiceStatusText('לא נקלט קול. לחץ שוב.');
         } else {
-          setVoiceStatusText('💡 השתמש במיקרופון של מקלדת הטלפון');
+          setVoiceStatusText('💡 השתמש במיקרופון שבמקלדת הטלפון');
         }
       };
 
@@ -610,7 +621,7 @@ export default function App() {
       console.error(err);
       setIsListening(false);
       recognitionInstanceRef.current = null;
-      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת');
+      setVoiceStatusText('💡 לחץ על השדה והשתמש במיקרופון שבמקלדת המכשיר');
     }
   };
 
