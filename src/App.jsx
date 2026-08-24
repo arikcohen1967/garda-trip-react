@@ -194,7 +194,6 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
-  const audioContextRef = useRef(null);
 
   // Haptic / Click Sound Synthesizer
   const playClickSound = () => {
@@ -616,8 +615,8 @@ export default function App() {
     return matchesCategory && matchesText;
   });
 
-  // Granite Black & Silver Theme Colors
-  const bgMain = isDark ? '#121214' : '#f8fafc';
+  // Granite Black & Silver Theme Colors (Pure White Background for Light Mode)
+  const bgMain = isDark ? '#121214' : '#ffffff';
   const cardBg = isDark ? '#18181b' : '#ffffff';
   const textColor = isDark ? '#f4f4f5' : '#0f172a';
   const textSub = isDark ? '#a1a1aa' : '#64748b';
@@ -649,7 +648,7 @@ export default function App() {
         width: '100%',
         maxWidth: '100vw',
         boxSizing: 'border-box',
-        boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)'
+        boxShadow: '0 1px 4px rgba(0, 0, 0, 0.03)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button 
@@ -720,7 +719,7 @@ export default function App() {
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.5)', zIndex: 2500, width: '100vw', height: '100vh', overflowX: 'hidden' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.4)', zIndex: 2500, width: '100vw', height: '100vh', overflowX: 'hidden' }}
         />
       )}
       <aside 
@@ -729,7 +728,7 @@ export default function App() {
         onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
         style={{
           position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px', maxWidth: '80vw',
-          background: cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.3)',
+          background: cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.15)',
           transition: 'right 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '32px 24px',
           display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: `1.5px solid ${borderColor}`, boxSizing: 'border-box'
         }}
