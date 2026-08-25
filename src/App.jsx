@@ -245,11 +245,29 @@ export default function App() {
     }
   };
 
+  // בדיקת חיבור חכמה ומידיעה שמזהה מצב טיסה
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    const updateOnlineStatus = () => {
+      if (!navigator.onLine) {
+        setIsOnline(false);
+      } else {
+        supabase.from('trip_data').select('id').limit(1).then(({ error }) => {
+          if (error) {
+            setIsOnline(false);
+          } else {
+            setIsOnline(true);
+          }
+        }).catch(() => {
+          setIsOnline(false);
+        });
+      }
+    };
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    const interval = setInterval(updateOnlineStatus, 5000);
 
     async function fetchTripDataFromCloud() {
       try {
@@ -262,10 +280,12 @@ export default function App() {
         if (!error && data && data.length > 0 && data[0].data) {
           setTripDays(data[0].data);
           localStorage.setItem('garda-trip-days-cache', JSON.stringify(data[0].data));
+          setIsOnline(true);
         } else {
           loadFromLocalCache();
         }
       } catch (err) {
+        setIsOnline(false);
         loadFromLocalCache();
       }
     }
@@ -287,8 +307,9 @@ export default function App() {
     } catch (e) {}
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', updateOnlineStatus);
+      window.removeEventListener('offline', updateOnlineStatus);
+      clearInterval(interval);
     };
   }, []);
 
@@ -299,8 +320,9 @@ export default function App() {
       await supabase
         .from('trip_data')
         .upsert({ id: 1, data: newDays });
+      setIsOnline(true);
     } catch (err) {
-      console.log('Saved locally due to offline mode');
+      setIsOnline(false);
     }
   };
 
@@ -593,9 +615,9 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🟢🔴 חיווי חיבור עליון ברור (Online / Offline) */}
+      {/* 🟢🟠 חיווי חיבור עליון שמתעדכן לכתום במצב טיסה או אופליין */}
       <div style={{
-        background: isOnline ? '#059669' : '#dc2626',
+        background: isOnline ? '#059669' : '#d97706',
         color: '#ffffff',
         textAlign: 'center',
         padding: '6px 12px',
@@ -613,7 +635,7 @@ export default function App() {
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
       }}>
         <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
-        {isOnline ? '🟢 Online · מחובר לענן (Supabase)' : '🔴 Offline · עובד ממצב מקומי (הכל זמין)'}
+        {isOnline ? '🟢 Online · מחובר לענן (Supabase)' : '🟠 Offline · מצב טיסה / אופליין פעיל (עובד מהזיכרון המקומי)'}
       </div>
 
       <header style={{
@@ -629,7 +651,6 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        {/* כפתור תפריט (☰) מוגדל ומובלט עם רקע צהבהב/מודגש למראה בולט ונוח */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
