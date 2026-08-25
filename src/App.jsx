@@ -245,20 +245,22 @@ export default function App() {
     }
   };
 
+  // בדיקת חיבור חכמה שבודקת גם את הדפדפן וגם מבצעת פינג מול Supabase כדי לעדכן לכתום/כסף במצב טיסה
   useEffect(() => {
-    const updateOnlineStatus = () => {
+    const updateOnlineStatus = async () => {
       if (!navigator.onLine) {
         setIsOnline(false);
-      } else {
-        supabase.from('trip_data').select('id').limit(1).then(({ error }) => {
-          if (error) {
-            setIsOnline(false);
-          } else {
-            setIsOnline(true);
-          }
-        }).catch(() => {
+        return;
+      }
+      try {
+        const { error } = await supabase.from('trip_data').select('id').limit(1);
+        if (error) {
           setIsOnline(false);
-        });
+        } else {
+          setIsOnline(true);
+        }
+      } catch (err) {
+        setIsOnline(false);
       }
     };
 
@@ -266,7 +268,7 @@ export default function App() {
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
 
-    const interval = setInterval(updateOnlineStatus, 5000);
+    const interval = setInterval(updateOnlineStatus, 4000);
 
     async function fetchTripDataFromCloud() {
       try {
