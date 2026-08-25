@@ -7,7 +7,7 @@ const SUPABASE_KEY = 'sb_publishable_Ov14SZJ4k0-4UeqQNEQ6CQ_N4da5ABY';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const WAZE_SVG = (
-  <svg viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
     <rect width="512" height="512" rx="110" fill="#33ccff"/>
     <path d="M375.4 233.5c-3.7-31.8-29.3-56.7-61.6-59.5-35.3-3.1-66.5 19.3-73.8 53.6-1.5 7-1.4 14.3.4 21.2-22.1 4.7-38.6 24.1-38.6 47.3 0 17.5 9.7 32.7 24.1 40.5l-10.7 33.3c-2.4 7.4 2.8 15 10.6 15 3.3 0 6.4-1.4 8.6-3.8l21.9-23.7c13.7 4.9 28.7 7.5 44.1 7.5 70.7 0 128-50.5 128-112.7 0-11.8-1.8-23.3-5.2-34.4zm-146 5.3c0-11 9-20 20-20s20 9 20 20-9 20-20 20-20-9-20-20zm112 40c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20zm-56 22c-29.8 0-54-15.6-54-35 0-3.3 2.7-6 6-6h96c3.3 0 6 2.7 6 6 0 19.4-24.2 35-54 35z" fill="#fff"/>
     <path d="M220.5 240c-1.2 5.5-6.2 9.5-12 9.5s-10.8-4-12-9.5c-2.8-12.7-14.2-22-27.5-22-15.5 0-28 12.5-28 28s12.5 28 28 28c4.4 0 8 3.6 8 8s-3.6 8-8 8c-24.3 0-44-19.7-44-44s19.7-44 44-44c21.2 0 39.1 14.7 43.5 34.5z" fill="#18181b"/>
@@ -636,6 +636,8 @@ export default function App() {
   const textSub = '#4b5563';
   const borderColor = '#e5e7eb';
   const cardShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)';
+  const yellowBtnBg = '#fef08a';
+  const yellowBtnText = '#000000';
 
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
@@ -647,7 +649,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Header מעודכן עם כפתור ניווט ישיר למלון ב-Waze */}
+      {/* Header עם כפתור תפריט מימין, כותרת במרכז, ו-Bio Vojon משולב עם Waze משמאל */}
       <header style={{
         padding: '16px 20px',
         background: bgMain,
@@ -661,16 +663,17 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* צד שמאל: כפתור Bio Vojon שמשלב בתוכו ניווט ישיר ל-Waze */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
           <button 
             onClick={() => handleGlobalClick(() => {
               setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
               setModalType('viewer');
             })}
             style={{
-              background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 12px',
-              borderRadius: '12px', fontSize: '12px', fontWeight: '800', color: '#166534', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+              background: 'transparent', border: 'none', padding: '6px 8px',
+              fontSize: '12px', fontWeight: '800', color: '#166534', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '4px'
             }}
           >
             🏡 Bio Vojon
@@ -680,20 +683,23 @@ export default function App() {
             href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`}
             onClick={() => playClickSound()}
             style={{
-              background: '#ffffff', border: '1px solid #bae6fd', padding: '8px 12px',
-              borderRadius: '12px', fontSize: '12px', fontWeight: '800', color: '#00a6ff', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+              background: '#ffffff', border: '1px solid #bae6fd', padding: '6px 8px',
+              borderRadius: '8px', fontSize: '11px', fontWeight: '800', color: '#00a6ff', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none'
             }}
+            title="נווט למלון ב-Waze"
           >
-            {WAZE_SVG} נווט למלון
+            {WAZE_SVG} ניווט
           </a>
         </div>
 
+        {/* מרכז: כותרת האפליקציה */}
         <div style={{ textAlign: 'center' }}>
           <h1 style={{ fontSize: '16px', fontWeight: '900', margin: '0 0 2px', color: textColor, letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
           <p style={{ fontSize: '11px', color: textSub, margin: 0, fontWeight: '700' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
         </div>
 
+        {/* צד ימין: כפתור תפריט (שלושת הקווים) */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
@@ -711,6 +717,7 @@ export default function App() {
             color: textColor,
             boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
           }}
+          title="תפריט מהיר"
         >
           ☰
         </button>
