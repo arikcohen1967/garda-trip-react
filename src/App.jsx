@@ -164,6 +164,7 @@ export default function App() {
   const [modalType, setModalType] = useState(null);
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [themeMode, setThemeMode] = useState('light'); // 'light' או 'silver'
 
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
@@ -616,11 +617,13 @@ export default function App() {
     return matchesCategory && matchesText;
   });
 
-  const bgMain = '#ffffff';
-  const cardBg = '#ffffff';
+  // הגדרת ערכות נושא (Theme Styles)
+  const isSilver = themeMode === 'silver';
+  const bgMain = isSilver ? 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%)' : '#ffffff';
+  const cardBg = isSilver ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)' : '#ffffff';
   const textColor = '#000000';
   const textSub = '#4b5563';
-  const borderColor = '#e5e7eb';
+  const borderColor = isSilver ? '#cbd5e1' : '#e5e7eb';
   const cardShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)';
   const yellowBtnBg = '#fef08a';
   const yellowBtnText = '#000000';
@@ -628,12 +631,12 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar */}
+      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar עם כפתור החלפת ערכת נושא */}
       <div style={{
         background: 'linear-gradient(135deg, #71717a 0%, #3f3f46 25%, #27272a 50%, #3f3f46 75%, #71717a 100%)',
         color: '#ffffff',
         textAlign: 'center',
-        padding: '14px 16px',
+        padding: '12px 16px',
         fontSize: '13px',
         fontWeight: '900',
         position: 'sticky',
@@ -643,20 +646,40 @@ export default function App() {
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px',
+        justifyContent: 'space-between',
         borderBottom: '2px solid #18181b',
         boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
         letterSpacing: '0.02em',
         textShadow: '0 1px 2px rgba(0,0,0,0.5)'
       }}>
-        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#34d399' : '#f59e0b', boxShadow: '0 0 10px rgba(255,255,255,0.9)' }}></span>
-        {isOnline ? 'on-line' : 'off-line'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#34d399' : '#f59e0b', boxShadow: '0 0 10px rgba(255,255,255,0.9)' }}></span>
+          <span>{isOnline ? 'on-line' : 'off-line'}</span>
+        </div>
+
+        <button
+          onClick={() => handleGlobalClick(() => setThemeMode(isSilver ? 'light' : 'silver'))}
+          style={{
+            background: 'rgba(255, 255, 255, 0.15)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            color: '#ffffff',
+            padding: '6px 12px',
+            borderRadius: '10px',
+            fontSize: '11px',
+            fontWeight: '900',
+            cursor: 'pointer',
+            boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          {isSilver ? '✨ גרסת סילבר יוקרתי (פעיל)' : '🎨 עבור לגרסת סילבר יוקרתי'}
+        </button>
       </div>
 
       <header style={{
         padding: '16px 20px',
-        background: bgMain,
+        background: isSilver ? 'rgba(255, 255, 255, 0.8)' : bgMain,
+        backdropFilter: isSilver ? 'blur(8px)' : 'none',
         borderBottom: `1px solid ${borderColor}`,
         display: 'flex',
         justifyContent: 'space-between',
@@ -722,7 +745,7 @@ export default function App() {
         onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
         style={{
           position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px', maxWidth: '80vw',
-          background: cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.15)',
+          background: isSilver ? '#f8fafc' : cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.15)',
           transition: 'right 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '28px 20px',
           display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box'
         }}
@@ -780,7 +803,7 @@ export default function App() {
           <div 
             onClick={() => handleGlobalClick(() => setModalType('questModal'))}
             style={{
-              background: '#f0fdf4',
+              background: isSilver ? 'rgba(240, 253, 244, 0.8)' : '#f0fdf4',
               border: `1px solid ${isCurrentDayCompleted ? '#10b981' : '#bbf7d0'}`,
               borderRadius: '16px',
               padding: '16px 18px',
@@ -822,12 +845,12 @@ export default function App() {
               <div key={idx} style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '20px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: '900', margin: 0, color: textColor }}>{stop.name}</h3>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: textColor, background: '#f8fafc', padding: '4px 10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>{stop.time}</span>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: textColor, background: isSilver ? 'rgba(255,255,255,0.7)' : '#f8fafc', padding: '4px 10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>{stop.time}</span>
                 </div>
                 <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 16px', lineHeight: '1.5', fontWeight: '600' }}>{stop.note}</p>
 
                 {stop.food && (
-                  <div style={{ fontSize: '12px', background: '#fffbeb', color: '#b45309', padding: '14px', borderRadius: '14px', marginBottom: '16px', border: '1px solid #fef3c7', display: 'flex', flexDirection: 'column', gap: '10px', fontWeight: '700', boxSizing: 'border-box' }}>
+                  <div style={{ fontSize: '12px', background: isSilver ? 'rgba(254, 243, 199, 0.7)' : '#fffbeb', color: '#b45309', padding: '14px', borderRadius: '14px', marginBottom: '16px', border: '1px solid #fef3c7', display: 'flex', flexDirection: 'column', gap: '10px', fontWeight: '700', boxSizing: 'border-box' }}>
                     <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
@@ -856,7 +879,7 @@ export default function App() {
                     onClick={() => playClickSound()}
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                      padding: '10px 14px', borderRadius: '12px', background: '#f8fafc', color: textColor,
+                      padding: '10px 14px', borderRadius: '12px', background: isSilver ? 'rgba(255,255,255,0.7)' : '#f8fafc', color: textColor,
                       border: `1px solid ${borderColor}`, fontSize: '12px', fontWeight: '800', textDecoration: 'none', boxSizing: 'border-box'
                     }}
                   >
@@ -864,7 +887,7 @@ export default function App() {
                   </a>
                   <button 
                     onClick={() => handleGlobalClick(() => setModalType('parking'))}
-                    style={{ border: `1px solid ${borderColor}`, background: '#f8fafc', color: textColor, borderRadius: '12px', padding: '0 14px', fontSize: '14px', fontWeight: '800', cursor: 'pointer' }}
+                    style={{ border: `1px solid ${borderColor}`, background: isSilver ? 'rgba(255,255,255,0.7)' : '#f8fafc', color: textColor, borderRadius: '12px', padding: '0 14px', fontSize: '14px', fontWeight: '800', cursor: 'pointer' }}
                     title="הסבר שמירת חניה"
                   >
                     ℹ️
