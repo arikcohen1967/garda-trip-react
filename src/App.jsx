@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // Supabase Cloud Configuration
 const SUPABASE_URL = 'https://qrdgructcnphiyosakgb.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_0v14SZJ4k0-4UeqQNEQ6CQ_N4da5...';
+const SUPABASE_KEY = 'sb_publishable_Ov14SZJ4k0-4UeqQNEQ6CQ_N4da5ABY';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const WAZE_SVG = (isDark) => (
