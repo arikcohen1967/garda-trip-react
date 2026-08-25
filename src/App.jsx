@@ -27,7 +27,7 @@ const MAPS_SVG = (
   </svg>
 );
 
-const tripDays = [
+const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
     label: "רביעי · 30/09",
@@ -158,6 +158,7 @@ const QUICK_PHRASES = [
 ];
 
 export default function App() {
+  const [tripDays, setTripDays] = useState(INITIAL_TRIP_DAYS);
   const [activeDay, setActiveDay] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
@@ -244,11 +245,42 @@ export default function App() {
     }
   };
 
+  // טעינת נתוני הטיול מ-Supabase עם גיבוי אופליין ל-LocalStorage
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+
+    async function fetchTripDataFromCloud() {
+      try {
+        const { data, error } = await supabase
+          .from('trip_data')
+          .select('*')
+          .order('id', { ascending: false })
+          .limit(1);
+
+        if (!error && data && data.length > 0 && data[0].data) {
+          setTripDays(data[0].data);
+          localStorage.setItem('garda-trip-days-cache', JSON.stringify(data[0].data));
+        } else {
+          loadFromLocalCache();
+        }
+      } catch (err) {
+        loadFromLocalCache();
+      }
+    }
+
+    const loadFromLocalCache = () => {
+      try {
+        const cached = JSON.parse(localStorage.getItem('garda-trip-days-cache'));
+        if (Array.isArray(cached) && cached.length) {
+          setTripDays(cached);
+        }
+      } catch (e) {}
+    };
+
+    fetchTripDataFromCloud();
 
     try {
       const savedQuests = JSON.parse(localStorage.getItem('garda-challenges-log')) || {};
@@ -260,6 +292,19 @@ export default function App() {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  // פונקציית שמירת נתוני הטיול למרכז (Supabase) + LocalStorage
+  const saveTripDataToCloud = async (newDays) => {
+    setTripDays(newDays);
+    localStorage.setItem('garda-trip-days-cache', JSON.stringify(newDays));
+    try {
+      await supabase
+        .from('trip_data')
+        .upsert({ id: 1, data: newDays });
+    } catch (err) {
+      console.log('Saved locally due to offline mode');
+    }
+  };
 
   useEffect(() => {
     try {
@@ -375,53 +420,6 @@ export default function App() {
     };
   };
 
-  const handleGalleryUpload = async (e) => {
-    const files = [...e.target.files];
-    if (!files.length) return;
-    const file = files[0];
-
-    try {
-      const filePath = `trip_${Date.now()}_${file.name}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('trip-photos')
-        .upload(filePath, file);
-
-      if (uploadErr) {
-        alert('שגיאה בהעלאת הקובץ לענן: ' + uploadErr.message);
-        return;
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from('trip-photos')
-        .getPublicUrl(filePath);
-
-      const mediaUrl = publicUrlData.publicUrl;
-
-      const newItem = {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        day_index: galleryDayFilter === 'all' ? activeDay : Number(galleryDayFilter),
-        caption: galleryCaption || '',
-        author: galleryAuthor || 'משפחה',
-        created: Date.now(),
-        media_url: mediaUrl
-      };
-
-      const { error: dbErr } = await supabase.from('gallery').insert([newItem]);
-      if (dbErr) {
-        alert('שגיאה בשמירת נתוני התמונה בענן');
-        return;
-      }
-
-      setGalleryCaption('');
-      setShowGalleryUpload(false);
-      loadGalleryFromCloud();
-    } catch (err) {
-      alert('שגיאה בתהליך ההעלאה');
-    }
-  };
-
   const saveDailyChallenge = async (photoFile = null) => {
     const dayKey = String(activeDay);
     const updated = {
@@ -469,36 +467,6 @@ export default function App() {
     setCompletedChallenges(updated);
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
     if (modalType === 'questModal') setModalType(null);
-  };
-
-  const resetAllChallenges = () => {
-    if (!window.confirm('האם אתה בטוח שברצונך לאפס את כל המשימות והאתגרים של כל הימים?')) return;
-    setCompletedChallenges({});
-    localStorage.removeItem('garda-challenges-log');
-    alert('כל האתגרים אופסו בהצלחה למצב התחלתי!');
-  };
-
-  const unlockAdminChallenges = () => {
-    if (isAdminUnlocked) {
-      setIsAdminUnlocked(false);
-      return;
-    }
-    const pin = window.prompt('הזן קוד מנהל לצפייה בכל האתגרים:');
-    if (pin === '1967' || pin === '1234') {
-      setIsAdminUnlocked(true);
-    } else if (pin !== null) {
-      alert('קוד שגוי!');
-    }
-  };
-
-  const deleteGalleryItem = async (id, e) => {
-    e.stopPropagation();
-    if (!window.confirm('למחוק תמונה/סרטון זה מהאלבום?')) return;
-    try {
-      await supabase.from('gallery').delete().eq('id', id);
-      if (lightboxItem && lightboxItem.id === id) setLightboxItem(null);
-      loadGalleryFromCloud();
-    } catch (err) {}
   };
 
   const deleteFile = async (id, e) => {
@@ -601,15 +569,9 @@ export default function App() {
     }
   };
 
-  const day = tripDays[activeDay];
+  const day = tripDays[activeDay] || tripDays[0];
   const isCurrentDayCompleted = completedChallenges[String(activeDay)]?.completed;
 
-  const filteredGallery = galleryDayFilter === 'all'
-    ? galleryItems
-    : galleryItems.filter(item => String(item.day_index) === String(galleryDayFilter));
-
-  const categories = ['הכל', '🍕 מסעדות וקפה', '🍦 גלידה ומתוקים', '🛒 קניות וחניה', '👋 בסיסי ונימוס'];
-  
   const filteredPhrases = QUICK_PHRASES.filter(p => {
     const matchesCategory = selectedCategory === 'הכל' || p.cat === selectedCategory;
     const cleanSearch = phraseSearch.trim().toLowerCase();
@@ -640,7 +602,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Header מעודכן: שלושת הקווים משמאל, כותרת במרכז, וכפתור Bio Vojon נקי מימין */}
       <header style={{
         padding: '16px 20px',
         background: bgMain,
@@ -654,7 +615,6 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        {/* צד שמאל: כפתור תפריט (שלושת הקווים ☰) */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
@@ -677,13 +637,11 @@ export default function App() {
           ☰
         </button>
 
-        {/* מרכז: כותרת האפליקציה */}
         <div style={{ textAlign: 'center' }}>
           <h1 style={{ fontSize: '16px', fontWeight: '900', margin: '0 0 2px', color: textColor, letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
           <p style={{ fontSize: '11px', color: textSub, margin: 0, fontWeight: '700' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
         </div>
 
-        {/* צד ימין: כפתור Bio Vojon נקי */}
         <button 
           onClick={() => handleGlobalClick(() => {
             setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
@@ -732,7 +690,6 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
         
-        {/* תאריכים בראש העמוד */}
         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '20px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
           {tripDays.map((d, i) => (
             <button
@@ -763,7 +720,6 @@ export default function App() {
             <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* משימת / אתגר היום בעיצוב ירוק ועדין */}
           <div 
             onClick={() => handleGlobalClick(() => setModalType('questModal'))}
             style={{
@@ -801,11 +757,11 @@ export default function App() {
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח משימה 🚀'}
             </span>
+
           </div>
 
-          {/* כרטיסיות עצירה / תחנות */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {day.stops.map((stop, idx) => (
+            {day.stops && day.stops.map((stop, idx) => (
               <div key={idx} style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '20px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: '900', margin: 0, color: textColor }}>{stop.name}</h3>
@@ -826,7 +782,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* כפתורי ניווט Maps ו-Waze */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: '#ffffff', color: textColor, borderColor: borderColor }}>
                     {MAPS_SVG} Maps
@@ -865,7 +820,6 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודלים שונים באפליקציה */}
       {modalType === 'questModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -949,7 +903,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל שיחון איטלקי עם הגנה מפני זום במובייל */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1006,7 +959,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל פרטי המלון עם כפתור ניווט בוויז לפי הכתובת */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1051,7 +1003,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מעודכן עם פיצה, גלידה, פארם, מסעדות ועוד */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1091,7 +1042,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל ארנק כרטיסים ומסמכים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1246,24 +1196,4 @@ const gridModalBtn = {
 const uploadBtnStyle = {
   width: '100%', padding: '12px', borderRadius: '10px',
   fontWeight: '900', cursor: 'pointer', fontSize: '12px', boxSizing: 'border-box'
-};
-
-const galleryActionBtn = {
-  padding: '10px 6px', borderRadius: '10px',
-  fontWeight: '900', fontSize: '11px', cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box'
-};
-
-const quickChipStyleLight = {
-  flex: '0 0 auto', padding: '6px 12px', borderRadius: '8px',
-  background: '#f1f5f9', color: '#000000',
-  border: '1px solid #cbd5e1', fontSize: '12px', fontWeight: '800',
-  cursor: 'pointer', whiteSpace: 'nowrap'
-};
-
-const quickChipStyleDark = {
-  flex: '0 0 auto', padding: '6px 10px', borderRadius: '8px',
-  background: '#f1f5f9', color: '#000000',
-  border: '1px solid #cbd5e1', fontSize: '12px', fontWeight: '800',
-  cursor: 'pointer', whiteSpace: 'nowrap'
 };
