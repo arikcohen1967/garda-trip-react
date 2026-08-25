@@ -7,7 +7,7 @@ const SUPABASE_KEY = 'sb_publishable_Ov14SZJ4k0-4UeqQNEQ6CQ_N4da5ABY';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const WAZE_SVG = (
-  <svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
     <rect width="512" height="512" rx="110" fill="#33ccff"/>
     <path d="M375.4 233.5c-3.7-31.8-29.3-56.7-61.6-59.5-35.3-3.1-66.5 19.3-73.8 53.6-1.5 7-1.4 14.3.4 21.2-22.1 4.7-38.6 24.1-38.6 47.3 0 17.5 9.7 32.7 24.1 40.5l-10.7 33.3c-2.4 7.4 2.8 15 10.6 15 3.3 0 6.4-1.4 8.6-3.8l21.9-23.7c13.7 4.9 28.7 7.5 44.1 7.5 70.7 0 128-50.5 128-112.7 0-11.8-1.8-23.3-5.2-34.4zm-146 5.3c0-11 9-20 20-20s20 9 20 20-9 20-20 20-20-9-20-20zm112 40c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20zm-56 22c-29.8 0-54-15.6-54-35 0-3.3 2.7-6 6-6h96c3.3 0 6 2.7 6 6 0 19.4-24.2 35-54 35z" fill="#fff"/>
     <path d="M220.5 240c-1.2 5.5-6.2 9.5-12 9.5s-10.8-4-12-9.5c-2.8-12.7-14.2-22-27.5-22-15.5 0-28 12.5-28 28s12.5 28 28 28c4.4 0 8 3.6 8 8s-3.6 8-8 8c-24.3 0-44-19.7-44-44s19.7-44 44-44c21.2 0 39.1 14.7 43.5 34.5z" fill="#18181b"/>
@@ -649,7 +649,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Header עם כפתור תפריט מימין, כותרת במרכז, ו-Bio Vojon משולב עם Waze משמאל */}
+      {/* Header מעודכן: שלושת הקווים משמאל, כותרת במרכז, ו-Bio Vojon עם ניווט מימין */}
       <header style={{
         padding: '16px 20px',
         background: bgMain,
@@ -663,7 +663,36 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        {/* צד שמאל: כפתור Bio Vojon שמשלב בתוכו ניווט ישיר ל-Waze */}
+        {/* צד שמאל: כפתור תפריט (שלושת הקווים ☰) */}
+        <button 
+          onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
+          style={{
+            background: '#ffffff', 
+            border: `1px solid ${borderColor}`, 
+            width: '42px', 
+            height: '42px',
+            borderRadius: '12px', 
+            fontSize: '20px', 
+            fontWeight: '900', 
+            cursor: 'pointer',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            color: textColor,
+            boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+          }}
+          title="תפריט מהיר"
+        >
+          ☰
+        </button>
+
+        {/* מרכז: כותרת האפליקציה */}
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '16px', fontWeight: '900', margin: '0 0 2px', color: textColor, letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
+          <p style={{ fontSize: '11px', color: textSub, margin: 0, fontWeight: '700' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
+        </div>
+
+        {/* צד ימין: כפתור Bio Vojon משולב עם ניווט ישיר ל-Waze */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
           <button 
             onClick={() => handleGlobalClick(() => {
@@ -692,35 +721,6 @@ export default function App() {
             {WAZE_SVG} ניווט
           </a>
         </div>
-
-        {/* מרכז: כותרת האפליקציה */}
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '16px', fontWeight: '900', margin: '0 0 2px', color: textColor, letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
-          <p style={{ fontSize: '11px', color: textSub, margin: 0, fontWeight: '700' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
-        </div>
-
-        {/* צד ימין: כפתור תפריט (שלושת הקווים) */}
-        <button 
-          onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
-          style={{
-            background: '#ffffff', 
-            border: `1px solid ${borderColor}`, 
-            width: '42px', 
-            height: '42px',
-            borderRadius: '12px', 
-            fontSize: '20px', 
-            fontWeight: '900', 
-            cursor: 'pointer',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            color: textColor,
-            boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
-          }}
-          title="תפריט מהיר"
-        >
-          ☰
-        </button>
       </header>
 
       {sidebarOpen && (
@@ -1010,6 +1010,35 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל פרטי המלון המעודכן עם שם המלון, הכתובת, הטלפון וכפתור ניווט ישיר בוויז */}
+      {modalType === 'viewer' && viewerItem && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#166534' }}>🏡 Bio Agriturismo Vojon</h3>
+                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              </div>
+              
+              <div style={{ lineHeight: '1.8', fontSize: '14px', color: textColor, fontWeight: '600' }}>
+                <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
+                <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
+                <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
+                <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: '#2563eb', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
+                
+                <a 
+                  href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
+                  onClick={() => playClickSound()} 
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#ffffff', border: '1px solid #bae6fd', color: '#00a6ff', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}
+                >
+                  {WAZE_SVG} נווט למלון ב-Waze עם הכתובת
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1019,7 +1048,7 @@ export default function App() {
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
               <p style={{ fontSize: '14px', lineHeight: '1.7', color: textColor, fontWeight: '600' }}>
-                אם האייפון מחובר ל-Bluetooth או ל-CarPlay ברכב השכור, ברגע שמכבים מנוע ומתנתקים – האייפון שומר <b>אוטומטית</b> את מיקום החניה. לחלופין, פתחו את מפות Apple ולחצו על הנקודה הכחולה לבחירת "סמן מיקום רכב חונה".
+                אם האייפון מחובר ל-Bluetooth או ל-CarPlay ברכב השכור, ברגע שמכבים מנוע ומתנתקים – האייפון שומר <b>אוטומטית</b> את מיקום החניה.
               </p>
             </div>
           </div>
@@ -1068,20 +1097,6 @@ export default function App() {
                 <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {modalType === 'viewer' && viewerItem && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '12px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '16px', fontWeight: '900', color: textColor }}>{viewerItem.title}</span>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
-              </div>
-              <p style={{ fontWeight: '700' }}>המלון מוזמן ומאשר את שהותכם למשך כל ימי הטיול.</p>
             </div>
           </div>
         </div>
