@@ -1796,7 +1796,7 @@ const navBtnStyle = {
 const modalStyle = {
   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
   width: '100vw', maxWidth: '100vw', height: '100vh',
-  zindex: 2000, overflowY: 'auto', overflowX: 'hidden',
+  zIndex: 2000, overflowY: 'auto', overflowX: 'hidden',
   WebkitOverflowScrolling: 'touch', direction: 'rtl', boxSizing: 'border-box'
 };
 
