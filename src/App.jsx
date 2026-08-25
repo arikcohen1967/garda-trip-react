@@ -615,12 +615,12 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🪙 חיווי חיבור עליון: כסף מטאלי יוקרתי לשני המצבים */}
+      {/* 🍏 חיווי חיבור עליון: צבע Silver יוקרתי סטייל Apple */}
       <div style={{
-        background: isOnline ? '#64748b' : '#475569',
-        color: '#ffffff',
+        background: '#e2e8f0',
+        color: '#0f172a',
         textAlign: 'center',
-        padding: '6px 12px',
+        padding: '7px 12px',
         fontSize: '11px',
         fontWeight: '900',
         position: 'sticky',
@@ -632,10 +632,11 @@ export default function App() {
         alignItems: 'center',
         justifyContent: 'center',
         gap: '6px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        borderBottom: '1px solid #cbd5e1',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
       }}>
-        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
-        {isOnline ? '🪙 Online · מחובר לענן (Supabase)' : '🪙 Offline · מצב טיסה / אופליין פעיל (עובד מהזיכרון המקומי)'}
+        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? '#059669' : '#d97706' }}></span>
+        {isOnline ? '🍏 Online · מחובר לענן (Supabase)' : '🍏 Offline · מצב טיסה / אופליין פעיל (עובד מהזיכרון המקומי)'}
       </div>
 
       <header style={{
@@ -646,7 +647,7 @@ export default function App() {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: '27px',
+        top: '28px',
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box'
