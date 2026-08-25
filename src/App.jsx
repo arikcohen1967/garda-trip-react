@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
+// Supabase Cloud Configuration
 const SUPABASE_URL = 'https://qrdgructcnphiyosakgb.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Ov14SZJ4k0-4UeqQNEQ6CQ_N4da5ABY';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -639,7 +640,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Header מעודכן: שלושת הקווים משמאל, כותרת במרכז, ו-Bio Vojon עם ניווט מימין */}
+      {/* Header: שלושת הקווים משמאל, כותרת במרכז, ו-Bio Vojon בלבד מימין */}
       <header style={{
         padding: '16px 20px',
         background: bgMain,
@@ -682,35 +683,20 @@ export default function App() {
           <p style={{ fontSize: '11px', color: textSub, margin: 0, fontWeight: '700' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
         </div>
 
-        {/* צד ימין: כפתור Bio Vojon משולב עם ניווט ישיר ל-Waze */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
-          <button 
-            onClick={() => handleGlobalClick(() => {
-              setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
-              setModalType('viewer');
-            })}
-            style={{
-              background: 'transparent', border: 'none', padding: '6px 8px',
-              fontSize: '12px', fontWeight: '800', color: '#166534', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '4px'
-            }}
-          >
-            🏡 Bio Vojon
-          </button>
-          
-          <a 
-            href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`}
-            onClick={() => playClickSound()}
-            style={{
-              background: '#ffffff', border: '1px solid #bae6fd', padding: '6px 8px',
-              borderRadius: '8px', fontSize: '11px', fontWeight: '800', color: '#00a6ff', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none'
-            }}
-            title="נווט למלון ב-Waze"
-          >
-            {WAZE_SVG} ניווט
-          </a>
-        </div>
+        {/* צד ימין: כפתור שם המלון בלבד (Bio Vojon) */}
+        <button 
+          onClick={() => handleGlobalClick(() => {
+            setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
+            setModalType('viewer');
+          })}
+          style={{
+            background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '10px 14px',
+            borderRadius: '12px', fontSize: '13px', fontWeight: '900', color: '#166534', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+          }}
+        >
+          🏡 Bio Vojon
+        </button>
       </header>
 
       {sidebarOpen && (
@@ -963,6 +949,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל שיחון איטלקי חכם עם פונט 16px למניעת זום במובייל */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -972,8 +959,16 @@ export default function App() {
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-                <input type="text" placeholder="הקלד בעברית לתרגום..." value={hebrewInput} onChange={(e) => setHebrewInput(e.target.value)} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `1px solid ${borderColor}`, background: '#f8fafc', color: textColor, fontWeight: '700', outline: 'none' }} />
-                <button onClick={() => handleGlobalClick(() => translateText(hebrewInput))} style={{ padding: '0 16px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '900', cursor: 'pointer' }}>תרגם</button>
+                <input 
+                  type="text" 
+                  lang="he" 
+                  dir="rtl" 
+                  placeholder="הקלד בעברית (או השתמש במיקרופון)..." 
+                  value={hebrewInput} 
+                  onChange={(e) => setHebrewInput(e.target.value)} 
+                  style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `1px solid ${borderColor}`, background: '#f8fafc', color: textColor, fontWeight: '700', outline: 'none', fontSize: '16px' }} 
+                />
+                <button onClick={() => handleGlobalClick(() => translateText(hebrewInput))} style={{ padding: '0 16px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '14px' }}>תרגם</button>
               </div>
               {italianOutput && (
                 <div style={{ background: '#f0fdf4', padding: '12px 14px', borderRadius: '12px', border: '1px solid #bbf7d0', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -981,6 +976,17 @@ export default function App() {
                   <strong style={{ fontSize: '15px', color: '#166534', direction: 'ltr' }}>{italianOutput}</strong>
                 </div>
               )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {filteredPhrases.slice(0, 10).map((phrase, idx) => (
+                  <div key={idx} onClick={() => speakItalian(phrase.it)} style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                    <button onClick={(e) => { e.stopPropagation(); speakItalian(phrase.it); }} style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '8px', width: '36px', height: '36px', fontSize: '15px', cursor: 'pointer', color: '#166534' }}>🔊</button>
+                    <div style={{ flex: 1, textAlign: 'right', marginRight: '10px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '800', color: textColor, display: 'block' }}>{phrase.he}</span>
+                      <strong style={{ fontSize: '13px', color: '#2563eb', display: 'block' }}>{phrase.it}</strong>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -989,7 +995,7 @@ export default function App() {
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
                 <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
@@ -1000,7 +1006,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל פרטי המלון */}
+      {/* מודל פרטי המלון המעודכן עם כפתור ניווט מוכן */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1019,9 +1025,9 @@ export default function App() {
                 <a 
                   href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
                   onClick={() => playClickSound()} 
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#ffffff', border: '1px solid #bae6fd', color: '#00a6ff', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}
                 >
-                  {WAZE_SVG} נווט למלון ב-Waze עם הכתובת
+                  {WAZE_SVG} נווט למלון ב-Waze לפי הכתובת
                 </a>
               </div>
             </div>
@@ -1045,6 +1051,7 @@ export default function App() {
         </div>
       )}
 
+      {/* תפריט "סביבי" מעודכן עם פיצה, גלידה, פארם, מסעדות ועוד */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1053,9 +1060,14 @@ export default function App() {
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>📍 סביבי (Around Me)</h3>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
+              <p style={{ fontSize: '13px', color: textSub, marginBottom: '16px', fontWeight: '700' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך:</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>🛒 סופרמרקטים</button>
-                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>⛽ תחנות דלק</button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>🍕 <span>פיצה</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>🍦 <span>גלידה</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>💊 <span>פארם / בית מרקחת</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>🍝 <span>מסעדות</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>🛒 <span>סופרמרקט</span></button>
+                <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: '#f8fafc', color: textColor, border: `1px solid ${borderColor}` }}>⛽ <span>תחנת דלק</span></button>
               </div>
             </div>
           </div>
@@ -1207,7 +1219,7 @@ const navBtnStyle = {
 };
 
 const modalStyle = {
-  position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
   width: '100vw', maxWidth: '100vw', height: '100vh',
   zIndex: 2000, overflowY: 'auto', overflowX: 'hidden',
   WebkitOverflowScrolling: 'touch', direction: 'rtl', boxSizing: 'border-box'
