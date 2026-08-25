@@ -615,13 +615,13 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🍏 Apple Silver Metallic & Sparkle Bar */}
+      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar */}
       <div style={{
-        background: 'linear-gradient(135deg, #e4e4e7 0%, #d4d4d8 25%, #a1a1aa 50%, #d4d4d8 75%, #e4e4e7 100%)',
-        color: '#18181b',
+        background: 'linear-gradient(135deg, #71717a 0%, #3f3f46 25%, #27272a 50%, #3f3f46 75%, #71717a 100%)',
+        color: '#ffffff',
         textAlign: 'center',
-        padding: '7px 12px',
-        fontSize: '11px',
+        padding: '14px 16px',
+        fontSize: '13px',
         fontWeight: '900',
         position: 'sticky',
         top: 0,
@@ -631,13 +631,14 @@ export default function App() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '6px',
-        borderBottom: '1px solid #71717a',
-        boxShadow: '0 3px 6px rgba(0,0,0,0.15)',
-        textShadow: '0 1px 0 rgba(255,255,255,0.8)'
+        gap: '8px',
+        borderBottom: '2px solid #18181b',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+        letterSpacing: '0.02em',
+        textShadow: '0 1px 2px rgba(0,0,0,0.5)'
       }}>
-        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? '#059669' : '#d97706', boxShadow: '0 0 8px rgba(255,255,255,0.9)' }}></span>
-        {isOnline ? '✨🍏 Online · מחובר לענן (Supabase) · מטאלי נוצץ' : '✨🍏 Offline · מצב טיסה פעיל · עובד מהזיכרון המקומי'}
+        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#34d399' : '#f59e0b', boxShadow: '0 0 10px rgba(255,255,255,0.9)' }}></span>
+        {isOnline ? '✨🍏 ONLINE · מחובר לענן (Supabase) · מטאלי יוקרתי' : '✨🍏 OFFLINE · מצב טיסה פעיל · עובד מהזיכרון המקומי'}
       </div>
 
       <header style={{
@@ -648,7 +649,7 @@ export default function App() {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: '28px',
+        top: '47px',
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box'
