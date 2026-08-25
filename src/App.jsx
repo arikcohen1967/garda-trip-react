@@ -640,7 +640,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Header: שלושת הקווים משמאל, כותרת במרכז, ו-Bio Vojon בלבד מימין */}
+      {/* Header מעודכן: שלושת הקווים משמאל, כותרת במרכז, וכפתור Bio Vojon נקי מימין */}
       <header style={{
         padding: '16px 20px',
         background: bgMain,
@@ -683,7 +683,7 @@ export default function App() {
           <p style={{ fontSize: '11px', color: textSub, margin: 0, fontWeight: '700' }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
         </div>
 
-        {/* צד ימין: כפתור שם המלון בלבד (Bio Vojon) */}
+        {/* צד ימין: כפתור Bio Vojon נקי */}
         <button 
           onClick={() => handleGlobalClick(() => {
             setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
@@ -949,7 +949,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל שיחון איטלקי חכם עם פונט 16px למניעת זום במובייל */}
+      {/* מודל שיחון איטלקי עם הגנה מפני זום במובייל */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -963,7 +963,7 @@ export default function App() {
                   type="text" 
                   lang="he" 
                   dir="rtl" 
-                  placeholder="הקלד בעברית (או השתמש במיקרופון)..." 
+                  placeholder="הקלד בעברית לתרגום..." 
                   value={hebrewInput} 
                   onChange={(e) => setHebrewInput(e.target.value)} 
                   style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `1px solid ${borderColor}`, background: '#f8fafc', color: textColor, fontWeight: '700', outline: 'none', fontSize: '16px' }} 
@@ -995,7 +995,7 @@ export default function App() {
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
                 <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
@@ -1006,7 +1006,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל פרטי המלון המעודכן עם כפתור ניווט מוכן */}
+      {/* מודל פרטי המלון עם כפתור ניווט בוויז לפי הכתובת */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1051,7 +1051,7 @@ export default function App() {
         </div>
       )}
 
-      {/* תפריט "סביבי" מעודכן עם פיצה, גלידה, פארם, מסעדות ועוד */}
+      {/* מודל סביבי מעודכן עם פיצה, גלידה, פארם, מסעדות ועוד */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1091,7 +1091,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל ארנק כרטיסים ומסמכים מלא */}
+      {/* מודל ארנק כרטיסים ומסמכים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
