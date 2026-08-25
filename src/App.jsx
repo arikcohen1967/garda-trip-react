@@ -254,7 +254,7 @@ export default function App() {
       
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
 
         const { error } = await supabase.from('trip_data').select('id').limit(1).abortSignal(controller.signal);
         clearTimeout(timeoutId);
@@ -269,14 +269,19 @@ export default function App() {
       }
     };
 
-    const handleOnline = () => updateOnlineStatus();
+    const handleOnline = () => {
+      // עדכון מיידי לירוק ברגע שהדפדפן מזהה חזרה של החיבור, ואז בדיקה מול הענן
+      setIsOnline(true);
+      setTimeout(updateOnlineStatus, 1500);
+    };
+    
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
     updateOnlineStatus();
-    const interval = setInterval(updateOnlineStatus, 3000);
+    const interval = setInterval(updateOnlineStatus, 4000);
 
     async function fetchTripDataFromCloud() {
       try {
