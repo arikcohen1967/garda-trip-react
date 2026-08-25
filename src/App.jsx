@@ -245,37 +245,42 @@ export default function App() {
     }
   };
 
-  // בדיקת חיבור מעודכנת שמגיבה מיידית למצב אופליין/טיסה
+  // מנגנון איתור חיבור משופר – מזהה מיד מצב אופליין או טיסה
   useEffect(() => {
     const updateOnlineStatus = async () => {
-      // אם הדפדפן מדווח מיד שאין רשת (כמו מצב טיסה)
+      // בדיקה מיידית של הדפדפן
       if (!navigator.onLine) {
         setIsOnline(false);
         return;
       }
       
       try {
-        // פינג קצר לשרת לוודא חיבור אמיתי
-        const { error } = await supabase.from('trip_data').select('id').limit(1);
+        // פינג קצר לשרת עם זמן קצוב (Timeout) כדי לא להיתקע
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        const { error } = await supabase.from('trip_data').select('id').limit(1).abortSignal(controller.signal);
+        clearTimeout(timeoutId);
+
         if (error) {
           setIsOnline(false);
         } else {
           setIsOnline(true);
         }
       } catch (err) {
+        // כל שגיאת רשת או טיסה תעביר את החיווי מיד ל-Offline (כתום)
         setIsOnline(false);
       }
     };
 
-    // האזנה מיידית לאירועי דפדפן (Online / Offline)
     const handleOnline = () => updateOnlineStatus();
-    const handleOffline = () => setIsOnline(false); // הופך לכתום/אופליין מיד באופן מיידי!
+    const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
     updateOnlineStatus();
-    const interval = setInterval(updateOnlineStatus, 4000);
+    const interval = setInterval(updateOnlineStatus, 3000);
 
     async function fetchTripDataFromCloud() {
       try {
@@ -623,7 +628,7 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar (מגיב מיידית למצב אופליין/טיסה) */}
+      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar (מגיב מיידית לכישלון רשת או מצב טיסה) */}
       <div style={{
         background: 'linear-gradient(135deg, #71717a 0%, #3f3f46 25%, #27272a 50%, #3f3f46 75%, #71717a 100%)',
         color: '#ffffff',
@@ -646,7 +651,7 @@ export default function App() {
         textShadow: '0 1px 2px rgba(0,0,0,0.5)'
       }}>
         <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#34d399' : '#f59e0b', boxShadow: '0 0 10px rgba(255,255,255,0.9)' }}></span>
-        {isOnline ? '✨🍏 ONLINE · מחובר לענן (Supabase) · מטאלי יוקרתי' : '✨🍏 OFFLINE · מצב טיסה פעיל · עובד מהזיכרון המקומי'}
+        {isOnline ? '✨🍏 ONLINE · מחובר לענן (Supabase) · מטאלי יוקרתי' : '✨🍏 OFFLINE · מצב טיסה / אופליין פעיל · עובד מהזיכרון המקומי'}
       </div>
 
       <header style={{
