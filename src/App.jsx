@@ -127,6 +127,49 @@ const tripDays = [
 
 const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
+const DEFAULT_DOCUMENTS = [
+  {
+    id: 'israir-flight',
+    folder: '✈️ טיסות ורכב',
+    title: 'הזמנת ישראייר (4623652)',
+    name: 'Israir Flight Booking',
+    type: 'text/flight-info',
+    size: 15400,
+    created: 1000,
+    isFlightInfo: true
+  },
+  {
+    id: 'aig-insurance',
+    folder: '✈️ טיסות ורכב',
+    title: 'ביטוח נסיעות AIG (170270213826)',
+    name: 'AIG Insurance Policy',
+    type: 'text/insurance-info',
+    size: 12000,
+    created: 900,
+    isInsuranceInfo: true
+  },
+  {
+    id: 'ecovia-car',
+    folder: '✈️ טיסות ורכב',
+    title: 'שובר השכרת רכב (724715780)',
+    name: 'Car Rental Voucher',
+    type: 'text/car-voucher',
+    size: 14000,
+    created: 800,
+    isCarVoucher: true
+  },
+  {
+    id: 'vojon-hotel',
+    folder: '🏡 מלון',
+    title: 'הזמנת Bio Agriturismo Vojon',
+    name: 'Hotel Booking Confirmation',
+    type: 'text/hotel-info',
+    size: 13000,
+    created: 700,
+    isHotelInfo: true
+  }
+];
+
 const QUICK_PHRASES = [
   { cat: '🍕 מסעדות וקפה', he: 'חשבון בבקשה', it: 'Il conto, per favore', pro: 'אִיל קוֹנְטוֹ, פֶּר פָבוֹרֶה' },
   { cat: '🍕 מסעדות וקפה', he: 'שולחן ל-5 אנשים בבקשה', it: 'Un tavolo per cinque persone, per favore', pro: 'אוּן טָאבוֹלוֹ פֶּר צִ׳ינְקְוֶוה פֶּרְסוֹנֶה' },
@@ -159,7 +202,7 @@ export default function App() {
 
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
-  const [ticketFiles, setTicketFiles] = useState([]);
+  const [ticketFiles, setTicketFiles] = useState(DEFAULT_DOCUMENTS.filter(d => d.folder === '✈️ טיסות ורכב'));
   const [showUploadBox, setShowUploadBox] = useState(false);
   const [newTicketTitle, setNewTicketTitle] = useState('');
   const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב');
@@ -260,7 +303,7 @@ export default function App() {
       if (Array.isArray(saved) && saved.length) setFolders(saved);
     } catch (e) {}
     initTickets();
-    loadGallery();
+    loadGalleryFromCloud();
   }, []);
 
   useEffect(() => {
@@ -276,10 +319,6 @@ export default function App() {
           const st = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
           st.createIndex('folder', 'folder', { unique: false });
         }
-        if (!db.objectStoreNames.contains('gallery')) {
-          const gst = db.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
-          gst.createIndex('dayIndex', 'dayIndex', { unique: false });
-        }
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
@@ -287,80 +326,66 @@ export default function App() {
   };
 
   const initTickets = async () => {
-    const db = await openDb();
-    const tx = db.transaction('files', 'readonly');
-    const req = tx.objectStore('files').getAll();
-    req.onsuccess = async () => {
-      const all = req.result || [];
-      const writeTx = db.transaction('files', 'readwrite');
-      const store = writeTx.objectStore('files');
-      
-      if (!all.some(f => f.isFlightInfo)) {
-        store.add({
-          folder: '✈️ טיסות ורכב',
-          title: 'הזמנת ישראייר (4623652)',
-          name: 'Israir Flight Booking',
-          type: 'text/flight-info',
-          size: 15400,
-          created: Date.now(),
-          isFlightInfo: true
+    try {
+      const db = await openDb();
+      const tx = db.transaction('files', 'readonly');
+      const req = tx.objectStore('files').getAll();
+      req.onsuccess = async () => {
+        const all = req.result || [];
+        const writeTx = db.transaction('files', 'readwrite');
+        const store = writeTx.objectStore('files');
+        
+        DEFAULT_DOCUMENTS.forEach(doc => {
+          if (!all.some(f => f.title === doc.title || (doc.isFlightInfo && f.isFlightInfo) || (doc.isInsuranceInfo && f.isInsuranceInfo) || (doc.isCarVoucher && f.isCarVoucher) || (doc.isHotelInfo && f.isHotelInfo))) {
+            store.add(doc);
+          }
         });
-      }
-      if (!all.some(f => f.isInsuranceInfo)) {
-        store.add({
-          folder: '✈️ טיסות ורכב',
-          title: 'ביטוח נסיעות AIG (170270213826)',
-          name: 'AIG Insurance Policy',
-          type: 'text/insurance-info',
-          size: 12000,
-          created: Date.now() - 1000,
-          isInsuranceInfo: true
-        });
-      }
-      if (!all.some(f => f.isCarVoucher)) {
-        store.add({
-          folder: '✈️ טיסות ורכב',
-          title: 'שובר השכרת רכב (724715780)',
-          name: 'Car Rental Voucher',
-          type: 'text/car-voucher',
-          size: 14000,
-          created: Date.now() - 2000,
-          isCarVoucher: true
-        });
-      }
-      if (!all.some(f => f.isHotelInfo)) {
-        store.add({
-          folder: '🏡 מלון',
-          title: 'הזמנת Bio Agriturismo Vojon',
-          name: 'Hotel Booking Confirmation',
-          type: 'text/hotel-info',
-          size: 13000,
-          created: Date.now(),
-          isHotelInfo: true
-        });
-      }
-      writeTx.oncomplete = () => loadFiles(activeFolder);
-    };
+        writeTx.oncomplete = () => loadFiles(activeFolder);
+      };
+    } catch (e) {
+      console.log('IndexedDB init fallback');
+    }
   };
 
   const loadFiles = async (folder) => {
-    const db = await openDb();
-    const tx = db.transaction('files', 'readonly');
-    const req = tx.objectStore('files').index('folder').getAll(folder);
-    req.onsuccess = () => {
-      const res = req.result || [];
-      setTicketFiles(res.sort((a, b) => b.created - a.created));
-    };
+    try {
+      const db = await openDb();
+      const tx = db.transaction('files', 'readonly');
+      const req = tx.objectStore('files').index('folder').getAll(folder);
+      req.onsuccess = () => {
+        const dbFiles = req.result || [];
+        const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
+        
+        // ממזג את קבצי ברירת המחדל עם קבצים חדשים שהועלו
+        const merged = [...dbFiles];
+        defaultsForFolder.forEach(def => {
+          if (!merged.some(m => m.title === def.title)) {
+            merged.push(def);
+          }
+        });
+        setTicketFiles(merged.sort((a, b) => (b.created || 0) - (a.created || 0)));
+      };
+      req.onerror = () => {
+        setTicketFiles(DEFAULT_DOCUMENTS.filter(d => d.folder === folder));
+      };
+    } catch (e) {
+      setTicketFiles(DEFAULT_DOCUMENTS.filter(d => d.folder === folder));
+    }
   };
 
-  const loadGallery = async () => {
-    const db = await openDb();
-    const tx = db.transaction('gallery', 'readonly');
-    const req = tx.objectStore('gallery').getAll();
-    req.onsuccess = () => {
-      const res = req.result || [];
-      setGalleryItems(res.sort((a, b) => b.created - a.created));
-    };
+  const loadGalleryFromCloud = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('gallery')
+        .select('*')
+        .order('created', { ascending: false });
+
+      if (!error && data) {
+        setGalleryItems(data);
+      }
+    } catch (e) {
+      console.log('Cloud gallery load error, fallback to local');
+    }
   };
 
   const handleFileUpload = async (e) => {
@@ -387,13 +412,143 @@ export default function App() {
     };
   };
 
+  const handleGalleryUpload = async (e) => {
+    const files = [...e.target.files];
+    if (!files.length) return;
+    const file = files[0];
+
+    try {
+      const filePath = `trip_${Date.now()}_${file.name}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('trip-photos')
+        .upload(filePath, file);
+
+      if (uploadErr) {
+        alert('שגיאה בהעלאת הקובץ לענן: ' + uploadErr.message);
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('trip-photos')
+        .getPublicUrl(filePath);
+
+      const mediaUrl = publicUrlData.publicUrl;
+
+      const newItem = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        day_index: galleryDayFilter === 'all' ? activeDay : Number(galleryDayFilter),
+        caption: galleryCaption || '',
+        author: galleryAuthor || 'משפחה',
+        created: Date.now(),
+        media_url: mediaUrl
+      };
+
+      const { error: dbErr } = await supabase.from('gallery').insert([newItem]);
+      if (dbErr) {
+        alert('שגיאה בשמירת נתוני התמונה בענן');
+        return;
+      }
+
+      setGalleryCaption('');
+      setShowGalleryUpload(false);
+      loadGalleryFromCloud();
+    } catch (err) {
+      alert('שגיאה בתהליך ההעלאה');
+    }
+  };
+
+  const saveDailyChallenge = async (photoFile = null) => {
+    const dayKey = String(activeDay);
+    const updated = {
+      ...completedChallenges,
+      [dayKey]: {
+        completed: true,
+        text: challengeNote || 'אתגר הושלם בהצלחה! 🎉',
+        author: challengeAuthor || 'משפחה',
+        time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+        date: tripDays[activeDay]?.date
+      }
+    };
+    setCompletedChallenges(updated);
+    localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
+
+    if (photoFile) {
+      try {
+        const filePath = `challenge_${Date.now()}_${photoFile.name}`;
+        await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+        const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+
+        await supabase.from('gallery').insert([{
+          name: `אתגר: ${tripDays[activeDay]?.title}`,
+          type: photoFile.type,
+          size: photoFile.size,
+          day_index: activeDay,
+          caption: `🎯 אתגר היום: ${challengeNote || tripDays[activeDay]?.challenge}`,
+          author: challengeAuthor || 'משפחה',
+          created: Date.now(),
+          media_url: publicUrlData.publicUrl
+        }]);
+        loadGalleryFromCloud();
+      } catch (e) {}
+    }
+
+    setChallengeNote('');
+    alert('🏆 כל הכבוד! האתגר בוצע ונשמר ביומן האתגרים המשפחתי!');
+    setModalType(null);
+  };
+
+  const resetSingleChallenge = (dayIdx) => {
+    if (!window.confirm(`לאפס את האתגר של ${tripDays[dayIdx]?.label} ולהחזיר למצב לא מבוצע?`)) return;
+    const updated = { ...completedChallenges };
+    delete updated[String(dayIdx)];
+    setCompletedChallenges(updated);
+    localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
+    if (modalType === 'questModal') setModalType(null);
+  };
+
+  const resetAllChallenges = () => {
+    if (!window.confirm('האם אתה בטוח שברצונך לאפס את כל המשימות והאתגרים של כל הימים?')) return;
+    setCompletedChallenges({});
+    localStorage.removeItem('garda-challenges-log');
+    alert('כל האתגרים אופסו בהצלחה למצב התחלתי!');
+  };
+
+  const unlockAdminChallenges = () => {
+    if (isAdminUnlocked) {
+      setIsAdminUnlocked(false);
+      return;
+    }
+    const pin = window.prompt('הזן קוד מנהל לצפייה בכל האתגרים:');
+    if (pin === '1967' || pin === '1234') {
+      setIsAdminUnlocked(true);
+    } else if (pin !== null) {
+      alert('קוד שגוי!');
+    }
+  };
+
+  const deleteGalleryItem = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm('למחוק תמונה/סרטון זה מהאלבום?')) return;
+    try {
+      await supabase.from('gallery').delete().eq('id', id);
+      if (lightboxItem && lightboxItem.id === id) setLightboxItem(null);
+      loadGalleryFromCloud();
+    } catch (err) {}
+  };
+
   const deleteFile = async (id, e) => {
     e.stopPropagation();
     if (!window.confirm('למחוק כרטיס זה לצמיתות?')) return;
-    const db = await openDb();
-    const tx = db.transaction('files', 'readwrite');
-    tx.objectStore('files').delete(id);
-    tx.oncomplete = () => loadFiles(activeFolder);
+    try {
+      const db = await openDb();
+      const tx = db.transaction('files', 'readwrite');
+      tx.objectStore('files').delete(id);
+      tx.oncomplete = () => loadFiles(activeFolder);
+    } catch (err) {
+      setTicketFiles(prev => prev.filter(f => f.id !== id));
+    }
   };
 
   const addNewFolder = () => {
@@ -486,14 +641,29 @@ export default function App() {
   const day = tripDays[activeDay];
   const isCurrentDayCompleted = completedChallenges[String(activeDay)]?.completed;
 
+  const filteredGallery = galleryDayFilter === 'all'
+    ? galleryItems
+    : galleryItems.filter(item => String(item.day_index) === String(galleryDayFilter));
+
+  const categories = ['הכל', '🍕 מסעדות וקפה', '🍦 גלידה ומתוקים', '🛒 קניות וחניה', '👋 בסיסי ונימוס'];
+  
+  const filteredPhrases = QUICK_PHRASES.filter(p => {
+    const matchesCategory = selectedCategory === 'הכל' || p.cat === selectedCategory;
+    const cleanSearch = phraseSearch.trim().toLowerCase();
+    if (!cleanSearch) return matchesCategory;
+    
+    const matchesText = p.he.toLowerCase().includes(cleanSearch) || 
+                        p.it.toLowerCase().includes(cleanSearch) || 
+                        p.pro.toLowerCase().includes(cleanSearch);
+    return matchesCategory && matchesText;
+  });
+
   const bgMain = '#ffffff';
   const cardBg = '#ffffff';
   const textColor = '#000000';
   const textSub = '#4b5563';
   const borderColor = '#e5e7eb';
   const cardShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)';
-  const yellowBtnBg = '#fef08a';
-  const yellowBtnText = '#000000';
 
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
@@ -745,7 +915,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודלים שונים באפליקציה */}
+      {/* מודל אתגר היום */}
       {modalType === 'questModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -795,6 +965,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל יומן אתגרים */}
       {modalType === 'challengesLog' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -803,6 +974,18 @@ export default function App() {
                 <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>יומן האתגרים והבדיחות</h2>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '8px' }}>
+                {isAdminUnlocked && (
+                  <button onClick={() => handleGlobalClick(resetAllChallenges)} style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}>
+                    🔄 אפס את כל האתגרים
+                  </button>
+                )}
+                <button onClick={() => handleGlobalClick(unlockAdminChallenges)} style={{ background: isAdminUnlocked ? '#fee2e2' : '#f8fafc', color: isAdminUnlocked ? '#dc2626' : textColor, border: `1px solid ${isAdminUnlocked ? '#fca5a5' : borderColor}`, padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', marginLeft: 'auto' }}>
+                  {isAdminUnlocked ? '🔒 נעל צפייה סודית' : '🔑 פתח הרשאת מנהל (אריק)'}
+                </button>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {tripDays.map((d, idx) => {
                   const log = completedChallenges[String(idx)];
@@ -816,7 +999,17 @@ export default function App() {
                         <span style={{ fontSize: '12px', fontWeight: '800', color: textSub }}>{d.label} · {d.title}</span>
                       </div>
                       {isUnlocked ? (
-                        <b style={{ fontSize: '14px', color: textColor, display: 'block' }}>🎯 {d.challenge}</b>
+                        <>
+                          <b style={{ fontSize: '14px', color: textColor, display: 'block' }}>🎯 {d.challenge}</b>
+                          {log?.completed && (
+                            <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '8px', fontSize: '13px', color: '#166534', lineHeight: '1.4', boxSizing: 'border-box', fontWeight: '700' }}>
+                              <b>💬 תיעוד ובדיחה:</b> "{log.text}"
+                              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign: 'left' }}>
+                                נכתב על ידי: {log.author} · שעה: {log.time}
+                              </div>
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <div style={{ fontSize: '13px', color: textSub, fontWeight: '700' }}>🔒 אתגר סודי</div>
                       )}
@@ -829,6 +1022,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל שיחון איטלקי */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -847,11 +1041,23 @@ export default function App() {
                   <strong style={{ fontSize: '15px', color: '#166534', direction: 'ltr' }}>{italianOutput}</strong>
                 </div>
               )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {filteredPhrases.slice(0, 10).map((phrase, idx) => (
+                  <div key={idx} onClick={() => speakItalian(phrase.it)} style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                    <button onClick={(e) => { e.stopPropagation(); speakItalian(phrase.it); }} style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '8px', width: '36px', height: '36px', fontSize: '15px', cursor: 'pointer', color: '#166534' }}>🔊</button>
+                    <div style={{ flex: 1, textAlign: 'right', marginRight: '10px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '800', color: textColor, display: 'block' }}>{phrase.he}</span>
+                      <strong style={{ fontSize: '13px', color: '#2563eb', display: 'block' }}>{phrase.it}</strong>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* מודל גלריית תמונות בענן */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -860,36 +1066,226 @@ export default function App() {
                 <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
-              <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', background: '#0f172a', color: '#fff', border: 'none', marginBottom: '16px' }}>📷 הוסף תמונה / סרטון</button>
+              <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', background: '#0f172a', color: '#fff', border: 'none', marginBottom: '16px' }}>📷 {showGalleryUpload ? 'סגור העלאה' : 'הוסף תמונה / סרטון'}</button>
+              
+              {showGalleryUpload && (
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: `1px solid ${borderColor}`, marginBottom: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input type="file" id="cameraPhoto" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleGalleryUpload} />
+                  <input type="file" id="galleryMulti" accept="image/*,video/*" multiple style={{ display: 'none' }} onChange={handleGalleryUpload} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('cameraPhoto').click())} style={{ padding: '12px', borderRadius: '10px', background: '#ffffff', border: `1px solid ${borderColor}`, fontWeight: '800', cursor: 'pointer' }}>📸 צלם במצלמה</button>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('galleryMulti').click())} style={{ padding: '12px', borderRadius: '10px', background: '#ffffff', border: `1px solid ${borderColor}`, fontWeight: '800', cursor: 'pointer' }}>📁 בחר מהגלריה</button>
+                  </div>
+                </div>
+              )}
+
+              {filteredGallery.length === 0 ? (
+                <div style={{ textAlign: 'center', color: textSub, padding: '36px 16px', fontSize: '13px', fontWeight: '600', background: '#f8fafc', borderRadius: '14px', border: `1px dashed ${borderColor}` }}>
+                  📸 אין עדיין תמונות באלבום הענן.<br/>לחצו על <b>"הוסף תמונה / סרטון"</b> כדי להעלות את התמונה הראשונה שכולם יראו!
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                  {filteredGallery.map((item) => (
+                    <div key={item.id} onClick={() => handleGlobalClick(() => setLightboxItem(item))} style={{ background: cardBg, borderRadius: '12px', border: `1px solid ${borderColor}`, overflow: 'hidden', cursor: 'pointer' }}>
+                      <img src={item.media_url} alt={item.caption || 'תמונה'} style={{ width: '100%', height: '120px', objectFit: 'cover' }} />
+                      <div style={{ padding: '8px 10px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: textColor, display: 'block' }}>{item.caption || item.name}</span>
+                        <small style={{ color: textSub, fontSize: '10px' }}>מאת: {item.author}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* מודל פרטי המלון */}
-      {modalType === 'viewer' && viewerItem && (
+      {/* מודל ארנק כרטיסים ומסמכים מלא ומוגן */}
+      {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#166534' }}>🏡 Bio Agriturismo Vojon</h3>
+                <div>
+                  <small style={{ color: '#2563eb', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>ארנק דיגיטלי</small>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
+                </div>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
-              
-              <div style={{ lineHeight: '1.8', fontSize: '14px', color: textColor, fontWeight: '600' }}>
-                <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
-                <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
-                <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
-                <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: '#2563eb', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
-                
-                <a 
-                  href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
-                  onClick={() => playClickSound()} 
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#ffffff', border: '1px solid #bae6fd', color: '#00a6ff', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}
-                >
-                  {WAZE_SVG} נווט למלון ב-Waze עם הכתובת
-                </a>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', border: 'none', background: '#0f172a', color: '#ffffff' }}>
+                  ➕ הוסף כרטיס
+                </button>
+                <button onClick={() => handleGlobalClick(addNewFolder)} style={{ padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', border: `1px solid ${borderColor}`, background: '#f3f4f6', color: '#000000' }}>
+                  📁 תקייה חדשה
+                </button>
               </div>
+
+              {showUploadBox && (
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: `1px solid ${borderColor}`, marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box', width: '100%' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', fontWeight: '700' }}>
+                      {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', fontWeight: '600' }} />
+                  </div>
+                  <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
+                  <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('cameraInput').click())} style={{ ...uploadBtnStyle, background: '#ffffff', color: textColor, border: `1px solid ${borderColor}` }}>📷 צלם במצלמה</button>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: '#ffffff', color: textColor, border: `1px solid ${borderColor}` }}>📁 בחר קובץ מהמכשיר</button>
+                  </div>
+                </div>
+              )}
+
+              <h3 style={{ fontSize: '14px', margin: '8px 0 10px', fontWeight: '900', color: textColor }}>תקיות הטיול</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '8px', marginBottom: '18px', width: '100%', boxSizing: 'border-box' }}>
+                {folders.map((f, i) => (
+                  <div 
+                    key={i} 
+                    onClick={() => handleGlobalClick(() => setActiveFolder(f))}
+                    style={{
+                      padding: '12px', borderRadius: '12px',
+                      background: activeFolder === f ? '#0f172a' : '#f8fafc',
+                      color: activeFolder === f ? '#ffffff' : textColor,
+                      border: `1px solid ${activeFolder === f ? '#0f172a' : borderColor}`,
+                      cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box'
+                    }}
+                  >
+                    <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px', fontWeight: '900' }}>{f}</strong>
+                    <small style={{ color: activeFolder === f ? 'rgba(255,255,255,0.7)' : textSub, fontSize: '10px', fontWeight: '800' }}>הצג קבצים</small>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ borderBottom: `1px solid ${borderColor}`, paddingBottom: '8px', marginBottom: '12px', fontWeight: '900', fontSize: '13px', color: textColor }}>
+                תכולת תיקייה: {activeFolder}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
+                {ticketFiles.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: textSub, padding: '24px', fontSize: '13px', fontWeight: '600' }}>אין עדיין כרטיסים בתקייה זו.</div>
+                ) : (
+                  ticketFiles.map((x, idx) => (
+                    <div 
+                      key={x.id || idx} 
+                      onClick={() => handleGlobalClick(() => { setViewerItem(x); setModalType('viewer'); })}
+                      style={{ 
+                        display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', 
+                        gap: '12px', padding: '14px', borderRadius: '14px', background: '#f8fafc', 
+                        border: `1px solid ${borderColor}`, cursor: 'pointer', boxSizing: 'border-box', width: '100%' 
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#ffffff', border: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
+                          {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
+                        </div>
+                        <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
+                          <b style={{ display: 'block', fontSize: '13px', fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: textColor }}>{x.title || x.name}</b>
+                          <small style={{ color: textSub, fontSize: '11px', display: 'block', fontWeight: '700' }}>
+                            {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round((x.size || 1024) / 1024)} KB`)))}
+                          </small>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '800' }}>צפה 👁️</span>
+                        {!x.isFlightInfo && !x.isInsuranceInfo && !x.isCarVoucher && !x.isHotelInfo && (
+                          <button onClick={(e) => deleteFile(x.id, e)} style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}>מחק</button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* מודל צפייה מלא במסמכים */}
+      {modalType === 'viewer' && viewerItem && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(viewerItem.isHotelInfo && !sidebarOpen ? null : 'tickets'))} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
+                <span style={{ fontSize: '16px', fontWeight: '900', color: textColor }}>{viewerItem.title || viewerItem.name}</span>
+                <button onClick={() => handleGlobalClick(() => setModalType(viewerItem.isHotelInfo && !sidebarOpen ? null : 'tickets'))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              </div>
+
+              {viewerItem.isFlightInfo && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: textColor, fontWeight: '600' }}>
+                  <h3 style={{ color: '#2563eb', margin: '0 0 10px', fontSize: '16px', fontWeight: '900' }}>✈️ פרטי טיסה – ישראייר</h3>
+                  <p><b>מספר הזמנה (Docket):</b> <span dir="ltr">4623652</span></p>
+                  <p><b>טיסת הלוך (30.09.2026):</b><br/>שעה: <span dir="ltr">13:15</span> מתל אביב (טרמינל 1) ➔ <span dir="ltr">16:05</span> בוורונה<br/>טיסה: <span dir="ltr">6H 357</span> (Economy)</p>
+                  <p><b>טיסת חזור (06.10.2026):</b><br/>שעה: <span dir="ltr">21:35</span> מוורונה ➔ <span dir="ltr">02:05</span> בתל אביב (07.10)<br/>טיסה: <span dir="ltr">6H 352</span> (Economy)</p>
+                  <hr style={{ border: 0, borderTop: `1px solid ${borderColor}`, margin: '14px 0' }}/>
+                  <b>נוסעים בהזמנה:</b>
+                  <ul style={{ paddingRight: '20px', margin: '6px 0', color: textColor }}>
+                    <li>Arik Cohen (28/12/1967)</li>
+                    <li>Amit Cohen (01/07/2014)</li>
+                    <li>Yuly Cohen (01/07/2014)</li>
+                    <li>Lian Cohen (14/10/2015)</li>
+                    <li>Harel Vilnai Cohen (04/09/1997)</li>
+                  </ul>
+                </div>
+              )}
+
+              {viewerItem.isInsuranceInfo && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: textColor, fontWeight: '600' }}>
+                  <h3 style={{ color: '#2563eb', margin: '0 0 10px', fontSize: '16px', fontWeight: '900' }}>🛡️ ביטוח נסיעות לחו"ל – AIG</h3>
+                  <p><b>מספר פוליסה:</b> <span dir="ltr">170270213826</span></p>
+                  <p><b>מוקד חירום רפואי 24/7 (עברית):</b></p>
+                  <ul style={{ paddingRight: '20px', margin: '6px 0' }}>
+                    <li>WhatsApp: <a href="https://wa.me/972549940911" target="_blank" rel="noreferrer" style={{ color: '#2563eb', fontWeight: '800' }} dir="ltr">+972-54-9940911</a></li>
+                    <li>טלפון ישיר: <a href="tel:+97239191155" style={{ color: '#2563eb', fontWeight: '800' }} dir="ltr">+972-3-9191155</a></li>
+                  </ul>
+                  <hr style={{ border: 0, borderTop: `1px solid ${borderColor}`, margin: '14px 0' }}/>
+                  <a href="https://www.aig.co.il/t/6b66x6" target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ display: 'block', padding: '12px', background: '#2563eb', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '900', marginTop: '10px' }}>כניסה לאזור האישי של AIG</a>
+                </div>
+              )}
+
+              {viewerItem.isCarVoucher && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: textColor, fontWeight: '600' }}>
+                  <h3 style={{ color: '#2563eb', margin: '0 0 10px', fontSize: '16px', fontWeight: '900' }}>🚗 שובר השכרת רכב – Booking.com (Ecovia)</h3>
+                  <p><b>מספר הזמנה:</b> <span dir="ltr">724715780</span></p>
+                  <p><b>רכב:</b> Intermediate SUV – Citroen C5 Aircross או דומה (אוטומטי)</p>
+                  <p><b>איסוף:</b> 30.09.2026 ב-17:30 – נמל התעופה ורונה</p>
+                  <p><b>החזרה:</b> 06.10.2026 ב-17:30 – נמל התעופה ורונה</p>
+                  <p><b>נהג ראשי:</b> <span dir="ltr">Cohen Arik (+972502022768)</span></p>
+                  <p><b>ביטוח:</b> <span style={{ color: '#059669', fontWeight: '900' }}>הגנה מלאה כלולה (Full Protection)</span></p>
+                  <a href="https://www.booking.com" target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ display: 'block', padding: '12px', background: '#0284c7', color: '#fff', borderRadius: '12px', textAlign: 'center', textDecoration: 'none', fontWeight: '900', marginTop: '14px' }}>📱 פתח ב-Booking.com</a>
+                </div>
+              )}
+
+              {viewerItem.isHotelInfo && (
+                <div style={{ lineHeight: '1.8', fontSize: '14px', color: textColor, fontWeight: '600' }}>
+                  <h3 style={{ color: '#166534', margin: '0 0 10px', fontSize: '16px', fontWeight: '900' }}>🏡 Bio Agriturismo Vojon</h3>
+                  <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
+                  <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
+                  <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
+                  <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: '#2563eb', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
+                  
+                  <a 
+                    href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
+                    onClick={() => playClickSound()} 
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: '#ffffff', border: '1px solid #bae6fd', color: '#00a6ff', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}
+                  >
+                    {WAZE_SVG} נווט למלון ב-Waze עם הכתובת
+                  </a>
+                </div>
+              )}
+
+              {viewerItem.blob && (viewerItem.type || '').startsWith('image/') && (
+                <img src={URL.createObjectURL(viewerItem.blob)} alt="מסמך" style={{ width: '100%', borderRadius: '12px', marginTop: '10px', border: `1px solid ${borderColor}` }} />
+              )}
             </div>
           </div>
         </div>
@@ -945,119 +1341,12 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל ארנק כרטיסים ומסמכים עם כל הקבצים בפנים */}
-      {modalType === 'tickets' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
-                <div>
-                  <small style={{ color: '#2563eb', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>ארנק דיגיטלי</small>
-                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
-                </div>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
-                <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', border: '1px solid #eab308', background: yellowBtnBg, color: yellowBtnText }}>
-                  ➕ הוסף כרטיס
-                </button>
-                <button onClick={() => handleGlobalClick(addNewFolder)} style={{ padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', border: `1px solid ${borderColor}`, background: '#f3f4f6', color: '#000000' }}>
-                  📁 תקייה חדשה
-                </button>
-              </div>
-
-              {showUploadBox && (
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: `1px solid ${borderColor}`, marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box', width: '100%' }}>
-                  <div>
-                    <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
-                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', fontWeight: '700' }}>
-                      {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
-                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', fontWeight: '600' }} />
-                  </div>
-                  <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
-                  <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <button onClick={() => handleGlobalClick(() => document.getElementById('cameraInput').click())} style={{ ...uploadBtnStyle, background: yellowBtnBg, color: yellowBtnText, border: '1px solid #eab308' }}>📷 צלם במצלמה</button>
-                    <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: yellowBtnBg, color: yellowBtnText, border: '1px solid #eab308' }}>📁 בחר קובץ מהמכשיר</button>
-                  </div>
-                </div>
-              )}
-
-              <h3 style={{ fontSize: '14px', margin: '8px 0 10px', fontWeight: '900', color: textColor }}>תקיות הטיול</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '8px', marginBottom: '18px', width: '100%', boxSizing: 'border-box' }}>
-                {folders.map((f, i) => (
-                  <div 
-                    key={i} 
-                    onClick={() => handleGlobalClick(() => setActiveFolder(f))}
-                    style={{
-                      padding: '12px', borderRadius: '12px',
-                      background: activeFolder === f ? yellowBtnBg : '#f8fafc',
-                      color: '#000000',
-                      border: `1px solid ${activeFolder === f ? '#eab308' : borderColor}`,
-                      cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box'
-                    }}
-                  >
-                    <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px', fontWeight: '900' }}>{f}</strong>
-                    <small style={{ color: textSub, fontSize: '10px', fontWeight: '800' }}>הצג קבצים</small>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ borderBottom: `1px solid ${borderColor}`, paddingBottom: '8px', marginBottom: '12px', fontWeight: '900', fontSize: '13px', color: textColor }}>
-                תכולת תיקייה: {activeFolder}
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
-                <div onClick={() => handleGlobalClick(() => { setViewerItem({ isFlightInfo: true, title: 'הזמנת ישראייר (4623652)' }); setModalType('viewer'); })} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: '14px', background: '#f8fafc', border: `1px solid ${borderColor}`, cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '20px' }}>✈️</span>
-                    <div>
-                      <b style={{ display: 'block', fontSize: '13px', fontWeight: '900' }}>הזמנת ישראייר (4623652)</b>
-                      <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>טיסות ורכב · 5 נוסעים</small>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '800' }}>צפה 👁️</span>
-                </div>
-
-                <div onClick={() => handleGlobalClick(() => { setViewerItem({ isInsuranceInfo: true, title: 'ביטוח נסיעות AIG (170270213826)' }); setModalType('viewer'); })} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: '14px', background: '#f8fafc', border: `1px solid ${borderColor}`, cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '20px' }}>🛡️</span>
-                    <div>
-                      <b style={{ display: 'block', fontSize: '13px', fontWeight: '900' }}>ביטוח נסיעות AIG (170270213826)</b>
-                      <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>פוליסת חירום רפואי</small>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '800' }}>צפה 👁️</span>
-                </div>
-
-                <div onClick={() => handleGlobalClick(() => { setViewerItem({ isCarVoucher: true, title: 'שובר השכרת רכב (724715780)' }); setModalType('viewer'); })} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: '14px', background: '#f8fafc', border: `1px solid ${borderColor}`, cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '20px' }}>🚗</span>
-                    <div>
-                      <b style={{ display: 'block', fontSize: '13px', fontWeight: '900' }}>שובר השכרת רכב (724715780)</b>
-                      <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>Ecovia · SUV אוטומטי</small>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '800' }}>צפה 👁️</span>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
 
 const sidebarBtnStyle = {
-  border: `1px solid ${'#e5e7eb'}`, padding: '12px 16px',
+  border: `1px solid #e5e7eb`, padding: '12px 16px',
   borderRadius: '12px', fontWeight: '800', fontSize: '14px', textAlign: 'right',
   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', boxSizing: 'border-box', width: '100%',
   background: '#f8fafc', color: '#000000', boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
@@ -1098,24 +1387,4 @@ const gridModalBtn = {
 const uploadBtnStyle = {
   width: '100%', padding: '12px', borderRadius: '10px',
   fontWeight: '900', cursor: 'pointer', fontSize: '12px', boxSizing: 'border-box'
-};
-
-const galleryActionBtn = {
-  padding: '10px 6px', borderRadius: '10px',
-  fontWeight: '900', fontSize: '11px', cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box'
-};
-
-const quickChipStyleLight = {
-  flex: '0 0 auto', padding: '6px 12px', borderRadius: '8px',
-  background: '#f1f5f9', color: '#000000',
-  border: '1px solid #cbd5e1', fontSize: '12px', fontWeight: '800',
-  cursor: 'pointer', whiteSpace: 'nowrap'
-};
-
-const quickChipStyleDark = {
-  flex: '0 0 auto', padding: '6px 10px', borderRadius: '8px',
-  background: '#f1f5f9', color: '#000000',
-  border: '1px solid #cbd5e1', fontSize: '12px', fontWeight: '800',
-  cursor: 'pointer', whiteSpace: 'nowrap'
 };
