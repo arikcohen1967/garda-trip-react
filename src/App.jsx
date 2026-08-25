@@ -1,4 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+// Supabase Cloud Configuration
+const SUPABASE_URL = 'https://qrdgructcnphiyosakgb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_0v14SZJ4k0-4UeqQNEQ6CQ_N4da5...';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const WAZE_SVG = (isDark) => (
   <svg viewBox="0 0 512 512" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
@@ -151,7 +157,6 @@ export default function App() {
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   
-  // Theme Mode State ('light' or 'dark')
   const [themeMode, setThemeMode] = useState(() => {
     return localStorage.getItem('garda-theme-mode') || 'light';
   });
@@ -164,7 +169,6 @@ export default function App() {
 
   const isDark = themeMode === 'dark';
 
-  // Tickets State
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
   const [ticketFiles, setTicketFiles] = useState([]);
@@ -172,7 +176,6 @@ export default function App() {
   const [newTicketTitle, setNewTicketTitle] = useState('');
   const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב');
 
-  // Album / Gallery State
   const [galleryItems, setGalleryItems] = useState([]);
   const [galleryDayFilter, setGalleryDayFilter] = useState('all');
   const [galleryCaption, setGalleryCaption] = useState('');
@@ -180,13 +183,11 @@ export default function App() {
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
   const [lightboxItem, setLightboxItem] = useState(null);
 
-  // Challenges State
   const [completedChallenges, setCompletedChallenges] = useState({});
   const [challengeNote, setChallengeNote] = useState('');
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // Translator State
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -197,7 +198,6 @@ export default function App() {
   
   const audioContextRef = useRef(false);
 
-  // High-Reliability Audio Wakeup & Haptic Click
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -219,8 +219,6 @@ export default function App() {
 
   const handleGlobalClick = (callback) => {
     playClickSound();
-    
-    // Force Wakeup of iOS Speech Synthesis Engine on any first user interaction
     if (!audioContextRef.current) {
       if ('speechSynthesis' in window) {
         const silent = new SpeechSynthesisUtterance('');
@@ -229,11 +227,9 @@ export default function App() {
       }
       audioContextRef.current = true;
     }
-    
     if (callback) callback();
   };
 
-  // Swipe-to-Close Touch Handlers
   const touchStartXRef = useRef(0);
   const touchCurrentXRef = useRef(0);
 
@@ -276,7 +272,7 @@ export default function App() {
       if (Array.isArray(saved) && saved.length) setFolders(saved);
     } catch (e) {}
     initTickets();
-    loadGallery();
+    loadGalleryFromCloud();
   }, []);
 
   useEffect(() => {
@@ -291,10 +287,6 @@ export default function App() {
         if (!db.objectStoreNames.contains('files')) {
           const st = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
           st.createIndex('folder', 'folder', { unique: false });
-        }
-        if (!db.objectStoreNames.contains('gallery')) {
-          const gst = db.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
-          gst.createIndex('dayIndex', 'dayIndex', { unique: false });
         }
       };
       req.onsuccess = () => resolve(req.result);
@@ -369,14 +361,20 @@ export default function App() {
     };
   };
 
-  const loadGallery = async () => {
-    const db = await openDb();
-    const tx = db.transaction('gallery', 'readonly');
-    const req = tx.objectStore('gallery').getAll();
-    req.onsuccess = () => {
-      const res = req.result || [];
-      setGalleryItems(res.sort((a, b) => b.created - a.created));
-    };
+  // טעינת גלריית תמונות מ-Supabase Cloud
+  const loadGalleryFromCloud = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('gallery')
+        .select('*')
+        .order('created', { ascending: false });
+
+      if (!error && data) {
+        setGalleryItems(data);
+      }
+    } catch (e) {
+      console.log('Cloud gallery load error, fallback to local');
+    }
   };
 
   const handleFileUpload = async (e) => {
@@ -406,28 +404,48 @@ export default function App() {
   const handleGalleryUpload = async (e) => {
     const files = [...e.target.files];
     if (!files.length) return;
-    const db = await openDb();
-    const tx = db.transaction('gallery', 'readwrite');
-    const store = tx.objectStore('gallery');
+    const file = files[0];
 
-    files.forEach(file => {
-      store.add({
+    try {
+      const filePath = `trip_${Date.now()}_${file.name}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('trip-photos')
+        .upload(filePath, file);
+
+      if (uploadErr) {
+        alert('שגיאה בהעלאת הקובץ לענן: ' + uploadErr.message);
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('trip-photos')
+        .getPublicUrl(filePath);
+
+      const mediaUrl = publicUrlData.publicUrl;
+
+      const newItem = {
         name: file.name,
         type: file.type,
         size: file.size,
-        dayIndex: galleryDayFilter === 'all' ? activeDay : Number(galleryDayFilter),
+        day_index: galleryDayFilter === 'all' ? activeDay : Number(galleryDayFilter),
         caption: galleryCaption || '',
         author: galleryAuthor || 'משפחה',
         created: Date.now(),
-        blob: file
-      });
-    });
+        media_url: mediaUrl
+      };
 
-    tx.oncomplete = () => {
+      const { error: dbErr } = await supabase.from('gallery').insert([newItem]);
+      if (dbErr) {
+        alert('שגיאה בשמירת נתוני התמונה בענן');
+        return;
+      }
+
       setGalleryCaption('');
       setShowGalleryUpload(false);
-      loadGallery();
-    };
+      loadGalleryFromCloud();
+    } catch (err) {
+      alert('שגיאה בתהליך ההעלאה');
+    }
   };
 
   const saveDailyChallenge = async (photoFile = null) => {
@@ -446,22 +464,23 @@ export default function App() {
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
 
     if (photoFile) {
-      const db = await openDb();
-      const tx = db.transaction('gallery', 'readwrite');
-      const store = tx.objectStore('gallery');
-      store.add({
-        name: `אתגר: ${tripDays[activeDay]?.title}`,
-        type: photoFile.type,
-        size: photoFile.size,
-        dayIndex: activeDay,
-        caption: `🎯 אתגר היום: ${challengeNote || tripDays[activeDay]?.challenge}`,
-        author: challengeAuthor || 'משפחה',
-        created: Date.now(),
-        blob: photoFile
-      });
-      tx.oncomplete = () => {
-        loadGallery();
-      };
+      try {
+        const filePath = `challenge_${Date.now()}_${photoFile.name}`;
+        await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+        const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+
+        await supabase.from('gallery').insert([{
+          name: `אתגר: ${tripDays[activeDay]?.title}`,
+          type: photoFile.type,
+          size: photoFile.size,
+          day_index: activeDay,
+          caption: `🎯 אתגר היום: ${challengeNote || tripDays[activeDay]?.challenge}`,
+          author: challengeAuthor || 'משפחה',
+          created: Date.now(),
+          media_url: publicUrlData.publicUrl
+        }]);
+        loadGalleryFromCloud();
+      } catch (e) {}
     }
 
     setChallengeNote('');
@@ -501,13 +520,11 @@ export default function App() {
   const deleteGalleryItem = async (id, e) => {
     e.stopPropagation();
     if (!window.confirm('למחוק תמונה/סרטון זה מהאלבום?')) return;
-    const db = await openDb();
-    const tx = db.transaction('gallery', 'readwrite');
-    tx.objectStore('gallery').delete(id);
-    tx.oncomplete = () => {
+    try {
+      await supabase.from('gallery').delete().eq('id', id);
       if (lightboxItem && lightboxItem.id === id) setLightboxItem(null);
-      loadGallery();
-    };
+      loadGalleryFromCloud();
+    } catch (err) {}
   };
 
   const deleteFile = async (id, e) => {
@@ -531,7 +548,6 @@ export default function App() {
     }
   };
 
-  // Pure Native SpeechSynthesis Engine for iOS & Android
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
@@ -545,7 +561,6 @@ export default function App() {
         utterance.lang = 'it-IT';
         utterance.rate = 0.85;
 
-        // Try to bind a native Italian voice if available
         const voices = window.speechSynthesis.getVoices();
         const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
         if (itVoice) utterance.voice = itVoice;
@@ -558,12 +573,10 @@ export default function App() {
         setIsPlayingAudio(false);
       }
     } catch (e) {
-      console.log('Speech synthesis error:', e);
       setIsPlayingAudio(false);
     }
   };
 
-  // Translation Function
   const translateText = async (textToTranslate) => {
     const query = (textToTranslate || hebrewInput || '').trim();
     if (!query) return;
@@ -615,7 +628,7 @@ export default function App() {
 
   const filteredGallery = galleryDayFilter === 'all'
     ? galleryItems
-    : galleryItems.filter(item => String(item.dayIndex) === String(galleryDayFilter));
+    : galleryItems.filter(item => String(item.day_index) === String(galleryDayFilter));
 
   const categories = ['הכל', '🍕 מסעדות וקפה', '🍦 גלידה ומתוקים', '🛒 קניות וחניה', '👋 בסיסי ונימוס'];
   
@@ -630,7 +643,6 @@ export default function App() {
     return matchesCategory && matchesText;
   });
 
-  // Floating Design Theme Constants
   const bgMain = isDark ? '#121214' : '#ffffff';
   const cardBg = isDark ? '#1e1e24' : '#ffffff';
   const textColor = isDark ? '#f4f4f5' : '#0f172a';
@@ -641,7 +653,6 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* Offline Alert Top Bar */}
       {!isOnline && (
         <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '7px 12px', fontSize: '11px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, width: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
@@ -649,7 +660,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Header */}
       <header style={{
         padding: '12px 16px',
         background: bgMain,
@@ -686,7 +696,6 @@ export default function App() {
             ☰
           </button>
 
-          {/* Theme Toggle Button */}
           <button 
             onClick={() => handleGlobalClick(toggleTheme)}
             style={{
@@ -727,7 +736,6 @@ export default function App() {
         </button>
       </header>
 
-      {/* Sidebar Drawer */}
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
@@ -759,10 +767,8 @@ export default function App() {
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('emergency'); })} style={{ ...sidebarBtnStyle, background: isDark ? '#7f1d1d' : '#fef2f2', color: isDark ? '#fee2e2' : '#dc2626', borderColor: '#fca5a5' }}><span>🆘</span> מספרי חירום</button>
       </aside>
 
-      {/* Main Container */}
       <main style={{ padding: '16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
         
-        {/* Day Selector Tabs */}
         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '16px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
           {tripDays.map((d, i) => (
             <button
@@ -787,14 +793,12 @@ export default function App() {
           ))}
         </div>
 
-        {/* Selected Day Content (No outer border, just floating cards) */}
         <section style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
           <div style={{ paddingBottom: '14px', marginBottom: '16px', borderBottom: `1px solid ${borderColor}` }}>
             <span style={{ fontSize: '12px', fontWeight: '700', color: isDark ? '#38bdf8' : '#2563eb' }}>{day.fullLabel}</span>
             <h2 style={{ margin: '4px 0 0', fontSize: '19px', fontWeight: '800', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* CLICKABLE DAILY QUEST / MORNING SURPRISE PREMIUM CARD */}
           <div 
             onClick={() => handleGlobalClick(() => setModalType('questModal'))}
             style={{
@@ -864,7 +868,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Navigation Buttons */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: isDark ? '#27272a' : '#f8fafc', color: textColor, borderColor }}>
                     {WAZE_SVG(isDark)} ניווט ב-Waze
@@ -874,7 +877,6 @@ export default function App() {
                   </a>
                 </div>
 
-                {/* Parked Car Button */}
                 <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
                   <a 
                     href="https://maps.apple.com/?q=Parked%20Car" 
@@ -904,7 +906,6 @@ export default function App() {
         </section>
       </main>
 
-      {/* MODAL: Interactive Daily Quest */}
       {modalType === 'questModal' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1010,7 +1011,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Challenges & Jokes Log */}
       {modalType === 'challengesLog' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1034,7 +1034,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Admin Unlock Bar & Reset All */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '8px' }}>
                 {isAdminUnlocked && (
                   <button 
@@ -1118,7 +1117,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Italian Phrasebook */}
       {modalType === 'phrasebook' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1129,7 +1127,6 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl', boxShadow: cardShadow }}>
               
-              {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '12px', marginBottom: '16px' }}>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: cardBg, color: textColor, border: `1px solid ${borderColor}` }}>✕</button>
                 <div style={{ textAlign: 'center', flex: 1, padding: '0 8px' }}>
@@ -1141,7 +1138,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Professional Granite Clean Translator Box */}
               <div style={{
                 background: cardBg,
                 border: `1px solid ${borderColor}`,
@@ -1335,7 +1331,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Gallery */}
       {modalType === 'gallery' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1348,7 +1343,7 @@ export default function App() {
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
                 <div>
-                  <small style={{ color: '#a21caf', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>יומן וזיכרונות</small>
+                  <small style={{ color: '#a21caf', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>יומן וזיכרונות בענן</small>
                   <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '800', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
                 </div>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: cardBg, color: textColor, border: `1px solid ${borderColor}` }}>✕</button>
@@ -1443,13 +1438,13 @@ export default function App() {
 
               {filteredGallery.length === 0 ? (
                 <div style={{ textAlign: 'center', color: textSub, padding: '36px 16px', fontSize: '13px', fontWeight: '500', background: isDark ? '#334155' : '#f8fafc', borderRadius: '14px', border: `1px dashed ${borderColor}`, boxSizing: 'border-box', width: '100%' }}>
-                  📸 אין עדיין תמונות או סרטונים ביום זה.<br/>לחצו על <b>"הוסף תמונה / סרטון"</b> כדי להעלות את התמונה הראשונה!
+                  📸 אין עדיין תמונות או סרטונים בענן ליום זה.<br/>לחצו על <b>"הוסף תמונה / סרטון"</b> כדי להעלות את התמונה הראשונה שכולם יראו!
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', width: '100%', boxSizing: 'border-box' }}>
                   {filteredGallery.map((item) => {
                     const isVideo = (item.type || '').startsWith('video/');
-                    const mediaUrl = item.blob ? URL.createObjectURL(item.blob) : '';
+                    const mediaUrl = item.media_url;
                     return (
                       <div 
                         key={item.id}
@@ -1471,7 +1466,7 @@ export default function App() {
                             </div>
                           )}
                           <span style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(15, 23, 42, 0.75)', color: '#fff', fontSize: '9px', fontWeight: '700', padding: '2px 6px', borderRadius: '6px' }}>
-                            {tripDays[item.dayIndex]?.label || 'כללי'}
+                            {tripDays[item.day_index]?.label || 'כללי'}
                           </span>
                         </div>
                         <div style={{ padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -1494,7 +1489,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Gallery Lightbox Viewer */}
       {lightboxItem && (
         <div 
           onClick={() => handleGlobalClick(() => setLightboxItem(null))}
@@ -1503,23 +1497,22 @@ export default function App() {
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px', width: '100%', background: cardBg, borderRadius: '16px', overflow: 'hidden', boxSizing: 'border-box' }}>
             <div style={{ position: 'relative', background: '#000', maxHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {(lightboxItem.type || '').startsWith('video/') ? (
-                <video src={URL.createObjectURL(lightboxItem.blob)} controls autoPlay style={{ width: '100%', maxHeight: '65vh' }} />
+                <video src={lightboxItem.media_url} controls autoPlay style={{ width: '100%', maxHeight: '65vh' }} />
               ) : (
-                <img src={URL.createObjectURL(lightboxItem.blob)} alt={lightboxItem.caption} style={{ width: '100%', maxHeight: '65vh', objectFit: 'contain' }} />
+                <img src={lightboxItem.media_url} alt={lightboxItem.caption} style={{ width: '100%', maxHeight: '65vh', objectFit: 'contain' }} />
               )}
               <button onClick={() => handleGlobalClick(() => setLightboxItem(null))} style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontWeight: '900', fontSize: '14px' }}>✕</button>
             </div>
             <div style={{ padding: '16px', textAlign: 'right', background: cardBg }}>
               <h4 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: '800', color: textColor }}>{lightboxItem.caption || lightboxItem.name}</h4>
               <p style={{ margin: 0, fontSize: '12px', color: textSub, fontWeight: '600' }}>
-                יום: {tripDays[lightboxItem.dayIndex]?.fullLabel || 'כללי'} · צילום: {lightboxItem.author}
+                יום: {tripDays[lightboxItem.day_index]?.fullLabel || 'כללי'} · צילום: {lightboxItem.author}
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL: Parking Guide */}
       {modalType === 'parking' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1544,7 +1537,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Around Me */}
       {modalType === 'around' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1570,7 +1562,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Emergency */}
       {modalType === 'emergency' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1596,7 +1587,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Tickets & Wallet */}
       {modalType === 'tickets' && (
         <div 
           onTouchStart={handleTouchStart}
@@ -1706,7 +1696,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: Full Viewer */}
       {modalType === 'viewer' && viewerItem && (
         <div 
           onTouchStart={handleTouchStart}
