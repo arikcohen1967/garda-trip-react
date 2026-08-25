@@ -270,7 +270,6 @@ export default function App() {
     };
 
     const handleOnline = () => {
-      // עדכון מיידי לירוק ברגע שהדפדפן מזהה חזרה של החיבור, ואז בדיקה מול הענן
       setIsOnline(true);
       setTimeout(updateOnlineStatus, 1500);
     };
@@ -652,7 +651,7 @@ export default function App() {
         textShadow: '0 1px 2px rgba(0,0,0,0.5)'
       }}>
         <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#34d399' : '#f59e0b', boxShadow: '0 0 10px rgba(255,255,255,0.9)' }}></span>
-        {isOnline ? '✨🍏 ONLINE · מחובר לענן (Supabase) · מטאלי יוקרתי' : '✨🍏 OFFLINE · מצב טיסה פעיל · עובד מהזיכרון המקומי'}
+        {isOnline ? 'on-line' : 'off-line'}
       </div>
 
       <header style={{
