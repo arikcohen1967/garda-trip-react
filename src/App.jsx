@@ -647,7 +647,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Header נקי ומקצועי */}
+      {/* Header מעודכן עם כפתור ניווט ישיר למלון ב-Waze */}
       <header style={{
         padding: '16px 20px',
         background: bgMain,
@@ -661,19 +661,33 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        <button 
-          onClick={() => handleGlobalClick(() => {
-            setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
-            setModalType('viewer');
-          })}
-          style={{
-            background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 12px',
-            borderRadius: '12px', fontSize: '12px', fontWeight: '800', color: '#166534', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
-          }}
-        >
-          🏡 Bio Vojon
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button 
+            onClick={() => handleGlobalClick(() => {
+              setViewerItem({ isHotelInfo: true, title: 'הזמנת Bio Agriturismo Vojon' });
+              setModalType('viewer');
+            })}
+            style={{
+              background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 12px',
+              borderRadius: '12px', fontSize: '12px', fontWeight: '800', color: '#166534', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+            }}
+          >
+            🏡 Bio Vojon
+          </button>
+          
+          <a 
+            href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`}
+            onClick={() => playClickSound()}
+            style={{
+              background: '#ffffff', border: '1px solid #bae6fd', padding: '8px 12px',
+              borderRadius: '12px', fontSize: '12px', fontWeight: '800', color: '#00a6ff', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+            }}
+          >
+            {WAZE_SVG} נווט למלון
+          </a>
+        </div>
 
         <div style={{ textAlign: 'center' }}>
           <h1 style={{ fontSize: '16px', fontWeight: '900', margin: '0 0 2px', color: textColor, letterSpacing: '-0.01em' }}>אגם גארדה וונציה</h1>
@@ -766,11 +780,11 @@ export default function App() {
             <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* משימת / אתגר היום בעיצוב ירוק ועדין בדיוק כמו בצילום המסך */}
+          {/* משימת / אתגר היום בעיצוב ירוק ועדין */}
           <div 
             onClick={() => handleGlobalClick(() => setModalType('questModal'))}
             style={{
-              background: isCurrentDayCompleted ? '#f0fdf4' : '#f0fdf4',
+              background: '#f0fdf4',
               border: `1px solid ${isCurrentDayCompleted ? '#10b981' : '#bbf7d0'}`,
               borderRadius: '16px',
               padding: '16px 18px',
@@ -829,7 +843,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* כפתורי ניווט Maps ו-Waze בדיוק כמו בצילום המסך */}
+                {/* כפתורי ניווט Maps ו-Waze */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: '#ffffff', color: textColor, borderColor: borderColor }}>
                     {MAPS_SVG} Maps
@@ -1071,7 +1085,7 @@ export default function App() {
 }
 
 const sidebarBtnStyle = {
-  border: `1px solid #e5e7eb`, padding: '12px 16px',
+  border: `1px solid ${'#e5e7eb'}`, padding: '12px 16px',
   borderRadius: '12px', fontWeight: '800', fontSize: '14px', textAlign: 'right',
   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', boxSizing: 'border-box', width: '100%',
   background: '#f8fafc', color: '#000000', boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
