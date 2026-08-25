@@ -245,13 +245,17 @@ export default function App() {
     }
   };
 
+  // בדיקת חיבור מעודכנת שמגיבה מיידית למצב אופליין/טיסה
   useEffect(() => {
     const updateOnlineStatus = async () => {
+      // אם הדפדפן מדווח מיד שאין רשת (כמו מצב טיסה)
       if (!navigator.onLine) {
         setIsOnline(false);
         return;
       }
+      
       try {
+        // פינג קצר לשרת לוודא חיבור אמיתי
         const { error } = await supabase.from('trip_data').select('id').limit(1);
         if (error) {
           setIsOnline(false);
@@ -263,10 +267,14 @@ export default function App() {
       }
     };
 
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
+    // האזנה מיידית לאירועי דפדפן (Online / Offline)
+    const handleOnline = () => updateOnlineStatus();
+    const handleOffline = () => setIsOnline(false); // הופך לכתום/אופליין מיד באופן מיידי!
 
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    updateOnlineStatus();
     const interval = setInterval(updateOnlineStatus, 4000);
 
     async function fetchTripDataFromCloud() {
@@ -307,8 +315,8 @@ export default function App() {
     } catch (e) {}
 
     return () => {
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
       clearInterval(interval);
     };
   }, []);
@@ -615,7 +623,7 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar */}
+      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar (מגיב מיידית למצב אופליין/טיסה) */}
       <div style={{
         background: 'linear-gradient(135deg, #71717a 0%, #3f3f46 25%, #27272a 50%, #3f3f46 75%, #71717a 100%)',
         color: '#ffffff',
