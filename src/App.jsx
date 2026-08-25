@@ -666,8 +666,8 @@ export default function App() {
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
-            background: '#fef08a', 
-            border: '2px solid #eab308', 
+            background: 'linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 50%, #d4d4d8 100%)', 
+            border: '1px solid #a1a1aa', 
             width: '48px', 
             height: '48px',
             borderRadius: '14px', 
@@ -677,8 +677,9 @@ export default function App() {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            color: '#000000',
-            boxShadow: '0 4px 10px rgba(234, 179, 8, 0.25)'
+            color: '#18181b',
+            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
+            textShadow: '0 1px 0 rgba(255,255,255,0.8)'
           }}
           title="תפריט מהיר"
         >
