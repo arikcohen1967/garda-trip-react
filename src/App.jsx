@@ -629,22 +629,23 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
+        {/* כפתור תפריט (☰) מוגדל ומובלט עם רקע צהבהב/מודגש למראה בולט ונוח */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
-            background: '#ffffff', 
-            border: `1px solid ${borderColor}`, 
-            width: '42px', 
-            height: '42px',
-            borderRadius: '12px', 
-            fontSize: '20px', 
+            background: '#fef08a', 
+            border: '2px solid #eab308', 
+            width: '48px', 
+            height: '48px',
+            borderRadius: '14px', 
+            fontSize: '24px', 
             fontWeight: '900', 
             cursor: 'pointer',
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            color: textColor,
-            boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+            color: '#000000',
+            boxShadow: '0 4px 10px rgba(234, 179, 8, 0.25)'
           }}
           title="תפריט מהיר"
         >
