@@ -245,7 +245,6 @@ export default function App() {
     }
   };
 
-  // בדיקת חיבור חכמה שבודקת גם את הדפדפן וגם מבצעת פינג מול Supabase כדי לעדכן לכתום/כסף במצב טיסה
   useEffect(() => {
     const updateOnlineStatus = async () => {
       if (!navigator.onLine) {
@@ -616,9 +615,9 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🪙 חיווי חיבור עליון: ירוק כשהכל מחובר, וכסף מטאלי כהה במצב טיסה או אופליין */}
+      {/* 🪙 חיווי חיבור עליון: כסף מטאלי יוקרתי לשני המצבים */}
       <div style={{
-        background: isOnline ? '#059669' : '#334155',
+        background: isOnline ? '#64748b' : '#475569',
         color: '#ffffff',
         textAlign: 'center',
         padding: '6px 12px',
@@ -636,7 +635,7 @@ export default function App() {
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
       }}>
         <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
-        {isOnline ? '🟢 Online · מחובר לענן (Supabase)' : '🪙 Offline · מצב טיסה / אופליין פעיל (עובד מהזיכרון המקומי)'}
+        {isOnline ? '🪙 Online · מחובר לענן (Supabase)' : '🪙 Offline · מצב טיסה / אופליין פעיל (עובד מהזיכרון המקומי)'}
       </div>
 
       <header style={{
