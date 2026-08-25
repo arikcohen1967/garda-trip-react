@@ -245,17 +245,14 @@ export default function App() {
     }
   };
 
-  // מנגנון איתור חיבור משופר – מזהה מיד מצב אופליין או טיסה
   useEffect(() => {
     const updateOnlineStatus = async () => {
-      // בדיקה מיידית של הדפדפן
       if (!navigator.onLine) {
         setIsOnline(false);
         return;
       }
       
       try {
-        // פינג קצר לשרת עם זמן קצוב (Timeout) כדי לא להיתקע
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
 
@@ -268,7 +265,6 @@ export default function App() {
           setIsOnline(true);
         }
       } catch (err) {
-        // כל שגיאת רשת או טיסה תעביר את החיווי מיד ל-Offline (כתום)
         setIsOnline(false);
       }
     };
@@ -628,7 +624,7 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar (מגיב מיידית לכישלון רשת או מצב טיסה) */}
+      {/* 🍏 Dark Metallic & Extra Wide Apple Silver Bar */}
       <div style={{
         background: 'linear-gradient(135deg, #71717a 0%, #3f3f46 25%, #27272a 50%, #3f3f46 75%, #71717a 100%)',
         color: '#ffffff',
@@ -651,7 +647,7 @@ export default function App() {
         textShadow: '0 1px 2px rgba(0,0,0,0.5)'
       }}>
         <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#34d399' : '#f59e0b', boxShadow: '0 0 10px rgba(255,255,255,0.9)' }}></span>
-        {isOnline ? '✨🍏 ONLINE · מחובר לענן (Supabase) · מטאלי יוקרתי' : '✨🍏 OFFLINE · מצב טיסה / אופליין פעיל · עובד מהזיכרון המקומי'}
+        {isOnline ? '✨🍏 ONLINE · מחובר לענן (Supabase) · מטאלי יוקרתי' : '✨🍏 OFFLINE · מצב טיסה פעיל · עובד מהזיכרון המקומי'}
       </div>
 
       <header style={{
@@ -742,6 +738,7 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
         
+        {/* כפתורי ימי הטיול בעיצוב Apple Silver מטאלי יוקרתי */}
         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '20px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
           {tripDays.map((d, i) => (
             <button
@@ -751,14 +748,17 @@ export default function App() {
                 flex: '0 0 auto',
                 padding: '10px 16px',
                 borderRadius: '12px',
-                background: activeDay === i ? '#0f172a' : '#f8fafc',
-                color: activeDay === i ? '#ffffff' : textColor,
-                border: `1px solid ${activeDay === i ? '#0f172a' : borderColor}`,
+                background: activeDay === i 
+                  ? 'linear-gradient(135deg, #71717a 0%, #3f3f46 50%, #27272a 100%)' 
+                  : 'linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 50%, #d4d4d8 100%)',
+                color: activeDay === i ? '#ffffff' : '#18181b',
+                border: `1px solid ${activeDay === i ? '#18181b' : '#a1a1aa'}`,
                 fontSize: '12px',
-                fontWeight: '800',
+                fontWeight: '900',
                 cursor: 'pointer',
-                boxShadow: activeDay === i ? '0 4px 12px rgba(15, 23, 42, 0.15)' : 'none',
-                transition: 'all 0.2s ease'
+                boxShadow: activeDay === i ? '0 4px 12px rgba(0, 0, 0, 0.25)' : '0 2px 5px rgba(0, 0, 0, 0.08)',
+                transition: 'all 0.2s ease',
+                textShadow: activeDay === i ? '0 1px 2px rgba(0,0,0,0.5)' : '0 1px 0 rgba(255,255,255,0.8)'
               }}
             >
               {d.label}
