@@ -10,7 +10,7 @@ const WAZE_SVG = (
   <svg viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
     <rect width="512" height="512" rx="110" fill="#33ccff"/>
     <path d="M375.4 233.5c-3.7-31.8-29.3-56.7-61.6-59.5-35.3-3.1-66.5 19.3-73.8 53.6-1.5 7-1.4 14.3.4 21.2-22.1 4.7-38.6 24.1-38.6 47.3 0 17.5 9.7 32.7 24.1 40.5l-10.7 33.3c-2.4 7.4 2.8 15 10.6 15 3.3 0 6.4-1.4 8.6-3.8l21.9-23.7c13.7 4.9 28.7 7.5 44.1 7.5 70.7 0 128-50.5 128-112.7 0-11.8-1.8-23.3-5.2-34.4zm-146 5.3c0-11 9-20 20-20s20 9 20 20-9 20-20 20-20-9-20-20zm112 40c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20zm-56 22c-29.8 0-54-15.6-54-35 0-3.3 2.7-6 6-6h96c3.3 0 6 2.7 6 6 0 19.4-24.2 35-54 35z" fill="#fff"/>
-    <path d="M220.5 240c-1.2 5.5-6.2 9.5-12 9.5s-10.8-4-12-9.5c-2.8-12.7-14.2-22-27.5-22-15.5 0-28 12.5-28 28s12.5 28 28 28c4.4 0 8 3.6 8 8s-3.6 8-8 8c-24.3 0-44-19.7-44-44s19.7-44 44-44c21.2 0 39.1 14.7 43.5 34.5z" fill="#18181b"/>
+    <path d="M220.5 240c-1.2 5.5-6.2 9.5-12 9.5s-10.8-4-12-9.5-2.8-12.7-14.2-22-27.5-22-15.5 0-28 12.5-28 28s12.5 28 28 28c4.4 0 8 3.6 8 8s-3.6 8-8 8c-24.3 0-44-19.7-44-44s19.7-44 44-44c21.2 0 39.1 14.7 43.5 34.5z" fill="#18181b"/>
     <circle cx="178" cy="246" r="10" fill="#18181b"/>
     <circle cx="282" cy="216" r="10" fill="#18181b"/>
     <circle cx="338" cy="216" r="10" fill="#18181b"/>
@@ -245,7 +245,6 @@ export default function App() {
     }
   };
 
-  // טעינת נתוני הטיול מ-Supabase עם גיבוי אופליין ל-LocalStorage
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -293,7 +292,6 @@ export default function App() {
     };
   }, []);
 
-  // פונקציית שמירת נתוני הטיול למרכז (Supabase) + LocalStorage
   const saveTripDataToCloud = async (newDays) => {
     setTripDays(newDays);
     localStorage.setItem('garda-trip-days-cache', JSON.stringify(newDays));
@@ -595,12 +593,28 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
-      {!isOnline && (
-        <div style={{ background: '#dc2626', color: '#ffffff', textAlign: 'center', padding: '8px 12px', fontSize: '12px', fontWeight: '800', position: 'sticky', top: 0, zIndex: 1100, width: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
-          מצב אופליין פעיל (ללא אינטרנט) · כל המסלולים, האתגרים והשיחון זמינים כרגיל!
-        </div>
-      )}
+      {/* 🟢🔴 חיווי חיבור עליון ברור (Online / Offline) */}
+      <div style={{
+        background: isOnline ? '#059669' : '#dc2626',
+        color: '#ffffff',
+        textAlign: 'center',
+        padding: '6px 12px',
+        fontSize: '11px',
+        fontWeight: '900',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1100,
+        width: '100%',
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '6px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+      }}>
+        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></span>
+        {isOnline ? '🟢 Online · מחובר לענן (Supabase)' : '🔴 Offline · עובד ממצב מקומי (הכל זמין)'}
+      </div>
 
       <header style={{
         padding: '16px 20px',
@@ -610,7 +624,7 @@ export default function App() {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: !isOnline ? '34px' : 0,
+        top: '27px',
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box'
