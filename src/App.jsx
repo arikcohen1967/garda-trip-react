@@ -137,7 +137,7 @@ const QUICK_PHRASES = [
   { cat: '🍦 גלידה ומתוקים', he: 'גביע של 2 טעמים', it: 'Un cono da due gusti, per favore', pro: 'אוּן קוֹנוֹ דָה דוּאֶה גוּסְטִי' },
   { cat: '🍦 גלידה ומתוקים', he: 'כוסית של 3 טעמים', it: 'Una coppetta da tre gusti', pro: 'אוּנָה קוֹפֶּטָה דָה טְרֶה גוּסְטִי' },
   { cat: '🍦 גלידה ומתוקים', he: 'אפשר לטעום?', it: 'Posso assaggiare?', pro: 'פּוֹסוֹ אַסַאגָ׳ארֶה?' },
-  { cat: '🍦 גלידה ומתוקים', he: 'פיסטוק ושוקולד בבקשה', it: 'Pistacchio e cioccolato per favore', pro: 'פִּיסְטָאקְיוֹ אֶه צ׳וֹקוֹלָאטוֹ' },
+  { cat: '🍦 גלידה ומתוקים', he: 'פיסטוק ושוקולד בבקשה', it: 'Pistacchio e cioccolato per favore', pro: 'פִּיסְטָאקְיוֹ אֶה צ׳וֹקוֹלָאטוֹ' },
   { cat: '🍦 גלידה ומתוקים', he: 'עם קצפת מעל?', it: 'Con panna sopra?', pro: 'קוֹן פָּאנָה סוֹפְּרָה?' },
   { cat: '🛒 קניות וחניה', he: 'כמה זה עולה?', it: 'Quanto costa questo?', pro: 'קְוָואנְטוֹ קוֹסְטָה קְוֶוסְטוֹ?' },
   { cat: '🛒 קניות וחניה', he: 'אפשר לשלם באשראי?', it: 'Posso pagare con la carta?', pro: 'פּוֹסוֹ פָּאגָארֶה קוֹן לָה קָארְטָה?' },
@@ -260,7 +260,7 @@ export default function App() {
       if (Array.isArray(saved) && saved.length) setFolders(saved);
     } catch (e) {}
     initTickets();
-    loadGalleryFromCloud();
+    loadGallery();
   }, []);
 
   useEffect(() => {
@@ -275,6 +275,10 @@ export default function App() {
         if (!db.objectStoreNames.contains('files')) {
           const st = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
           st.createIndex('folder', 'folder', { unique: false });
+        }
+        if (!db.objectStoreNames.contains('gallery')) {
+          const gst = db.createObjectStore('gallery', { keyPath: 'id', autoIncrement: true });
+          gst.createIndex('dayIndex', 'dayIndex', { unique: false });
         }
       };
       req.onsuccess = () => resolve(req.result);
@@ -349,19 +353,14 @@ export default function App() {
     };
   };
 
-  const loadGalleryFromCloud = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('gallery')
-        .select('*')
-        .order('created', { ascending: false });
-
-      if (!error && data) {
-        setGalleryItems(data);
-      }
-    } catch (e) {
-      console.log('Cloud gallery load error, fallback to local');
-    }
+  const loadGallery = async () => {
+    const db = await openDb();
+    const tx = db.transaction('gallery', 'readonly');
+    const req = tx.objectStore('gallery').getAll();
+    req.onsuccess = () => {
+      const res = req.result || [];
+      setGalleryItems(res.sort((a, b) => b.created - a.created));
+    };
   };
 
   const handleFileUpload = async (e) => {
@@ -386,132 +385,6 @@ export default function App() {
       setShowUploadBox(false);
       loadFiles(activeFolder);
     };
-  };
-
-  const handleGalleryUpload = async (e) => {
-    const files = [...e.target.files];
-    if (!files.length) return;
-    const file = files[0];
-
-    try {
-      const filePath = `trip_${Date.now()}_${file.name}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('trip-photos')
-        .upload(filePath, file);
-
-      if (uploadErr) {
-        alert('שגיאה בהעלאת הקובץ לענן: ' + uploadErr.message);
-        return;
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from('trip-photos')
-        .getPublicUrl(filePath);
-
-      const mediaUrl = publicUrlData.publicUrl;
-
-      const newItem = {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        day_index: galleryDayFilter === 'all' ? activeDay : Number(galleryDayFilter),
-        caption: galleryCaption || '',
-        author: galleryAuthor || 'משפחה',
-        created: Date.now(),
-        media_url: mediaUrl
-      };
-
-      const { error: dbErr } = await supabase.from('gallery').insert([newItem]);
-      if (dbErr) {
-        alert('שגיאה בשמירת נתוני התמונה בענן');
-        return;
-      }
-
-      setGalleryCaption('');
-      setShowGalleryUpload(false);
-      loadGalleryFromCloud();
-    } catch (err) {
-      alert('שגיאה בתהליך ההעלאה');
-    }
-  };
-
-  const saveDailyChallenge = async (photoFile = null) => {
-    const dayKey = String(activeDay);
-    const updated = {
-      ...completedChallenges,
-      [dayKey]: {
-        completed: true,
-        text: challengeNote || 'אתגר הושלם בהצלחה! 🎉',
-        author: challengeAuthor || 'משפחה',
-        time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-        date: tripDays[activeDay]?.date
-      }
-    };
-    setCompletedChallenges(updated);
-    localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
-
-    if (photoFile) {
-      try {
-        const filePath = `challenge_${Date.now()}_${photoFile.name}`;
-        await supabase.storage.from('trip-photos').upload(filePath, photoFile);
-        const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
-
-        await supabase.from('gallery').insert([{
-          name: `אתגר: ${tripDays[activeDay]?.title}`,
-          type: photoFile.type,
-          size: photoFile.size,
-          day_index: activeDay,
-          caption: `🎯 אתגר היום: ${challengeNote || tripDays[activeDay]?.challenge}`,
-          author: challengeAuthor || 'משפחה',
-          created: Date.now(),
-          media_url: publicUrlData.publicUrl
-        }]);
-        loadGalleryFromCloud();
-      } catch (e) {}
-    }
-
-    setChallengeNote('');
-    alert('🏆 כל הכבוד! האתגר בוצע ונשמר ביומן האתגרים המשפחתי!');
-    setModalType(null);
-  };
-
-  const resetSingleChallenge = (dayIdx) => {
-    if (!window.confirm(`לאפס את האתגר של ${tripDays[dayIdx]?.label} ולהחזיר למצב לא מבוצע?`)) return;
-    const updated = { ...completedChallenges };
-    delete updated[String(dayIdx)];
-    setCompletedChallenges(updated);
-    localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
-    if (modalType === 'questModal') setModalType(null);
-  };
-
-  const resetAllChallenges = () => {
-    if (!window.confirm('האם אתה בטוח שברצונך לאפס את כל המשימות והאתגרים של כל הימים?')) return;
-    setCompletedChallenges({});
-    localStorage.removeItem('garda-challenges-log');
-    alert('כל האתגרים אופסו בהצלחה למצב התחלתי!');
-  };
-
-  const unlockAdminChallenges = () => {
-    if (isAdminUnlocked) {
-      setIsAdminUnlocked(false);
-      return;
-    }
-    const pin = window.prompt('הזן קוד מנהל לצפייה בכל האתגרים:');
-    if (pin === '1967' || pin === '1234') {
-      setIsAdminUnlocked(true);
-    } else if (pin !== null) {
-      alert('קוד שגוי!');
-    }
-  };
-
-  const deleteGalleryItem = async (id, e) => {
-    e.stopPropagation();
-    if (!window.confirm('למחוק תמונה/סרטון זה מהאלבום?')) return;
-    try {
-      await supabase.from('gallery').delete().eq('id', id);
-      if (lightboxItem && lightboxItem.id === id) setLightboxItem(null);
-      loadGalleryFromCloud();
-    } catch (err) {}
   };
 
   const deleteFile = async (id, e) => {
@@ -612,23 +485,6 @@ export default function App() {
 
   const day = tripDays[activeDay];
   const isCurrentDayCompleted = completedChallenges[String(activeDay)]?.completed;
-
-  const filteredGallery = galleryDayFilter === 'all'
-    ? galleryItems
-    : galleryItems.filter(item => String(item.day_index) === String(galleryDayFilter));
-
-  const categories = ['הכל', '🍕 מסעדות וקפה', '🍦 גלידה ומתוקים', '🛒 קניות וחניה', '👋 בסיסי ונימוס'];
-  
-  const filteredPhrases = QUICK_PHRASES.filter(p => {
-    const matchesCategory = selectedCategory === 'הכל' || p.cat === selectedCategory;
-    const cleanSearch = phraseSearch.trim().toLowerCase();
-    if (!cleanSearch) return matchesCategory;
-    
-    const matchesText = p.he.toLowerCase().includes(cleanSearch) || 
-                        p.it.toLowerCase().includes(cleanSearch) || 
-                        p.pro.toLowerCase().includes(cleanSearch);
-    return matchesCategory && matchesText;
-  });
 
   const bgMain = '#ffffff';
   const cardBg = '#ffffff';
@@ -1010,7 +866,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל פרטי המלון המעודכן עם שם המלון, הכתובת, הטלפון וכפתור ניווט ישיר בוויז */}
+      {/* מודל פרטי המלון */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1089,14 +945,108 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל ארנק כרטיסים ומסמכים עם כל הקבצים בפנים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
-                <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
+                <div>
+                  <small style={{ color: '#2563eb', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>ארנק דיגיטלי</small>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
+                </div>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
               </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', border: '1px solid #eab308', background: yellowBtnBg, color: yellowBtnText }}>
+                  ➕ הוסף כרטיס
+                </button>
+                <button onClick={() => handleGlobalClick(addNewFolder)} style={{ padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', border: `1px solid ${borderColor}`, background: '#f3f4f6', color: '#000000' }}>
+                  📁 תקייה חדשה
+                </button>
+              </div>
+
+              {showUploadBox && (
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: `1px solid ${borderColor}`, marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box', width: '100%' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>בחר תקייה לשמירה:</label>
+                    <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', fontWeight: '700' }}>
+                      {folders.map((f, i) => <option key={i} value={f}>{f}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>שם הכרטיס / מסמך:</label>
+                    <input type="text" placeholder="לדוגמה: כרטיס כניסה לפארק" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', fontWeight: '600' }} />
+                  </div>
+                  <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
+                  <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('cameraInput').click())} style={{ ...uploadBtnStyle, background: yellowBtnBg, color: yellowBtnText, border: '1px solid #eab308' }}>📷 צלם במצלמה</button>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: yellowBtnBg, color: yellowBtnText, border: '1px solid #eab308' }}>📁 בחר קובץ מהמכשיר</button>
+                  </div>
+                </div>
+              )}
+
+              <h3 style={{ fontSize: '14px', margin: '8px 0 10px', fontWeight: '900', color: textColor }}>תקיות הטיול</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '8px', marginBottom: '18px', width: '100%', boxSizing: 'border-box' }}>
+                {folders.map((f, i) => (
+                  <div 
+                    key={i} 
+                    onClick={() => handleGlobalClick(() => setActiveFolder(f))}
+                    style={{
+                      padding: '12px', borderRadius: '12px',
+                      background: activeFolder === f ? yellowBtnBg : '#f8fafc',
+                      color: '#000000',
+                      border: `1px solid ${activeFolder === f ? '#eab308' : borderColor}`,
+                      cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box'
+                    }}
+                  >
+                    <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px', fontWeight: '900' }}>{f}</strong>
+                    <small style={{ color: textSub, fontSize: '10px', fontWeight: '800' }}>הצג קבצים</small>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ borderBottom: `1px solid ${borderColor}`, paddingBottom: '8px', marginBottom: '12px', fontWeight: '900', fontSize: '13px', color: textColor }}>
+                תכולת תיקייה: {activeFolder}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
+                <div onClick={() => handleGlobalClick(() => { setViewerItem({ isFlightInfo: true, title: 'הזמנת ישראייר (4623652)' }); setModalType('viewer'); })} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: '14px', background: '#f8fafc', border: `1px solid ${borderColor}`, cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '20px' }}>✈️</span>
+                    <div>
+                      <b style={{ display: 'block', fontSize: '13px', fontWeight: '900' }}>הזמנת ישראייר (4623652)</b>
+                      <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>טיסות ורכב · 5 נוסעים</small>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '800' }}>צפה 👁️</span>
+                </div>
+
+                <div onClick={() => handleGlobalClick(() => { setViewerItem({ isInsuranceInfo: true, title: 'ביטוח נסיעות AIG (170270213826)' }); setModalType('viewer'); })} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: '14px', background: '#f8fafc', border: `1px solid ${borderColor}`, cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '20px' }}>🛡️</span>
+                    <div>
+                      <b style={{ display: 'block', fontSize: '13px', fontWeight: '900' }}>ביטוח נסיעות AIG (170270213826)</b>
+                      <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>פוליסת חירום רפואי</small>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '800' }}>צפה 👁️</span>
+                </div>
+
+                <div onClick={() => handleGlobalClick(() => { setViewerItem({ isCarVoucher: true, title: 'שובר השכרת רכב (724715780)' }); setModalType('viewer'); })} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: '14px', background: '#f8fafc', border: `1px solid ${borderColor}`, cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '20px' }}>🚗</span>
+                    <div>
+                      <b style={{ display: 'block', fontSize: '13px', fontWeight: '900' }}>שובר השכרת רכב (724715780)</b>
+                      <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>Ecovia · SUV אוטומטי</small>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: '800' }}>צפה 👁️</span>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
