@@ -651,11 +651,11 @@ export default function App() {
                   <span style={{ fontSize: '12px', fontWeight: '800', color: blockText, background: blockBg, padding: '4px 10px', borderRadius: '10px', border: `1px solid ${blockBorder}` }}>{stop.time}</span>
                 </div>
 
-                {/* תצוגת כתובת מדויקת מיושרת לימין בבטחה עם unicodeBidi */}
+                {/* תיקון מושלם של כיווניות הכתובות באנגלית בלי שייחתכו או יתפכו */}
                 {stop.address && (
-                  <div style={{ fontSize: '12px', color: isDark ? '#38bdf8' : '#0369a1', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px', direction: 'rtl', unicodeBidi: 'plaintext' }}>
+                  <div style={{ fontSize: '12px', color: isDark ? '#38bdf8' : '#0369a1', fontWeight: '800', marginBottom: '8px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '5px', direction: 'rtl', textAlign: 'right' }}>
                     <span>📍 כתובת מדויקת:</span>
-                    <span dir="ltr" style={{ unicodeBidi: 'plaintext', display: 'inline-block' }}>{stop.address}</span>
+                    <span dir="ltr" style={{ unicodeBidi: 'bidi-override', textAlign: 'left', display: 'inline-block' }}>{stop.address}</span>
                   </div>
                 )}
 
@@ -699,7 +699,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודלים שונים עם תמיכה מלאה בכיווניות נכונה לכל הטקסטים */}
+      {/* מודלים שונים */}
       {modalType === 'questModal' && (
         <div style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -826,11 +826,11 @@ export default function App() {
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: isDark ? '#ffffff' : '#166534' }}>🏡 Bio Agriturismo Vojon</h3>
                 <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
-              <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600', direction: 'rtl', unicodeBidi: 'plaintext' }}>
+              <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600', direction: 'rtl', textAlign: 'right' }}>
                 <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
-                <p><b>כתובת המלון:</b><br/><span dir="ltr" style={{ unicodeBidi: 'plaintext' }}>Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
-                <p><b>תאריכי שהות:</b> <span dir="ltr" style={{ unicodeBidi: 'plaintext' }}>30.09.2026 – 06.10.2026</span> (6 לילות)</p>
-                <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#93c5fd' : '#2563eb', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
+                <p><b>כתובת המלון:</b><br/><span dir="ltr" style={{ unicodeBidi: 'bidi-override', textAlign: 'left', display: 'inline-block' }}>Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
+                <p><b>תאריכי שהות:</b> <span dir="ltr" style={{ unicodeBidi: 'bidi-override', display: 'inline-block' }}>30.09.2026 – 06.10.2026</span> (6 לילות)</p>
+                <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#93c5fd' : '#2563eb', fontWeight: '800', unicodeBidi: 'bidi-override', display: 'inline-block' }} dir="ltr">+39 379 202 7060</a></p>
                 <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} onClick={() => playClickSound()} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px' }}>
                   {WAZE_SVG} נווט למלון ב-Waze לפי הכתובת
                 </a>
