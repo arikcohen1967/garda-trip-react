@@ -27,13 +27,6 @@ const MAPS_SVG = (
   </svg>
 );
 
-const KOMOOT_SVG = (
-  <svg viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-    <rect width="512" height="512" rx="110" fill="#90d26d"/>
-    <path d="M256 110c-75.1 0-136 60.9-136 136s60.9 136 136 136 136-60.9 136-136-60.9-136-136-136zm0 216c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z" fill="#fff"/>
-  </svg>
-);
-
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -672,16 +665,13 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 🗺️ כפתורי ניווט מעודכנים הכוללים כעת גם Apple Maps, Waze וגם Komoot למסלולים וטיולים */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', paddingTop: '14px', borderTop: `1px solid ${borderColor}` }}>
+                {/* כפתורי ניווט (מקוריים: Apple Maps ו-Waze בלבד) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder }}>
                     {MAPS_SVG} Maps
                   </a>
                   <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: isDark ? '#ffffff' : '#00a6ff', borderColor: blockBorder }}>
                     {WAZE_SVG} Waze
-                  </a>
-                  <a href="https://www.komoot.com" target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: isDark ? '#ffffff' : '#588118', borderColor: blockBorder }}>
-                    {KOMOOT_SVG} Komoot
                   </a>
                 </div>
 
@@ -953,7 +943,7 @@ export default function App() {
 }
 
 const sidebarBtnStyle = { border: '1px solid', padding: '12px 16px', borderRadius: '12px', fontWeight: '800', fontSize: '14px', textAlign: 'right', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', width: '100%' };
-const navBtnStyle = { fontSize: '12px', fontWeight: '900', padding: '10px 8px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', border: '1px solid', textDecoration: 'none', boxSizing: 'border-box' };
+const navBtnStyle = { fontSize: '13px', fontWeight: '900', padding: '10px 14px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer', border: '1px solid', textDecoration: 'none', boxSizing: 'border-box' };
 const modalStyle = { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', maxWidth: '100vw', height: '100vh', zIndex: 2000, overflowY: 'auto', overflowX: 'hidden', direction: 'rtl', boxSizing: 'border-box' };
 const modalContentStyle = { width: '100%', maxWidth: '600px', margin: '0 auto', padding: '20px 16px 40px', boxSizing: 'border-box', minHeight: '100vh' };
 const modalCloseBtn = { width: '36px', height: '36px', borderRadius: '50%', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' };
