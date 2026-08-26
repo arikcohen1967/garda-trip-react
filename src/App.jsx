@@ -651,15 +651,17 @@ export default function App() {
                   <span style={{ fontSize: '12px', fontWeight: '800', color: blockText, background: blockBg, padding: '4px 10px', borderRadius: '10px', border: `1px solid ${blockBorder}` }}>{stop.time}</span>
                 </div>
 
-                {/* תיקון מושלם של כיווניות הכתובות באנגלית בלי שייחתכו או יתפכו */}
+                {/* הצגת כתובת בשורה נפרדת לחלוטין באנגלית נגישה ונקייה */}
                 {stop.address && (
-                  <div style={{ fontSize: '12px', color: isDark ? '#38bdf8' : '#0369a1', fontWeight: '800', marginBottom: '8px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '5px', direction: 'rtl', textAlign: 'right' }}>
-                    <span>📍 כתובת מדויקת:</span>
-                    <span dir="ltr" style={{ unicodeBidi: 'bidi-override', textAlign: 'left', display: 'inline-block' }}>{stop.address}</span>
+                  <div style={{ marginBottom: '10px' }}>
+                    <div style={{ fontSize: '11px', color: textSub, fontWeight: '800', marginBottom: '2px' }}>📍 כתובת מדויקת:</div>
+                    <div dir="ltr" style={{ fontSize: '13px', color: isDark ? '#38bdf8' : '#0284c7', fontWeight: '800', textAlign: 'left', background: isDark ? '#18181b' : '#f8fafc', padding: '6px 10px', borderRadius: '8px', border: `1px solid ${blockBorder}` }}>
+                      {stop.address}
+                    </div>
                   </div>
                 )}
 
-                <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 16px', lineHeight: '1.5', fontWeight: '600' }}>{stop.note}</p>
+                <p style={{ fontSize: '13px', color: textSub, margin: '8px 0 16px', lineHeight: '1.5', fontWeight: '600' }}>{stop.note}</p>
 
                 {stop.food && (
                   <div style={{ fontSize: '12px', background: isDark ? '#27272a' : '#ffffff', color: isDark ? '#fde047' : '#334155', padding: '14px', borderRadius: '14px', marginBottom: '16px', border: `1px solid ${isDark ? '#52525b' : '#94a3b8'}`, display: 'flex', flexDirection: 'column', gap: '10px', fontWeight: '700', boxSizing: 'border-box', boxShadow: cardShadow }}>
@@ -828,9 +830,24 @@ export default function App() {
               </div>
               <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600', direction: 'rtl', textAlign: 'right' }}>
                 <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
-                <p><b>כתובת המלון:</b><br/><span dir="ltr" style={{ unicodeBidi: 'bidi-override', textAlign: 'left', display: 'inline-block' }}>Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
-                <p><b>תאריכי שהות:</b> <span dir="ltr" style={{ unicodeBidi: 'bidi-override', display: 'inline-block' }}>30.09.2026 – 06.10.2026</span> (6 לילות)</p>
-                <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#93c5fd' : '#2563eb', fontWeight: '800', unicodeBidi: 'bidi-override', display: 'inline-block' }} dir="ltr">+39 379 202 7060</a></p>
+                <div style={{ marginBottom: '12px' }}>
+                  <b style={{ display: 'block', marginBottom: '2px' }}>כתובת המלון:</b>
+                  <div dir="ltr" style={{ textAlign: 'left', background: isDark ? '#18181b' : '#f8fafc', padding: '6px 10px', borderRadius: '8px', border: `1px solid ${blockBorder}`, fontWeight: '800' }}>
+                    Via Del Forte 6, 46040 Ponti Sul Mincio, Italy
+                  </div>
+                </div>
+                <div style={{ marginBottom: '12px' }}>
+                  <b style={{ display: 'block', marginBottom: '2px' }}>תאריכי שהות:</b>
+                  <div dir="ltr" style={{ textAlign: 'left', background: isDark ? '#18181b' : '#f8fafc', padding: '6px 10px', borderRadius: '8px', border: `1px solid ${blockBorder}`, fontWeight: '800' }}>
+                    30.09.2026 – 06.10.2026 (6 לילות)
+                  </div>
+                </div>
+                <div style={{ marginBottom: '16px' }}>
+                  <b style={{ display: 'block', marginBottom: '2px' }}>טלפון ליצירת קשר:</b>
+                  <div dir="ltr" style={{ textAlign: 'left', fontWeight: '800' }}>
+                    <a href="tel:+393792027060" style={{ color: isDark ? '#93c5fd' : '#2563eb' }}>+39 379 202 7060</a>
+                  </div>
+                </div>
                 <a href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} onClick={() => playClickSound()} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px' }}>
                   {WAZE_SVG} נווט למלון ב-Waze לפי הכתובת
                 </a>
