@@ -37,8 +37,8 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
-      { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
+      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", address: "Caselle di Sommacampagna, VR, Italy", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", address: "Via Del Forte 6, 46040 Ponti Sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
   {
@@ -50,10 +50,10 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
     stops: [
-      { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
-      { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
-      { time: "13:00", name: "ארוחת צהריים בפארק", dest: "Gardaland Resort", note: "אוכל מהיר, פיצות והמבורגרים בתוך הפארק.", food: { name: "🍔 Aladino Pizza & Burger (בתוך הפארק)", dest: "Gardaland Resort" } },
-      { time: "19:00", name: "ארוחת ערב", dest: "Osteria Sottoportego, Peschiera del Garda", note: "פסטות מעולות ואווירה על המים בפסקיירה דל גארדה.", food: { name: "🍝 Osteria Sottoportego", dest: "Osteria Sottoportego, Peschiera del Garda" } }
+      { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", address: "Via Derna 4, 37014 Castelnuovo del Garda VR, Italy", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
+      { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", address: "Via Derna, 37014 Castelnuovo del Garda VR, Italy", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
+      { time: "13:00", name: "ארוחת צהריים בפארק", dest: "Gardaland Resort", address: "Via Derna 4, Castelnuovo del Garda", note: "אוכל מהיר, פיצות והמבורגרים בתוך הפארק.", food: { name: "🍔 Aladino Pizza & Burger (בתוך הפארק)", dest: "Gardaland Resort" } },
+      { time: "19:00", name: "ארוחת ערב", dest: "Osteria Sottoportego, Peschiera del Garda", address: "Via Roma 41, 37019 Peschiera del Garda VR, Italy", note: "פסטות מעולות ואווירה על המים בפסקיירה דל גארדה.", food: { name: "🍝 Osteria Sottoportego", dest: "Osteria Sottoportego, Peschiera del Garda" } }
     ]
   },
   {
@@ -65,9 +65,9 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
     challengeDesc: "משימת אקשן ומים! צלמו את הסירה לפני הירידה למים, וכתבו בדיחה או משפט קורע שקרה במהלך השיט.",
     stops: [
-      { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
-      { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
-      { time: "14:30", name: "יציאה לראפטינג ב-Valdadige", dest: "Visit Valdadige, Via San Martino, Volargne, Italy", note: "ראפטינג משפחתי חווייתי על נהר האדיג׳ה." }
+      { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", address: "Lungolago Padiel, 37018 Malcesine VR, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
+      { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", address: "Via Lungolago Marconi, 25010 Limone sul Garda BS, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
+      { time: "14:30", name: "יציאה לראפטינג ב-Valdadige", dest: "Visit Valdadige, Via San Martino, Volargne, Italy", address: "Via San Martino, 37020 Volargne VR, Italy", note: "ראפטינג משפחתי חווייתי על נהר האדיג׳ה." }
     ]
   },
   {
@@ -79,8 +79,8 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
     stops: [
-      { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
-      { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
+      { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", address: "Via Fossalta 58, 37017 Lazise VR, Italy", note: "יום של אקשן וחוויות קולנועיות." },
+      { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", address: "Via Fossalta 58, 37017 Lazise VR, Italy", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
     ]
   },
   {
@@ -92,8 +92,8 @@ const INITIAL_TRIP_DAYS = [
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
     challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
     stops: [
-      { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
-      { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
+      { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking", address: "Isola Nova del Tronchetto 33, 30135 Venezia VE, Italy", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
+      { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", address: "Calle Larga dei Bari 1223, 30135 Venezia VE, Italy", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
     ]
   },
   {
@@ -105,8 +105,8 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים העתיקות!",
     challengeDesc: "תמונה חגיגית על הגשר של בורגטו + טעימה של הטורטליני המפורסם ('קשר האהבה').",
     stops: [
-      { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
-      { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
+      { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", address: "Borghetto sul Mincio, 37067 Valeggio sul Mincio VR, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
+      { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio", address: "Via Goito 2, 37067 Valeggio sul Mincio VR, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
     ]
   },
   {
@@ -118,9 +118,9 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
     stops: [
-      { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
-      { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "Verona Villafranca Airport", note: "התארגנות וטיסה חזרה הביתה." }
+      { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Verona", address: "Piazza Cittadella, 37122 Verona VR, Italy", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
+      { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", address: "Via Le Corbusier 35, 37138 Verona VR, Italy", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "Verona Villafranca Airport", address: "Caselle di Sommacampagna, VR, Italy", note: "התארגנות וטיסה חזרה הביתה." }
     ]
   }
 ];
@@ -650,19 +650,16 @@ export default function App() {
                   <h3 style={{ fontSize: '16px', fontWeight: '900', margin: 0, color: textColor }}>{stop.name}</h3>
                   <span style={{ fontSize: '12px', fontWeight: '800', color: blockText, background: blockBg, padding: '4px 10px', borderRadius: '10px', border: `1px solid ${blockBorder}` }}>{stop.time}</span>
                 </div>
-                <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 16px', lineHeight: '1.5', fontWeight: '600' }}>{stop.note}</p>
 
-                {/* ⏱️ ווידג'ט מצפן מרחקים וזמני נסיעה חכם (Mini ETA) */}
-                <div style={{ background: isDark ? '#27272a' : '#f1f5f9', border: `1px solid ${isDark ? '#52525b' : '#cbd5e1'}`, borderRadius: '12px', padding: '10px 14px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', fontWeight: '800', color: isDark ? '#e4e4e7' : '#475569', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>🧭</span>
-                    <span>יעד הבא: <b>~{15 + (idx * 12)} ק"מ</b></span>
+                {/* הצגת הכתובת המדויקת של המקום בבירור */}
+                {stop.address && (
+                  <div style={{ fontSize: '12px', color: isDark ? '#38bdf8' : '#0369a1', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span>📍 כתובת מדויקת:</span>
+                    <span dir="ltr">{stop.address}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>⏳</span>
-                    <span>זמן נסיעה משוער: <b style={{ color: isDark ? '#38bdf8' : '#0284c7' }}>~{20 + (idx * 10)} דק'</b></span>
-                  </div>
-                </div>
+                )}
+
+                <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 16px', lineHeight: '1.5', fontWeight: '600' }}>{stop.note}</p>
 
                 {stop.food && (
                   <div style={{ fontSize: '12px', background: isDark ? '#27272a' : '#ffffff', color: isDark ? '#fde047' : '#334155', padding: '14px', borderRadius: '14px', marginBottom: '16px', border: `1px solid ${isDark ? '#52525b' : '#94a3b8'}`, display: 'flex', flexDirection: 'column', gap: '10px', fontWeight: '700', boxSizing: 'border-box', boxShadow: cardShadow }}>
@@ -677,13 +674,13 @@ export default function App() {
                   </div>
                 )}
 
-                {/* כפתורי ניווט */}
+                {/* כפתורי ניווט עם הפניה מוגדרת בדיוק לכתובת הספציפית */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: `1px solid ${borderColor}` }}>
-                  <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder }}>
+                  <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.address || stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder }}>
                     {MAPS_SVG} Maps
                   </a>
-                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: isDark ? '#ffffff' : '#00a6ff', borderColor: blockBorder }}>
-                    {WAZE_SVG} Waze
+                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.address || stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: isDark ? '#ffffff' : '#00a6ff', borderColor: blockBorder }}>
+                    {WAZE_SVG} Waze (הגדר יעד)
                   </a>
                 </div>
 
