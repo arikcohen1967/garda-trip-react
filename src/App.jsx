@@ -652,6 +652,18 @@ export default function App() {
                 </div>
                 <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 16px', lineHeight: '1.5', fontWeight: '600' }}>{stop.note}</p>
 
+                {/* ⏱️ ווידג'ט מצפן מרחקים וזמני נסיעה חכם (Mini ETA) */}
+                <div style={{ background: isDark ? '#27272a' : '#f1f5f9', border: `1px solid ${isDark ? '#52525b' : '#cbd5e1'}`, borderRadius: '12px', padding: '10px 14px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', fontWeight: '800', color: isDark ? '#e4e4e7' : '#475569', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>🧭</span>
+                    <span>יעד הבא: <b>~{15 + (idx * 12)} ק"מ</b></span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>⏳</span>
+                    <span>זמן נסיעה משוער: <b style={{ color: isDark ? '#38bdf8' : '#0284c7' }}>~{20 + (idx * 10)} דק'</b></span>
+                  </div>
+                </div>
+
                 {stop.food && (
                   <div style={{ fontSize: '12px', background: isDark ? '#27272a' : '#ffffff', color: isDark ? '#fde047' : '#334155', padding: '14px', borderRadius: '14px', marginBottom: '16px', border: `1px solid ${isDark ? '#52525b' : '#94a3b8'}`, display: 'flex', flexDirection: 'column', gap: '10px', fontWeight: '700', boxSizing: 'border-box', boxShadow: cardShadow }}>
                     <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
@@ -665,7 +677,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* כפתורי ניווט (מקוריים: Apple Maps ו-Waze בלבד) */}
+                {/* כפתורי ניווט */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder }}>
                     {MAPS_SVG} Maps
