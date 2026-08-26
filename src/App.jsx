@@ -651,11 +651,11 @@ export default function App() {
                   <span style={{ fontSize: '12px', fontWeight: '800', color: blockText, background: blockBg, padding: '4px 10px', borderRadius: '10px', border: `1px solid ${blockBorder}` }}>{stop.time}</span>
                 </div>
 
-                {/* הצגת הכתובת המדויקת של המקום בבירור */}
+                {/* תיקון תצוגת הכתובת כך שתופיע כמו שצריך בעברית ואנגלית בלי להתהפך */}
                 {stop.address && (
-                  <div style={{ fontSize: '12px', color: isDark ? '#38bdf8' : '#0369a1', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <div style={{ fontSize: '12px', color: isDark ? '#38bdf8' : '#0369a1', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px', direction: 'rtl', textAlign: 'right' }}>
                     <span>📍 כתובת מדויקת:</span>
-                    <span dir="ltr">{stop.address}</span>
+                    <span dir="ltr" style={{ unicodeBidi: 'plaintext', textAlign: 'left' }}>{stop.address}</span>
                   </div>
                 )}
 
@@ -674,7 +674,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* כפתורי ניווט עם הפניה מוגדרת בדיוק לכתובת הספציפית */}
+                {/* כפתורי ניווט מדויקים */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '14px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.address || stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder }}>
                     {MAPS_SVG} Maps
