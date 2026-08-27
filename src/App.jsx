@@ -187,7 +187,6 @@ export default function App() {
   const [translationHistory, setTranslationHistory] = useState([]);
   
   const audioContextRef = useRef(false);
-  const currentUtteranceRef = useRef(null);
 
   const playClickSound = () => {
     try {
@@ -500,66 +499,20 @@ export default function App() {
     }
   };
 
-  // שדרוג השמע לקול גבר באיטלקית
+  // השמעת קול איטלקי באמצעות מנוע השמע של גוגל (קול גברי טבעי ונקי)
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
     setIsPlayingAudio(true);
 
     try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        
-        const utterance = new SpeechSynthesisUtterance(text.trim());
-        currentUtteranceRef.current = utterance; 
-        utterance.lang = 'it-IT';
-        utterance.rate = 0.8;
-        utterance.pitch = 0.85; // מנמיך מעט את גובה הצליל כדי לקבל בגוון קול גברי
-
-        const voices = window.speechSynthesis.getVoices();
-        // חיפוש מתקדם אחר קול גברי איטלקי או בחירת קול מתאים
-        const itVoices = voices.filter(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
-        const maleVoice = itVoices.find(v => 
-          v.name.toLowerCase().includes('male') || 
-          v.name.toLowerCase().includes('mario') || 
-          v.name.toLowerCase().includes('cosimo') ||
-          v.name.toLowerCase().includes('luca') ||
-          v.name.toLowerCase().includes('giorgio')
-        );
-
-        if (maleVoice) {
-          utterance.voice = maleVoice;
-        } else if (itVoices.length > 1) {
-          // בד"כ הקול השני ברשימה הוא גברי במערכות רבות
-          utterance.voice = itVoices[1];
-        } else if (itVoices.length > 0) {
-          utterance.voice = itVoices[0];
-        }
-
-        utterance.onend = () => {
-          setIsPlayingAudio(false);
-          currentUtteranceRef.current = null;
-        };
-        utterance.onerror = () => {
-          setIsPlayingAudio(false);
-          currentUtteranceRef.current = null;
-        };
-
-        if (voices.length === 0) {
-          window.speechSynthesis.onvoiceschanged = () => {
-            const updatedVoices = window.speechSynthesis.getVoices();
-            const updatedItVoices = updatedVoices.filter(v => v.lang.startsWith('it'));
-            const selectedMale = updatedItVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('mario') || v.name.toLowerCase().includes('cosimo'));
-            if (selectedMale) utterance.voice = selectedMale;
-            else if (updatedItVoices.length > 1) utterance.voice = updatedItVoices[1];
-            window.speechSynthesis.speak(utterance);
-          };
-        } else {
-          window.speechSynthesis.speak(utterance);
-        }
-      } else {
-        setIsPlayingAudio(false);
-      }
+      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=it&client=tw-ob`;
+      const audio = new Audio(audioUrl);
+      
+      audio.onended = () => setIsPlayingAudio(false);
+      audio.onerror = () => setIsPlayingAudio(false);
+      
+      audio.play().catch(() => setIsPlayingAudio(false));
     } catch (e) {
       setIsPlayingAudio(false);
     }
@@ -627,11 +580,12 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  const bgMain = isDark ? '#f4f5f7' : '#ffffff';
+  // רקע כסף בהיר מובחן, קלפים לבנים שיוצרים הפרדה ויזואלית מושלמת
+  const bgMain = isDark ? '#e2e5eb' : '#ffffff';
   const cardBg = isDark ? '#ffffff' : '#ffffff';
   const textColor = isDark ? '#111827' : '#000000';
   const textSub = isDark ? '#4b5563' : '#4b5563';
-  const borderColor = isDark ? '#d1d5db' : '#e5e7eb';
+  const borderColor = isDark ? '#cbd5e1' : '#e5e7eb';
   const cardShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05)';
 
   const blockBg = isDark ? '#ffffff' : '#ffffff';
