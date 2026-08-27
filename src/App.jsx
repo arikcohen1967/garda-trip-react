@@ -31,7 +31,6 @@ const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
     label: "רביעי · 30/09",
-    fullLabel: "יום רביעי · 30 בספטמבר 2026",
     title: "נחיתה והגעה למלון",
     icon: "✈️",
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
@@ -44,7 +43,6 @@ const INITIAL_TRIP_DAYS = [
   {
     date: "2026-10-01",
     label: "חמישי · 01/10",
-    fullLabel: "יום חמישי · 01 באוקטובר 2026",
     title: "Gardaland – יום פארק מלא",
     icon: "🎢",
     challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
@@ -59,7 +57,6 @@ const INITIAL_TRIP_DAYS = [
   {
     date: "2026-10-02",
     label: "שישי · 02/10",
-    fullLabel: "יום שישי · 02 באוקטובר 2026",
     title: "סובב אגם גארדה + ראפטינג",
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
@@ -73,7 +70,6 @@ const INITIAL_TRIP_DAYS = [
   {
     date: "2026-10-03",
     label: "שבת · 03/10",
-    fullLabel: "יום שבת · 03 באוקטובר 2026",
     title: "Movieland + Medieval Times",
     icon: "🎬",
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
@@ -86,7 +82,6 @@ const INITIAL_TRIP_DAYS = [
   {
     date: "2026-10-04",
     label: "ראשון · 04/10",
-    fullLabel: "יום ראשון · 04 באוקטובר 2026",
     title: "ונציה – יום מלא",
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
@@ -99,7 +94,6 @@ const INITIAL_TRIP_DAYS = [
   {
     date: "2026-10-05",
     label: "שני · 05/10",
-    fullLabel: "יום שני · 05 באוקטובר 2026",
     title: "Borghetto sul Mincio + Valeggio",
     icon: "🏘️",
     challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים העתיקות!",
@@ -112,7 +106,6 @@ const INITIAL_TRIP_DAYS = [
   {
     date: "2026-10-06",
     label: "שלישי · 06/10",
-    fullLabel: "יום שלישי · 06 באוקטובר 2026",
     title: "ורונה + הטיסה הביתה",
     icon: "❤️",
     challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
@@ -507,6 +500,7 @@ export default function App() {
     }
   };
 
+  // שדרוג השמע לקול גבר באיטלקית
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
@@ -520,12 +514,26 @@ export default function App() {
         currentUtteranceRef.current = utterance; 
         utterance.lang = 'it-IT';
         utterance.rate = 0.8;
-        utterance.pitch = 1.0;
+        utterance.pitch = 0.85; // מנמיך מעט את גובה הצליל כדי לקבל בגוון קול גברי
 
         const voices = window.speechSynthesis.getVoices();
-        const itVoice = voices.find(v => v.lang === 'it-IT' || v.lang === 'it_IT' || v.lang.startsWith('it'));
-        if (itVoice) {
-          utterance.voice = itVoice;
+        // חיפוש מתקדם אחר קול גברי איטלקי או בחירת קול מתאים
+        const itVoices = voices.filter(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
+        const maleVoice = itVoices.find(v => 
+          v.name.toLowerCase().includes('male') || 
+          v.name.toLowerCase().includes('mario') || 
+          v.name.toLowerCase().includes('cosimo') ||
+          v.name.toLowerCase().includes('luca') ||
+          v.name.toLowerCase().includes('giorgio')
+        );
+
+        if (maleVoice) {
+          utterance.voice = maleVoice;
+        } else if (itVoices.length > 1) {
+          // בד"כ הקול השני ברשימה הוא גברי במערכות רבות
+          utterance.voice = itVoices[1];
+        } else if (itVoices.length > 0) {
+          utterance.voice = itVoices[0];
         }
 
         utterance.onend = () => {
@@ -540,8 +548,10 @@ export default function App() {
         if (voices.length === 0) {
           window.speechSynthesis.onvoiceschanged = () => {
             const updatedVoices = window.speechSynthesis.getVoices();
-            const selectedVoice = updatedVoices.find(v => v.lang.startsWith('it'));
-            if (selectedVoice) utterance.voice = selectedVoice;
+            const updatedItVoices = updatedVoices.filter(v => v.lang.startsWith('it'));
+            const selectedMale = updatedItVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('mario') || v.name.toLowerCase().includes('cosimo'));
+            if (selectedMale) utterance.voice = selectedMale;
+            else if (updatedItVoices.length > 1) utterance.voice = updatedItVoices[1];
             window.speechSynthesis.speak(utterance);
           };
         } else {
@@ -617,7 +627,6 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // שינוי הרקע ל-Silver בהיר במצב כהה ושמירה מלאה על הבהיר
   const bgMain = isDark ? '#f4f5f7' : '#ffffff';
   const cardBg = isDark ? '#ffffff' : '#ffffff';
   const textColor = isDark ? '#111827' : '#000000';
@@ -800,7 +809,6 @@ export default function App() {
 
         <section style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
           <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '800', color: '#1d4ed8', display: 'block', marginBottom: '2px' }}>{day.fullLabel}</span>
             <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
