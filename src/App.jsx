@@ -157,7 +157,7 @@ const QUICK_PHRASES = [
   { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
 ];
 
-// יצירת 1,000 שאלות טריויה כלליות לגילאי עד 16 ברмות שונות ומעורבבות באקראי
+// יצירת 1,000 שאלות טריויה כלליות רנדומליות
 const generateMassiveTrivia = () => {
   const baseQuestions = [
     { q: "כמה רגליים יש לעכביש?", options: ["6", "8", "10", "12"], correct: 1 },
@@ -193,7 +193,6 @@ const generateMassiveTrivia = () => {
   ];
 
   const generated = [];
-  // שכפול חכם של שאלות עד הגעה ל-1000 שאלות רנדומליות ומאתגרות
   for (let i = 0; i < 1000; i++) {
     const template = baseQuestions[i % baseQuestions.length];
     generated.push({
@@ -239,12 +238,13 @@ export default function App() {
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
 
-  // משחק טריויה משודרג לנהיגה לפי תורות השחקנים
+  // משחק טריויה משודרג לפי תורים עם אופציית השהה ואיפוס
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   const [travelerIndex, setTravelerIndex] = useState(0);
   const [triviaIndex, setTriviaIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+  const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const [travelerScores, setTravelerScores] = useState({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
 
   // סדר תפריט צדדי ניתן לעריכה
@@ -670,7 +670,6 @@ export default function App() {
     }
   };
 
-  // טיפול בתשובת טריויה לפי תור הנוסעים
   const handleTriviaAnswer = (optionIdx) => {
     setSelectedAnswer(optionIdx);
     const currentQ = ROAD_TRIVIA_QUESTIONS[triviaIndex];
@@ -691,8 +690,17 @@ export default function App() {
     setSelectedAnswer(null);
     setIsAnswerCorrect(null);
     setTriviaIndex(prev => (prev + 1) % ROAD_TRIVIA_QUESTIONS.length);
-    // מעבר לנוסע הבא בתור בסבב
     setTravelerIndex(prev => (prev + 1) % travelers.length);
+  };
+
+  const resetTriviaGame = () => {
+    if (!window.confirm('לאפס את המשחק ולהתחיל את הניקוד מחדש?')) return;
+    setTriviaScore(0);
+    setTriviaIndex(0);
+    setTravelerIndex(0);
+    setSelectedAnswer(null);
+    setIsAnswerCorrect(null);
+    setTravelerScores({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
   };
 
   const day = tripDays[activeDay] || tripDays[0];
@@ -1115,86 +1123,111 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודל משחק טריויה לנהיגה לפי תורות השחקנים */}
+      {/* מודל משחק טריויה לנהיגה לפי תורות עם אופציית השהה ואיפוס */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '18px' }}>
                 <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>🚗 טריויה חכמה לזמן הנהיגה</h2>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
-              </div>
-
-              {/* תור השחקן הנוכחי */}
-              <div style={{ background: isDark ? '#312e81' : '#eff6ff', border: '1px solid #3b82f6', borderRadius: '14px', padding: '12px 16px', marginBottom: '14px', textAlign: 'center' }}>
-                <span style={{ fontSize: '15px', fontWeight: '900', color: isDark ? '#93c5fd' : '#1d4ed8' }}>
-                  🎯 תורו של/ה של: <u style={{ fontSize: '17px' }}>{travelers[travelerIndex]}</u>!
-                </span>
-              </div>
-
-              {/* טבלת ניקוד משפחתית */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', marginBottom: '16px' }}>
-                {travelers.map((name, idx) => (
-                  <div key={idx} style={{ background: travelerIndex === idx ? (isDark ? '#3f3f46' : '#1e293b') : blockBg, color: travelerIndex === idx ? '#fff' : blockText, border: `1px solid ${blockBorder}`, borderRadius: '10px', padding: '8px 4px', textAlign: 'center', fontSize: '11px', fontWeight: '800', boxShadow: cardShadow }}>
-                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
-                    <div style={{ fontSize: '13px', fontWeight: '900', color: travelerIndex === idx ? '#86efac' : '#166534' }}>{travelerScores[name]}₪</div>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '18px', marginBottom: '18px', boxSizing: 'border-box', boxShadow: cardShadow }}>
-                <p style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: blockText, lineHeight: '1.5' }}>
-                  {ROAD_TRIVIA_QUESTIONS[triviaIndex].q}
-                </p>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
-                {ROAD_TRIVIA_QUESTIONS[triviaIndex].options.map((option, optIdx) => {
-                  let btnBg = blockBg;
-                  let btnColor = blockText;
-                  let btnBorder = blockBorder;
-
-                  if (selectedAnswer !== null) {
-                    if (optIdx === ROAD_TRIVIA_QUESTIONS[triviaIndex].correct) {
-                      btnBg = '#d1fae5';
-                      btnColor = '#065f46';
-                      btnBorder = '#34d399';
-                    } else if (optIdx === selectedAnswer) {
-                      btnBg = '#fee2e2';
-                      btnColor = '#991b1b';
-                      btnBorder = '#f87171';
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={optIdx}
-                      disabled={selectedAnswer !== null}
-                      onClick={() => handleGlobalClick(() => handleTriviaAnswer(optIdx))}
-                      style={{
-                        padding: '14px 16px', borderRadius: '12px', textAlign: 'right', fontSize: '14px', fontWeight: '800',
-                        background: btnBg, color: btnColor, border: `1px solid ${btnBorder}`, cursor: selectedAnswer === null ? 'pointer' : 'default',
-                        boxShadow: cardShadow, transition: 'all 0.2s ease'
-                      }}
-                    >
-                      {option}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {selectedAnswer !== null && (
-                <div style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: '15px', fontWeight: '900', color: isAnswerCorrect ? '#166534' : '#dc2626', marginBottom: '12px' }}>
-                    {isAnswerCorrect ? `🎉 כל הכבוד ${travelers[travelerIndex]}! תשובה נכונה (+10 נק')!` : `❌ לא מדויק ${travelers[travelerIndex]}! התשובה שגויה.`}
-                  </p>
-                  <button
-                    onClick={() => handleGlobalClick(nextTriviaQuestion)}
-                    style={{ width: '100%', padding: '14px', background: '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', boxShadow: cardShadow }}
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <button 
+                    onClick={() => handleGlobalClick(() => setIsTriviaPaused(!isTriviaPaused))}
+                    style={{ background: isTriviaPaused ? '#f59e0b' : (isDark ? '#3f3f46' : '#f1f5f9'), color: isTriviaPaused ? '#fff' : textColor, border: '1px solid #cbd5e1', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', cursor: 'pointer' }}
                   >
-                    שאלה הבאה לנוסע הבא ➡️
+                    {isTriviaPaused ? '▶️ המשך' : '⏸️ השהה'}
                   </button>
+                  <button 
+                    onClick={() => handleGlobalClick(resetTriviaGame)}
+                    style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', cursor: 'pointer' }}
+                    title="איפוס משחק"
+                  >
+                    🔄 איפוס
+                  </button>
+                  <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
                 </div>
+              </div>
+
+              {isTriviaPaused ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', background: blockBg, borderRadius: '16px', border: `1px solid ${blockBorder}` }}>
+                  <span style={{ fontSize: '40px', display: 'block', marginBottom: '10px' }}>⏸️</span>
+                  <h3 style={{ fontSize: '18px', fontWeight: '900', color: blockText, margin: '0 0 8px' }}>המשחק מושהה</h3>
+                  <p style={{ fontSize: '13px', color: textSub, margin: 0 }}>קחו הפסקה מהשאלות, המשיכו לנהוג בבטוחה, ולחצו על "המשך" כשבא לכם להמשיך!</p>
+                </div>
+              ) : (
+                <>
+                  {/* תור השחקן הנוכחי */}
+                  <div style={{ background: isDark ? '#312e81' : '#eff6ff', border: '1px solid #3b82f6', borderRadius: '14px', padding: '12px 16px', marginBottom: '14px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '15px', fontWeight: '900', color: isDark ? '#93c5fd' : '#1d4ed8' }}>
+                      🎯 תורו של/ה של: <u style={{ fontSize: '17px' }}>{travelers[travelerIndex]}</u>!
+                    </span>
+                  </div>
+
+                  {/* טבלת ניקוד משפחתית */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', marginBottom: '16px' }}>
+                    {travelers.map((name, idx) => (
+                      <div key={idx} style={{ background: travelerIndex === idx ? (isDark ? '#3f3f46' : '#1e293b') : blockBg, color: travelerIndex === idx ? '#fff' : blockText, border: `1px solid ${blockBorder}`, borderRadius: '10px', padding: '8px 4px', textAlign: 'center', fontSize: '11px', fontWeight: '800', boxShadow: cardShadow }}>
+                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
+                        <div style={{ fontSize: '13px', fontWeight: '900', color: travelerIndex === idx ? '#86efac' : '#166534' }}>{travelerScores[name]}₪</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '18px', marginBottom: '18px', boxSizing: 'border-box', boxShadow: cardShadow }}>
+                    <p style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: blockText, lineHeight: '1.5' }}>
+                      {ROAD_TRIVIA_QUESTIONS[triviaIndex].q}
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
+                    {ROAD_TRIVIA_QUESTIONS[triviaIndex].options.map((option, optIdx) => {
+                      let btnBg = blockBg;
+                      let btnColor = blockText;
+                      let btnBorder = blockBorder;
+
+                      if (selectedAnswer !== null) {
+                        if (optIdx === ROAD_TRIVIA_QUESTIONS[triviaIndex].correct) {
+                          btnBg = '#d1fae5';
+                          btnColor = '#065f46';
+                          btnBorder = '#34d399';
+                        } else if (optIdx === selectedAnswer) {
+                          btnBg = '#fee2e2';
+                          btnColor = '#991b1b';
+                          btnBorder = '#f87171';
+                        }
+                      }
+
+                      return (
+                        <button
+                          key={optIdx}
+                          disabled={selectedAnswer !== null}
+                          onClick={() => handleGlobalClick(() => handleTriviaAnswer(optIdx))}
+                          style={{
+                            padding: '14px 16px', borderRadius: '12px', textAlign: 'right', fontSize: '14px', fontWeight: '800',
+                            background: btnBg, color: btnColor, border: `1px solid ${btnBorder}`, cursor: selectedAnswer === null ? 'pointer' : 'default',
+                            boxShadow: cardShadow, transition: 'all 0.2s ease'
+                          }}
+                        >
+                          {option}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {selectedAnswer !== null && (
+                    <div style={{ textAlign: 'center' }}>
+                      <p style={{ fontSize: '15px', fontWeight: '900', color: isAnswerCorrect ? '#166534' : '#dc2626', marginBottom: '12px' }}>
+                        {isAnswerCorrect ? `🎉 כל הכבוד ${travelers[travelerIndex]}! תשובה נכונה (+10 נק')!` : `❌ לא מדויק ${travelers[travelerIndex]}! התשובה שגויה.`}
+                      </p>
+                      <button
+                        onClick={() => handleGlobalClick(nextTriviaQuestion)}
+                        style={{ width: '100%', padding: '14px', background: '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', boxShadow: cardShadow }}
+                      >
+                        שאלה הבאה לנוסע הבא ➡️
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
