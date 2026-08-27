@@ -194,7 +194,6 @@ export default function App() {
   const [translationHistory, setTranslationHistory] = useState([]);
   
   const audioContextRef = useRef(false);
-  const currentUtteranceRef = useRef(null); // תיקון מניעת Garbage Collection באייפון
 
   const playClickSound = () => {
     try {
@@ -373,9 +372,7 @@ export default function App() {
         });
         writeTx.oncomplete = () => loadFiles(activeFolder);
       };
-    } catch (e) {
-      console.log('IndexedDB init fallback');
-    }
+    } catch (e) {}
   };
 
   const loadFiles = async (folder) => {
@@ -413,9 +410,7 @@ export default function App() {
       if (!error && data) {
         setGalleryItems(data);
       }
-    } catch (e) {
-      console.log('Cloud gallery load error, fallback to local');
-    }
+    } catch (e) {}
   };
 
   const handleFileUpload = async (e) => {
@@ -516,37 +511,20 @@ export default function App() {
     }
   };
 
+  // שימוש במנוע הקול של גוגל (TTS) לקבלת קול גברי צלול, טבעי וברור באיטלקית
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
     setIsPlayingAudio(true);
 
     try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        
-        const utterance = new SpeechSynthesisUtterance(text.trim());
-        currentUtteranceRef.current = utterance; // מניעת Garbage Collection באייפון
-        utterance.lang = 'it-IT';
-        utterance.rate = 0.85;
-
-        const voices = window.speechSynthesis.getVoices();
-        const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
-        if (itVoice) utterance.voice = itVoice;
-
-        utterance.onend = () => {
-          setIsPlayingAudio(false);
-          currentUtteranceRef.current = null;
-        };
-        utterance.onerror = () => {
-          setIsPlayingAudio(false);
-          currentUtteranceRef.current = null;
-        };
-
-        window.speechSynthesis.speak(utterance);
-      } else {
-        setIsPlayingAudio(false);
-      }
+      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=it&client=tw-ob`;
+      const audio = new Audio(audioUrl);
+      
+      audio.onended = () => setIsPlayingAudio(false);
+      audio.onerror = () => setIsPlayingAudio(false);
+      
+      audio.play().catch(() => setIsPlayingAudio(false));
     } catch (e) {
       setIsPlayingAudio(false);
     }
@@ -796,7 +774,6 @@ export default function App() {
 
         <section style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
           <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '800', color: isDark ? '#93c5fd' : '#1d4ed8', display: 'block', marginBottom: '2px' }}>{day.fullLabel}</span>
             <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
