@@ -187,6 +187,7 @@ export default function App() {
   const [translationHistory, setTranslationHistory] = useState([]);
   
   const audioContextRef = useRef(false);
+  const currentUtteranceRef = useRef(null);
 
   const playClickSound = () => {
     try {
@@ -499,20 +500,65 @@ export default function App() {
     }
   };
 
-  // השמעת קול איטלקי באמצעות מנוע השמע של גוגל (קול גברי טבעי ונקי)
+  // מנגנון הדיבור המדויק עם בחירת קול גברי מובהק באיטלקית
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
     setIsPlayingAudio(true);
 
     try {
-      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=it&client=tw-ob`;
-      const audio = new Audio(audioUrl);
-      
-      audio.onended = () => setIsPlayingAudio(false);
-      audio.onerror = () => setIsPlayingAudio(false);
-      
-      audio.play().catch(() => setIsPlayingAudio(false));
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text.trim());
+        currentUtteranceRef.current = utterance; 
+        utterance.lang = 'it-IT';
+        utterance.rate = 0.8;
+        utterance.pitch = 0.8; // מנמיך את הטון כדי לוודא צליל גברי עמוק וברור
+
+        const voices = window.speechSynthesis.getVoices();
+        const itVoices = voices.filter(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
+        const maleVoice = itVoices.find(v => 
+          v.name.toLowerCase().includes('male') || 
+          v.name.toLowerCase().includes('mario') || 
+          v.name.toLowerCase().includes('cosimo') ||
+          v.name.toLowerCase().includes('luca') ||
+          v.name.toLowerCase().includes('giorgio') ||
+          v.name.toLowerCase().includes('diego')
+        );
+
+        if (maleVoice) {
+          utterance.voice = maleVoice;
+        } else if (itVoices.length > 1) {
+          utterance.voice = itVoices[1]; // לרוב הקול השני הוא הגברי במערכת
+        } else if (itVoices.length > 0) {
+          utterance.voice = itVoices[0];
+        }
+
+        utterance.onend = () => {
+          setIsPlayingAudio(false);
+          currentUtteranceRef.current = null;
+        };
+        utterance.onerror = () => {
+          setIsPlayingAudio(false);
+          currentUtteranceRef.current = null;
+        };
+
+        if (voices.length === 0) {
+          window.speechSynthesis.onvoiceschanged = () => {
+            const updatedVoices = window.speechSynthesis.getVoices();
+            const updatedItVoices = updatedVoices.filter(v => v.lang.startsWith('it'));
+            const selectedMale = updatedItVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('mario') || v.name.toLowerCase().includes('cosimo'));
+            if (selectedMale) utterance.voice = selectedMale;
+            else if (updatedItVoices.length > 1) utterance.voice = updatedItVoices[1];
+            window.speechSynthesis.speak(utterance);
+          };
+        } else {
+          window.speechSynthesis.speak(utterance);
+        }
+      } else {
+        setIsPlayingAudio(false);
+      }
     } catch (e) {
       setIsPlayingAudio(false);
     }
@@ -580,13 +626,13 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // רקע כסף בהיר מובחן, קלפים לבנים שיוצרים הפרדה ויזואלית מושלמת
-  const bgMain = isDark ? '#e2e5eb' : '#ffffff';
+  // עיצוב סילבר כהה ברקע המסכים (#1e222b) שיוצר קונטרסט מושלם עם הקלפים הלבנים
+  const bgMain = isDark ? '#1e222b' : '#ffffff';
   const cardBg = isDark ? '#ffffff' : '#ffffff';
-  const textColor = isDark ? '#111827' : '#000000';
-  const textSub = isDark ? '#4b5563' : '#4b5563';
-  const borderColor = isDark ? '#cbd5e1' : '#e5e7eb';
-  const cardShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05)';
+  const textColor = isDark ? '#f8fafc' : '#000000';
+  const textSub = isDark ? '#d1d5db' : '#4b5563';
+  const borderColor = isDark ? '#374151' : '#e5e7eb';
+  const cardShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.15)';
 
   const blockBg = isDark ? '#ffffff' : '#ffffff';
   const blockText = isDark ? '#1f2937' : '#1e293b';
@@ -636,13 +682,13 @@ export default function App() {
             transition: 'all 0.2s ease'
           }}
         >
-          {isDark ? '✨ Silver בהיר (פעיל)' : '🎨 עבור ל-Silver בהיר'}
+          {isDark ? '✨ סילבר כהה (פעיל)' : '🎨 עבור לסילבר כהה'}
         </button>
       </div>
 
       <header style={{
         padding: '16px 20px',
-        background: bgMain,
+        background: isDark ? '#272b35' : bgMain,
         borderBottom: `1px solid ${borderColor}`,
         display: 'flex',
         justifyContent: 'space-between',
@@ -656,8 +702,8 @@ export default function App() {
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
-            background: 'linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 50%, #d4d4d8 100%)', 
-            border: '1px solid #94a3b8', 
+            background: isDark ? '#374151' : 'linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 50%, #d4d4d8 100%)', 
+            border: `1px solid ${isDark ? '#4b5563' : '#94a3b8'}`, 
             width: '48px', 
             height: '48px',
             borderRadius: '14px', 
@@ -667,7 +713,7 @@ export default function App() {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            color: '#1e293b',
+            color: isDark ? '#ffffff' : '#1e293b',
             boxShadow: '0 2px 6px rgba(0, 0, 0, 0.2)',
             textShadow: '0 1px 1px rgba(0,0,0,0.3)'
           }}
@@ -687,11 +733,11 @@ export default function App() {
             setModalType('viewer');
           })}
           style={{
-            background: '#ffffff', 
-            border: '1px solid #94a3b8', 
+            background: isDark ? '#374151' : '#ffffff', 
+            border: `1px solid ${isDark ? '#4b5563' : '#94a3b8'}`, 
             padding: '10px 14px',
             borderRadius: '12px', fontSize: '13px', fontWeight: '900', 
-            color: '#1e293b', cursor: 'pointer',
+            color: isDark ? '#ffffff' : '#1e293b', cursor: 'pointer',
             display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
           }}
         >
@@ -702,7 +748,7 @@ export default function App() {
       {sidebarOpen && (
         <div 
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.4)', zIndex: 2500, width: '100vw', height: '100vh', backdropFilter: 'blur(2px)' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.5)', zIndex: 2500, width: '100vw', height: '100vh', backdropFilter: 'blur(2px)' }}
         />
       )}
       
@@ -712,14 +758,14 @@ export default function App() {
         onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
         style={{
           position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px', maxWidth: '80vw',
-          background: cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.3)',
+          background: isDark ? '#272b35' : cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.4)',
           transition: 'right 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '28px 20px',
           display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box'
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '6px' }}>
           <h3 style={{ fontSize: '18px', fontWeight: '900', margin: 0, color: textColor }}>תפריט מהיר</h3>
-          <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+          <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? '#374151' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
         </div>
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType(null); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>📅</span> מסלול ימי הטיול</button>
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('challengesLog'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🏆</span> יומן אתגרים ובדיחות</button>
