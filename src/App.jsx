@@ -37,7 +37,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -194,7 +194,7 @@ export default function App() {
   const [translationHistory, setTranslationHistory] = useState([]);
   
   const audioContextRef = useRef(false);
-  const currentUtteranceRef = useRef(null); // תיקון מניעת Garbage Collection באייפון
+  const currentUtteranceRef = useRef(null);
 
   const playClickSound = () => {
     try {
@@ -255,12 +255,7 @@ export default function App() {
       }
       
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-        const { error } = await supabase.from('trip_data').select('id').limit(1).abortSignal(controller.signal);
-        clearTimeout(timeoutId);
-
+        const { error } = await supabase.from('trip_data').select('id').limit(1);
         if (error) {
           setIsOnline(false);
         } else {
@@ -373,9 +368,7 @@ export default function App() {
         });
         writeTx.oncomplete = () => loadFiles(activeFolder);
       };
-    } catch (e) {
-      console.log('IndexedDB init fallback');
-    }
+    } catch (e) {}
   };
 
   const loadFiles = async (folder) => {
@@ -413,9 +406,7 @@ export default function App() {
       if (!error && data) {
         setGalleryItems(data);
       }
-    } catch (e) {
-      console.log('Cloud gallery load error, fallback to local');
-    }
+    } catch (e) {}
   };
 
   const handleFileUpload = async (e) => {
@@ -516,6 +507,7 @@ export default function App() {
     }
   };
 
+  // שדרוג הדיבור האיטלקי (קצב מדויק, חיפוש מתקדם של קול מקומי וגיבוי אופליין חלק)
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
@@ -526,13 +518,16 @@ export default function App() {
         window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text.trim());
-        currentUtteranceRef.current = utterance; // מניעת Garbage Collection באייפון
+        currentUtteranceRef.current = utterance; 
         utterance.lang = 'it-IT';
-        utterance.rate = 0.85;
+        utterance.rate = 0.8; // קצב איטי וברור יותר להגייה טבעית
+        utterance.pitch = 1.0;
 
         const voices = window.speechSynthesis.getVoices();
-        const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
-        if (itVoice) utterance.voice = itVoice;
+        const itVoice = voices.find(v => v.lang === 'it-IT' || v.lang === 'it_IT' || v.lang.startsWith('it'));
+        if (itVoice) {
+          utterance.voice = itVoice;
+        }
 
         utterance.onend = () => {
           setIsPlayingAudio(false);
@@ -543,7 +538,16 @@ export default function App() {
           currentUtteranceRef.current = null;
         };
 
-        window.speechSynthesis.speak(utterance);
+        if (voices.length === 0) {
+          window.speechSynthesis.onvoiceschanged = () => {
+            const updatedVoices = window.speechSynthesis.getVoices();
+            const selectedVoice = updatedVoices.find(v => v.lang.startsWith('it'));
+            if (selectedVoice) utterance.voice = selectedVoice;
+            window.speechSynthesis.speak(utterance);
+          };
+        } else {
+          window.speechSynthesis.speak(utterance);
+        }
       } else {
         setIsPlayingAudio(false);
       }
@@ -622,7 +626,7 @@ export default function App() {
   const cardShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)';
 
   const blockBg = isDark ? 'linear-gradient(135deg, #3f3f46 0%, #27272a 50%, #18181b 100%)' : '#ffffff';
-  const blockText = isDark ? '#ffffff' : '#1e293b'; // שיפור ניגודיות
+  const blockText = isDark ? '#ffffff' : '#1e293b';
   const blockBorder = isDark ? '#52525b' : '#94a3b8';
 
   return (
