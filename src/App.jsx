@@ -157,9 +157,9 @@ const QUICK_PHRASES = [
   { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
 ];
 
-// מאגר ענק של מעל 300 שאלות טריויה כלליות לגילאי עד 16 (ללא קשר לכדור הארץ, מדע, סרטים וגאוגרפיה)
+// מאגר ענק ומקיף של למעלה מ-300 שאלות טריויה כלליות לגילאי עד 16
 const ROAD_TRIVIA_QUESTIONS = [
-  // 1-50: בעלי חיים וטבע
+  // 1-80: מדע, טבע וחלל
   { q: "כמה רגליים יש לעכביש?", options: ["6", "8", "10", "12"], correct: 1 },
   { q: "איזה בעל חיים נחשב למהיר ביותר בעולם ביבשה?", options: ["אריה", "ברדלס (צ'יטה)", "סוס מירוץ", "זברה"], correct: 1 },
   { q: "כמה פלנטות יש במערכת השמש שלנו?", options: ["7", "8", "9", "10"], correct: 1 },
@@ -210,8 +210,38 @@ const ROAD_TRIVIA_QUESTIONS = [
   { q: "איזה יבשת נחשבת לחמה ביותר וכוללת את מדבר סהרה?", options: ["אסיה", "אפריקה", "אוסטרליה", "אמריקה הדרומית"], correct: 1 },
   { q: "מי היה המנהיג הראשון של מדינת ישראל ומחבר מגילת העצמאות?", options: ["בנימין נתניהו", "דוד בן-גוריון", "תאודור הרצל", "חיים ויצמן"], correct: 1 },
   { q: "איזה כוכב לכת מכונה 'הכוכב הכחול'?", options: ["מאדים", "כדור הארץ", "נפטון", "שבתאי"], correct: 1 },
+  { q: "איזה עוף גדול מטיל את הביצים הגדולות ביותר בעולם?", options: ["תרנגולת", "יען", "נשר", "ברווז"], correct: 1 },
+  { q: "איזה פרי צהוב וחמוץ מאוד שמים בדרך כלל בתה?", options: ["תפוז", "לימון", "אשכולית", "בננה"], correct: 1 },
+  { q: "איזה חיה גדולה חיה במים ויש לה חדק ארוך מאוד?", options: ["היפופוטם", "פיל ים", "לווייתן", "כריש"], correct: 1 },
+  { q: "כמה שחקנים יש בקבוצת כדורסל על המגרש לכל קבוצה?", options: ["5", "6", "7", "11"], correct: 0 },
+  { q: "מהו בעל החיים המהיר ביותר בעולם במעוף?", options: ["נשר", "בז נודד (Peregrine Falcon)", "יונה", "סנונית"], correct: 1 },
+  { q: "כמה חוליות יש בצוואר של ג'ירפה (כמו לבני אדם)?", options: ["7", "12", "20", "30"], correct: 0 },
+  { q: "איזה יסוד כימי יש בתוך מים יחד עם חמצן (H2O)?", options: ["פחמן", "מימן (Hydrogen)", "חנקן", "הליום"], correct: 1 },
+  { q: "מהו הפרי הלאומי של ישראל שגדל באשכולות על עצי פרי?", options: ["תפוח", "תפוז / הדרים", "בננה", "ענבים"], correct: 1 },
+  { q: "איזה בעל חיים מפורסם בנשיאת הגורים שלו בכיס בבטן?", options: ["קנגורו", "אריה", "פיל", "זברה"], correct: 0 },
+  { q: "כמה צבעים יש בדגל ישראל?", options: ["אחד", "שניים (כחול ולבן)", "שלושה", "ארבעה"], correct: 1 },
+  { q: "איזה בעל חיים ידוע כיצור שנושם דרך הזימים שלו במים?", options: ["לווייתן", "דג", "דולפין", "כלב ים"], correct: 1 },
+  { q: "איזה חיה נחשבת לגדולה ביותר ביבשה כיום?", options: ["קרנף", "פיל אפריקאי", "היפופוטם", "ג'ירפה"], correct: 1 },
+  { q: "מה שמו של המדען שהפיל תפוח וגילה את כוח הכבידה?", options: ["אלברט איינשטיין", "אייזק ניוטון", "גלילאו גליליי", "תומאס אדיסון"], correct: 1 },
+  { q: "איזה פרי עשוי להפוך לצימוק כשהוא מיובש בשמש?", options: ["ענב", "תפוח", "בננה", "אפרסק"], correct: 0 },
+  { q: "איזה כלי נגינה מצריך קשת וארבעה מיתרים?", options: ["גיטרה", "פסנתר", "כינור", "חליל"], correct: 2 },
+  { q: "איזה בעל חיים ידוע בזכות היכולת שלו לבנות סכרים ממרץ מדהים בנהרות?", options: ["בונה (Beaver)", "דוב", "זאב", "שועל"], correct: 0 },
+  { q: "מהו כוכב הלכת האדום במערכת השמש?", options: ["נוגה", "מאדים", "שבתאי", "מרקורי"], correct: 1 },
+  { q: "איזה בעל חיים מפורסם בצוואר הארוך שלו?", options: ["פיל", "ג'ירפה", "זברה", "סוס"], correct: 1 },
+  { q: "איזה יסוד כימי יש בתוך מלח שולחן יחד עם כלור?", options: ["נתרן (Sodium)", "ברזל", "זהב", "חמצן"], correct: 0 },
+  { q: "איזה פרי טרופי קוצני מבחוץ וצהוב ומתוק מבפנים?", options: ["אננס", "אבטיח", "תות", "מלון"], correct: 0 },
+  { q: "איזה חלק בצמח אחראי על קליטת מים מהאדמה?", options: ["העלים", "הפרחים", "השורשים", "הגזע"], correct: 2 },
+  { q: "איזה בעל חיים חי במדבר וידוע בדבשת שלו ששומרת שומן?", options: ["סוס", "גמל", "פיל", "זברה"], correct: 1 },
+  { q: "איזה סוג של בעל חיים הוא הלווייתן הכחול?", options: ["דג ענק", "יונקים ימי", "זוחל עתיק", "דו-חיים"], correct: 1 },
+  { q: "איזה בעל חיים ידוע בזכות היכולת שלו ליצור פנינים בתוך הקונכייה?", options: ["צדפה", "כוכב ים", "תמנון", "דג זהב"], correct: 0 },
+  { q: "איזה חרק מפורסם ידוע בקפיצות הגבוהות שלו ובצליל שהוא עושה בלילות הקיץ?", options: ["צרצר", "נמלה", "דבורה", "זבוב"], correct: 0 },
+  { q: "איזה כוכב לכת הוא הקרוב ביותר לכדור הארץ וידוע כבהיר ביותר בשמי הלילה?", options: ["נוגה (Venus)", "מאדים", "צדק", "מרקורי"], correct: 0 },
+  { q: "מהו החלק הקשה ביותר בגוף האדם?", options: ["עצם הירך", "אמייל השן", "הגולגולת", "עמוד השדרה"], correct: 1 },
+  { q: "כמה עצמות יש בגוף של תינוק שזה עתה נולד (יותר מאשר במבוגר)?", options: ["כ-300 עצמות", "כ-206 עצמות", "כ-150 עצמות", "כ-500 עצמות"], correct: 0 },
+  { q: "איזה יסוד בטבע נוזלי בטמפרטורת החדר ומשמש במדחומים?", options: ["כספה (Mercury)", "ברזל", "נחושת", "זהב"], correct: 0 },
+  { q: "איזה בעל חיים מסוגל לישון עם עין אחת פתוחה?", options: ["דולפין", "סוס", "ארנב", "דג זהב"], correct: 0 },
 
-  // 51-120: סרטים, גיימינג ותרבות פופולרית
+  // 81-160: סרטים, גיימינג ופופולרי
   { q: "מי כתב את ספרי 'הארי פוטר'?", options: ["ג'י. קיי. רולינג", "סטיבן קינג", "ג'. ר. ר. טולקין", "דן בראון"], correct: 0 },
   { q: "איזה מהמשחקים הבאים אינו משחק וידאו?", options: ["Minecraft", "Fortnite", "Monopoly", "Roblox"], correct: 2 },
   { q: "מה שמה של בובת הספוג הצהובה שגר באננס מתחת לים?", options: ["פטריק", "ספוגובב קבוע", "ספוגבוב מכנסמרובע", "סקווידוויד"], correct: 2 },
@@ -251,6 +281,9 @@ const ROAD_TRIVIA_QUESTIONS = [
   { q: "מי הגיבור הראשי במשחקי 'זלדה' (The Legend of Zelda)?", options: ["זלדה", "לינק (Link)", "מריו", "גאנון"], correct: 1 },
   { q: "מהו שם הבית ספר הקוסמים שאליו מגיע הארי פוטר?", options: ["הוגוורטס (Hogwarts)", "אקספורד", "קיימברידג'", "נרניה"], correct: 0 },
   { q: "איזה סרט מציג רובוטים ענקיים שיכולים להפוך למכוניות (אופטימוס פריים וכד')?", options: ["רובוטריקים (Transformers)", "מהיר ועצבני", "מלחמת הכוכבים", "אווטאר"], correct: 0 },
+  { q: "באיזה משחק וידאו בונים עולמות תלת-ממדיים מתוך קוביות ונלחמים במפלצות בלילה?", options: ["Minecraft", "Tetris", "Pacman", "Roblox"], correct: 0 },
+  { q: "מה שמה של הדמות הראשית בסרטי 'אווטאר' של ג'יימס קמרון שחי בפנדורה?", options: ["ג'ייק סאלי", "קפטן קוק", "לוק סקייווקר", "הארי פוטר"], correct: 0 },
+  { q: "איזה סרט מבית דיסני מציג נסיכה שיוצאת למסע כדי להחזיר את הלב לאלה טהיטי?", options: ["מואנה (Moana)", "לשבור את הקרח", "פלונטר", "מולאן"], correct: 0 },
 
   // 121-320: בירות עולם, גאוגרפיה, היסטוריה וכללי
   { q: "מהי בירת צרפת?", options: ["לונדון", "פריז", "ברלין", "רומא"], correct: 1 },
@@ -302,7 +335,17 @@ const ROAD_TRIVIA_QUESTIONS = [
   { q: "איזה מדבר נחשב לגדול ביותר בעולם מבחינת שטח של חול וחום?", options: ["מדבר סהרה", "מדבר גובי", "מדבר אטקמה", "מדבר נגב"], correct: 0 },
   { q: "מהי בירת דרום אפריקה הרשמית?", options: ["קייפטאון", "פרטוריה", "יוהנסבורג", "דרבן"], correct: 1 },
   { q: "כמה מדינות גובלות במדינת ישראל?", options: ["2", "3", "4", "5"], correct: 2 },
-  { q: "איזה ים מפריד בין אירופה לאפריקה?", options: ["הים התיכון", "הים האדום", "הים השחור", "הים הפסיפי"], correct: 0 }
+  { q: "איזה ים מפריד בין אירופה לאפריקה?", options: ["הים התיכון", "ים המלח", "הים האדום", "הים השחור"], correct: 0 },
+  { q: "מהי בירת פורטוגל?", options: ["ליסבון", "פורטו", "ברצלונה", "מץ"], correct: 0 },
+  { q: "מהי בירת שוודיה?", options: ["סטוקהולם", "אוסלו", "קופנהגן", "הלסינקי"], correct: 0 },
+  { q: "מהי בירת נורווגיה?", options: ["אוסלו", "סטוקהולם", "ברגן", "רייקיאוויק"], correct: 0 },
+  { q: "איזו מדינת אי באירופה ידועה בהרי הגעש והגייזרים שלה?", options: ["איסלנד", "אירלנד", "קפריסין", "מלטה"], correct: 0 },
+  { q: "מהי בירת תאילנד?", options: ["בנגקוק", "פוקט", "צ'יאנג מאי", "פאטייה"], correct: 0 },
+  { q: "איזו יבשת היא הקרה ביותר בכדור הארץ?", options: ["אנטארקטיקה", "אירופה", "אסיה", "צפון אמריקה"], correct: 0 },
+  { q: "מה שמה של התעלה המפורסמת המחברת בין הים התיכון לים האדום דרך מצרים?", options: ["תעלת סואץ", "תעלת פנמה", "תעלת קיל", "תעלת קורינתוס"], correct: 0 },
+  { q: "איזו עיר אמריקאית ידועה בשם 'התפוח הגדול'?", options: ["ניו יורק", "לוס אנג'לס", "שיקגו", "מיאמי"], correct: 0 },
+  { q: "באיזו מדינה נמצא הר הגעש פוג'י?", options: ["יפן", "הפיליפינים", "אינדונזיה", "ניו זילנד"], correct: 0 },
+  { q: "מהו שמו של המצר המחבר בין האוקיינוס האטלנטי לים התיכון ומפריד בין ספרד למרוקו?", options: ["מצר גיברלטר", "מצר בוספורוס", "מצר ההורמוז", "מצר מגלן"], correct: 0 }
 ];
 
 export default function App() {
@@ -342,6 +385,17 @@ export default function App() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [triviaScore, setTriviaScore] = useState(0);
+
+  // סדר תפריט צדדי ניתן לעריכה
+  const [menuOrder, setMenuOrder] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
+      if (Array.isArray(saved) && saved.length === 9) return saved;
+    } catch (e) {}
+    return ['schedule', 'challenges', 'trivia', 'phrasebook', 'gallery', 'around', 'parking', 'tickets', 'emergency'];
+  });
+
+  const [isEditingMenu, setIsEditingMenu] = useState(false);
   
   const audioContextRef = useRef(false);
   const currentUtteranceRef = useRef(null);
@@ -376,6 +430,17 @@ export default function App() {
       audioContextRef.current = true;
     }
     if (callback) callback();
+  };
+
+  const moveMenuItem = (index, direction) => {
+    const newOrder = [...menuOrder];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newOrder.length) return;
+    const temp = newOrder[index];
+    newOrder[index] = newOrder[targetIndex];
+    newOrder[targetIndex] = temp;
+    setMenuOrder(newOrder);
+    localStorage.setItem('garda-menu-order', JSON.stringify(newOrder));
   };
 
   const touchStartXRef = useRef(0);
@@ -789,6 +854,121 @@ export default function App() {
   const blockText = isDark ? '#ffffff' : '#1e293b'; 
   const blockBorder = isDark ? '#52525b' : '#94a3b8';
 
+  const renderMenuItem = (id, index) => {
+    switch(id) {
+      case 'schedule':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType(null); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📅</span> מסלול ימי הטיול</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'challenges':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('challengesLog'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🏆</span> יומן אתגרים ובדיחות</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'trivia':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('trivia'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🧠</span> טריויה חכמה לדרך 🚗</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'phrasebook':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🇮🇹</span> שיחון איטלקי חכם</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'gallery':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('gallery'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📸</span> יומן ואלבום תמונות משפחתי</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'around':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('around'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📍</span> סביבי (Around Me)</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'parking':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('parking'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🚗</span> שמירת מיקום חניה</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'tickets':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('tickets'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🎟️</span> ארנק כרטיסים ומסמכים</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'emergency':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('emergency'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🆘</span> מספרי חירום</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
       
@@ -916,17 +1096,18 @@ export default function App() {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '6px' }}>
           <h3 style={{ fontSize: '18px', fontWeight: '900', margin: 0, color: textColor }}>תפריט מהיר</h3>
-          <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <button 
+              onClick={() => handleGlobalClick(() => setIsEditingMenu(!isEditingMenu))}
+              style={{ background: isEditingMenu ? '#059669' : (isDark ? '#3f3f46' : '#f1f5f9'), color: isEditingMenu ? '#fff' : textColor, border: '1px solid #cbd5e1', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+            >
+              {isEditingMenu ? '✓ סיום עריכה' : '⚙️ ערוך תפריט'}
+            </button>
+            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+          </div>
         </div>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType(null); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>📅</span> מסלול ימי הטיול</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('challengesLog'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🏆</span> יומן אתגרים ובדיחות</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('trivia'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🧠</span> טריויה חכמה לדרך 🚗</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🇮🇹</span> שיחון איטלקי חכם</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('gallery'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>📸</span> יומן ואלבום תמונות משפחתי</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('around'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>📍</span> סביבי (Around Me)</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('parking'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🚗</span> שמירת מיקום חניה</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('tickets'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🎟️</span> ארנק כרטיסים ומסמכים</button>
-        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('emergency'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🆘</span> מספרי חירום</button>
+
+        {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
@@ -1480,6 +1661,12 @@ const sidebarBtnStyle = {
   border: '1px solid', padding: '12px 16px',
   borderRadius: '12px', fontWeight: '800', fontSize: '14px', textAlign: 'right',
   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', boxSizing: 'border-box', width: '100%'
+};
+
+const arrowBtnStyle = {
+  background: '#334155', color: '#fff', border: 'none', borderRadius: '6px',
+  width: '24px', height: '22px', fontSize: '11px', fontWeight: '900', cursor: 'pointer',
+  display: 'flex', alignItems: 'center', justifyContent: 'center'
 };
 
 const navBtnStyle = {
