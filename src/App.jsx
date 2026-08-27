@@ -157,6 +157,17 @@ const QUICK_PHRASES = [
   { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
 ];
 
+const ROAD_TRIVIA_QUESTIONS = [
+  { q: "איזה אהרן, או בעצם איזה נהר זורם לאורך אגם גארדה ויוצר את העיירות הציוריות סביבו?", options: ["נהר הפּוֹ (Po)", "נהר המינצ׳ו (Mincio)", "נהר הטיבר (Tiber)", "נהר הארנו (Arno)"], correct: 1 },
+  { q: "כמה גשרים רגילים יש בעיר ונציה?", options: ["אפס – יש רק גשרי עץ ניידים", "יותר מ-400 גשרים", "כ-50 גשרים בלבד", "כמעט אלף גשרים"], correct: 1 },
+  { q: "מהו מאכל הפסטה המפורסם ביותר שמקורו בעיירה ולג'ו סול מינצ'ו (Borghetto)?", options: ["ספגטי קרבונרה", "טורטליני 'קשר האהבה' (Tortellino)", "לזניה בשרית", "רביולי גבינות קלאסי"], correct: 1 },
+  { q: "באיזו שנה נפתח פארק השעשועים המפורסם גארדלנד (Gardaland)?", options: ["1955", "1975", "1990", "2005"], correct: 1 },
+  { q: "איזה הר געש מפורסם נמצא בדרום איטליה ליד העיר נאפולי?", options: ["הר הפוג'י", "הר וזוב (Vesuvius)", "אטנה", "סטרומבולי"], correct: 1 },
+  { q: "מהי צורתו של אגם גארדה במפה?", options: ["צורת לב מושלם", "צורת טיפה צרה בצפון ורחבה בדרום", "צורת עיגול מושלם", "צורת כוכב בעל 4 קצוות"], correct: 1 },
+  { q: "באיזו עיר באיטליה מתרחשת עלילת המחזה המפורסם 'רומיאו ויוליה' של שייקספיר?", options: ["מילאנו", "רומא", "ורונה (Verona)", "פלורנס"], correct: 2 },
+  { q: "מהו פירוש המילה המפורסמת 'צ'או' (Ciao) באיטלקית במקור?", options: ["להתראות לנצח", "העבד שלך / לרשותך", "בוקר טוב אדוני", "שלום חבר יקר"], correct: 1 }
+];
+
 export default function App() {
   const [tripDays, setTripDays] = useState(INITIAL_TRIP_DAYS);
   const [activeDay, setActiveDay] = useState(0);
@@ -174,11 +185,7 @@ export default function App() {
   const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב');
 
   const [galleryItems, setGalleryItems] = useState([]);
-  const [galleryDayFilter, setGalleryDayFilter] = useState('all');
-  const [galleryCaption, setGalleryCaption] = useState('');
-  const [galleryAuthor, setGalleryAuthor] = useState('אריק');
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
-  const [lightboxItem, setLightboxItem] = useState(null);
 
   const [completedChallenges, setCompletedChallenges] = useState({});
   const [challengeNote, setChallengeNote] = useState('');
@@ -192,8 +199,15 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
+
+  // משחק טריויה לנהיגה
+  const [triviaIndex, setTriviaIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+  const [triviaScore, setTriviaScore] = useState(0);
   
   const audioContextRef = useRef(false);
+  const currentUtteranceRef = useRef(null);
 
   const playClickSound = () => {
     try {
@@ -511,7 +525,7 @@ export default function App() {
     }
   };
 
-  // שימוש במנוע הקול של גוגל (TTS) לקבלת קול גברי צלול, טבעי וברור באיטלקית
+  // השמעת קול גבר איטלקי באיכות מקסימלית (גוגל TTS)
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
@@ -574,6 +588,23 @@ export default function App() {
     } catch (e) {
       callback('זמין במצב מקוון');
     }
+  };
+
+  const handleTriviaAnswer = (optionIdx) => {
+    setSelectedAnswer(optionIdx);
+    const currentQ = ROAD_TRIVIA_QUESTIONS[triviaIndex];
+    if (optionIdx === currentQ.correct) {
+      setIsAnswerCorrect(true);
+      setTriviaScore(prev => prev + 10);
+    } else {
+      setIsAnswerCorrect(false);
+    }
+  };
+
+  const nextTriviaQuestion = () => {
+    setSelectedAnswer(null);
+    setIsAnswerCorrect(null);
+    setTriviaIndex(prev => (prev + 1) % ROAD_TRIVIA_QUESTIONS.length);
   };
 
   const day = tripDays[activeDay] || tripDays[0];
@@ -725,7 +756,7 @@ export default function App() {
           position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px', maxWidth: '80vw',
           background: isDark ? '#1f1f23' : cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.3)',
           transition: 'right 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '28px 20px',
-          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box'
+          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '6px' }}>
@@ -734,6 +765,7 @@ export default function App() {
         </div>
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType(null); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>📅</span> מסלול ימי הטיול</button>
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('challengesLog'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🏆</span> יומן אתגרים ובדיחות</button>
+        <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('trivia'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🧠</span> טריויה חכמה לדרך 🚗</button>
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>🇮🇹</span> שיחון איטלקי חכם</button>
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('gallery'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>📸</span> יומן ואלבום תמונות משפחתי</button>
         <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('around'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow }}><span>📍</span> סביבי (Around Me)</button>
@@ -878,6 +910,80 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {/* מודל משחק טריויה לנהיגה */}
+      {modalType === 'trivia' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '18px' }}>
+                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>🚗 טריויה חכמה לזמן הנהיגה</h2>
+                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: blockBg, padding: '10px 14px', borderRadius: '12px', border: `1px solid ${blockBorder}` }}>
+                <span style={{ fontSize: '13px', fontWeight: '900', color: blockText }}>שאלה {triviaIndex + 1} מתוך {ROAD_TRIVIA_QUESTIONS.length}</span>
+                <span style={{ fontSize: '13px', fontWeight: '900', color: '#166534' }}>ניקוד: {triviaScore} 🏆</span>
+              </div>
+
+              <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '18px', marginBottom: '18px', boxSizing: 'border-box', boxShadow: cardShadow }}>
+                <p style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: blockText, lineHeight: '1.5' }}>
+                  {ROAD_TRIVIA_QUESTIONS[triviaIndex].q}
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
+                {ROAD_TRIVIA_QUESTIONS[triviaIndex].options.map((option, optIdx) => {
+                  let btnBg = blockBg;
+                  let btnColor = blockText;
+                  let btnBorder = blockBorder;
+
+                  if (selectedAnswer !== null) {
+                    if (optIdx === ROAD_TRIVIA_QUESTIONS[triviaIndex].correct) {
+                      btnBg = '#d1fae5';
+                      btnColor = '#065f46';
+                      btnBorder = '#34d399';
+                    } else if (optIdx === selectedAnswer) {
+                      btnBg = '#fee2e2';
+                      btnColor = '#991b1b';
+                      btnBorder = '#f87171';
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={optIdx}
+                      disabled={selectedAnswer !== null}
+                      onClick={() => handleGlobalClick(() => handleTriviaAnswer(optIdx))}
+                      style={{
+                        padding: '14px 16px', borderRadius: '12px', textAlign: 'right', fontSize: '14px', fontWeight: '800',
+                        background: btnBg, color: btnColor, border: `1px solid ${btnBorder}`, cursor: selectedAnswer === null ? 'pointer' : 'default',
+                        boxShadow: cardShadow, transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedAnswer !== null && (
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '15px', fontWeight: '900', color: isAnswerCorrect ? '#166534' : '#dc2626', marginBottom: '12px' }}>
+                    {isAnswerCorrect ? '🎉 כל הכבוד! תשובה נכונה!' : '❌ לא מדויק, נסו את השאלה הבאה!'}
+                  </p>
+                  <button
+                    onClick={() => handleGlobalClick(nextTriviaQuestion)}
+                    style={{ width: '100%', padding: '14px', background: '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', boxShadow: cardShadow }}
+                  >
+                    שאלה הבאה ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {modalType === 'questModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
