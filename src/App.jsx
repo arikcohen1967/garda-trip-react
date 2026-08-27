@@ -158,8 +158,8 @@ const QUICK_PHRASES = [
 ];
 
 const ROAD_TRIVIA_QUESTIONS = [
-  { q: "איזה אהרן, או בעצם איזה נהר זורם לאורך אגם גארדה ויוצר את העיירות הציוריות סביבו?", options: ["נהר הפּוֹ (Po)", "נהר המינצ׳ו (Mincio)", "נהר הטיבר (Tiber)", "נהר הארנו (Arno)"], correct: 1 },
-  { q: "כמה גשרים רגילים יש בעיר ונציה?", options: ["אפס – יש רק גשרי עץ ניידים", "יותר מ-400 גשרים", "כ-50 גשרים בלבד", "כמעט אלף גשרים"], correct: 1 },
+  { q: "איזה נהר זורם לאורך אגם גארדה ויוצר את העיירות הציוריות סביבו?", options: ["נהר הפּוֹ (Po)", "נהר המינצ׳ו (Mincio)", "נהר הטיבר (Tiber)", "נהר הארנו (Arno)"], correct: 1 },
+  { q: "כמה גשרים יש בעיר ונציה?", options: ["אפס – יש רק מעבורות", "יותר מ-400 גשרים", "כ-50 גשרים בלבד", "כמעט אלף גשרים"], correct: 1 },
   { q: "מהו מאכל הפסטה המפורסם ביותר שמקורו בעיירה ולג'ו סול מינצ'ו (Borghetto)?", options: ["ספגטי קרבונרה", "טורטליני 'קשר האהבה' (Tortellino)", "לזניה בשרית", "רביולי גבינות קלאסי"], correct: 1 },
   { q: "באיזו שנה נפתח פארק השעשועים המפורסם גארדלנד (Gardaland)?", options: ["1955", "1975", "1990", "2005"], correct: 1 },
   { q: "איזה הר געש מפורסם נמצא בדרום איטליה ליד העיר נאפולי?", options: ["הר הפוג'י", "הר וזוב (Vesuvius)", "אטנה", "סטרומבולי"], correct: 1 },
@@ -525,20 +525,38 @@ export default function App() {
     }
   };
 
-  // השמעת קול גבר איטלקי באיכות מקסימלית (גוגל TTS)
+  // פונקציית דיבור יציבה ובטוחה שמנגנת את הקול באיטלקית
   const speakItalian = (text) => {
     if (!text || !text.trim()) return;
     playClickSound();
     setIsPlayingAudio(true);
 
     try {
-      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=it&client=tw-ob`;
-      const audio = new Audio(audioUrl);
-      
-      audio.onended = () => setIsPlayingAudio(false);
-      audio.onerror = () => setIsPlayingAudio(false);
-      
-      audio.play().catch(() => setIsPlayingAudio(false));
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text.trim());
+        currentUtteranceRef.current = utterance; 
+        utterance.lang = 'it-IT';
+        utterance.rate = 0.85;
+
+        const voices = window.speechSynthesis.getVoices();
+        const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
+        if (itVoice) utterance.voice = itVoice;
+
+        utterance.onend = () => {
+          setIsPlayingAudio(false);
+          currentUtteranceRef.current = null;
+        };
+        utterance.onerror = () => {
+          setIsPlayingAudio(false);
+          currentUtteranceRef.current = null;
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setIsPlayingAudio(false);
+      }
     } catch (e) {
       setIsPlayingAudio(false);
     }
