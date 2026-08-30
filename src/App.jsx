@@ -283,7 +283,6 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
 
-  // נעילת גלילה כשיש מודל פתוח
   useEffect(() => {
     if (modalType || sidebarOpen) {
       document.body.style.overflow = 'hidden';
@@ -451,7 +450,6 @@ export default function App() {
     fetchTripDataFromCloud();
     fetchChallengesFromCloud();
 
-    // האזנת זמן אמת (Realtime Subscriptions) לעדכוני גלריה ואתגרים
     const galleryChannel = supabase
       .channel('realtime-gallery')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gallery' }, payload => {
@@ -709,7 +707,6 @@ export default function App() {
     setCompletedChallenges(updated);
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
 
-    // סנכרון ישיר לענן ב-Supabase
     try {
       await supabase.from('challenges_log').upsert([{
         date_key: dayKey,
@@ -1396,7 +1393,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודלים מקובעים מלאים על 100% רוחב */}
+      {/* מודל טריוויה */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1819,7 +1816,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי */}
+      {/* מודל סביבי עם כפתור עצירת דרך / Autogrill ותחנת דלק */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1827,14 +1824,17 @@ export default function App() {
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>📍 סביבי (Around Me)</h3>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
             </div>
-            <p style={{ fontSize: '13px', color: textSub, marginBottom: '16px', fontWeight: '700' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך:</p>
+            <p style={{ fontSize: '13px', color: textSub, marginBottom: '16px', fontWeight: '700' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך ובדרכים:</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: blockBg, color: '#f59e0b', border: `1px solid #f59e0b`, boxShadow: cardShadow, gridColumn: 'span 2' }}>
+                ☕ <span>עצירת דרך / Autogrill & שירותים</span>
+              </button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>⛽ <span>תחנת דלק</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>💊 <span>פארם / בית מרקחת</span></button>
               <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>🍕 <span>פיצה</span></button>
               <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>🍦 <span>גלידה</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>💊 <span>פארם / בית מרקחת</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>🍝 <span>מסעדות</span></button>
               <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>🛒 <span>סופרמרקט</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>⛽ <span>תחנת דלק</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>🍝 <span>מסעדות</span></button>
             </div>
           </div>
         </div>
