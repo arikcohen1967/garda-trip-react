@@ -603,7 +603,11 @@ export default function App() {
   };
 
   const resetSingleChallenge = (dayIdx) => {
-    if (!window.confirm(`לאפס את האתגר של ${tripDays[dayIdx]?.label} ולהחזיר למצב לא מבוצע?`)) return;
+    const pass = window.prompt('הזן קוד מנהל לאיפוס המשימה:');
+    if (pass !== '1967') {
+      alert('קוד שגוי!');
+      return;
+    }
     const updated = { ...completedChallenges };
     delete updated[String(dayIdx)];
     setCompletedChallenges(updated);
@@ -755,7 +759,11 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    if (!window.confirm('לאפס את המשחק, לערבב שאלות מחדש ולהתחיל ניקוד מחדש?')) return;
+    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
+    if (pass !== '1967') {
+      alert('קוד שגוי! לא ניתן לאפס את המשחק.');
+      return;
+    }
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     setTriviaQuestions(generateMassiveTrivia());
     setTriviaIndex(0);
@@ -763,6 +771,21 @@ export default function App() {
     setSelectedAnswer(null);
     setIsAnswerCorrect(null);
     setTravelerScores({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
+    alert('המשחק והניקוד אופסו בהצלחה!');
+  };
+
+  const handleToggleAdminQuests = () => {
+    if (isAdminUnlocked) {
+      setIsAdminUnlocked(false);
+      return;
+    }
+    const pass = window.prompt('הזן קוד מנהל לחשיפת כל המשימות:');
+    if (pass === '1967') {
+      setIsAdminUnlocked(true);
+      alert('הרשאת מנהל הופעלה! כל המשימות פתוחות לצפייה.');
+    } else {
+      alert('קוד שגוי!');
+    }
   };
 
   const day = tripDays[activeDay] || tripDays[0];
@@ -781,14 +804,12 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // רקעים וצבעים קבועים
   const bgMain = isDark ? '#18181b' : '#f1f5f9';
   const cardBg = isDark ? '#27272a' : '#ffffff';
   const textColor = isDark ? '#ffffff' : '#0f172a';
   const textSub = isDark ? '#d4d4d8' : '#475569';
   const borderColor = isDark ? '#3f3f46' : '#cbd5e1';
 
-  // אפקט Bevel & Emboss מובלט
   const cardShadow = isDark 
     ? '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)'
     : 'inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 0 rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05)';
@@ -1041,7 +1062,7 @@ export default function App() {
         />
       )}
       
-      {/* תפריט צדדי מקובע ומבודד מ-Overflow */}
+      {/* תפריט צדדי מקובע */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -1208,7 +1229,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודלים מקובעים מלאים על 100% רוחב ללא זליגה */}
+      {/* מודלים מקובעים מלאים על 100% רוחב */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1224,9 +1245,9 @@ export default function App() {
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
                   style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', boxShadow: cardShadow }}
-                  title="איפוס וערבוב מחדש"
+                  title="איפוס וערבוב מחדש (דורש קוד מנהל)"
                 >
-                  🔄 איפוס
+                  🔒 איפוס
                 </button>
                 <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
               </div>
@@ -1349,7 +1370,7 @@ export default function App() {
               </div>
 
               {isCurrentDayCompleted && (
-                <button onClick={() => handleGlobalClick(() => resetSingleChallenge(activeDay))} style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', width: '100%', boxSizing: 'border-box', boxShadow: cardShadow }}>🔄 אפס משימה זו</button>
+                <button onClick={() => handleGlobalClick(() => resetSingleChallenge(activeDay))} style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', width: '100%', boxSizing: 'border-box', boxShadow: cardShadow }}>🔒 אפס משימה זו (מנהל)</button>
               )}
             </div>
           </div>
@@ -1360,7 +1381,15 @@ export default function App() {
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
-              <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>יומן האתגרים והבדיחות</h2>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>יומן האתגרים והבדיחות</h2>
+                <button 
+                  onClick={handleToggleAdminQuests}
+                  style={{ background: 'none', border: 'none', color: isAdminUnlocked ? '#059669' : textSub, fontSize: '11px', fontWeight: '800', cursor: 'pointer', padding: '4px 0 0 0', textDecoration: 'underline' }}
+                >
+                  {isAdminUnlocked ? '🔓 מחובר כמנהל (כל המשימות פתוחות)' : '🔒 פתח נעילת מנהל (1967)'}
+                </button>
+              </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1376,9 +1405,16 @@ export default function App() {
                       <span style={{ fontSize: '12px', fontWeight: '800', color: textSub }}>{d.label} · {d.title}</span>
                     </div>
                     {isUnlocked ? (
-                      <b style={{ fontSize: '14px', color: blockText, display: 'block' }}>🎯 {d.challenge}</b>
+                      <div>
+                        <b style={{ fontSize: '14px', color: blockText, display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
+                        {log?.text && (
+                          <div style={{ fontSize: '12px', color: isDark ? '#86efac' : '#166534', marginTop: '6px', background: isDark ? '#18181b' : '#dcfce7', padding: '8px', borderRadius: '8px', fontWeight: '700' }}>
+                            💬 <b>{log.author || 'משפחה'}:</b> "{log.text}"
+                          </div>
+                        )}
+                      </div>
                     ) : (
-                      <div style={{ fontSize: '13px', color: textSub, fontWeight: '700' }}>🔒 אתגר סודי</div>
+                      <div style={{ fontSize: '13px', color: textSub, fontWeight: '700' }}>🔒 אתגר סודי (ייחשף ביום המשימה)</div>
                     )}
                   </div>
                 );
