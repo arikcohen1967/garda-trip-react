@@ -283,7 +283,6 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
 
-  // נעילת גלילה כשיש מודל פתוח
   useEffect(() => {
     if (modalType || sidebarOpen) {
       document.body.style.overflow = 'hidden';
@@ -291,6 +290,17 @@ export default function App() {
       document.body.style.overflow = 'unset';
     }
   }, [modalType, sidebarOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (sidebarOpen) setSidebarOpen(false);
+        if (modalType) closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen, modalType]);
 
   const playClickSound = () => {
     try {
@@ -583,7 +593,6 @@ export default function App() {
     }
   };
 
-  // העלאת תמונה ישירה לגלריה
   const handleDirectGalleryUpload = async (photoFile) => {
     if (!photoFile) return;
     try {
@@ -1316,7 +1325,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודל טריוויה */}
+      {/* מודלים מקובעים מלאים על 100% רוחב */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1760,7 +1769,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל מספרי חירום */}
+      {/* מודל חירום */}
       {modalType === 'emergency' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1776,7 +1785,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל ארנק כרטיסים */}
+      {/* מודל ארנק כרטיסים ומסמכים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
