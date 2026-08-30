@@ -157,7 +157,6 @@ const QUICK_PHRASES = [
   { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
 ];
 
-// יצירת 1,000 שאלות טריויה כלליות רנדומליות
 const generateMassiveTrivia = () => {
   const baseQuestions = [
     { q: "כמה רגליים יש לעכביש?", options: ["6", "8", "10", "12"], correct: 1 },
@@ -695,7 +694,6 @@ export default function App() {
 
   const resetTriviaGame = () => {
     if (!window.confirm('לאפס את המשחק ולהתחיל את הניקוד מחדש?')) return;
-    setTriviaScore(0);
     setTriviaIndex(0);
     setTravelerIndex(0);
     setSelectedAnswer(null);
