@@ -1095,8 +1095,8 @@ export default function App() {
                   <a 
                     href="https://maps.apple.com/?q=Parked%20Car" 
                     target="_blank" 
-                    rel="noreferrer"
-                    onClick={() => playClickSound()}
+                    rel="noreferrer" 
+                    onClick={() => playClickSound()} 
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                       padding: '10px 14px', borderRadius: '12px', background: blockBg, color: blockText,
@@ -1171,6 +1171,21 @@ export default function App() {
                     ))}
                   </div>
 
+                  {/* כפתור שאלה הבאה ופידבק ממוקמים ישירות מעל השאלה */}
+                  {selectedAnswer !== null && (
+                    <div style={{ textAlign: 'center', marginBottom: '18px', background: isDark ? '#27272a' : '#f8fafc', padding: '14px', borderRadius: '14px', border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>
+                      <p style={{ fontSize: '15px', fontWeight: '900', color: isAnswerCorrect ? '#166534' : '#dc2626', margin: '0 0 12px' }}>
+                        {isAnswerCorrect ? `🎉 כל הכבוד ${travelers[travelerIndex]}! תשובה נכונה (+10 נק')!` : `❌ לא מדויק ${travelers[travelerIndex]}! התשובה שגויה.`}
+                      </p>
+                      <button
+                        onClick={() => handleGlobalClick(nextTriviaQuestion)}
+                        style={{ width: '100%', padding: '14px', background: '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', boxShadow: cardShadow }}
+                      >
+                        שאלה הבאה לנוסע הבא ➡️
+                      </button>
+                    </div>
+                  )}
+
                   <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '18px', marginBottom: '18px', boxSizing: 'border-box', boxShadow: cardShadow }}>
                     <p style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: blockText, lineHeight: '1.5' }}>
                       {ROAD_TRIVIA_QUESTIONS[triviaIndex].q}
@@ -1211,20 +1226,6 @@ export default function App() {
                       );
                     })}
                   </div>
-
-                  {selectedAnswer !== null && (
-                    <div style={{ textAlign: 'center' }}>
-                      <p style={{ fontSize: '15px', fontWeight: '900', color: isAnswerCorrect ? '#166534' : '#dc2626', marginBottom: '12px' }}>
-                        {isAnswerCorrect ? `🎉 כל הכבוד ${travelers[travelerIndex]}! תשובה נכונה (+10 נק')!` : `❌ לא מדויק ${travelers[travelerIndex]}! התשובה שגויה.`}
-                      </p>
-                      <button
-                        onClick={() => handleGlobalClick(nextTriviaQuestion)}
-                        style={{ width: '100%', padding: '14px', background: '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', boxShadow: cardShadow }}
-                      >
-                        שאלה הבאה לנוסע הבא ➡️
-                      </button>
-                    </div>
-                  )}
                 </>
               )}
             </div>
