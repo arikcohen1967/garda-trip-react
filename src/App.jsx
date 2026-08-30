@@ -279,6 +279,8 @@ export default function App() {
   const audioContextRef = useRef(false);
   const currentUtteranceRef = useRef(null);
   const currentBlobUrlRef = useRef(null);
+  const translationAbortRef = useRef(null);
+  const dbInstanceRef = useRef(null);
 
   const playClickSound = () => {
     try {
@@ -436,6 +438,7 @@ export default function App() {
       clearInterval(networkInterval);
       if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
       if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
+      if (translationAbortRef.current) translationAbortRef.current.abort();
     };
   }, []);
 
@@ -453,6 +456,7 @@ export default function App() {
   }, [activeFolder]);
 
   const openDb = () => {
+    if (dbInstanceRef.current) return Promise.resolve(dbInstanceRef.current);
     return new Promise((resolve, reject) => {
       const req = indexedDB.open('gardaTripMasterDB', 2);
       req.onupgradeneeded = () => {
@@ -462,7 +466,10 @@ export default function App() {
           st.createIndex('folder', 'folder', { unique: false });
         }
       };
-      req.onsuccess = () => resolve(req.result);
+      req.onsuccess = () => {
+        dbInstanceRef.current = req.result;
+        resolve(req.result);
+      };
       req.onerror = () => reject(req.error);
     });
   };
@@ -538,29 +545,36 @@ export default function App() {
   const handleFileUpload = async (e) => {
     const files = [...e.target.files];
     if (!files.length) return;
-    const db = await openDb();
-    const tx = db.transaction('files', 'readwrite');
-    const store = tx.objectStore('files');
-    files.forEach(file => {
-      store.add({
-        folder: selectedUploadFolder || activeFolder,
-        title: newTicketTitle || file.name,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        created: Date.now(),
-        blob: file
+    try {
+      const db = await openDb();
+      const tx = db.transaction('files', 'readwrite');
+      const store = tx.objectStore('files');
+      files.forEach(file => {
+        store.add({
+          folder: selectedUploadFolder || activeFolder,
+          title: newTicketTitle || file.name,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          created: Date.now(),
+          blob: file
+        });
       });
-    });
-    tx.oncomplete = () => {
-      setNewTicketTitle('');
-      setShowUploadBox(false);
-      loadFiles(activeFolder);
-    };
+      tx.oncomplete = () => {
+        setNewTicketTitle('');
+        setShowUploadBox(false);
+        loadFiles(activeFolder);
+      };
+      tx.onerror = (err) => console.error('IndexedDB upload error:', err);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const saveDailyChallenge = async (photoFile = null) => {
-    const dayKey = String(activeDay);
+    const currentDayObj = tripDays[activeDay] || tripDays[0];
+    const dayKey = currentDayObj?.date || String(activeDay);
+    
     const updated = {
       ...completedChallenges,
       [dayKey]: {
@@ -568,7 +582,7 @@ export default function App() {
         text: challengeNote || 'אתגר הושלם בהצלחה! 🎉',
         author: challengeAuthor || 'משפחה',
         time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-        date: tripDays[activeDay]?.date
+        date: currentDayObj?.date
       }
     };
     setCompletedChallenges(updated);
@@ -583,11 +597,11 @@ export default function App() {
         if (publicUrlData?.publicUrl) {
           await cacheMediaOffline(publicUrlData.publicUrl);
           await supabase.from('gallery').insert([{
-            name: `אתגר: ${tripDays[activeDay]?.title}`,
+            name: `אתגר: ${currentDayObj?.title}`,
             type: photoFile.type,
             size: photoFile.size,
             day_index: activeDay,
-            caption: `🎯 אתגר היום: ${challengeNote || tripDays[activeDay]?.challenge}`,
+            caption: `🎯 אתגר היום: ${challengeNote || currentDayObj?.challenge}`,
             author: challengeAuthor || 'משפחה',
             created: Date.now(),
             media_url: publicUrlData.publicUrl
@@ -608,7 +622,11 @@ export default function App() {
       alert('קוד שגוי!');
       return;
     }
+    const targetDay = tripDays[dayIdx] || tripDays[0];
+    const dayKey = targetDay?.date || String(dayIdx);
+
     const updated = { ...completedChallenges };
+    delete updated[dayKey];
     delete updated[String(dayIdx)];
     setCompletedChallenges(updated);
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
@@ -685,6 +703,12 @@ export default function App() {
     const query = (textToTranslate || hebrewInput || '').trim();
     if (!query) return;
 
+    if (translationAbortRef.current) {
+      translationAbortRef.current.abort();
+    }
+    const abortController = new AbortController();
+    translationAbortRef.current = abortController;
+
     setIsTranslating(true);
     setItalianOutput('');
 
@@ -702,21 +726,25 @@ export default function App() {
     }
 
     try {
-      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=iw&tl=it&dt=t&q=${encodeURIComponent(query)}`);
+      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=iw&tl=it&dt=t&q=${encodeURIComponent(query)}`, {
+        signal: abortController.signal
+      });
       const data = await res.json();
       if (data && data[0] && data[0][0] && data[0][0][0]) {
         finishTranslation(data[0][0][0]);
       } else {
-        fallbackTranslate(query, finishTranslation);
+        fallbackTranslate(query, finishTranslation, abortController.signal);
       }
     } catch (err) {
-      fallbackTranslate(query, finishTranslation);
+      if (err.name !== 'AbortError') {
+        fallbackTranslate(query, finishTranslation, abortController.signal);
+      }
     }
   };
 
-  const fallbackTranslate = async (query, callback) => {
+  const fallbackTranslate = async (query, callback, signal) => {
     try {
-      const res2 = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=he|it`);
+      const res2 = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=he|it`, { signal });
       const data2 = await res2.json();
       if (data2 && data2.responseData && data2.responseData.translatedText) {
         callback(data2.responseData.translatedText);
@@ -724,7 +752,9 @@ export default function App() {
         callback('שגיאה בתרגום');
       }
     } catch (e) {
-      callback('זמין במצב מקוון');
+      if (e.name !== 'AbortError') {
+        callback(isOnline ? 'שגיאה בתרגום' : 'זמין במצב מקוון');
+      }
     }
   };
 
@@ -789,7 +819,7 @@ export default function App() {
   };
 
   const day = tripDays[activeDay] || tripDays[0];
-  const isCurrentDayCompleted = completedChallenges[String(activeDay)]?.completed;
+  const isCurrentDayCompleted = completedChallenges[day?.date]?.completed || completedChallenges[String(activeDay)]?.completed;
 
   const filteredPhrases = QUICK_PHRASES.filter(p => {
     const matchesCategory = selectedCategory === 'הכל' || p.cat === selectedCategory;
@@ -1271,7 +1301,7 @@ export default function App() {
                   {travelers.map((name, idx) => (
                     <div key={idx} style={{ background: travelerIndex === idx ? (isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)') : blockBg, color: travelerIndex === idx ? '#fff' : blockText, border: `1px solid ${blockBorder}`, borderRadius: '10px', padding: '8px 4px', textAlign: 'center', fontSize: '11px', fontWeight: '800', boxShadow: cardShadow }}>
                       <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
-                      <div style={{ fontSize: '13px', fontWeight: '900', color: travelerIndex === idx ? '#86efac' : '#166534' }}>{travelerScores[name]}₪</div>
+                      <div style={{ fontSize: '13px', fontWeight: '900', color: travelerIndex === idx ? '#86efac' : '#166534' }}>{travelerScores[name]} נק'</div>
                     </div>
                   ))}
                 </div>
@@ -1394,7 +1424,7 @@ export default function App() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {tripDays.map((d, idx) => {
-                const log = completedChallenges[String(idx)];
+                const log = completedChallenges[d.date] || completedChallenges[String(idx)];
                 const isUnlocked = isAdminUnlocked || log?.completed;
                 return (
                   <div key={idx} style={{ background: log?.completed ? (isDark ? '#27272a' : '#f0fdf4') : blockBg, border: `1px solid ${log?.completed ? '#71717a' : blockBorder}`, borderRadius: '16px', padding: '16px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
