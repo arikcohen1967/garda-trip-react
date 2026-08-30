@@ -190,7 +190,6 @@ const RAW_BASE_QUESTIONS = [
   { q: "מהי בירת גרמניה?", options: ["מינכן", "פרנקפורט", "ברלין", "המבורג"], correct: 2 }
 ];
 
-// יצירת מאגר שאלות עם ערבוב רנדומלי מלא
 const generateMassiveTrivia = () => {
   const shuffledBase = [...RAW_BASE_QUESTIONS];
   for (let i = shuffledBase.length - 1; i > 0; i--) {
@@ -631,15 +630,21 @@ export default function App() {
     }
   };
 
+  const clearPhrasebook = () => {
+    setHebrewInput('');
+    setItalianOutput('');
+  };
+
   const translateText = async (textToTranslate) => {
     const query = (textToTranslate || hebrewInput || '').trim();
     if (!query) return;
 
     setIsTranslating(true);
-    setHebrewInput(query);
+    setItalianOutput(''); // איפוס מיידי של שדה התרגום הקולי כדי שלא יציג תרגום ישן
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
+      setHebrewInput(''); // ניקוי שדה הקלט
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
     };
@@ -1334,26 +1339,43 @@ export default function App() {
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '12px', marginBottom: '16px' }}>
                 <h2 style={{ margin: 0, fontSize: '17px', fontWeight: '900', color: textColor }}>שיחון איטלקי חכם</h2>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  {(hebrewInput || italianOutput) && (
+                    <button 
+                      onClick={() => handleGlobalClick(clearPhrasebook)} 
+                      style={{ background: isDark ? '#3f3f46' : '#f1f5f9', color: textSub, border: '1px solid #cbd5e1', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+                    >
+                      🧹 נקה הכל
+                    </button>
+                  )}
+                  <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', position: 'relative' }}>
                 <input 
                   type="text" 
                   lang="he" 
                   dir="rtl" 
                   placeholder="הקלד בעברית לתרגום..." 
                   value={hebrewInput} 
-                  onChange={(e) => setHebrewInput(e.target.value)} 
+                  onChange={(e) => {
+                    setHebrewInput(e.target.value);
+                    if (italianOutput) setItalianOutput(''); // איפוס התרגום הקולי ברגע שהמשתמש מקליד מחדש
+                  }} 
                   style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `1px solid ${blockBorder}`, background: blockBg, color: blockText, fontWeight: '700', outline: 'none', fontSize: '16px', boxShadow: cardShadow }} 
                 />
-                <button onClick={() => handleGlobalClick(() => translateText(hebrewInput))} style={{ padding: '0 16px', background: isDark ? '#3f3f46' : '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '14px', boxShadow: cardShadow }}>תרגם</button>
+                <button onClick={() => handleGlobalClick(() => translateText(hebrewInput))} style={{ padding: '0 16px', background: isDark ? '#3f3f46' : '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '14px', boxShadow: cardShadow }}>
+                  {isTranslating ? '...' : 'תרגם'}
+                </button>
               </div>
+
               {italianOutput && (
                 <div style={{ background: isDark ? '#27272a' : '#f0fdf4', padding: '12px 14px', borderRadius: '12px', border: '1px solid #52525b', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
                   <button onClick={() => speakItalian(italianOutput)} style={{ background: '#3f3f46', color: '#fff', border: '1px solid #71717a', borderRadius: '8px', padding: '6px 12px', fontWeight: '800', cursor: 'pointer' }}>🔊 השמע</button>
                   <strong style={{ fontSize: '15px', color: isDark ? '#ffffff' : '#166534', direction: 'ltr' }}>{italianOutput}</strong>
                 </div>
               )}
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {filteredPhrases.slice(0, 10).map((phrase, idx) => (
                   <div key={idx} onClick={() => speakItalian(phrase.it)} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', boxShadow: cardShadow }}>
