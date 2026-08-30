@@ -242,6 +242,7 @@ export default function App() {
 
   const [galleryItems, setGalleryItems] = useState([]);
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
+  const [galleryCaption, setGalleryCaption] = useState('');
 
   const [completedChallenges, setCompletedChallenges] = useState({});
   const [challengeNote, setChallengeNote] = useState('');
@@ -282,6 +283,15 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
 
+  // נעילת גלילה כשיש מודל פתוח
+  useEffect(() => {
+    if (modalType || sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [modalType, sidebarOpen]);
+
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -321,6 +331,8 @@ export default function App() {
     }
     setViewerItem(null);
     setModalType(null);
+    setShowGalleryUpload(false);
+    setGalleryCaption('');
   };
 
   const moveMenuItem = (index, direction) => {
@@ -568,6 +580,51 @@ export default function App() {
       tx.onerror = (err) => console.error('IndexedDB upload error:', err);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  // העלאת תמונה ישירה לגלריה
+  const handleDirectGalleryUpload = async (photoFile) => {
+    if (!photoFile) return;
+    try {
+      const filePath = `gallery_${Date.now()}_${photoFile.name}`;
+      await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+      const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+
+      if (publicUrlData?.publicUrl) {
+        await cacheMediaOffline(publicUrlData.publicUrl);
+        await supabase.from('gallery').insert([{
+          name: photoFile.name,
+          type: photoFile.type,
+          size: photoFile.size,
+          day_index: activeDay,
+          caption: galleryCaption || `רגע משפחתי יום ${activeDay + 1}`,
+          author: challengeAuthor || 'משפחה',
+          created: Date.now(),
+          media_url: publicUrlData.publicUrl
+        }]);
+      }
+      setGalleryCaption('');
+      setShowGalleryUpload(false);
+      loadGalleryFromCloud();
+    } catch (e) {
+      alert('העלאה נכשלה - זמין במצב מקוון');
+    }
+  };
+
+  const deleteGalleryItem = async (id, e) => {
+    e.stopPropagation();
+    const pass = window.prompt('הזן קוד מנהל למחיקת התמונה מהאלבום:');
+    if (pass !== '1967') {
+      alert('קוד שגוי!');
+      return;
+    }
+    try {
+      await supabase.from('gallery').delete().eq('id', id);
+      setGalleryItems(prev => prev.filter(item => item.id !== id));
+      localStorage.setItem('garda-gallery-cache', JSON.stringify(galleryItems.filter(item => item.id !== id)));
+    } catch (err) {
+      setGalleryItems(prev => prev.filter(item => item.id !== id));
     }
   };
 
@@ -1259,7 +1316,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודלים מקובעים מלאים על 100% רוחב */}
+      {/* מודל טריוויה */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1360,6 +1417,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל אתגר יומי */}
       {modalType === 'questModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1407,6 +1465,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל יומן אתגרים */}
       {modalType === 'challengesLog' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1454,6 +1513,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל שיחון */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1511,6 +1571,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל גלריה */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1518,11 +1579,30 @@ export default function App() {
               <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
             </div>
+
             <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', border: '1px solid #94a3b8', marginBottom: '16px', boxShadow: cardShadow }}>📷 הוסף תמונה / סרטון</button>
             
+            {showGalleryUpload && (
+              <div style={{ background: isDark ? '#18181b' : '#f8fafc', padding: '14px', borderRadius: '12px', border: `1px solid ${blockBorder}`, marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <input 
+                  type="text" 
+                  placeholder="תיאור התמונה (לדוגמה: ארוחת צהריים בלימונה)..." 
+                  value={galleryCaption} 
+                  onChange={(e) => setGalleryCaption(e.target.value)} 
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1px solid ${blockBorder}`, background: blockBg, color: blockText, boxSizing: 'border-box', fontWeight: '700' }} 
+                />
+                <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
+                <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '10px', borderRadius: '8px', background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, fontWeight: '800', fontSize: '12px', cursor: 'pointer' }}>📸 צלם עכשיו</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '10px', borderRadius: '8px', background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, fontWeight: '800', fontSize: '12px', cursor: 'pointer' }}>📁 בחר מהמכשיר</button>
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px' }}>
               {galleryItems.map((item, i) => (
-                <div key={item.id || i} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '12px', padding: '6px', boxSizing: 'border-box', boxShadow: cardShadow }}>
+                <div key={item.id || i} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '12px', padding: '6px', boxSizing: 'border-box', boxShadow: cardShadow, position: 'relative' }}>
                   {item.media_url && (
                     <img 
                       src={item.media_url} 
@@ -1539,9 +1619,18 @@ export default function App() {
                       }}
                     />
                   )}
-                  <small style={{ fontSize: '11px', fontWeight: '800', color: blockText, display: 'block', marginTop: '4px', textAlign: 'center' }}>
-                    {item.author}: {item.name}
+                  <small style={{ fontSize: '11px', fontWeight: '800', color: blockText, display: 'block', marginTop: '4px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {item.author || 'משפחה'}: {item.caption || item.name}
                   </small>
+                  {item.id && (
+                    <button 
+                      onClick={(e) => deleteGalleryItem(item.id, e)} 
+                      style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(220, 38, 38, 0.85)', color: '#fff', border: 'none', borderRadius: '50%', width: '22px', height: '22px', fontSize: '11px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      title="מחק תמונה (דורש קוד מנהל)"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -1549,6 +1638,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל צפייה במסמכים */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1634,6 +1724,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל חניה */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1648,6 +1739,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל סביבי */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1668,6 +1760,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל מספרי חירום */}
       {modalType === 'emergency' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1683,6 +1776,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל ארנק כרטיסים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
