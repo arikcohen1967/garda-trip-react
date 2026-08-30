@@ -209,7 +209,6 @@ const generateMassiveTrivia = () => {
   return generated;
 };
 
-// פונקציית שמירת תמונות במטמון אופליין
 const cacheMediaOffline = async (url) => {
   if (!url || typeof window === 'undefined' || !('caches' in window)) return url;
   try {
@@ -257,7 +256,6 @@ export default function App() {
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
 
-  // משחק טריויה רנדומלי לפי תורים עם מעבר אוטומטי
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   const [travelerIndex, setTravelerIndex] = useState(0);
   const [triviaIndex, setTriviaIndex] = useState(0);
@@ -268,7 +266,6 @@ export default function App() {
   const [travelerScores, setTravelerScores] = useState({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
   const triviaTimerRef = useRef(null);
 
-  // סדר תפריט צדדי ניתן לעריכה
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
@@ -784,14 +781,14 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // הגדרות עיצוב - צבעים אחידים ללא שולי רקע צפים
-  const bgMain = isDark ? '#18181b' : '#f8fafc';
+  // רקעים וצבעים קבועים
+  const bgMain = isDark ? '#18181b' : '#f1f5f9';
   const cardBg = isDark ? '#27272a' : '#ffffff';
   const textColor = isDark ? '#ffffff' : '#0f172a';
   const textSub = isDark ? '#d4d4d8' : '#475569';
   const borderColor = isDark ? '#3f3f46' : '#cbd5e1';
 
-  // אפקט Bevel & Emboss מובלט במצב בהיר
+  // אפקט Bevel & Emboss מובלט
   const cardShadow = isDark 
     ? '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)'
     : 'inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 0 rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05)';
@@ -806,7 +803,7 @@ export default function App() {
     switch(id) {
       case 'schedule':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); closeModal(); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📅</span> מסלול ימי הטיול</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -818,7 +815,7 @@ export default function App() {
         );
       case 'challenges':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('challengesLog'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🏆</span> יומן אתגרים ובדיחות</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -830,7 +827,7 @@ export default function App() {
         );
       case 'trivia':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('trivia'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🧠</span> טריויה חכמה לדרך 🚗</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -842,7 +839,7 @@ export default function App() {
         );
       case 'phrasebook':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🇮🇹</span> שיחון איטלקי חכם</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -854,7 +851,7 @@ export default function App() {
         );
       case 'gallery':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('gallery'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📸</span> יומן ואלבום תמונות משפחתי</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -866,7 +863,7 @@ export default function App() {
         );
       case 'around':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('around'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📍</span> סביבי (Around Me)</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -878,7 +875,7 @@ export default function App() {
         );
       case 'parking':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('parking'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🚗</span> שמירת מיקום חניה</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -890,7 +887,7 @@ export default function App() {
         );
       case 'tickets':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('tickets'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🎟️</span> ארנק כרטיסים ומסמכים</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -902,7 +899,7 @@ export default function App() {
         );
       case 'emergency':
         return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('emergency'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🆘</span> מספרי חירום</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -918,7 +915,19 @@ export default function App() {
   };
 
   return (
-    <div style={{ background: bgMain, minHeight: '100vh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box', position: 'relative' }}>
+    <div style={{ 
+      background: bgMain, 
+      minHeight: '100vh', 
+      width: '100%', 
+      maxWidth: '100vw', 
+      overflowX: 'clip', 
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif', 
+      color: textColor, 
+      direction: 'rtl', 
+      paddingBottom: '40px', 
+      boxSizing: 'border-box', 
+      position: 'relative' 
+    }}>
       
       {/* פס עליון מטאלי */}
       <div style={{
@@ -1032,14 +1041,16 @@ export default function App() {
         />
       )}
       
+      {/* תפריט צדדי מקובע ומבודד מ-Overflow */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
         style={{
-          position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px', maxWidth: '80vw',
+          position: 'fixed', top: 0, bottom: 0, right: 0, width: '300px', maxWidth: '85vw',
           background: isDark ? '#1f1f23' : '#ffffff', zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.3)',
-          transition: 'right 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '28px 20px',
+          transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', padding: '28px 20px',
           display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
         }}
       >
@@ -1059,7 +1070,7 @@ export default function App() {
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
 
-      <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
+      <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
         {/* כפתורי ימי הטיול */}
         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '12px', marginBottom: '18px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
@@ -1091,7 +1102,7 @@ export default function App() {
           ))}
         </div>
 
-        <section style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+        <section style={{ width: '100%', boxSizing: 'border-box' }}>
           <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
@@ -1129,8 +1140,8 @@ export default function App() {
               background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)',
               color: '#ffffff',
               padding: '8px 14px', borderRadius: '10px',
-              fontSize: '12px', fontWeight: '800', flexShrink: 0, border: '1px solid #0f172a',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 5px rgba(0,0,0,0.2)'
+              fontSize: '12px', fontWeight: '800', flexShrink: 0, border: '1px solid #94a3b8',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח משימה 🚀'}
             </span>
@@ -1197,7 +1208,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודלים מקובעים מלאים (ללא תחושת ריחוף/מסך כפול) */}
+      {/* מודלים מקובעים מלאים על 100% רוחב ללא זליגה */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1745,15 +1756,15 @@ const modalStyle = {
 
 const modalContentStyle = {
   width: '100%', maxWidth: '600px', margin: '0 auto',
-  padding: '20px 16px 40px', boxSizing: 'border-box',
+  padding: '16px 16px 40px', boxSizing: 'border-box',
   minHeight: '100vh', overflowX: 'hidden'
 };
 
 const modalCloseBtn = {
-  width: '40px', height: '40px',
-  borderRadius: '50%', fontWeight: '900', fontSize: '16px', cursor: 'pointer',
+  width: '42px', height: '42px',
+  borderRadius: '50%', fontWeight: '900', fontSize: '18px', cursor: 'pointer',
   display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, flexShrink: 0,
-  boxShadow: '0 2px 5px rgba(0,0,0,0.15)'
+  boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
 };
 
 const gridModalBtn = {
