@@ -237,7 +237,7 @@ export default function App() {
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
 
-  // משחק טריויה משודרג לפי תורים עם אופציית השהה ואיפוס
+  // משחק טריויה משודרג לפי תורים עם אופציית השהה ואיפוס ומעבר אוטומטי
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   const [travelerIndex, setTravelerIndex] = useState(0);
   const [triviaIndex, setTriviaIndex] = useState(0);
@@ -245,6 +245,7 @@ export default function App() {
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const [travelerScores, setTravelerScores] = useState({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
+  const triviaTimerRef = useRef(null);
 
   // סדר תפריט צדדי ניתן לעריכה
   const [menuOrder, setMenuOrder] = useState(() => {
@@ -400,6 +401,7 @@ export default function App() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       clearInterval(interval);
+      if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     };
   }, []);
 
@@ -669,7 +671,16 @@ export default function App() {
     }
   };
 
+  const nextTriviaQuestion = () => {
+    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
+    setSelectedAnswer(null);
+    setIsAnswerCorrect(null);
+    setTriviaIndex(prev => (prev + 1) % ROAD_TRIVIA_QUESTIONS.length);
+    setTravelerIndex(prev => (prev + 1) % travelers.length);
+  };
+
   const handleTriviaAnswer = (optionIdx) => {
+    if (selectedAnswer !== null) return;
     setSelectedAnswer(optionIdx);
     const currentQ = ROAD_TRIVIA_QUESTIONS[triviaIndex];
     const currentTraveler = travelers[travelerIndex];
@@ -683,17 +694,17 @@ export default function App() {
     } else {
       setIsAnswerCorrect(false);
     }
-  };
 
-  const nextTriviaQuestion = () => {
-    setSelectedAnswer(null);
-    setIsAnswerCorrect(null);
-    setTriviaIndex(prev => (prev + 1) % ROAD_TRIVIA_QUESTIONS.length);
-    setTravelerIndex(prev => (prev + 1) % travelers.length);
+    // מעבר אוטומטי לשאלה הבאה לאחר 1.5 שניות
+    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
+    triviaTimerRef.current = setTimeout(() => {
+      nextTriviaQuestion();
+    }, 1500);
   };
 
   const resetTriviaGame = () => {
     if (!window.confirm('לאפס את המשחק ולהתחיל את הניקוד מחדש?')) return;
+    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     setTriviaIndex(0);
     setTravelerIndex(0);
     setSelectedAnswer(null);
@@ -1121,7 +1132,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודל משחק טריויה לנהיגה לפי תורות עם אופציית השהה ואיפוס */}
+      {/* מודל משחק טריויה לנהיגה לפי תורות עם מעבר אוטומטי */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1171,18 +1182,12 @@ export default function App() {
                     ))}
                   </div>
 
-                  {/* כפתור שאלה הבאה ופידבק ממוקמים ישירות מעל השאלה */}
+                  {/* הודעת פידבק בעת בחירה (מעבר אוטומטי מתבצע מיד) */}
                   {selectedAnswer !== null && (
-                    <div style={{ textAlign: 'center', marginBottom: '18px', background: isDark ? '#27272a' : '#f8fafc', padding: '14px', borderRadius: '14px', border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>
-                      <p style={{ fontSize: '15px', fontWeight: '900', color: isAnswerCorrect ? '#166534' : '#dc2626', margin: '0 0 12px' }}>
-                        {isAnswerCorrect ? `🎉 כל הכבוד ${travelers[travelerIndex]}! תשובה נכונה (+10 נק')!` : `❌ לא מדויק ${travelers[travelerIndex]}! התשובה שגויה.`}
+                    <div style={{ textAlign: 'center', marginBottom: '16px', background: isDark ? '#27272a' : '#f8fafc', padding: '12px', borderRadius: '14px', border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>
+                      <p style={{ fontSize: '15px', fontWeight: '900', color: isAnswerCorrect ? '#166534' : '#dc2626', margin: 0 }}>
+                        {isAnswerCorrect ? `🎉 כל הכבוד ${travelers[travelerIndex]}! (+10 נק')` : `❌ לא מדויק ${travelers[travelerIndex]}! עוברים הלאה...`}
                       </p>
-                      <button
-                        onClick={() => handleGlobalClick(nextTriviaQuestion)}
-                        style={{ width: '100%', padding: '14px', background: '#1e293b', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', boxShadow: cardShadow }}
-                      >
-                        שאלה הבאה לנוסע הבא ➡️
-                      </button>
                     </div>
                   )}
 
