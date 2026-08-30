@@ -157,43 +157,50 @@ const QUICK_PHRASES = [
   { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
 ];
 
+const RAW_BASE_QUESTIONS = [
+  { q: "כמה רגליים יש לעכביש?", options: ["6", "8", "10", "12"], correct: 1 },
+  { q: "איזה בעל חיים נחשב למהיר ביותר בעולם ביבשה?", options: ["אריה", "ברדלס (צ'יטה)", "סוס מירוץ", "זברה"], correct: 1 },
+  { q: "כמה פלנטות יש במערכת השמש שלנו?", options: ["7", "8", "9", "10"], correct: 1 },
+  { q: "איזה גז אנחנו בני האדם שואפים בעיקר כדי לחיות?", options: ["פחמן דו-חמצני", "חמצן", "מימן", "חנקן"], correct: 1 },
+  { q: "איזה כוכב לכת ידוע בתור 'הכוכב האדום'?", options: ["נוגה", "מאדים", "צדק", "שבתאי"], correct: 1 },
+  { q: "מהו האוקיינוס הגדול ביותר בעולם?", options: ["האוקיינוס האטלנטי", "האוקיינוס ההודי", "האוקיינוס השקט", "אוקיינוס הקרח הצפוני"], correct: 2 },
+  { q: "כמה ימים יש בשנה רגילה?", options: ["364", "365", "366", "360"], correct: 1 },
+  { q: "איזה יצור קדום חי בעבר על כדור הארץ ונכחד לפני מיליוני שנים?", options: ["כריש לבן", "דינוזאור", "תנין", "צב ים"], correct: 1 },
+  { q: "מהי היבשה הקטנה ביותר בעולם?", options: ["אפריקה", "אוסטרליה", "אירופה", "אמריקה"], correct: 1 },
+  { q: "באיזו מדינה נמצאים המפלים הגבוהים בעולם (מפלי אנג'ל)?", options: ["ונצואלה", "ברזיל", "ארצות הברית", "קנדה"], correct: 0 },
+  { q: "כמה שיניים יש לבן אדם מבוגר בדרך כלל (כולל שיני בינה)?", options: ["28", "32", "36", "24"], correct: 1 },
+  { q: "איזה חומר נחשב לקשה ביותר בטבע?", options: ["ברזל", "זהב", "יהלום", "טיטניום"], correct: 2 },
+  { q: "איזו חיה מפורסמת ידועה כישנה כמעט כל היום (כ-20 שעות ביממה)?", options: ["קואלה", "אריה", "פנדה", "דוב קוטב"], correct: 0 },
+  { q: "באיזו שנה נחת האדם הראשון על הירח?", options: ["1959", "1969", "1979", "1989"], correct: 1 },
+  { q: "מי היה האדם הראשון שהלך על הירח?", options: ["באז אולדרין", "ניל ארמסטרונג", "יוורי גגארין", "ג'ון גלן"], correct: 1 },
+  { q: "מהו כוכב הלכת הקרוב ביותר לשמש?", options: ["נוגה", "מרקורי (חמה)", "מאדים", "ארץ"], correct: 1 },
+  { q: "איזה בעל חיים הוא הגדול ביותר בעולם כיום?", options: ["פיל אפריקאי", "לווייתן כחול", "תנין הים", "ג'ירפה"], correct: 1 },
+  { q: "מהי השפה המדוברת ביותר בעולם מבחינת מספר דוברים ילידים?", options: ["אנגלית", "ספרדית", "מנדרינית (סינית)", "הינדי"], correct: 2 },
+  { q: "איזה יסוד כימי מסומן באותיות H?", options: ["הליום", "מימן (Hydrogen)", "חמצן", "זהב"], correct: 1 },
+  { q: "מהו כיוון הזריחה של השמש?", options: ["מערב", "מזרח", "צפון", "דרום"], correct: 1 },
+  { q: "מי כתב את ספרי 'הארי פוטר'?", options: ["ג'י. קיי. רולינג", "סטיבן קינג", "ג'. ר. ר. טולקין", "דן בראון"], correct: 0 },
+  { q: "איזה מהמשחקים הבאים אינו משחק וידאו?", options: ["Minecraft", "Fortnite", "Monopoly", "Roblox"], correct: 2 },
+  { q: "מה שמה של בובת הספוג הצהובה שגר באננס מתחת לים?", options: ["פטריק", "ספוגובב קבוע", "ספוגבוב מכנסמרובע", "סקווידוויד"], correct: 2 },
+  { q: "מה שמו של גיבור העל שנושך על ידי עכביש רדיואקטיבי?", options: ["באטמן", "ספיידרמן", "סופרמן", "איירון מן"], correct: 1 },
+  { q: "מהי בירת צרפת?", options: ["לונדון", "פריז", "ברלין", "רומא"], correct: 1 },
+  { q: "מהי בירת אנגליה (בריטניה)?", options: ["פריז", "לונדון", "דבלין", "אדינבורו"], correct: 1 },
+  { q: "באיזו מדינה נמצאת העיר ברצלונה?", options: ["פורטוגל", "איטליה", "ספרד", "צרפת"], correct: 2 },
+  { q: "מהי בירת ספרד?", options: ["ברצלונה", "מדריד", "סביליה", "ולנסיה"], correct: 1 },
+  { q: "באיזו מדינה נמצאת העיר טוקיו?", options: ["סין", "יפן", "קוריאה", "ויאטנם"], correct: 1 },
+  { q: "מהי בירת גרמניה?", options: ["מינכן", "פרנקפורט", "ברלין", "המבורג"], correct: 2 }
+];
+
+// יצירת מאגר שאלות עם ערבוב רנדומלי מלא
 const generateMassiveTrivia = () => {
-  const baseQuestions = [
-    { q: "כמה רגליים יש לעכביש?", options: ["6", "8", "10", "12"], correct: 1 },
-    { q: "איזה בעל חיים נחשב למהיר ביותר בעולם ביבשה?", options: ["אריה", "ברדלס (צ'יטה)", "סוס מירוץ", "זברה"], correct: 1 },
-    { q: "כמה פלנטות יש במערכת השמש שלנו?", options: ["7", "8", "9", "10"], correct: 1 },
-    { q: "איזה גז אנחנו בני האדם שואפים בעיקר כדי לחיות?", options: ["פחמן דו-חמצני", "חמצן", "מימן", "חנקן"], correct: 1 },
-    { q: "איזה כוכב לכת ידוע בתור 'הכוכב האדום'?", options: ["נוגה", "מאדים", "צדק", "שבתאי"], correct: 1 },
-    { q: "מהו האוקיינוס הגדול ביותר בעולם?", options: ["האוקיינוס האטלנטי", "האוקיינוס ההודי", "האוקיינוס השקט", "אוקיינוס הקרח הצפוני"], correct: 2 },
-    { q: "כמה ימים יש בשנה רגילה?", options: ["364", "365", "366", "360"], correct: 1 },
-    { q: "איזה יצור קדום חי בעבר על כדור הארץ ונכחד לפני מיליוני שנים?", options: ["כריש לבן", "דינוזאור", "תנין", "צב ים"], correct: 1 },
-    { q: "מהי היבשה הקטנה ביותר בעולם?", options: ["אפריקה", "אוסטרליה", "אירופה", "אמריקה"], correct: 1 },
-    { q: "באיזו מדינה נמצאים המפלים הגבוהים בעולם (מפלי אנג'ל)?", options: ["ונצואלה", "ברזיל", "ארצות הברית", "קנדה"], correct: 0 },
-    { q: "כמה שיניים יש לבן אדם מבוגר בדרך כלל (כולל שיני בינה)?", options: ["28", "32", "36", "24"], correct: 1 },
-    { q: "איזה חומר נחשב לקשה ביותר בטבע?", options: ["ברזל", "זהב", "יהלום", "טיטניום"], correct: 2 },
-    { q: "איזו חיה מפורסמת ידועה כישנה כמעט כל היום (כ-20 שעות ביממה)?", options: ["קואלה", "אריה", "פנדה", "דוב קוטב"], correct: 0 },
-    { q: "באיזו שנה נחת האדם הראשון על הירח?", options: ["1959", "1969", "1979", "1989"], correct: 1 },
-    { q: "מי היה האדם הראשון שהלך על הירח?", options: ["באז אולדרין", "ניל ארמסטרונג", "יוורי גגארין", "ג'ון גלן"], correct: 1 },
-    { q: "מהו כוכב הלכת הקרוב ביותר לשמש?", options: ["נוגה", "מרקורי (חמה)", "מאדים", "ארץ"], correct: 1 },
-    { q: "איזה בעל חיים הוא הגדול ביותר בעולם כיום?", options: ["פיל אפריקאי", "לווייתן כחול", "תנין הים", "ג'ירפה"], correct: 1 },
-    { q: "מהי השפה המדוברת ביותר בעולם מבחינת מספר דוברים ילידים?", options: ["אנגלית", "ספרדית", "מנדרינית (סינית)", "הינדי"], correct: 2 },
-    { q: "איזה יסוד כימי מסומן באותיות H?", options: ["הליום", "מימן (Hydrogen)", "חמצן", "זהב"], correct: 1 },
-    { q: "מהו כיוון הזריחה של השמש?", options: ["מערב", "מזרח", "צפון", "דרום"], correct: 1 },
-    { q: "מי כתב את ספרי 'הארי פוטר'?", options: ["ג'י. קיי. רולינג", "סטיבן קינג", "ג'. ר. ר. טולקין", "דן בראון"], correct: 0 },
-    { q: "איזה מהמשחקים הבאים אינו משחק וידאו?", options: ["Minecraft", "Fortnite", "Monopoly", "Roblox"], correct: 2 },
-    { q: "מה שמה של בובת הספוג הצהובה שגר באננס מתחת לים?", options: ["פטריק", "ספוגובב קבוע", "ספוגבוב מכנסמרובע", "סקווידוויד"], correct: 2 },
-    { q: "מה שמו של גיבור העל שנושך על ידי עכביש רדיואקטיבי?", options: ["באטמן", "ספיידרמן", "סופרמן", "איירון מן"], correct: 1 },
-    { q: "מהי בירת צרפת?", options: ["לונדון", "פריז", "ברלין", "רומא"], correct: 1 },
-    { q: "מהי בירת אנגליה (בריטניה)?", options: ["פריז", "לונדון", "דבלין", "אדינבורו"], correct: 1 },
-    { q: "באיזו מדינה נמצאת העיר ברצלונה?", options: ["פורטוגל", "איטליה", "ספרד", "צרפת"], correct: 2 },
-    { q: "מהי בירת ספרד?", options: ["ברצלונה", "מדריד", "סביליה", "ולנסיה"], correct: 1 },
-    { q: "באיזו מדינה נמצאת העיר טוקיו?", options: ["סין", "יפן", "קוריאה", "ויאטנם"], correct: 1 },
-    { q: "מהי בירת גרמניה?", options: ["מינכן", "פרנקפורט", "ברלין", "המבורג"], correct: 2 }
-  ];
+  const shuffledBase = [...RAW_BASE_QUESTIONS];
+  for (let i = shuffledBase.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledBase[i], shuffledBase[j]] = [shuffledBase[j], shuffledBase[i]];
+  }
 
   const generated = [];
   for (let i = 0; i < 1000; i++) {
-    const template = baseQuestions[i % baseQuestions.length];
+    const template = shuffledBase[i % shuffledBase.length];
     generated.push({
       q: `(שאלה #${i + 1}) ${template.q}`,
       options: template.options,
@@ -202,8 +209,6 @@ const generateMassiveTrivia = () => {
   }
   return generated;
 };
-
-const ROAD_TRIVIA_QUESTIONS = generateMassiveTrivia();
 
 export default function App() {
   const [tripDays, setTripDays] = useState(INITIAL_TRIP_DAYS);
@@ -237,10 +242,11 @@ export default function App() {
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
 
-  // משחק טריויה משודרג לפי תורים עם אופציית השהה ואיפוס ומעבר אוטומטי
+  // משחק טריויה רנדומלי לפי תורים עם מעבר אוטומטי
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   const [travelerIndex, setTravelerIndex] = useState(0);
   const [triviaIndex, setTriviaIndex] = useState(0);
+  const [triviaQuestions, setTriviaQuestions] = useState(() => generateMassiveTrivia());
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
@@ -675,14 +681,14 @@ export default function App() {
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     setSelectedAnswer(null);
     setIsAnswerCorrect(null);
-    setTriviaIndex(prev => (prev + 1) % ROAD_TRIVIA_QUESTIONS.length);
+    setTriviaIndex(prev => (prev + 1) % triviaQuestions.length);
     setTravelerIndex(prev => (prev + 1) % travelers.length);
   };
 
   const handleTriviaAnswer = (optionIdx) => {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(optionIdx);
-    const currentQ = ROAD_TRIVIA_QUESTIONS[triviaIndex];
+    const currentQ = triviaQuestions[triviaIndex];
     const currentTraveler = travelers[travelerIndex];
 
     if (optionIdx === currentQ.correct) {
@@ -703,8 +709,9 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    if (!window.confirm('לאפס את המשחק ולהתחיל את הניקוד מחדש?')) return;
+    if (!window.confirm('לאפס את המשחק, לערבב שאלות מחדש ולהתחיל ניקוד מחדש?')) return;
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
+    setTriviaQuestions(generateMassiveTrivia());
     setTriviaIndex(0);
     setTravelerIndex(0);
     setSelectedAnswer(null);
@@ -1132,7 +1139,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודל משחק טריויה לנהיגה לפי תורות עם מעבר אוטומטי */}
+      {/* מודל משחק טריויה רנדומלי לנהיגה לפי תורות עם מעבר אוטומטי */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -1149,7 +1156,7 @@ export default function App() {
                   <button 
                     onClick={() => handleGlobalClick(resetTriviaGame)}
                     style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', cursor: 'pointer' }}
-                    title="איפוס משחק"
+                    title="איפוס וערבוב מחדש"
                   >
                     🔄 איפוס
                   </button>
@@ -1193,18 +1200,18 @@ export default function App() {
 
                   <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '18px', marginBottom: '18px', boxSizing: 'border-box', boxShadow: cardShadow }}>
                     <p style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: blockText, lineHeight: '1.5' }}>
-                      {ROAD_TRIVIA_QUESTIONS[triviaIndex].q}
+                      {triviaQuestions[triviaIndex]?.q}
                     </p>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
-                    {ROAD_TRIVIA_QUESTIONS[triviaIndex].options.map((option, optIdx) => {
+                    {triviaQuestions[triviaIndex]?.options.map((option, optIdx) => {
                       let btnBg = blockBg;
                       let btnColor = blockText;
                       let btnBorder = blockBorder;
 
                       if (selectedAnswer !== null) {
-                        if (optIdx === ROAD_TRIVIA_QUESTIONS[triviaIndex].correct) {
+                        if (optIdx === triviaQuestions[triviaIndex].correct) {
                           btnBg = '#d1fae5';
                           btnColor = '#065f46';
                           btnBorder = '#34d399';
