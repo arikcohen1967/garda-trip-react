@@ -283,6 +283,7 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
 
+  // נעילת גלילה כשיש מודל פתוח
   useEffect(() => {
     if (modalType || sidebarOpen) {
       document.body.style.overflow = 'hidden';
@@ -448,21 +449,72 @@ export default function App() {
     };
 
     fetchTripDataFromCloud();
+    fetchChallengesFromCloud();
 
-    try {
-      const savedQuests = JSON.parse(localStorage.getItem('garda-challenges-log')) || {};
-      setCompletedChallenges(savedQuests);
-    } catch (e) {}
+    // האזנת זמן אמת (Realtime Subscriptions) לעדכוני גלריה ואתגרים
+    const galleryChannel = supabase
+      .channel('realtime-gallery')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gallery' }, payload => {
+        setGalleryItems(prev => {
+          if (prev.some(item => item.id === payload.new.id)) return prev;
+          if (payload.new.media_url) cacheMediaOffline(payload.new.media_url);
+          return [payload.new, ...prev];
+        });
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'gallery' }, payload => {
+        setGalleryItems(prev => prev.filter(item => item.id !== payload.old.id));
+      })
+      .subscribe();
+
+    const challengesChannel = supabase
+      .channel('realtime-challenges')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'challenges_log' }, () => {
+        fetchChallengesFromCloud();
+      })
+      .subscribe();
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       clearInterval(networkInterval);
+      supabase.removeChannel(galleryChannel);
+      supabase.removeChannel(challengesChannel);
       if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
       if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
       if (translationAbortRef.current) translationAbortRef.current.abort();
     };
   }, []);
+
+  const fetchChallengesFromCloud = async () => {
+    try {
+      const { data, error } = await supabase.from('challenges_log').select('*');
+      if (!error && data) {
+        const mapped = {};
+        data.forEach(item => {
+          mapped[item.date_key] = {
+            completed: item.completed,
+            text: item.text,
+            author: item.author,
+            time: item.time,
+            date: item.date_key
+          };
+        });
+        setCompletedChallenges(mapped);
+        localStorage.setItem('garda-challenges-log', JSON.stringify(mapped));
+      } else {
+        loadChallengesFromLocal();
+      }
+    } catch (e) {
+      loadChallengesFromLocal();
+    }
+  };
+
+  const loadChallengesFromLocal = () => {
+    try {
+      const savedQuests = JSON.parse(localStorage.getItem('garda-challenges-log')) || {};
+      setCompletedChallenges(savedQuests);
+    } catch (e) {}
+  };
 
   useEffect(() => {
     try {
@@ -640,19 +692,33 @@ export default function App() {
   const saveDailyChallenge = async (photoFile = null) => {
     const currentDayObj = tripDays[activeDay] || tripDays[0];
     const dayKey = currentDayObj?.date || String(activeDay);
-    
+    const timeNow = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+    const textNote = challengeNote || 'אתגר הושלם בהצלחה! 🎉';
+    const authorName = challengeAuthor || 'משפחה';
+
     const updated = {
       ...completedChallenges,
       [dayKey]: {
         completed: true,
-        text: challengeNote || 'אתגר הושלם בהצלחה! 🎉',
-        author: challengeAuthor || 'משפחה',
-        time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+        text: textNote,
+        author: authorName,
+        time: timeNow,
         date: currentDayObj?.date
       }
     };
     setCompletedChallenges(updated);
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
+
+    // סנכרון ישיר לענן ב-Supabase
+    try {
+      await supabase.from('challenges_log').upsert([{
+        date_key: dayKey,
+        completed: true,
+        text: textNote,
+        author: authorName,
+        time: timeNow
+      }], { onConflict: 'date_key' });
+    } catch (e) {}
 
     if (photoFile) {
       try {
@@ -667,8 +733,8 @@ export default function App() {
             type: photoFile.type,
             size: photoFile.size,
             day_index: activeDay,
-            caption: `🎯 אתגר היום: ${challengeNote || currentDayObj?.challenge}`,
-            author: challengeAuthor || 'משפחה',
+            caption: `🎯 אתגר היום: ${textNote}`,
+            author: authorName,
             created: Date.now(),
             media_url: publicUrlData.publicUrl
           }]);
@@ -682,7 +748,7 @@ export default function App() {
     closeModal();
   };
 
-  const resetSingleChallenge = (dayIdx) => {
+  const resetSingleChallenge = async (dayIdx) => {
     const pass = window.prompt('הזן קוד מנהל לאיפוס המשימה:');
     if (pass !== '1967') {
       alert('קוד שגוי!');
@@ -696,6 +762,11 @@ export default function App() {
     delete updated[String(dayIdx)];
     setCompletedChallenges(updated);
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
+
+    try {
+      await supabase.from('challenges_log').delete().eq('date_key', dayKey);
+    } catch (e) {}
+
     if (modalType === 'questModal') closeModal();
   };
 
