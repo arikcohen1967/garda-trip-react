@@ -149,7 +149,7 @@ const QUICK_PHRASES = [
   { cat: '🛒 קניות וחניה', he: 'כמה זה עולה?', it: 'Quanto costa questo?', pro: 'קְוָואנְטוֹ קוֹסְטָה קְוֶוסְטוֹ?' },
   { cat: '🛒 קניות וחניה', he: 'אפשר לשלם באשראי?', it: 'Posso pagare con la carta?', pro: 'פּוֹסוֹ פָּאגָארֶה קוֹן לָה קָארְטָה?' },
   { cat: '🛒 קניות וחניה', he: 'איפה המדחן?', it: 'Dov’è il parcometro?', pro: 'דוֹבֶה אִיל פָּארְקוֹמֶטְרוֹ?' },
-  { cat: '🛒 קניות וחניה', he: 'איפה תחנת הדלק הקרובה?', it: 'Dov’è il distributore di benzina יותר vicino?', pro: 'דוֹבֶה אִיל דִיסְטְרִיבּוּטוֹרֶה...' },
+  { cat: '🛒 קניות וחניה', he: 'איפה תחנת הדלק הקרובה?', it: 'Dov’è il distributore di benzina più vicino?', pro: 'דוֹבֶה אִיל דִיסְטְרִיבּוּטוֹרֶה...' },
   { cat: '👋 בסיסי ונימוס', he: 'שלום / להתראות', it: 'Ciao / Arrivederci', pro: 'צ׳או / אָרִיבֶדֶרְצִ׳י' },
   { cat: '👋 בסיסי ונימוס', he: 'בוקר טוב / ערב טוב', it: 'Buongiorno / Buonasera', pro: 'בּוּאוֹן ג׳וֹרְנוֹ / בּוּאוֹנָה סֶרָה' },
   { cat: '👋 בסיסי ונימוס', he: 'תודה רבה', it: 'Grazie mille!', pro: 'גְרָאצְיֶה מִילֶה' },
@@ -209,7 +209,7 @@ const generateMassiveTrivia = () => {
   return generated;
 };
 
-// פונקציית עזר לשמירת תמונות ב-Cache API עבור שימוש מלא באופליין
+// פונקציית שמירת תמונות במטמון אופליין
 const cacheMediaOffline = async (url) => {
   if (!url || typeof window === 'undefined' || !('caches' in window)) return url;
   try {
@@ -231,7 +231,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [viewerItem, setViewerItem] = useState(null);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [themeMode, setThemeMode] = useState('light');
 
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
@@ -281,6 +281,7 @@ export default function App() {
   
   const audioContextRef = useRef(false);
   const currentUtteranceRef = useRef(null);
+  const currentBlobUrlRef = useRef(null);
 
   const playClickSound = () => {
     try {
@@ -314,6 +315,15 @@ export default function App() {
     if (callback) callback();
   };
 
+  const closeModal = () => {
+    if (currentBlobUrlRef.current) {
+      URL.revokeObjectURL(currentBlobUrlRef.current);
+      currentBlobUrlRef.current = null;
+    }
+    setViewerItem(null);
+    setModalType(null);
+  };
+
   const moveMenuItem = (index, direction) => {
     const newOrder = [...menuOrder];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -344,25 +354,30 @@ export default function App() {
     }
   };
 
+  // תשתית טעינת קולות Web Speech
   useEffect(() => {
-    const updateOnlineStatus = async () => {
+    if ('speechSynthesis' in window) {
+      const loadVoices = () => {
+        window.speechSynthesis.getVoices();
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
+  // ניהול רשת חכם וחיסכון בסוללה
+  useEffect(() => {
+    const checkSupabaseConnection = async () => {
       if (!navigator.onLine) {
         setIsOnline(false);
         return;
       }
-      
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
         const { error } = await supabase.from('trip_data').select('id').limit(1).abortSignal(controller.signal);
         clearTimeout(timeoutId);
-
-        if (error) {
-          setIsOnline(false);
-        } else {
-          setIsOnline(true);
-        }
+        setIsOnline(!error);
       } catch (err) {
         setIsOnline(false);
       }
@@ -370,16 +385,19 @@ export default function App() {
 
     const handleOnline = () => {
       setIsOnline(true);
-      setTimeout(updateOnlineStatus, 1500);
+      checkSupabaseConnection();
     };
-    
-    const handleOffline = () => setIsOnline(false);
+
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
-    updateOnlineStatus();
-    const interval = setInterval(updateOnlineStatus, 8000);
+
+    // בדיקה ראשונית ובדיקת דופק מרווחת (30 שניות) למניעת עומס
+    checkSupabaseConnection();
+    const networkInterval = setInterval(checkSupabaseConnection, 30000);
 
     async function fetchTripDataFromCloud() {
       try {
@@ -421,8 +439,9 @@ export default function App() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      clearInterval(interval);
+      clearInterval(networkInterval);
       if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
+      if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
     };
   }, []);
 
@@ -509,7 +528,6 @@ export default function App() {
       if (!error && data) {
         setGalleryItems(data);
         localStorage.setItem('garda-gallery-cache', JSON.stringify(data));
-        // שמירת כל תמונות הגלריה במטמון אופליין
         data.forEach(item => {
           if (item.media_url) cacheMediaOffline(item.media_url);
         });
@@ -587,7 +605,7 @@ export default function App() {
 
     setChallengeNote('');
     alert('🏆 כל הכבוד! האתגר בוצע ונשמר ביומן האתגרים המשפחתי!');
-    setModalType(null);
+    closeModal();
   };
 
   const resetSingleChallenge = (dayIdx) => {
@@ -596,7 +614,7 @@ export default function App() {
     delete updated[String(dayIdx)];
     setCompletedChallenges(updated);
     localStorage.setItem('garda-challenges-log', JSON.stringify(updated));
-    if (modalType === 'questModal') setModalType(null);
+    if (modalType === 'questModal') closeModal();
   };
 
   const deleteFile = async (id, e) => {
@@ -736,7 +754,6 @@ export default function App() {
       setIsAnswerCorrect(false);
     }
 
-    // מעבר אוטומטי לשאלה הבאה לאחר 1.5 שניות
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     triviaTimerRef.current = setTimeout(() => {
       nextTriviaQuestion();
@@ -770,17 +787,17 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // הגדרות עיצוב עם Bevel & Emboss / Inset Shadow משופר לגרסה הבהירה
-  const bgMain = isDark ? '#18181b' : '#f8fafc';
+  // הגדרות עיצוב - תלת ממד מודגש בגרסה הבהירה
+  const bgMain = isDark ? '#18181b' : '#ffffff';
   const cardBg = isDark ? 'linear-gradient(135deg, #27272a 0%, #1f1f23 100%)' : '#ffffff';
-  const textColor = isDark ? '#ffffff' : '#0f172a';
-  const textSub = isDark ? '#d4d4d8' : '#475569';
+  const textColor = isDark ? '#ffffff' : '#000000';
+  const textSub = isDark ? '#d4d4d8' : '#4b5563';
   const borderColor = isDark ? '#3f3f46' : '#cbd5e1';
 
-  // צלליות Bevel & Emboss בגרסה הבהירה (תאורה עליונה + הכהיה זוויתית תחתונה)
+  // אפקט Bevel & Emboss / Inset Shadow משופר לגרסה הבהירה
   const cardShadow = isDark 
-    ? '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3)'
-    : 'inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 0 rgba(0, 0, 0, 0.06), 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06)';
+    ? '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)'
+    : 'inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 0 rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05)';
 
   const blockBg = isDark 
     ? 'linear-gradient(135deg, #3f3f46 0%, #27272a 50%, #18181b 100%)' 
@@ -793,7 +810,7 @@ export default function App() {
       case 'schedule':
         return (
           <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType(null); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📅</span> מסלול ימי הטיול</button>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); closeModal(); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📅</span> מסלול ימי הטיול</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
@@ -943,7 +960,7 @@ export default function App() {
             fontSize: '11px',
             fontWeight: '900',
             cursor: 'pointer',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.2)',
+            boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
             transition: 'all 0.2s ease'
           }}
         >
@@ -953,7 +970,7 @@ export default function App() {
 
       <header style={{
         padding: '16px 20px',
-        background: isDark ? '#27272a' : '#ffffff',
+        background: isDark ? '#27272a' : bgMain,
         borderBottom: `1px solid ${borderColor}`,
         display: 'flex',
         justifyContent: 'space-between',
@@ -962,8 +979,7 @@ export default function App() {
         top: '47px',
         zIndex: 900,
         width: '100%',
-        boxSizing: 'border-box',
-        boxShadow: isDark ? 'none' : '0 2px 8px rgba(0,0,0,0.04)'
+        boxSizing: 'border-box'
       }}>
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
@@ -1024,7 +1040,7 @@ export default function App() {
         onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
         style={{
           position: 'fixed', top: 0, bottom: 0, right: sidebarOpen ? 0 : '-340px', width: '300px', maxWidth: '80vw',
-          background: isDark ? '#1f1f23' : '#ffffff', zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.3)',
+          background: isDark ? '#1f1f23' : cardBg, zIndex: 2600, boxShadow: '-10px 0 30px rgba(0,0,0,0.3)',
           transition: 'right 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '28px 20px',
           display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
         }}
@@ -1034,7 +1050,7 @@ export default function App() {
           <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
             <button 
               onClick={() => handleGlobalClick(() => setIsEditingMenu(!isEditingMenu))}
-              style={{ background: isEditingMenu ? '#059669' : (isDark ? '#3f3f46' : '#f1f5f9'), color: isEditingMenu ? '#fff' : textColor, border: '1px solid #cbd5e1', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: isDark ? 'none' : 'inset 0 1px 0 #fff' }}
+              style={{ background: isEditingMenu ? '#059669' : (isDark ? '#3f3f46' : '#f1f5f9'), color: isEditingMenu ? '#fff' : textColor, border: '1px solid #cbd5e1', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
             >
               {isEditingMenu ? '✓ סיום עריכה' : '⚙️ ערוך תפריט'}
             </button>
@@ -1047,8 +1063,8 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box', overflowX: 'hidden' }}>
         
-        {/* כפתורי ימי הטיול עם צל תלת ממדי מובלט */}
-        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '12px', marginBottom: '18px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
+        {/* כפתורי ימי הטיול */}
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '20px', scrollbarWidth: 'none', width: '100%', boxSizing: 'border-box' }}>
           {tripDays.map((d, i) => (
             <button
               key={i}
@@ -1065,10 +1081,8 @@ export default function App() {
                 fontSize: '12px',
                 fontWeight: '900',
                 cursor: 'pointer',
-                boxShadow: activeDay === i 
-                  ? (isDark ? '0 4px 10px rgba(0,0,0,0.4)' : 'inset 0 2px 4px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1)')
-                  : cardShadow,
-                transition: 'all 0.15s ease',
+                boxShadow: cardShadow,
+                transition: 'all 0.2s ease',
                 textShadow: activeDay === i ? '0 1px 2px rgba(0,0,0,0.4)' : 'none'
               }}
             >
@@ -1115,11 +1129,12 @@ export default function App() {
               background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)',
               color: '#ffffff',
               padding: '8px 14px', borderRadius: '10px',
-              fontSize: '12px', fontWeight: '800', flexShrink: 0, border: '1px solid #0f172a',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 5px rgba(0,0,0,0.2)'
+              fontSize: '12px', fontWeight: '800', flexShrink: 0, border: '1px solid #94a3b8',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח משימה 🚀'}
             </span>
+
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1185,7 +1200,7 @@ export default function App() {
 
       {/* מודל משחק טריויה רנדומלי לנהיגה לפי תורות עם מעבר אוטומטי */}
       {modalType === 'trivia' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '18px' }}>
@@ -1204,7 +1219,7 @@ export default function App() {
                   >
                     🔄 איפוס
                   </button>
-                  <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                  <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
                 </div>
               </div>
 
@@ -1290,12 +1305,12 @@ export default function App() {
       )}
 
       {modalType === 'questModal' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '18px' }}>
                 <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>הפתעת הבוקר והאתגר!</h2>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
 
               <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '16px', marginBottom: '20px', textAlign: 'center', boxSizing: 'border-box', boxShadow: cardShadow }}>
@@ -1339,12 +1354,12 @@ export default function App() {
       )}
 
       {modalType === 'challengesLog' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
                 <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>יומן האתגרים והבדיחות</h2>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {tripDays.map((d, idx) => {
@@ -1373,7 +1388,7 @@ export default function App() {
       )}
 
       {modalType === 'phrasebook' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '20px 16px', boxSizing: 'border-box', width: '100%', direction: 'rtl', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '12px', marginBottom: '16px' }}>
@@ -1387,7 +1402,7 @@ export default function App() {
                       🧹 נקה הכל
                     </button>
                   )}
-                  <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                  <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', position: 'relative' }}>
@@ -1432,16 +1447,15 @@ export default function App() {
       )}
 
       {modalType === 'gallery' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
                 <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
               <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', border: '1px solid #94a3b8', marginBottom: '16px', boxShadow: cardShadow }}>📷 הוסף תמונה / סרטון</button>
               
-              {/* תצוגת גלריית תמונות עם תמיכה באופליין */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px' }}>
                 {galleryItems.map((item, i) => (
                   <div key={item.id || i} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '12px', padding: '6px', boxSizing: 'border-box', boxShadow: cardShadow }}>
@@ -1451,7 +1465,6 @@ export default function App() {
                         alt={item.caption || item.name} 
                         style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '8px', display: 'block' }} 
                         onError={(e) => {
-                          // ניסיון משיכה מקאש מקומי אם אין אינטרנט
                           if ('caches' in window) {
                             caches.open('garda-offline-photos-v1').then(cache => {
                               cache.match(item.media_url).then(res => {
@@ -1474,12 +1487,12 @@ export default function App() {
       )}
 
       {modalType === 'viewer' && viewerItem && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: isDark ? '#ffffff' : '#166534' }}>{viewerItem.title || viewerItem.name}</h3>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
               
               <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600' }}>
@@ -1528,9 +1541,27 @@ export default function App() {
                 {viewerItem.blob && (
                   <div style={{ marginTop: '16px', textAlign: 'center' }}>
                     {viewerItem.type?.startsWith('image/') ? (
-                      <img src={URL.createObjectURL(viewerItem.blob)} alt={viewerItem.title} style={{ maxWidth: '100%', borderRadius: '12px', boxShadow: cardShadow }} />
+                      <img 
+                        src={(() => {
+                          if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
+                          const url = URL.createObjectURL(viewerItem.blob);
+                          currentBlobUrlRef.current = url;
+                          return url;
+                        })()} 
+                        alt={viewerItem.title} 
+                        style={{ maxWidth: '100%', borderRadius: '12px', boxShadow: cardShadow }} 
+                      />
                     ) : (
-                      <a href={URL.createObjectURL(viewerItem.blob)} download={viewerItem.name} style={{ display: 'inline-block', padding: '12px 20px', background: 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontWeight: '800', boxShadow: cardShadow }}>
+                      <a 
+                        href={(() => {
+                          if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
+                          const url = URL.createObjectURL(viewerItem.blob);
+                          currentBlobUrlRef.current = url;
+                          return url;
+                        })()} 
+                        download={viewerItem.name} 
+                        style={{ display: 'inline-block', padding: '12px 20px', background: 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontWeight: '800', boxShadow: cardShadow }}
+                      >
                         📥 פתח / הורד קובץ ({viewerItem.name})
                       </a>
                     )}
@@ -1543,12 +1574,12 @@ export default function App() {
       )}
 
       {modalType === 'parking' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>🚗 איך שומרים את הרכב ב-Apple Maps</h3>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
               <p style={{ fontSize: '14px', lineHeight: '1.7', color: blockText, fontWeight: '600' }}>
                 אם האייפון מחובר ל-Bluetooth או ל-CarPlay ברכב השכור, ברגע שמכבים מנוע ומתנתקים – האייפון שומר <b>אוטומטית</b> את מיקום החניה.
@@ -1559,12 +1590,12 @@ export default function App() {
       )}
 
       {modalType === 'around' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>📍 סביבי (Around Me)</h3>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
               <p style={{ fontSize: '13px', color: textSub, marginBottom: '16px', fontWeight: '700' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך:</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -1581,12 +1612,12 @@ export default function App() {
       )}
 
       {modalType === 'emergency' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '20px', padding: '22px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#dc2626' }}>🆘 מספרי חירום באיטליה</h3>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#27272a' : '#fef2f2', color: '#dc2626', borderColor: '#fca5a5', textDecoration: 'none', boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
@@ -1598,7 +1629,7 @@ export default function App() {
       )}
 
       {modalType === 'tickets' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(() => setModalType(null))} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '24px', padding: '24px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
@@ -1606,7 +1637,7 @@ export default function App() {
                   <small style={{ color: '#1d4ed8', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', fontSize: '11px' }}>ארנק דיגיטלי</small>
                   <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
                 </div>
-                <button onClick={() => handleGlobalClick(() => setModalType(null))} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '1px solid #cbd5e1' }}>✕</button>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
@@ -1649,7 +1680,7 @@ export default function App() {
                       padding: '12px', borderRadius: '12px',
                       background: activeFolder === f ? (isDark ? '#52525b' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)') : blockBg,
                       color: '#ffffff',
-                      border: `1px solid ${activeFolder === f ? (isDark ? '#d4d4d8' : '#0f172a') : blockBorder}`,
+                      border: `1px solid ${activeFolder === f ? (isDark ? '#d4d4d8' : '#1e293b') : blockBorder}`,
                       cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box',
                       boxShadow: cardShadow
                     }}
