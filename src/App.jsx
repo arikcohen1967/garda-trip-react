@@ -192,10 +192,10 @@ const RAW_BASE_QUESTIONS = [
 
 const BINGO_ITEMS_POOL = [
   "🚗 פיאט 500 אדומה", "🛵 וספה / קטנוע", "🍇 כרם ענבים", "⛰️ מנהרה ארוכה", 
-  "🚓 ניידת Carabinieri", "⛵ סירת מפרש", "🍦 שלט גלידריה", "🚜 טרקטור בכביש", 
-  "🐕 כלב מציץ מחלון", "☕ שלט של Autogrill", "🚲 רוכב אופניים עם קסדה", 
-  "🏰 טירה עתיקה מרחוק", "🏎️ רכב ספורט איטלקי", "🚚 משאית פירות", 
-  "⛽ תחנת דלק ENI (כלב עם 6 רגליים)", "🌲 עץ ברוש גבוה"
+  "🚓 ניידת משטרה", "⛵ סירת מפרש", "🍦 שלט גלידריה", "🚜 טרקטור בכביש", 
+  "🐕 כלב מציץ מחלון", "☕ שלט Autogrill", "🚲 רוכב אופניים", 
+  "🏰 טירה עתיקה", "🏎️ פרארי / רכב ספורט", "🚚 משאית פירות", 
+  "⛽ תחנת דלק ENI", "🌲 עץ ברוש גבוה"
 ];
 
 const generateMassiveTrivia = () => {
@@ -398,7 +398,7 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
 
-  // סנכרון ושמירת ניקוד הטריוויה לזיכרון המכשיר
+  // שמירת ניקוד הטריוויה לזיכרון המכשיר
   useEffect(() => {
     localStorage.setItem('garda-trivia-scores', JSON.stringify(travelerScores));
     localStorage.setItem('garda-trivia-index', String(triviaIndex));
@@ -415,22 +415,25 @@ export default function App() {
   };
 
   const toggleBingoItem = (idx) => {
+    playClickSound();
     if (hasBingoWin) return;
-    const updated = { ...bingoChecked, [idx]: !bingoChecked[idx] };
-    setBingoChecked(updated);
     
-    // בדיקת נצחון בלוח 3x3 (שורות, עמודות, אלכסונים)
-    const lines = [
-      [0,1,2], [3,4,5], [6,7,8], // שורות
-      [0,3,6], [1,4,7], [2,5,8], // טורים
-      [0,4,8], [2,4,6]           // אלכסונים
-    ];
+    setBingoChecked(prev => {
+      const updated = { ...prev, [idx]: !prev[idx] };
+      
+      // בדיקת נצחון בלוח 3x3 (שורות, עמודות, אלכסונים)
+      const lines = [
+        [0,1,2], [3,4,5], [6,7,8], // שורות
+        [0,3,6], [1,4,7], [2,5,8], // טורים
+        [0,4,8], [2,4,6]           // אלכסונים
+      ];
 
-    const isWin = lines.some(line => line.every(pos => updated[pos]));
-    if (isWin) {
-      setHasBingoWin(true);
-      playClickSound();
-    }
+      const isWin = lines.some(line => line.every(pos => updated[pos]));
+      if (isWin) {
+        setHasBingoWin(true);
+      }
+      return updated;
+    });
   };
 
   useEffect(() => {
@@ -481,7 +484,9 @@ export default function App() {
       }
       audioContextRef.current = true;
     }
-    if (callback) callback();
+    if (typeof callback === 'function') {
+      callback();
+    }
   };
 
   const closeModal = () => {
@@ -1057,7 +1062,7 @@ export default function App() {
       setIsAnswerCorrect(true);
       setTravelerScores(prev => ({
         ...prev,
-        [currentTraveler]: prev[currentTraveler] + 10
+        [currentTraveler]: (prev[currentTraveler] || 0) + 10
       }));
     } else {
       setIsAnswerCorrect(false);
@@ -1603,26 +1608,33 @@ export default function App() {
                     return (
                       <button
                         key={idx}
-                        onClick={() => handleGlobalClick(() => toggleBingoItem(idx))}
+                        onClick={() => toggleBingoItem(idx)}
                         style={{
                           aspectRatio: '1',
-                          padding: '8px',
+                          padding: '10px 6px',
                           borderRadius: '14px',
-                          border: isChecked ? '2px solid #22c55e' : `1px solid ${blockBorder}`,
-                          background: isChecked ? (isDark ? '#14532d' : '#dcfce7') : blockBg,
-                          color: isChecked ? (isDark ? '#86efac' : '#166534') : blockText,
+                          border: isChecked ? '2px solid #16a34a' : `1px solid ${blockBorder}`,
+                          background: isChecked ? (isDark ? '#14532d' : '#86efac') : blockBg,
+                          color: isChecked ? (isDark ? '#f0fdf4' : '#064e3b') : blockText,
                           fontSize: '12px',
                           fontWeight: '900',
                           cursor: 'pointer',
                           display: 'flex',
+                          flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
                           textAlign: 'center',
-                          boxShadow: cardShadow,
+                          boxShadow: isChecked ? '0 0 10px rgba(34, 197, 94, 0.4)' : cardShadow,
+                          transform: isChecked ? 'scale(0.98)' : 'none',
                           transition: 'all 0.15s ease'
                         }}
                       >
-                        {item}
+                        <span style={{ fontSize: '13px', lineHeight: '1.3' }}>{item}</span>
+                        {isChecked && (
+                          <span style={{ marginTop: '4px', fontSize: '11px', fontWeight: '900', background: '#16a34a', color: '#fff', padding: '1px 6px', borderRadius: '6px' }}>
+                            ✓ נתפס!
+                          </span>
+                        )}
                       </button>
                     );
                   })}
