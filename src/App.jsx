@@ -213,7 +213,7 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
-// הפקת מפת Leaflet עם שמות בולטים (Tooltip) ישירות על הנעצים במפה
+// הפקת מפת Leaflet עם האות הראשונה של כל שם ישירות על הנעץ
 const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
@@ -241,7 +241,7 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
       <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #0f172a; }
         #map { width: 100%; height: 100%; }
-        .custom-tooltip { background: #1e293b; color: #fff; border: 1px solid #38bdf8; font-weight: bold; font-family: sans-serif; padding: 2px 8px; border-radius: 6px; font-size: 12px; direction: rtl; }
+        .custom-tooltip { background: #1e293b; color: #fff; border: 1.5px solid #38bdf8; font-weight: 900; font-family: sans-serif; padding: 3px 10px; border-radius: 8px; font-size: 14px; direction: rtl; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
       </style>
     </head>
     <body>
@@ -260,9 +260,10 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
         locs.forEach(loc => {
           const isSos = sos && sos.name === loc.name;
           const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-          const labelName = isSos ? '🚨 ' + loc.name + ' (מצוקה!)' : '👤 ' + loc.name;
+          const firstLetter = loc.name ? loc.name.charAt(0) : '?';
+          const labelText = isSos ? '🚨 ' + firstLetter + ' (מצוקה!)' : firstLetter;
           
-          marker.bindTooltip(labelName, {permanent: true, direction: 'top', className: 'custom-tooltip'});
+          marker.bindTooltip(labelText, {permanent: true, direction: 'top', className: 'custom-tooltip'});
           markers.push([loc.lat, loc.lng]);
         });
 
@@ -571,7 +572,8 @@ export default function App() {
           });
         } catch (e) {}
 
-        alert('🚨 הודעת המצוקה שודרה לכולם! הישאר במקומך – המשפחה קיבלה את מיקומך המדויק.');
+        // פתיחה אוטומטית של מפת החירום
+        setModalType('radar');
       },
       () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון.'),
       { enableHighAccuracy: true }
@@ -1862,26 +1864,26 @@ export default function App() {
           style={{
             background: '#dc2626',
             color: '#ffffff',
-            padding: '12px 16px',
+            padding: '14px 18px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             cursor: 'pointer',
             fontWeight: '900',
-            fontSize: '14px',
-            boxShadow: '0 4px 12px rgba(220,38,38,0.5)',
+            fontSize: '15px',
+            boxShadow: '0 6px 20px rgba(220,38,38,0.6)',
             animation: 'pulse 1s infinite'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>🚨</span>
-            <span>{activeSosAlert.name} הלך/ה לאיבוד! (לחץ לצפייה במפה)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '20px' }}>🚨</span>
+            <span><b>{activeSosAlert.name} הלך/ה לאיבוד!</b> לחץ כאן לפתיחת מפת החירום והניווט אליו</span>
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); clearSosAlert(); }}
-            style={{ background: '#7f1d1d', color: '#fff', border: '1px solid #fca5a5', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+            style={{ background: '#7f1d1d', color: '#fff', border: '1px solid #fca5a5', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '900', cursor: 'pointer' }}
           >
-            אישור / נסגר ✓
+            אישור ✓
           </button>
         </div>
       )}
@@ -1924,7 +1926,7 @@ export default function App() {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: (activeSosAlert ? 48 : 0) + (activeTimer ? 41 : 0) + 47 + 'px',
+        top: (activeSosAlert ? 52 : 0) + (activeTimer ? 41 : 0) + 47 + 'px',
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box',
@@ -2301,7 +2303,7 @@ export default function App() {
             {/* אזור הבקרה והמרחקים מתחת למפה - גלילה חופשית ובטוחה */}
             <div style={{ flex: 1, background: cardBg, padding: '16px 16px 50px 16px', boxSizing: 'border-box' }}>
               
-              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית (צבעים רגילים ללא סגול) */}
+              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית */}
               <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '14px', marginBottom: '14px', boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2355,7 +2357,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 👑 פאנל ניהול למנהל הקבוצה (אריק) - בעיצוב מטאלי סטנדרטי נקי */}
+              {/* 👑 פאנל ניהול למנהל הקבוצה (אריק) - עיצוב מטאלי סטנדרטי נקי */}
               {(challengeAuthor === 'אריק' || isAdminUnlocked) && (
                 <div style={{ background: isDark ? '#27272a' : '#f1f5f9', border: `1.5px solid ${borderColor}`, borderRadius: '14px', padding: '12px 14px', marginBottom: '14px', boxShadow: cardShadow }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
