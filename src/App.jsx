@@ -213,7 +213,6 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
-// הפקת מפת Leaflet עם גיבוי מלא למצב Offline
 const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
@@ -243,38 +242,33 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
         #map { width: 100%; height: 100%; }
         .custom-popup .leaflet-popup-content-wrapper { background: #1e293b; color: #fff; border-radius: 10px; text-align: right; direction: rtl; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .custom-popup .leaflet-popup-tip { background: #1e293b; }
-        .offline-fallback { position: absolute; top: 10px; right: 10px; z-index: 999; background: #f59e0b; color: #000; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 6px; }
       </style>
     </head>
     <body>
       <div id="map"></div>
       <script>
-        try {
-          const map = L.map('map', { zoomControl: true }).setView([${centerLat}, ${centerLng}], 15);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-          }).addTo(map);
+        const map = L.map('map', { zoomControl: true }).setView([${centerLat}, ${centerLng}], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
 
-          const locs = ${JSON.stringify(locsArray)};
-          const sos = ${JSON.stringify(sosState)};
-          const markers = [];
+        const locs = ${JSON.stringify(locsArray)};
+        const sos = ${JSON.stringify(sosState)};
+        const markers = [];
 
-          locs.forEach(loc => {
-            const isSos = sos && sos.name === loc.name;
-            const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-            const titleText = isSos ? '🚨 ' + loc.name + ' (הלך לאיבוד!)' : '👤 ' + loc.name;
-            marker.bindPopup('<div style="font-family: sans-serif; padding: 4px;"><b>' + titleText + '</b><br><small style="color: #94a3b8;">עודכן: ' + loc.updated_at + '</small></div>', {className: 'custom-popup'});
-            markers.push([loc.lat, loc.lng]);
-          });
+        locs.forEach(loc => {
+          const isSos = sos && sos.name === loc.name;
+          const marker = L.marker([loc.lat, loc.lng]).addTo(map);
+          const titleText = isSos ? '🚨 ' + loc.name + ' (הלך לאיבוד!)' : '👤 ' + loc.name;
+          marker.bindPopup('<div style="font-family: sans-serif; padding: 4px;"><b>' + titleText + '</b><br><small style="color: #94a3b8;">עודכן: ' + loc.updated_at + '</small></div>', {className: 'custom-popup'});
+          markers.push([loc.lat, loc.lng]);
+        });
 
-          if (markers.length > 1) {
-            map.fitBounds(markers, { padding: [40, 40], maxZoom: 16 });
-          } else if (markers.length === 1) {
-            map.setView(markers[0], 16);
-          }
-        } catch (e) {
-          document.body.innerHTML = '<div style="color: #fff; text-align:center; padding-top:40vh; font-family:sans-serif;">מצב אופליין: רשימת המרחקים למטה מעודכנת, אך אין חיבור לריצוף מפות.</div>';
+        if (markers.length > 1) {
+          map.fitBounds(markers, { padding: [40, 40], maxZoom: 16 });
+        } else if (markers.length === 1) {
+          map.setView(markers[0], 16);
         }
       </script>
     </body>
@@ -493,7 +487,7 @@ export default function App() {
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
 
-  // ⏱️ טיימר משפחתי מסונכרן בשליטת אריק
+  // ⏱️ טיימר משפחתי מסונכרן + צפצוף אוטומטי וכפתור עצירת צפצוף
   const [activeTimer, setActiveTimer] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-active-timer')) || null;
@@ -502,6 +496,7 @@ export default function App() {
   const [timerRemainingSec, setTimerRemainingSec] = useState(0);
   const [customTimerMinutes, setCustomTimerMinutes] = useState('15');
   const [customTimerTitle, setCustomTimerTitle] = useState('זמן חופשי ומפגש');
+  const [isAlarmMuted, setIsAlarmMuted] = useState(false);
 
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
@@ -517,6 +512,7 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
+  const alarmIntervalRef = useRef(null);
 
   // שידור מיקום ב-GPS
   const broadcastMyLocation = async (coords) => {
@@ -564,7 +560,7 @@ export default function App() {
         };
         setActiveSosAlert(sosData);
         localStorage.setItem('garda-active-sos', JSON.stringify(sosData));
-        playAlarmSound();
+        startAlarmLoop();
 
         try {
           await supabase.channel('realtime-radar').send({
@@ -576,13 +572,14 @@ export default function App() {
 
         alert('🚨 הודעת המצוקה שודרה לכולם! הישאר במקומך – המשפחה קיבלה את מיקומך המדויק.');
       },
-      () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון (ומותרת גישה בפרוטוקול HTTPS).'),
+      () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון.'),
       { enableHighAccuracy: true }
     );
   };
 
   const clearSosAlert = async () => {
     setActiveSosAlert(null);
+    stopAlarmLoop();
     localStorage.removeItem('garda-active-sos');
     try {
       await supabase.channel('realtime-radar').send({
@@ -662,6 +659,42 @@ export default function App() {
     };
   }, []);
 
+  // ניהול צפצוף מתמשך כשהטיימר מגיע ל-0 או ב-SOS
+  const playBeepSound = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+    } catch (e) {}
+  };
+
+  const startAlarmLoop = () => {
+    setIsAlarmMuted(false);
+    if (alarmIntervalRef.current) clearInterval(alarmIntervalRef.current);
+    playBeepSound();
+    alarmIntervalRef.current = setInterval(() => {
+      playBeepSound();
+    }, 1500);
+  };
+
+  const stopAlarmLoop = () => {
+    setIsAlarmMuted(true);
+    if (alarmIntervalRef.current) {
+      clearInterval(alarmIntervalRef.current);
+      alarmIntervalRef.current = null;
+    }
+  };
+
   // ספירה לאחור של הטיימר המרכזי
   useEffect(() => {
     if (!activeTimer || !activeTimer.endTime) {
@@ -675,10 +708,9 @@ export default function App() {
       setTimerRemainingSec(diff);
 
       if (diff === 0 && !activeTimer.notified) {
-        playAlarmSound();
+        startAlarmLoop();
         speakItalian('Attenzione! Il tempo è scaduto!');
         setActiveTimer(prev => ({ ...prev, notified: true }));
-        alert(`⏰ הזמן נגמר לפעילות: "${activeTimer.title}"! כולם להתכנס.`);
       }
     };
 
@@ -686,25 +718,6 @@ export default function App() {
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, [activeTimer]);
-
-  const playAlarmSound = () => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(800, ctx.currentTime);
-      osc.frequency.setValueAtTime(400, ctx.currentTime + 0.2);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.6);
-    } catch (e) {}
-  };
 
   const verifyAdminAccess = () => {
     if (isAdminUnlocked || challengeAuthor === 'אריק') return true;
@@ -739,6 +752,7 @@ export default function App() {
     };
 
     setActiveTimer(timerData);
+    setIsAlarmMuted(false);
     localStorage.setItem('garda-active-timer', JSON.stringify(timerData));
 
     try {
@@ -756,6 +770,7 @@ export default function App() {
   const cancelGlobalTimer = async () => {
     if (!verifyAdminAccess()) return;
 
+    stopAlarmLoop();
     setActiveTimer(null);
     setTimerRemainingSec(0);
     localStorage.removeItem('garda-active-timer');
@@ -769,7 +784,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime ל-SOS, טיימר ומיקומים
+  // סנכרון Realtime
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -786,12 +801,12 @@ export default function App() {
         if (payload) {
           setActiveSosAlert(payload);
           localStorage.setItem('garda-active-sos', JSON.stringify(payload));
-          playAlarmSound();
-          alert(`🚨 התראת מצוקה! ${payload.name} הודיע/ה שהלך/ה לאיבוד! מיקומו/ה מסומן כעת במפה.`);
+          startAlarmLoop();
         }
       })
       .on('broadcast', { event: 'sos_clear' }, () => {
         setActiveSosAlert(null);
+        stopAlarmLoop();
         localStorage.removeItem('garda-active-sos');
       })
       .on('broadcast', { event: 'admin_request_location' }, () => {
@@ -809,11 +824,13 @@ export default function App() {
       .on('broadcast', { event: 'family_timer_start' }, ({ payload }) => {
         if (payload && payload.endTime) {
           setActiveTimer(payload);
+          setIsAlarmMuted(false);
           localStorage.setItem('garda-active-timer', JSON.stringify(payload));
           playClickSound();
         }
       })
       .on('broadcast', { event: 'family_timer_cancel' }, () => {
+        stopAlarmLoop();
         setActiveTimer(null);
         setTimerRemainingSec(0);
         localStorage.removeItem('garda-active-timer');
@@ -1869,7 +1886,7 @@ export default function App() {
         </div>
       )}
 
-      {/* פס התראת טיימר פעיל */}
+      {/* פס התראת טיימר פעיל + כפתור עצירת צפצוף */}
       {activeTimer && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('timer'))}
@@ -1894,6 +1911,14 @@ export default function App() {
             <span style={{ fontSize: '16px', letterSpacing: '1px', background: 'rgba(0,0,0,0.2)', padding: '2px 8px', borderRadius: '6px' }}>
               {formatTimerClock(timerRemainingSec)}
             </span>
+            {timerRemainingSec === 0 && !isAlarmMuted && (
+              <button
+                onClick={(e) => { e.stopPropagation(); stopAlarmLoop(); }}
+                style={{ background: '#fff', color: '#dc2626', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
+              >
+                🛑 עצור צפצוף
+              </button>
+            )}
             <span style={{ fontSize: '11px', textDecoration: 'underline' }}>פתח ⚙️</span>
           </div>
         </div>
@@ -2178,7 +2203,15 @@ export default function App() {
                   מוגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
                 </small>
 
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  {timerRemainingSec === 0 && !isAlarmMuted && (
+                    <button
+                      onClick={stopAlarmLoop}
+                      style={{ padding: '10px 18px', borderRadius: '10px', background: '#22c55e', color: '#fff', border: 'none', fontWeight: '900', fontSize: '13px', cursor: 'pointer' }}
+                    >
+                      🛑 עצור צפצוף
+                    </button>
+                  )}
                   <button
                     onClick={cancelGlobalTimer}
                     style={{ padding: '10px 18px', borderRadius: '10px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', fontWeight: '900', fontSize: '13px', cursor: 'pointer' }}
@@ -2250,7 +2283,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר משפחתי חי - מותאם למובייל עם גלילה מושלמת */}
+      {/* 📡 מודל רדאר משפחתי חי - מעוצב מחדש בגלילה מושלמת ללא חיתוכים */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
