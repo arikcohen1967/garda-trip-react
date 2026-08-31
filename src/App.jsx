@@ -198,7 +198,6 @@ const BINGO_ITEMS_POOL = [
   "⛽ תחנת דלק ENI", "🌲 עץ ברוש גבוה"
 ];
 
-// חישוב מרחק גאוגרפי מדויק במטרים/ק"מ
 const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return null;
   const R = 6371;
@@ -354,7 +353,7 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // שיחון איטלקי + זיהוי קולי (Speech Recognition)
+  // שיחון
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -395,13 +394,13 @@ export default function App() {
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const triviaTimerRef = useRef(null);
 
-  // בינגו דרכים דינמי
+  // בינגו
   const [bingoPlayer, setBingoPlayer] = useState('');
   const [bingoCard, setBingoCard] = useState([]);
   const [bingoChecked, setBingoChecked] = useState({});
   const [hasBingoWin, setHasBingoWin] = useState(false);
 
-  // רדאר משפחתי (Family Radar)
+  // רדאר
   const [myLocation, setMyLocation] = useState(null);
   const [isSharingLocation, setIsSharingLocation] = useState(false);
   const [familyLocations, setFamilyLocations] = useState(() => {
@@ -410,7 +409,7 @@ export default function App() {
     } catch (e) { return {}; }
   });
 
-  // שמירת חניה חכמה (Car Finder Pro)
+  // חניה חכמה
   const [savedParking, setSavedParking] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
@@ -419,12 +418,22 @@ export default function App() {
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
 
+  // ⏱️ טיימר משפחתי מסונכרן
+  const [activeTimer, setActiveTimer] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('garda-active-timer')) || null;
+    } catch (e) { return null; }
+  });
+  const [timerRemainingSec, setTimerRemainingSec] = useState(0);
+  const [customTimerMinutes, setCustomTimerMinutes] = useState('15');
+  const [customTimerTitle, setCustomTimerTitle] = useState('זמן חופשי ומפגש');
+
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 11) return saved;
+      if (Array.isArray(saved) && saved.length === 12) return saved;
     } catch (e) {}
-    return ['schedule', 'radar', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
+    return ['schedule', 'timer', 'radar', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -434,15 +443,98 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
+  const alarmIntervalRef = useRef(null);
 
-  // שמירת נתוני טריוויה
+  // לוגיקת ספירה לאחור של הטיימר המרכזי
   useEffect(() => {
-    localStorage.setItem('garda-trivia-scores', JSON.stringify(travelerScores));
-    localStorage.setItem('garda-trivia-index', String(triviaIndex));
-    localStorage.setItem('garda-trivia-traveler-idx', String(travelerIndex));
-  }, [travelerScores, triviaIndex, travelerIndex]);
+    if (!activeTimer || !activeTimer.endTime) {
+      setTimerRemainingSec(0);
+      return;
+    }
 
-  // סנכרון רדאר משפחתי מ-Supabase Realtime
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = Math.max(0, Math.floor((activeTimer.endTime - now) / 1000));
+      setTimerRemainingSec(diff);
+
+      if (diff === 0 && !activeTimer.notified) {
+        playAlarmSound();
+        speakItalian('Attenzione! Il tempo è scaduto!');
+        setActiveTimer(prev => ({ ...prev, notified: true }));
+        alert(`⏰ הזמן נגמר לפעילות: "${activeTimer.title}"! כולם להתכנס.`);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [activeTimer]);
+
+  const playAlarmSound = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.frequency.setValueAtTime(400, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.6);
+    } catch (e) {}
+  };
+
+  // התחלת טיימר מסונכרן לכל המשפחה
+  const startGlobalTimer = async (minutes, title) => {
+    const mins = Number(minutes) || 15;
+    const timerTitle = title || 'פעילות משפחתית';
+    const endTime = Date.now() + mins * 60 * 1000;
+
+    const timerData = {
+      title: timerTitle,
+      durationMinutes: mins,
+      endTime,
+      startedBy: challengeAuthor || 'אריק',
+      startedAt: Date.now(),
+      notified: false
+    };
+
+    setActiveTimer(timerData);
+    localStorage.setItem('garda-active-timer', JSON.stringify(timerData));
+
+    // שידור Realtime לכל המשפחה
+    try {
+      await supabase.channel('realtime-radar').send({
+        type: 'broadcast',
+        event: 'family_timer_start',
+        payload: timerData
+      });
+    } catch (e) {}
+
+    alert(`⏱️ טיימר ל-${mins} דקות ("${timerTitle}") הופעל וסונכרן לכל המשפחה!`);
+    closeModal();
+  };
+
+  const cancelGlobalTimer = async () => {
+    setActiveTimer(null);
+    setTimerRemainingSec(0);
+    localStorage.removeItem('garda-active-timer');
+
+    try {
+      await supabase.channel('realtime-radar').send({
+        type: 'broadcast',
+        event: 'family_timer_cancel',
+        payload: {}
+      });
+    } catch (e) {}
+  };
+
+  // סנכרון רדאר + טיימר מ-Supabase Realtime
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -458,6 +550,18 @@ export default function App() {
       .on('broadcast', { event: 'bingo_winner' }, ({ payload }) => {
         alert(`🎉 בינגו! ${payload.winner} השלים/ה שורה ראשון/ה! 🏆`);
       })
+      .on('broadcast', { event: 'family_timer_start' }, ({ payload }) => {
+        if (payload && payload.endTime) {
+          setActiveTimer(payload);
+          localStorage.setItem('garda-active-timer', JSON.stringify(payload));
+          playClickSound();
+        }
+      })
+      .on('broadcast', { event: 'family_timer_cancel' }, () => {
+        setActiveTimer(null);
+        setTimerRemainingSec(0);
+        localStorage.removeItem('garda-active-timer');
+      })
       .subscribe();
 
     return () => {
@@ -465,7 +569,6 @@ export default function App() {
     };
   }, []);
 
-  // שיתוף מיקום חי ברדאר
   const toggleShareLocation = () => {
     if (isSharingLocation) {
       setIsSharingLocation(false);
@@ -490,7 +593,6 @@ export default function App() {
         setMyLocation({ lat: latitude, lng: longitude });
         setIsSharingLocation(true);
 
-        // שמירה מקומית וענן
         setFamilyLocations(prev => {
           const updated = { ...prev, [currentName]: locObj };
           localStorage.setItem('garda-family-radar-cache', JSON.stringify(updated));
@@ -501,14 +603,11 @@ export default function App() {
           await supabase.from('family_radar').upsert([locObj], { onConflict: 'name' });
         } catch (e) {}
       },
-      (err) => {
-        alert('לא ניתן לקבל מיקום. אנא ודא שה-GPS מאושר בדפדפן.');
-      },
+      () => alert('לא ניתן לקבל מיקום GPS.'),
       { enableHighAccuracy: true, timeout: 10000 }
     );
   };
 
-  // שמירת מיקום רכב חכם
   const saveSmartParkingLocation = () => {
     if (!navigator.geolocation) {
       alert('שירותי מיקום אינם נתמכים');
@@ -526,7 +625,7 @@ export default function App() {
         };
         setSavedParking(parkObj);
         localStorage.setItem('garda-saved-parking', JSON.stringify(parkObj));
-        alert('🚗 מיקום הרכב, ההערה והתמונה נשמרו בהצלחה (זמין גם ב-Offline)!');
+        alert('🚗 מיקום הרכב נשמר בהצלחה (עובד גם Offline)!');
       },
       () => alert('שגיאה בדגימת מיקום ה-GPS של הרכב'),
       { enableHighAccuracy: true }
@@ -553,7 +652,6 @@ export default function App() {
     localStorage.removeItem('garda-saved-parking');
   };
 
-  // תרגום קולי
   const startVoiceInput = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
@@ -584,7 +682,6 @@ export default function App() {
     }
   };
 
-  // לוגיקת בינגו
   const initBingoGame = (playerName) => {
     setBingoPlayer(playerName);
     const shuffled = [...BINGO_ITEMS_POOL].sort(() => 0.5 - Math.random()).slice(0, 9);
@@ -608,7 +705,6 @@ export default function App() {
       const isWin = lines.some(line => line.every(pos => updated[pos]));
       if (isWin) {
         setHasBingoWin(true);
-        // שידור Realtime לכל המשפחה
         supabase.channel('realtime-radar').send({
           type: 'broadcast',
           event: 'bingo_winner',
@@ -1289,6 +1385,12 @@ export default function App() {
     }
   };
 
+  const formatTimerClock = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
   const day = tripDays[activeDay] || tripDays[0];
   const isCurrentDayCompleted = completedChallenges[day?.date]?.completed || completedChallenges[String(activeDay)]?.completed;
 
@@ -1327,6 +1429,20 @@ export default function App() {
         return (
           <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); closeModal(); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📅</span> מסלול ימי הטיול</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'timer':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('timer'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: '#f59e0b', borderColor: '#fbbf24', boxShadow: cardShadow, flex: 1 }}>
+              <span>⏱️</span> טיימר משפחתי מסונכרן {activeTimer && `(${formatTimerClock(timerRemainingSec)})`}
+            </button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
@@ -1519,6 +1635,37 @@ export default function App() {
           {isDark ? '✨ גרסה כהה (פעיל)' : '🎨 עבור לגרסה כהה'}
         </button>
       </div>
+
+      {/* פס התרעת טיימר פעיל בראש המסך */}
+      {activeTimer && (
+        <div
+          onClick={() => handleGlobalClick(() => setModalType('timer'))}
+          style={{
+            background: timerRemainingSec > 0 ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : '#dc2626',
+            color: '#ffffff',
+            padding: '10px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            fontWeight: '900',
+            fontSize: '13px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            animation: timerRemainingSec === 0 ? 'pulse 1s infinite' : 'none'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>⏱️</span>
+            <span>{activeTimer.title}:</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '16px', letterSpacing: '1px', background: 'rgba(0,0,0,0.2)', padding: '2px 8px', borderRadius: '6px' }}>
+              {formatTimerClock(timerRemainingSec)}
+            </span>
+            <span style={{ fontSize: '11px', textDecoration: 'underline' }}>פתח ⚙️</span>
+          </div>
+        </div>
+      )}
 
       <header style={{
         padding: '16px 20px',
@@ -1737,11 +1884,11 @@ export default function App() {
                     🚗 שמור/מצא רכב חונה
                   </button>
                   <button 
-                    onClick={() => handleGlobalClick(() => setModalType('radar'))}
-                    style={{ border: `1px solid #38bdf8`, background: blockBg, color: '#0284c7', borderRadius: '12px', padding: '0 14px', fontSize: '13px', fontWeight: '900', cursor: 'pointer', boxShadow: cardShadow }}
-                    title="איפה כולם ברדאר?"
+                    onClick={() => handleGlobalClick(() => setModalType('timer'))}
+                    style={{ border: `1px solid #fbbf24`, background: blockBg, color: '#f59e0b', borderRadius: '12px', padding: '0 14px', fontSize: '13px', fontWeight: '900', cursor: 'pointer', boxShadow: cardShadow }}
+                    title="טיימר מרכזי"
                   >
-                    📡
+                    ⏱️
                   </button>
                 </div>
 
@@ -1751,7 +1898,96 @@ export default function App() {
         </section>
       </main>
 
-      {/* מודל רדאר משפחתי (Family Radar) */}
+      {/* ⏱️ מודל טיימר משפחתי מסונכרן */}
+      {modalType === 'timer' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: '#f59e0b', fontWeight: '900', fontSize: '11px' }}>FAMILY SYNC TIMER</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: textColor }}>⏱️ טיימר משפחתי מסונכרן</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
+            </div>
+
+            {activeTimer ? (
+              <div style={{ background: isDark ? '#18181b' : '#fefce8', border: '2px solid #f59e0b', borderRadius: '20px', padding: '24px 16px', textAlign: 'center', marginBottom: '20px', boxShadow: cardShadow }}>
+                <span style={{ fontSize: '13px', fontWeight: '900', color: '#b45309', display: 'block', marginBottom: '6px' }}>
+                  🎯 פעילות: {activeTimer.title}
+                </span>
+                <div style={{ fontSize: '48px', fontWeight: '900', color: timerRemainingSec > 0 ? (isDark ? '#fbbf24' : '#d97706') : '#dc2626', letterSpacing: '2px', margin: '10px 0' }}>
+                  {formatTimerClock(timerRemainingSec)}
+                </div>
+                <small style={{ color: textSub, fontSize: '12px', display: 'block', fontWeight: '700', marginBottom: '18px' }}>
+                  הופעל ע"י {activeTimer.startedBy} (סה"כ {activeTimer.durationMinutes} דקות)
+                </small>
+
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <button
+                    onClick={cancelGlobalTimer}
+                    style={{ padding: '10px 18px', borderRadius: '10px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', fontWeight: '900', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    ⏹️ בטל טיימר לכולם
+                  </button>
+                  <button
+                    onClick={() => startGlobalTimer(Number(activeTimer.durationMinutes) + 5, activeTimer.title)}
+                    style={{ padding: '10px 18px', borderRadius: '10px', background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', fontWeight: '900', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    ➕ הוסף 5 דקות
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '18px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px', boxShadow: cardShadow }}>
+                <p style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: blockText }}>
+                  קובעים זמן לחזרה לרכב, קניות או מתקן בפארק? הפעל טיימר וכל הטלפונים יתחילו לספור יחד!
+                </p>
+
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>שם הפעילות:</label>
+                  <input
+                    type="text"
+                    placeholder="לדוגמה: נפגשים ליד הרכב / קניות..."
+                    value={customTimerTitle}
+                    onChange={(e) => setCustomTimerTitle(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1px solid ${blockBorder}`, background: isDark ? '#18181b' : '#ffffff', color: blockText, boxSizing: 'border-box', fontWeight: '700' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '6px' }}>זמנים מהירים לבחירה:</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                    {['10', '15', '30', '45'].map((mins) => (
+                      <button
+                        key={mins}
+                        onClick={() => setCustomTimerMinutes(mins)}
+                        style={{
+                          padding: '10px 4px', borderRadius: '10px',
+                          background: customTimerMinutes === mins ? '#f59e0b' : blockBg,
+                          color: customTimerMinutes === mins ? '#ffffff' : blockText,
+                          border: `1px solid ${customTimerMinutes === mins ? '#d97706' : blockBorder}`,
+                          fontWeight: '900', fontSize: '13px', cursor: 'pointer'
+                        }}
+                      >
+                        {mins} דק'
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => startGlobalTimer(customTimerMinutes, customTimerTitle)}
+                  style={{ padding: '14px', borderRadius: '12px', background: 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)', color: '#fff', border: 'none', fontWeight: '900', fontSize: '15px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(245,158,11,0.3)' }}
+                >
+                  🚀 הפעל טיימר מסונכרן לכל המשפחה
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* מודל רדאר משפחתי */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1815,7 +2051,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל חניה חכם (Car Finder Pro) */}
+      {/* מודל חניה חכם */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -1895,7 +2131,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל בינגו דרכים אינטראקטיבי */}
+      {/* מודל בינגו */}
       {modalType === 'bingo' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
