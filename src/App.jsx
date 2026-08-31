@@ -239,7 +239,7 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
       <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #0f172a; }
-        #map { width: 100%; height: 100vh; }
+        #map { width: 100%; height: 100%; }
         .custom-popup .leaflet-popup-content-wrapper { background: #1e293b; color: #fff; border-radius: 10px; text-align: right; direction: rtl; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .custom-popup .leaflet-popup-tip { background: #1e293b; }
       </style>
@@ -626,7 +626,6 @@ export default function App() {
     );
   };
 
-  // 👑 כלי ניהול של אריק: פקודה מרחוק לכל המשפחה לעדכן מיקום מיידית
   const adminForceRefreshAllLocations = async () => {
     if (challengeAuthor !== 'אריק' && !isAdminUnlocked) {
       const pass = window.prompt('הזן קוד מנהל לפעולה זו:');
@@ -764,7 +763,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime ל-SOS, טיימר ומיקומים
+  // סנכרון Realtime
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -790,7 +789,6 @@ export default function App() {
         localStorage.removeItem('garda-active-sos');
       })
       .on('broadcast', { event: 'admin_request_location' }, () => {
-        // אם אריק ביקש רענון מכל המכשירים, נבצע דגימה ושליחה אוטומטית אם המיקום זמין
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (pos) => broadcastMyLocation(pos.coords),
@@ -1515,6 +1513,70 @@ export default function App() {
     }
   };
 
+  const nextTriviaQuestion = () => {
+    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
+    setSelectedAnswer(null);
+    setIsAnswerCorrect(null);
+    setTriviaIndex(prev => (prev + 1) % triviaQuestions.length);
+    setTravelerIndex(prev => (prev + 1) % travelers.length);
+  };
+
+  const handleTriviaAnswer = (optionIdx) => {
+    if (selectedAnswer !== null) return;
+    setSelectedAnswer(optionIdx);
+    const currentQ = triviaQuestions[triviaIndex];
+    const currentTraveler = travelers[travelerIndex];
+
+    if (optionIdx === currentQ.correct) {
+      setIsAnswerCorrect(true);
+      setTravelerScores(prev => ({
+        ...prev,
+        [currentTraveler]: (prev[currentTraveler] || 0) + 10
+      }));
+    } else {
+      setIsAnswerCorrect(false);
+    }
+
+    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
+    triviaTimerRef.current = setTimeout(() => {
+      nextTriviaQuestion();
+    }, 1500);
+  };
+
+  const resetTriviaGame = () => {
+    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
+    if (pass !== '1967') {
+      alert('קוד שגוי! לא ניתן לאפס את המשחק.');
+      return;
+    }
+    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
+    setTriviaQuestions(generateMassiveTrivia());
+    setTriviaIndex(0);
+    setTravelerIndex(0);
+    setSelectedAnswer(null);
+    setIsAnswerCorrect(null);
+    const initialScores = { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
+    setTravelerScores(initialScores);
+    localStorage.setItem('garda-trivia-scores', JSON.stringify(initialScores));
+    localStorage.setItem('garda-trivia-index', '0');
+    localStorage.setItem('garda-trivia-traveler-idx', '0');
+    alert('המשחק והניקוד אופסו בהצלחה!');
+  };
+
+  const handleToggleAdminQuests = () => {
+    if (isAdminUnlocked) {
+      setIsAdminUnlocked(false);
+      return;
+    }
+    const pass = window.prompt('הזן קוד מנהל לחשיפת כל המשימות:');
+    if (pass === '1967') {
+      setIsAdminUnlocked(true);
+      alert('הרשאת מנהל הופעלה! כל המשימות פתוחות לצפייה.');
+    } else {
+      alert('קוד שגוי!');
+    }
+  };
+
   const formatTimerClock = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -2182,13 +2244,13 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר משפחתי חי - מפה פתוחה לחלוטין ומרכז בקרה מתחתיה + שליטת מנהל (אריק) */}
+      {/* 📡 מודל רדאר משפחתי חי - מעוצב מחדש בגלילה מושלמת ללא חיתוכים */}
       {modalType === 'radar' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflow: 'hidden' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%' }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflowY: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
             
             {/* כותרת עליונה */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, padding: '14px 16px', background: cardBg, zIndex: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, padding: '16px', background: cardBg, position: 'sticky', top: 0, zIndex: 100 }}>
               <div>
                 <small style={{ color: '#0284c7', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: '900', color: textColor }}>📡 רדאר משפחתי חי</h2>
@@ -2196,8 +2258,8 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
             </div>
 
-            {/* שטח המפה - נקי לחלוטין ללא שום כפתור מסתיר */}
-            <div style={{ flex: 1, position: 'relative', width: '100%', background: '#0f172a' }}>
+            {/* שטח המפה בגובה קבוע שרואים היטב */}
+            <div style={{ width: '100%', height: '320px', position: 'relative', background: '#0f172a', flexShrink: 0 }}>
               <iframe
                 title="Family Radar Map"
                 srcDoc={generateMapHTML(familyLocations, myLocation, activeSosAlert)}
@@ -2205,8 +2267,8 @@ export default function App() {
               />
             </div>
 
-            {/* אזור הבקרה והמרחקים מתחת למפה - כולל פאנל ניהול של אריק */}
-            <div style={{ height: '44vh', background: cardBg, overflowY: 'auto', borderTop: `1px solid ${borderColor}`, padding: '16px', boxSizing: 'border-box' }}>
+            {/* אזור הבקרה והמרחקים מתחת למפה - גלילה חופשית ובטוחה ללא חיתוך */}
+            <div style={{ flex: 1, background: cardBg, padding: '16px 16px 50px 16px', boxSizing: 'border-box' }}>
               
               {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית */}
               <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '14px', marginBottom: '14px', boxShadow: cardShadow }}>
@@ -2343,6 +2405,7 @@ export default function App() {
               </div>
 
             </div>
+
           </div>
         </div>
       )}
@@ -2515,7 +2578,7 @@ export default function App() {
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>שיחון איטלקי חכם</h2>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 {(hebrewInput || italianOutput) && (
