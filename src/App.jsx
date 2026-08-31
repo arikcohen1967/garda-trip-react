@@ -213,6 +213,7 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
+// הפקת מפת Leaflet עם גיבוי מלא למצב Offline
 const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
@@ -242,33 +243,38 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
         #map { width: 100%; height: 100%; }
         .custom-popup .leaflet-popup-content-wrapper { background: #1e293b; color: #fff; border-radius: 10px; text-align: right; direction: rtl; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .custom-popup .leaflet-popup-tip { background: #1e293b; }
+        .offline-fallback { position: absolute; top: 10px; right: 10px; z-index: 999; background: #f59e0b; color: #000; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 6px; }
       </style>
     </head>
     <body>
       <div id="map"></div>
       <script>
-        const map = L.map('map', { zoomControl: true }).setView([${centerLat}, ${centerLng}], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap'
-        }).addTo(map);
+        try {
+          const map = L.map('map', { zoomControl: true }).setView([${centerLat}, ${centerLng}], 15);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+          }).addTo(map);
 
-        const locs = ${JSON.stringify(locsArray)};
-        const sos = ${JSON.stringify(sosState)};
-        const markers = [];
+          const locs = ${JSON.stringify(locsArray)};
+          const sos = ${JSON.stringify(sosState)};
+          const markers = [];
 
-        locs.forEach(loc => {
-          const isSos = sos && sos.name === loc.name;
-          const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-          const titleText = isSos ? '🚨 ' + loc.name + ' (הלך לאיבוד!)' : '👤 ' + loc.name;
-          marker.bindPopup('<div style="font-family: sans-serif; padding: 4px;"><b>' + titleText + '</b><br><small style="color: #94a3b8;">עודכן: ' + loc.updated_at + '</small></div>', {className: 'custom-popup'});
-          markers.push([loc.lat, loc.lng]);
-        });
+          locs.forEach(loc => {
+            const isSos = sos && sos.name === loc.name;
+            const marker = L.marker([loc.lat, loc.lng]).addTo(map);
+            const titleText = isSos ? '🚨 ' + loc.name + ' (הלך לאיבוד!)' : '👤 ' + loc.name;
+            marker.bindPopup('<div style="font-family: sans-serif; padding: 4px;"><b>' + titleText + '</b><br><small style="color: #94a3b8;">עודכן: ' + loc.updated_at + '</small></div>', {className: 'custom-popup'});
+            markers.push([loc.lat, loc.lng]);
+          });
 
-        if (markers.length > 1) {
-          map.fitBounds(markers, { padding: [40, 40], maxZoom: 16 });
-        } else if (markers.length === 1) {
-          map.setView(markers[0], 16);
+          if (markers.length > 1) {
+            map.fitBounds(markers, { padding: [40, 40], maxZoom: 16 });
+          } else if (markers.length === 1) {
+            map.setView(markers[0], 16);
+          }
+        } catch (e) {
+          document.body.innerHTML = '<div style="color: #fff; text-align:center; padding-top:40vh; font-family:sans-serif;">מצב אופליין: רשימת המרחקים למטה מעודכנת, אך אין חיבור לריצוף מפות.</div>';
         }
       </script>
     </body>
@@ -570,7 +576,7 @@ export default function App() {
 
         alert('🚨 הודעת המצוקה שודרה לכולם! הישאר במקומך – המשפחה קיבלה את מיקומך המדויק.');
       },
-      () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון.'),
+      () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון (ומותרת גישה בפרוטוקול HTTPS).'),
       { enableHighAccuracy: true }
     );
   };
@@ -763,7 +769,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime
+  // סנכרון Realtime ל-SOS, טיימר ומיקומים
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -1863,7 +1869,7 @@ export default function App() {
         </div>
       )}
 
-      {/* פס התרעת טיימר פעיל */}
+      {/* פס התראת טיימר פעיל */}
       {activeTimer && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('timer'))}
@@ -2244,7 +2250,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר משפחתי חי - מעוצב מחדש בגלילה מושלמת ללא חיתוכים */}
+      {/* 📡 מודל רדאר משפחתי חי - מותאם למובייל עם גלילה מושלמת */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
@@ -2259,7 +2265,7 @@ export default function App() {
             </div>
 
             {/* שטח המפה בגובה קבוע שרואים היטב */}
-            <div style={{ width: '100%', height: '320px', position: 'relative', background: '#0f172a', flexShrink: 0 }}>
+            <div style={{ width: '100%', height: '300px', position: 'relative', background: '#0f172a', flexShrink: 0 }}>
               <iframe
                 title="Family Radar Map"
                 srcDoc={generateMapHTML(familyLocations, myLocation, activeSosAlert)}
@@ -2267,7 +2273,7 @@ export default function App() {
               />
             </div>
 
-            {/* אזור הבקרה והמרחקים מתחת למפה - גלילה חופשית ובטוחה ללא חיתוך */}
+            {/* אזור הבקרה והמרחקים מתחת למפה - גלילה חופשית ובטוחה */}
             <div style={{ flex: 1, background: cardBg, padding: '16px 16px 50px 16px', boxSizing: 'border-box' }}>
               
               {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית */}
