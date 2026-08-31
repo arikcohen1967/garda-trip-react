@@ -190,6 +190,14 @@ const RAW_BASE_QUESTIONS = [
   { q: "מהי בירת גרמניה?", options: ["מינכן", "פרנקפורט", "ברלין", "המבורג"], correct: 2 }
 ];
 
+const BINGO_ITEMS_POOL = [
+  "🚗 פיאט 500 אדומה", "🛵 וספה / קטנוע", "🍇 כרם ענבים", "⛰️ מנהרה ארוכה", 
+  "🚓 ניידת Carabinieri", "⛵ סירת מפרש", "🍦 שלט גלידריה", "🚜 טרקטור בכביש", 
+  "🐕 כלב מציץ מחלון", "☕ שלט של Autogrill", "🚲 רוכב אופניים עם קסדה", 
+  "🏰 טירה עתיקה מרחוק", "🏎️ רכב ספורט איטלקי", "🚚 משאית פירות", 
+  "⛽ תחנת דלק ENI (כלב עם 6 רגליים)", "🌲 עץ ברוש גבוה"
+];
+
 const generateMassiveTrivia = () => {
   const shuffledBase = [...RAW_BASE_QUESTIONS];
   for (let i = shuffledBase.length - 1; i > 0; i--) {
@@ -224,7 +232,6 @@ const cacheMediaOffline = async (url) => {
   return url;
 };
 
-// רכיב צפייה במסמכים עם טיפול מבודד ב-Blob ומניעת דליפת זיכרון
 function DocumentViewer({ item, isDark, blockText, cardShadow }) {
   const [blobUrl, setBlobUrl] = useState(null);
 
@@ -315,10 +322,6 @@ export default function App() {
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [themeMode, setThemeMode] = useState('light');
 
-  // PWA Support States
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
   const [ticketFiles, setTicketFiles] = useState(DEFAULT_DOCUMENTS.filter(d => d.folder === '✈️ טיסות ורכב'));
@@ -344,21 +347,48 @@ export default function App() {
   const [translationHistory, setTranslationHistory] = useState([]);
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
-  const [travelerIndex, setTravelerIndex] = useState(0);
-  const [triviaIndex, setTriviaIndex] = useState(0);
+  
+  // טריוויה: שחזור הניקוד וההתקדמות מ-localStorage
+  const [travelerIndex, setTravelerIndex] = useState(() => {
+    try {
+      const saved = localStorage.getItem('garda-trivia-traveler-idx');
+      return saved !== null ? Number(saved) : 0;
+    } catch (e) { return 0; }
+  });
+
+  const [triviaIndex, setTriviaIndex] = useState(() => {
+    try {
+      const saved = localStorage.getItem('garda-trivia-index');
+      return saved !== null ? Number(saved) : 0;
+    } catch (e) { return 0; }
+  });
+
+  const [travelerScores, setTravelerScores] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('garda-trivia-scores'));
+      if (saved && typeof saved === 'object') return saved;
+    } catch (e) {}
+    return { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
+  });
+
   const [triviaQuestions, setTriviaQuestions] = useState(() => generateMassiveTrivia());
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
-  const [travelerScores, setTravelerScores] = useState({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
   const triviaTimerRef = useRef(null);
+
+  // בינגו דרכים דינמי
+  const [bingoPlayer, setBingoPlayer] = useState('');
+  const [bingoCard, setBingoCard] = useState([]);
+  const [bingoChecked, setBingoChecked] = useState({});
+  const [hasBingoWin, setHasBingoWin] = useState(false);
 
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 9) return saved;
+      if (Array.isArray(saved) && saved.length === 10) return saved;
     } catch (e) {}
-    return ['schedule', 'challenges', 'trivia', 'phrasebook', 'gallery', 'around', 'parking', 'tickets', 'emergency'];
+    return ['schedule', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'parking', 'tickets', 'emergency'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -368,38 +398,39 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
 
-  // רישום Service Worker והאזנה להתקנת PWA
+  // סנכרון ושמירת ניקוד הטריוויה לזיכרון המכשיר
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js').catch(() => {});
-      });
+    localStorage.setItem('garda-trivia-scores', JSON.stringify(travelerScores));
+    localStorage.setItem('garda-trivia-index', String(triviaIndex));
+    localStorage.setItem('garda-trivia-traveler-idx', String(travelerIndex));
+  }, [travelerScores, triviaIndex, travelerIndex]);
+
+  // לוגיקת בינגו: יצירת לוח מותאם אישית
+  const initBingoGame = (playerName) => {
+    setBingoPlayer(playerName);
+    const shuffled = [...BINGO_ITEMS_POOL].sort(() => 0.5 - Math.random()).slice(0, 9);
+    setBingoCard(shuffled);
+    setBingoChecked({});
+    setHasBingoWin(false);
+  };
+
+  const toggleBingoItem = (idx) => {
+    if (hasBingoWin) return;
+    const updated = { ...bingoChecked, [idx]: !bingoChecked[idx] };
+    setBingoChecked(updated);
+    
+    // בדיקת נצחון בלוח 3x3 (שורות, עמודות, אלכסונים)
+    const lines = [
+      [0,1,2], [3,4,5], [6,7,8], // שורות
+      [0,3,6], [1,4,7], [2,5,8], // טורים
+      [0,4,8], [2,4,6]           // אלכסונים
+    ];
+
+    const isWin = lines.some(line => line.every(pos => updated[pos]));
+    if (isWin) {
+      setHasBingoWin(true);
+      playClickSound();
     }
-
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallBanner(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  const handleInstallPWA = async () => {
-    if (!deferredPrompt) {
-      alert('להתקנה באייפון: לחץ על כפתור השיתוף (Share) בתחתית הדפדפן ובחר ב-"הוסף למסך הבית" (Add to Home Screen)');
-      return;
-    }
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowInstallBanner(false);
-    }
-    setDeferredPrompt(null);
   };
 
   useEffect(() => {
@@ -792,8 +823,6 @@ export default function App() {
       alert('קוד שגוי!');
       return;
     }
-    
-    // עדכון מיידי ללא תלות ב-Closure
     const updated = galleryItems.filter(item => item.id !== id);
     setGalleryItems(updated);
     localStorage.setItem('garda-gallery-cache', JSON.stringify(updated));
@@ -1052,7 +1081,11 @@ export default function App() {
     setTravelerIndex(0);
     setSelectedAnswer(null);
     setIsAnswerCorrect(null);
-    setTravelerScores({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
+    const initialScores = { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
+    setTravelerScores(initialScores);
+    localStorage.setItem('garda-trivia-scores', JSON.stringify(initialScores));
+    localStorage.setItem('garda-trivia-index', '0');
+    localStorage.setItem('garda-trivia-traveler-idx', '0');
     alert('המשחק והניקוד אופסו בהצלחה!');
   };
 
@@ -1120,6 +1153,18 @@ export default function App() {
         return (
           <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('challengesLog'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🏆</span> יומן אתגרים ובדיחות</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'bingo':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('bingo'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🎯</span> בינגו דרכים לאוטו 🚗</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
@@ -1258,44 +1303,23 @@ export default function App() {
           <span>{isOnline ? 'on-line' : 'off-line'}</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px' }}>
-          {showInstallBanner && (
-            <button
-              onClick={handleInstallPWA}
-              style={{
-                background: '#38bdf8',
-                border: '1px solid #0284c7',
-                color: '#0f172a',
-                padding: '6px 10px',
-                borderRadius: '10px',
-                fontSize: '11px',
-                fontWeight: '900',
-                cursor: 'pointer',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-              }}
-            >
-              📲 התקן אפליקציה
-            </button>
-          )}
-
-          <button
-            onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'darkSilver'))}
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#ffffff',
-              padding: '6px 12px',
-              borderRadius: '10px',
-              fontSize: '11px',
-              fontWeight: '900',
-              cursor: 'pointer',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.2)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            {isDark ? '✨ כהה (פעיל)' : '🎨 עבור לכהה'}
-          </button>
-        </div>
+        <button
+          onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'darkSilver'))}
+          style={{
+            background: 'rgba(255, 255, 255, 0.15)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            color: '#ffffff',
+            padding: '6px 12px',
+            borderRadius: '10px',
+            fontSize: '11px',
+            fontWeight: '900',
+            cursor: 'pointer',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.2)',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          {isDark ? '✨ גרסה כהה (פעיל)' : '🎨 עבור לגרסה כהה'}
+        </button>
       </div>
 
       <header style={{
@@ -1532,6 +1556,83 @@ export default function App() {
         </section>
       </main>
 
+      {/* מודל בינגו דרכים אינטראקטיבי */}
+      {modalType === 'bingo' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '900', color: textColor }}>🎯 בינגו דרכים לאוטו</h2>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
+            </div>
+
+            {!bingoPlayer ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <p style={{ fontSize: '15px', fontWeight: '800', color: blockText, marginBottom: '16px' }}>מי משחק עכשיו? (בחר שם להפקת לוח אישי):</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  {travelers.map((name, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleGlobalClick(() => initBingoGame(name))}
+                      style={{ padding: '14px', borderRadius: '12px', background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, fontSize: '15px', fontWeight: '900', cursor: 'pointer', boxShadow: cardShadow }}
+                    >
+                      👤 {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: isDark ? '#27272a' : '#f8fafc', padding: '10px 14px', borderRadius: '12px', border: `1px solid ${blockBorder}` }}>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#0284c7' }}>לוח של: {bingoPlayer} 🎲</span>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button onClick={() => initBingoGame(bingoPlayer)} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}>🔀 ערבב מחדש</button>
+                    <button onClick={() => setBingoPlayer('')} style={{ background: isDark ? '#3f3f46' : '#e2e8f0', color: blockText, border: 'none', padding: '6px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}>החלף שחקן</button>
+                  </div>
+                </div>
+
+                {hasBingoWin && (
+                  <div style={{ background: '#dcfce7', border: '2px solid #22c55e', color: '#15803d', padding: '14px', borderRadius: '14px', textAlign: 'center', marginBottom: '14px', boxShadow: cardShadow }}>
+                    <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: '900' }}>🏆 בינגו! כל הכבוד {bingoPlayer}! 🎉</h3>
+                    <p style={{ margin: 0, fontSize: '12px', fontWeight: '700' }}>השלמת רצף מנצח! מגיע לך כדור גלידה בוונציה / גארדה 🍦</p>
+                  </div>
+                )}
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                  {bingoCard.map((item, idx) => {
+                    const isChecked = !!bingoChecked[idx];
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleGlobalClick(() => toggleBingoItem(idx))}
+                        style={{
+                          aspectRatio: '1',
+                          padding: '8px',
+                          borderRadius: '14px',
+                          border: isChecked ? '2px solid #22c55e' : `1px solid ${blockBorder}`,
+                          background: isChecked ? (isDark ? '#14532d' : '#dcfce7') : blockBg,
+                          color: isChecked ? (isDark ? '#86efac' : '#166534') : blockText,
+                          fontSize: '12px',
+                          fontWeight: '900',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textAlign: 'center',
+                          boxShadow: cardShadow,
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* מודל טריוויה */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
@@ -1560,7 +1661,7 @@ export default function App() {
               <div style={{ textAlign: 'center', padding: '40px 20px', background: blockBg, borderRadius: '16px', border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>
                 <span style={{ fontSize: '40px', display: 'block', marginBottom: '10px' }}>⏸️</span>
                 <h3 style={{ fontSize: '18px', fontWeight: '900', color: blockText, margin: '0 0 8px' }}>המשחק מושהה</h3>
-                <p style={{ fontSize: '13px', color: textSub, margin: 0 }}>קחו הפסקה מהשאלות, המשיכו לנהוג בבטוחה, ולחצו על "המשך" כשבא לכם להמשיך!</p>
+                <p style={{ fontSize: '13px', color: textSub, margin: 0 }}>הניקוד והשאלה שמורים בבטחה. לחצו על "המשך" כדי לחזור לשחק!</p>
               </div>
             ) : (
               <>
@@ -1574,7 +1675,7 @@ export default function App() {
                   {travelers.map((name, idx) => (
                     <div key={idx} style={{ background: travelerIndex === idx ? (isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)') : blockBg, color: travelerIndex === idx ? '#fff' : blockText, border: `1px solid ${blockBorder}`, borderRadius: '10px', padding: '8px 4px', textAlign: 'center', fontSize: '11px', fontWeight: '800', boxShadow: cardShadow }}>
                       <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
-                      <div style={{ fontSize: '13px', fontWeight: '900', color: travelerIndex === idx ? '#86efac' : '#166534' }}>{travelerScores[name]} נק'</div>
+                      <div style={{ fontSize: '13px', fontWeight: '900', color: travelerIndex === idx ? '#86efac' : '#166534' }}>{travelerScores[name] || 0} נק'</div>
                     </div>
                   ))}
                 </div>
