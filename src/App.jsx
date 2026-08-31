@@ -418,7 +418,7 @@ export default function App() {
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
 
-  // ⏱️ טיימר משפחתי מסונכרן
+  // ⏱️ טיימר משפחתי מסונכרן בשליטת אריק בלבד
   const [activeTimer, setActiveTimer] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-active-timer')) || null;
@@ -443,9 +443,8 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
-  const alarmIntervalRef = useRef(null);
 
-  // לוגיקת ספירה לאחור של הטיימר המרכזי
+  // ספירה לאחור של הטיימר המרכזי
   useEffect(() => {
     if (!activeTimer || !activeTimer.endTime) {
       setTimerRemainingSec(0);
@@ -489,8 +488,21 @@ export default function App() {
     } catch (e) {}
   };
 
-  // התחלת טיימר מסונכרן לכל המשפחה
+  // בדיקת הרשאת מנהל (אריק בלבד שולט בטיימר)
+  const verifyAdminAccess = () => {
+    if (isAdminUnlocked || challengeAuthor === 'אריק') return true;
+    const pass = window.prompt('הזן קוד מנהל לשליטה בטיימר המשפחתי:');
+    if (pass === '1967') {
+      setIsAdminUnlocked(true);
+      return true;
+    }
+    alert('גישה חסומה! רק אריק רשאי להגדיר או לבטל את הטיימר.');
+    return false;
+  };
+
   const startGlobalTimer = async (minutes, title) => {
+    if (!verifyAdminAccess()) return;
+
     const mins = Number(minutes) || 15;
     const timerTitle = title || 'פעילות משפחתית';
     const endTime = Date.now() + mins * 60 * 1000;
@@ -499,7 +511,7 @@ export default function App() {
       title: timerTitle,
       durationMinutes: mins,
       endTime,
-      startedBy: challengeAuthor || 'אריק',
+      startedBy: 'אריק',
       startedAt: Date.now(),
       notified: false
     };
@@ -507,7 +519,6 @@ export default function App() {
     setActiveTimer(timerData);
     localStorage.setItem('garda-active-timer', JSON.stringify(timerData));
 
-    // שידור Realtime לכל המשפחה
     try {
       await supabase.channel('realtime-radar').send({
         type: 'broadcast',
@@ -516,11 +527,13 @@ export default function App() {
       });
     } catch (e) {}
 
-    alert(`⏱️ טיימר ל-${mins} דקות ("${timerTitle}") הופעל וסונכרן לכל המשפחה!`);
+    alert(`⏱️ טיימר ל-${mins} דקות ("${timerTitle}") הופעל בהצלחה וסונכרן לכל המשפחה!`);
     closeModal();
   };
 
   const cancelGlobalTimer = async () => {
+    if (!verifyAdminAccess()) return;
+
     setActiveTimer(null);
     setTimerRemainingSec(0);
     localStorage.removeItem('garda-active-timer');
@@ -534,7 +547,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון רדאר + טיימר מ-Supabase Realtime
+  // סנכרון Realtime
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -1277,6 +1290,7 @@ export default function App() {
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
+      setHebrewInput('');
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
       speakItalian(italianText);
@@ -1514,7 +1528,7 @@ export default function App() {
       case 'phrasebook':
         return (
           <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
-            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🇮🇹</span> שיחון איטלקי + דיבור קולי 🎙️</button>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🇮🇹</span> שיחון איטלקי חכם</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
@@ -1650,8 +1664,7 @@ export default function App() {
             cursor: 'pointer',
             fontWeight: '900',
             fontSize: '13px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            animation: timerRemainingSec === 0 ? 'pulse 1s infinite' : 'none'
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1675,7 +1688,7 @@ export default function App() {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: '47px',
+        top: activeTimer ? '88px' : '47px',
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box',
@@ -1898,13 +1911,13 @@ export default function App() {
         </section>
       </main>
 
-      {/* ⏱️ מודל טיימר משפחתי מסונכרן */}
+      {/* ⏱️ מודל טיימר משפחתי מסונכרן (שליטת אריק) */}
       {modalType === 'timer' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <div>
-                <small style={{ color: '#f59e0b', fontWeight: '900', fontSize: '11px' }}>FAMILY SYNC TIMER</small>
+                <small style={{ color: '#f59e0b', fontWeight: '900', fontSize: '11px' }}>FAMILY SYNC TIMER (ADMIN: ARIK)</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: textColor }}>⏱️ טיימר משפחתי מסונכרן</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
@@ -1919,7 +1932,7 @@ export default function App() {
                   {formatTimerClock(timerRemainingSec)}
                 </div>
                 <small style={{ color: textSub, fontSize: '12px', display: 'block', fontWeight: '700', marginBottom: '18px' }}>
-                  הופעל ע"י {activeTimer.startedBy} (סה"כ {activeTimer.durationMinutes} דקות)
+                  מוגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
                 </small>
 
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
@@ -1927,7 +1940,7 @@ export default function App() {
                     onClick={cancelGlobalTimer}
                     style={{ padding: '10px 18px', borderRadius: '10px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', fontWeight: '900', fontSize: '13px', cursor: 'pointer' }}
                   >
-                    ⏹️ בטל טיימר לכולם
+                    ⏹️ בטל טיימר (מנהל בלבד)
                   </button>
                   <button
                     onClick={() => startGlobalTimer(Number(activeTimer.durationMinutes) + 5, activeTimer.title)}
@@ -1939,9 +1952,10 @@ export default function App() {
               </div>
             ) : (
               <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '18px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px', boxShadow: cardShadow }}>
-                <p style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: blockText }}>
-                  קובעים זמן לחזרה לרכב, קניות או מתקן בפארק? הפעל טיימר וכל הטלפונים יתחילו לספור יחד!
-                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '800', color: blockText }}>קביעת טיימר לפעילות (שליטת אריק):</span>
+                  <span style={{ fontSize: '11px', background: '#fef3c7', color: '#b45309', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>🔒 מנהל</span>
+                </div>
 
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>שם הפעילות:</label>
@@ -2215,7 +2229,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל שיחון + דיבור קולי */}
+      {/* מודל שיחון מתוקן עיצובית */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -2234,32 +2248,46 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', position: 'relative' }}>
-              <input 
-                type="text" 
-                lang="he" 
-                dir="rtl" 
-                placeholder="הקלד בעברית או לחץ על המיקרופון..." 
-                value={hebrewInput} 
-                onChange={(e) => {
-                  setHebrewInput(e.target.value);
-                  if (italianOutput) setItalianOutput('');
-                }} 
-                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `1px solid ${blockBorder}`, background: blockBg, color: blockText, fontWeight: '700', outline: 'none', fontSize: '16px', boxShadow: cardShadow }} 
-              />
-              
-              <button
-                onClick={startVoiceInput}
-                style={{
-                  padding: '0 14px', borderRadius: '12px', border: '1px solid #38bdf8',
-                  background: isListeningVoice ? '#ef4444' : '#0284c7', color: '#fff', fontSize: '18px', cursor: 'pointer', boxShadow: cardShadow
-                }}
-                title="דבר בעברית לתרגום"
-              >
-                🎙️
-              </button>
+            {/* שורת חיפוש נקייה ללא שבירת עיצוב */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '14px', alignItems: 'stretch' }}>
+              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+                <input 
+                  type="text" 
+                  lang="he" 
+                  dir="rtl" 
+                  placeholder="הקלד בעברית או לחץ לדיבור..." 
+                  value={hebrewInput} 
+                  onChange={(e) => {
+                    setHebrewInput(e.target.value);
+                    if (italianOutput) setItalianOutput('');
+                  }} 
+                  style={{
+                    width: '100%', padding: '12px 38px 12px 12px', borderRadius: '12px',
+                    border: `1px solid ${blockBorder}`, background: blockBg, color: blockText,
+                    fontWeight: '700', outline: 'none', fontSize: '15px', boxShadow: cardShadow, boxSizing: 'border-box'
+                  }} 
+                />
+                <button
+                  onClick={startVoiceInput}
+                  style={{
+                    position: 'absolute', right: '8px', background: 'none', border: 'none',
+                    fontSize: '18px', cursor: 'pointer', opacity: isListeningVoice ? 1 : 0.7,
+                    animation: isListeningVoice ? 'pulse 1s infinite' : 'none'
+                  }}
+                  title="דבר בעברית לתרגום"
+                >
+                  {isListeningVoice ? '🔴' : '🎙️'}
+                </button>
+              </div>
 
-              <button onClick={() => handleGlobalClick(() => translateText(hebrewInput))} style={{ padding: '0 16px', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '14px', boxShadow: cardShadow }}>
+              <button
+                onClick={() => handleGlobalClick(() => translateText(hebrewInput))}
+                style={{
+                  padding: '0 16px', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)',
+                  color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900',
+                  cursor: 'pointer', fontSize: '14px', boxShadow: cardShadow, flexShrink: 0
+                }}
+              >
                 {isTranslating ? '...' : 'תרגם'}
               </button>
             </div>
