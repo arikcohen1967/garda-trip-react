@@ -213,7 +213,7 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
-// הפקת מפת Leaflet עם האות הראשונה של כל שם ישירות על הנעץ
+// הפקת מפת Leaflet עם האות הראשונה של כל שם על הנעץ
 const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
@@ -241,7 +241,7 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
       <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #0f172a; }
         #map { width: 100%; height: 100%; }
-        .custom-tooltip { background: #1e293b; color: #fff; border: 1.5px solid #38bdf8; font-weight: 900; font-family: sans-serif; padding: 3px 10px; border-radius: 8px; font-size: 14px; direction: rtl; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        .custom-tooltip { background: #1e293b; color: #fff; border: 1.5px solid #38bdf8; font-weight: 900; font-family: sans-serif; padding: 2px 8px; border-radius: 6px; font-size: 13px; direction: rtl; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
       </style>
     </head>
     <body>
@@ -261,7 +261,7 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
           const isSos = sos && sos.name === loc.name;
           const marker = L.marker([loc.lat, loc.lng]).addTo(map);
           const firstLetter = loc.name ? loc.name.charAt(0) : '?';
-          const labelText = isSos ? '🚨 ' + firstLetter + ' (מצוקה!)' : firstLetter;
+          const labelText = isSos ? '🚨 ' + firstLetter : firstLetter;
           
           marker.bindTooltip(labelText, {permanent: true, direction: 'top', className: 'custom-tooltip'});
           markers.push([loc.lat, loc.lng]);
@@ -1857,7 +1857,7 @@ export default function App() {
         </button>
       </div>
 
-      {/* 🚨 פס התראת SOS צף */}
+      {/* 🚨 פס התראת SOS צף שבלחיצה עליו פותח מיד את מפת החירום המשפחתית */}
       {activeSosAlert && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('radar'))}
@@ -3050,7 +3050,7 @@ export default function App() {
                 <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <button onClick={() => handleGlobalClick(() => document.getElementById('cameraInput').click())} style={{ ...uploadBtnStyle, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>📷 צלם במצלמה</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>📁 בחר קובץ מהמכשיר</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>📁 בחר מהמכשיר</button>
                 </div>
               </div>
             )}
