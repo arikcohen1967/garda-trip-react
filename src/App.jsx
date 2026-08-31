@@ -194,9 +194,25 @@ const BINGO_ITEMS_POOL = [
   "🚗 פיאט 500 אדומה", "🛵 וספה / קטנוע", "🍇 כרם ענבים", "⛰️ מנהרה ארוכה", 
   "🚓 ניידת משטרה", "⛵ סירת מפרש", "🍦 שלט גלידריה", "🚜 טרקטור בכביש", 
   "🐕 כלב מציץ מחלון", "☕ שלט Autogrill", "🚲 רוכב אופניים", 
-  "🏰 טירה עתיקה", "🏎️ פרארי / רכב ספורט", "🚚 משאית פירות", 
+  "🏰 טירה עתיקה", "🏎️ פרארי / ספורט", "🚚 משאית פירות", 
   "⛽ תחנת דלק ENI", "🌲 עץ ברוש גבוה"
 ];
+
+// חישוב מרחק גאוגרפי מדויק במטרים/ק"מ
+const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const d = R * c;
+  if (d < 1) return `${Math.round(d * 1000)} מטר`;
+  return `${d.toFixed(1)} ק"מ`;
+};
 
 const generateMassiveTrivia = () => {
   const shuffledBase = [...RAW_BASE_QUESTIONS];
@@ -338,9 +354,11 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
+  // שיחון איטלקי + זיהוי קולי (Speech Recognition)
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isListeningVoice, setIsListeningVoice] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
@@ -348,7 +366,7 @@ export default function App() {
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
-  // טריוויה: שחזור הניקוד וההתקדמות מ-localStorage
+  // טריוויה
   const [travelerIndex, setTravelerIndex] = useState(() => {
     try {
       const saved = localStorage.getItem('garda-trivia-traveler-idx');
@@ -383,12 +401,30 @@ export default function App() {
   const [bingoChecked, setBingoChecked] = useState({});
   const [hasBingoWin, setHasBingoWin] = useState(false);
 
+  // רדאר משפחתי (Family Radar)
+  const [myLocation, setMyLocation] = useState(null);
+  const [isSharingLocation, setIsSharingLocation] = useState(false);
+  const [familyLocations, setFamilyLocations] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('garda-family-radar-cache')) || {};
+    } catch (e) { return {}; }
+  });
+
+  // שמירת חניה חכמה (Car Finder Pro)
+  const [savedParking, setSavedParking] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
+    } catch (e) { return null; }
+  });
+  const [parkingNote, setParkingNote] = useState('');
+  const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
+
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 10) return saved;
+      if (Array.isArray(saved) && saved.length === 11) return saved;
     } catch (e) {}
-    return ['schedule', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'parking', 'tickets', 'emergency'];
+    return ['schedule', 'radar', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -397,15 +433,158 @@ export default function App() {
   const currentUtteranceRef = useRef(null);
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
+  const recognitionRef = useRef(null);
 
-  // שמירת ניקוד הטריוויה לזיכרון המכשיר
+  // שמירת נתוני טריוויה
   useEffect(() => {
     localStorage.setItem('garda-trivia-scores', JSON.stringify(travelerScores));
     localStorage.setItem('garda-trivia-index', String(triviaIndex));
     localStorage.setItem('garda-trivia-traveler-idx', String(travelerIndex));
   }, [travelerScores, triviaIndex, travelerIndex]);
 
-  // לוגיקת בינגו: יצירת לוח מותאם אישית
+  // סנכרון רדאר משפחתי מ-Supabase Realtime
+  useEffect(() => {
+    const radarChannel = supabase
+      .channel('realtime-radar')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'family_radar' }, payload => {
+        if (payload.new && payload.new.name) {
+          setFamilyLocations(prev => {
+            const updated = { ...prev, [payload.new.name]: payload.new };
+            localStorage.setItem('garda-family-radar-cache', JSON.stringify(updated));
+            return updated;
+          });
+        }
+      })
+      .on('broadcast', { event: 'bingo_winner' }, ({ payload }) => {
+        alert(`🎉 בינגו! ${payload.winner} השלים/ה שורה ראשון/ה! 🏆`);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(radarChannel);
+    };
+  }, []);
+
+  // שיתוף מיקום חי ברדאר
+  const toggleShareLocation = () => {
+    if (isSharingLocation) {
+      setIsSharingLocation(false);
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      alert('שירותי מיקום אינם נתמכים במכשיר זה');
+      return;
+    }
+
+    const currentName = challengeAuthor || 'אריק';
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const locObj = {
+          name: currentName,
+          lat: latitude,
+          lng: longitude,
+          updated_at: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+        };
+        setMyLocation({ lat: latitude, lng: longitude });
+        setIsSharingLocation(true);
+
+        // שמירה מקומית וענן
+        setFamilyLocations(prev => {
+          const updated = { ...prev, [currentName]: locObj };
+          localStorage.setItem('garda-family-radar-cache', JSON.stringify(updated));
+          return updated;
+        });
+
+        try {
+          await supabase.from('family_radar').upsert([locObj], { onConflict: 'name' });
+        } catch (e) {}
+      },
+      (err) => {
+        alert('לא ניתן לקבל מיקום. אנא ודא שה-GPS מאושר בדפדפן.');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  // שמירת מיקום רכב חכם
+  const saveSmartParkingLocation = () => {
+    if (!navigator.geolocation) {
+      alert('שירותי מיקום אינם נתמכים');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const parkObj = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          note: parkingNote || 'רכב חונה',
+          photo: parkingPhotoUrl || null,
+          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('he-IL')
+        };
+        setSavedParking(parkObj);
+        localStorage.setItem('garda-saved-parking', JSON.stringify(parkObj));
+        alert('🚗 מיקום הרכב, ההערה והתמונה נשמרו בהצלחה (זמין גם ב-Offline)!');
+      },
+      () => alert('שגיאה בדגימת מיקום ה-GPS של הרכב'),
+      { enableHighAccuracy: true }
+    );
+  };
+
+  const handleParkingPhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setParkingPhotoUrl(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {}
+  };
+
+  const clearSavedParking = () => {
+    if (!window.confirm('האם למחוק את מיקום החניה השמור?')) return;
+    setSavedParking(null);
+    setParkingPhotoUrl('');
+    setParkingNote('');
+    localStorage.removeItem('garda-saved-parking');
+  };
+
+  // תרגום קולי
+  const startVoiceInput = () => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert('זיהוי קולי אינו נתמך בדפדפן זה. השתמש בהקלדה.');
+      return;
+    }
+
+    try {
+      if (recognitionRef.current) recognitionRef.current.stop();
+      const recognition = new SpeechRec();
+      recognitionRef.current = recognition;
+      recognition.lang = 'he-IL';
+      recognition.interimResults = false;
+
+      recognition.onstart = () => setIsListeningVoice(true);
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setHebrewInput(transcript);
+          translateText(transcript);
+        }
+      };
+      recognition.onerror = () => setIsListeningVoice(false);
+      recognition.onend = () => setIsListeningVoice(false);
+      recognition.start();
+    } catch (e) {
+      setIsListeningVoice(false);
+    }
+  };
+
+  // לוגיקת בינגו
   const initBingoGame = (playerName) => {
     setBingoPlayer(playerName);
     const shuffled = [...BINGO_ITEMS_POOL].sort(() => 0.5 - Math.random()).slice(0, 9);
@@ -420,17 +599,21 @@ export default function App() {
     
     setBingoChecked(prev => {
       const updated = { ...prev, [idx]: !prev[idx] };
-      
-      // בדיקת נצחון בלוח 3x3 (שורות, עמודות, אלכסונים)
       const lines = [
-        [0,1,2], [3,4,5], [6,7,8], // שורות
-        [0,3,6], [1,4,7], [2,5,8], // טורים
-        [0,4,8], [2,4,6]           // אלכסונים
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
       ];
 
       const isWin = lines.some(line => line.every(pos => updated[pos]));
       if (isWin) {
         setHasBingoWin(true);
+        // שידור Realtime לכל המשפחה
+        supabase.channel('realtime-radar').send({
+          type: 'broadcast',
+          event: 'bingo_winner',
+          payload: { winner: bingoPlayer }
+        }).catch(() => {});
       }
       return updated;
     });
@@ -484,9 +667,7 @@ export default function App() {
       }
       audioContextRef.current = true;
     }
-    if (typeof callback === 'function') {
-      callback();
-    }
+    if (typeof callback === 'function') callback();
   };
 
   const closeModal = () => {
@@ -1000,9 +1181,9 @@ export default function App() {
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
-      setHebrewInput('');
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
+      speakItalian(italianText);
     };
 
     const matched = QUICK_PHRASES.find(p => query.includes(p.he) || p.he.includes(query));
@@ -1154,6 +1335,30 @@ export default function App() {
             )}
           </div>
         );
+      case 'radar':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('radar'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: '#0284c7', borderColor: '#38bdf8', boxShadow: cardShadow, flex: 1 }}><span>📡</span> רדאר משפחתי ("איפה כולם?")</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
+      case 'parking':
+        return (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('parking'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🚗</span> שמירת מיקום רכב חכם (GPS)</button>
+            {isEditingMenu && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
+                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
+              </div>
+            )}
+          </div>
+        );
       case 'challenges':
         return (
           <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
@@ -1193,7 +1398,7 @@ export default function App() {
       case 'phrasebook':
         return (
           <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
-            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🇮🇹</span> שיחון איטלקי חכם</button>
+            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('phrasebook'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🇮🇹</span> שיחון איטלקי + דיבור קולי 🎙️</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
@@ -1218,18 +1423,6 @@ export default function App() {
         return (
           <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
             <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('around'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>📍</span> סביבי (Around Me)</button>
-            {isEditingMenu && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
-                <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
-              </div>
-            )}
-          </div>
-        );
-      case 'parking':
-        return (
-          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
-            <button onClick={() => handleGlobalClick(() => { setSidebarOpen(false); setModalType('parking'); })} style={{ ...sidebarBtnStyle, background: blockBg, color: blockText, borderColor: blockBorder, boxShadow: cardShadow, flex: 1 }}><span>🚗</span> שמירת מיקום חניה</button>
             {isEditingMenu && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
@@ -1394,7 +1587,7 @@ export default function App() {
         />
       )}
       
-      {/* תפריט צדדי מקובע */}
+      {/* תפריט צדדי */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -1532,26 +1725,23 @@ export default function App() {
                 </div>
 
                 <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
-                  <a 
-                    href="https://maps.apple.com/?q=Parked%20Car" 
-                    target="_blank" 
-                    rel="noreferrer" 
-                    onClick={() => playClickSound()} 
+                  <button 
+                    onClick={() => handleGlobalClick(() => setModalType('parking'))}
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                       padding: '10px 14px', borderRadius: '12px', background: blockBg, color: blockText,
-                      border: `1px solid ${blockBorder}`, fontSize: '12px', fontWeight: '800', textDecoration: 'none', boxSizing: 'border-box',
+                      border: `1px solid ${blockBorder}`, fontSize: '12px', fontWeight: '800', cursor: 'pointer', boxSizing: 'border-box',
                       boxShadow: cardShadow
                     }}
                   >
                     🚗 שמור/מצא רכב חונה
-                  </a>
+                  </button>
                   <button 
-                    onClick={() => handleGlobalClick(() => setModalType('parking'))}
-                    style={{ border: `1px solid ${blockBorder}`, background: blockBg, color: blockText, borderRadius: '12px', padding: '0 14px', fontSize: '14px', fontWeight: '800', cursor: 'pointer', boxShadow: cardShadow }}
-                    title="הסבר שמירת חניה"
+                    onClick={() => handleGlobalClick(() => setModalType('radar'))}
+                    style={{ border: `1px solid #38bdf8`, background: blockBg, color: '#0284c7', borderRadius: '12px', padding: '0 14px', fontSize: '13px', fontWeight: '900', cursor: 'pointer', boxShadow: cardShadow }}
+                    title="איפה כולם ברדאר?"
                   >
-                    ℹ️
+                    📡
                   </button>
                 </div>
 
@@ -1560,6 +1750,150 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {/* מודל רדאר משפחתי (Family Radar) */}
+      {modalType === 'radar' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: '#0284c7', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: textColor }}>📡 רדאר משפחתי: איפה כולם?</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
+            </div>
+
+            <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '16px', marginBottom: '18px', textAlign: 'center', boxShadow: cardShadow }}>
+              <p style={{ margin: '0 0 12px', fontSize: '13px', color: blockText, fontWeight: '700' }}>
+                מסתובבים ב-Gardaland או בוונציה? שתפו מיקום בלחיצה כדי שכולם יראו איפה אתם והמרחק מכם:
+              </p>
+              <button
+                onClick={() => handleGlobalClick(toggleShareLocation)}
+                style={{
+                  padding: '12px 20px', borderRadius: '12px', fontWeight: '900', fontSize: '14px', cursor: 'pointer',
+                  background: isSharingLocation ? '#16a34a' : '#0284c7', color: '#fff', border: 'none', boxShadow: '0 4px 10px rgba(2,132,199,0.3)'
+                }}
+              >
+                {isSharingLocation ? '✓ המיקום שלך משותף ומתעדכן' : '📍 שתף את המיקום שלי עכשיו'}
+              </button>
+            </div>
+
+            <h3 style={{ fontSize: '14px', fontWeight: '900', color: textColor, marginBottom: '12px' }}>מיקומי המשפחה:</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {Object.keys(familyLocations).length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px', color: textSub, fontSize: '13px', fontWeight: '600' }}>
+                  טרם שותף מיקום. לחצו על "שתף מיקום" כדי להופיע ברדאר.
+                </div>
+              ) : (
+                Object.values(familyLocations).map((member, i) => {
+                  const distStr = myLocation ? calculateDistanceKm(myLocation.lat, myLocation.lng, member.lat, member.lng) : null;
+                  return (
+                    <div key={i} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '14px', padding: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
+                      <div>
+                        <b style={{ fontSize: '15px', color: blockText, display: 'block' }}>👤 {member.name}</b>
+                        <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>עודכן לאחרונה: {member.updated_at}</small>
+                        {distStr && (
+                          <span style={{ display: 'block', fontSize: '12px', fontWeight: '900', color: '#059669', marginTop: '2px' }}>
+                            📏 במרחק: {distStr} ממך
+                          </span>
+                        )}
+                      </div>
+                      <a
+                        href={`https://maps.apple.com/?daddr=${member.lat},${member.lng}&dirflg=w`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ padding: '8px 14px', borderRadius: '10px', background: '#0284c7', color: '#fff', textDecoration: 'none', fontSize: '12px', fontWeight: '900', boxShadow: cardShadow }}
+                      >
+                        🚶 נווט אליו/ה
+                      </a>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* מודל חניה חכם (Car Finder Pro) */}
+      {modalType === 'parking' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px' }}>
+              <div>
+                <small style={{ color: '#059669', fontWeight: '900', fontSize: '11px' }}>CAR FINDER PRO (OFFLINE)</small>
+                <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: '900', color: textColor }}>🚗 שמירת מיקום רכב חכם</h3>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
+            </div>
+
+            {savedParking ? (
+              <div style={{ background: isDark ? '#14532d' : '#f0fdf4', border: '1px solid #86efac', borderRadius: '16px', padding: '16px', marginBottom: '16px', boxShadow: cardShadow }}>
+                <span style={{ fontSize: '12px', fontWeight: '900', color: '#166534', display: 'block', marginBottom: '4px' }}>✅ רכב שמור במערכת</span>
+                <p style={{ margin: '0 0 6px', fontSize: '14px', fontWeight: '900', color: isDark ? '#ffffff' : '#0f172a' }}>
+                  📌 {savedParking.note}
+                </p>
+                <small style={{ color: isDark ? '#d4d4d8' : '#374151', fontSize: '11px', display: 'block', fontWeight: '700', marginBottom: '12px' }}>
+                  נשמר בתאריך {savedParking.date} בשעה {savedParking.time}
+                </small>
+
+                {savedParking.photo && (
+                  <img src={savedParking.photo} alt="Parking place" style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: '12px', marginBottom: '14px' }} />
+                )}
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                  <a
+                    href={`https://maps.apple.com/?daddr=${savedParking.lat},${savedParking.lng}&dirflg=w`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ ...navBtnStyle, background: '#0284c7', color: '#fff', borderColor: '#0284c7', textDecoration: 'none', fontWeight: '900' }}
+                  >
+                    🚶 נווט ברגל לרכב
+                  </a>
+                  <a
+                    href={`https://www.waze.com/ul?ll=${savedParking.lat},${savedParking.lng}&navigate=yes`}
+                    style={{ ...navBtnStyle, background: '#33ccff', color: '#000', borderColor: '#33ccff', textDecoration: 'none', fontWeight: '900' }}
+                  >
+                    {WAZE_SVG} Waze
+                  </a>
+                </div>
+
+                <button onClick={clearSavedParking} style={{ width: '100%', padding: '8px', borderRadius: '8px', background: 'none', border: '1px solid #fca5a5', color: '#dc2626', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}>
+                  🗑️ מחק חניה זו והזן חדשה
+                </button>
+              </div>
+            ) : (
+              <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '16px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: cardShadow }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '800', color: textSub, display: 'block', marginBottom: '4px' }}>תיאור מקום החניה / קומה / עמוד:</label>
+                  <input
+                    type="text"
+                    placeholder="לדוגמה: חניון טרונקטו קומה 2, עמוד 14B..."
+                    value={parkingNote}
+                    onChange={(e) => setParkingNote(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1px solid ${blockBorder}`, background: isDark ? '#18181b' : '#ffffff', color: blockText, boxSizing: 'border-box', fontWeight: '700' }}
+                  />
+                </div>
+
+                <input type="file" id="parkingCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleParkingPhotoUpload} />
+                <button
+                  onClick={() => document.getElementById('parkingCamera').click()}
+                  style={{ padding: '10px', borderRadius: '10px', background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, fontWeight: '800', fontSize: '12px', cursor: 'pointer' }}
+                >
+                  📷 {parkingPhotoUrl ? '✓ תמונת חניה צולמה (לחץ להחלפה)' : 'צלם תמונה של עמוד/אזור החניה'}
+                </button>
+
+                <button
+                  onClick={saveSmartParkingLocation}
+                  style={{ padding: '14px', borderRadius: '12px', background: '#059669', color: '#ffffff', border: 'none', fontWeight: '900', fontSize: '14px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(5,150,105,0.3)' }}
+                >
+                  📍 שמור מיקום GPS מדויק עכשיו
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* מודל בינגו דרכים אינטראקטיבי */}
       {modalType === 'bingo' && (
@@ -1598,7 +1932,7 @@ export default function App() {
                 {hasBingoWin && (
                   <div style={{ background: '#dcfce7', border: '2px solid #22c55e', color: '#15803d', padding: '14px', borderRadius: '14px', textAlign: 'center', marginBottom: '14px', boxShadow: cardShadow }}>
                     <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: '900' }}>🏆 בינגו! כל הכבוד {bingoPlayer}! 🎉</h3>
-                    <p style={{ margin: 0, fontSize: '12px', fontWeight: '700' }}>השלמת רצף מנצח! מגיע לך כדור גלידה בוונציה / גארדה 🍦</p>
+                    <p style={{ margin: 0, fontSize: '12px', fontWeight: '700' }}>השלמת רצף מנצח! שודרה התראה לכל המשפחה 🍦</p>
                   </div>
                 )}
 
@@ -1641,6 +1975,77 @@ export default function App() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* מודל שיחון + דיבור קולי */}
+      {modalType === 'phrasebook' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
+              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>שיחון איטלקי חכם</h2>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                {(hebrewInput || italianOutput) && (
+                  <button 
+                    onClick={() => handleGlobalClick(clearPhrasebook)} 
+                    style={{ background: isDark ? '#3f3f46' : '#f1f5f9', color: textSub, border: '1px solid #cbd5e1', padding: '6px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: cardShadow }}
+                  >
+                    🧹 נקה הכל
+                  </button>
+                )}
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', position: 'relative' }}>
+              <input 
+                type="text" 
+                lang="he" 
+                dir="rtl" 
+                placeholder="הקלד בעברית או לחץ על המיקרופון..." 
+                value={hebrewInput} 
+                onChange={(e) => {
+                  setHebrewInput(e.target.value);
+                  if (italianOutput) setItalianOutput('');
+                }} 
+                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `1px solid ${blockBorder}`, background: blockBg, color: blockText, fontWeight: '700', outline: 'none', fontSize: '16px', boxShadow: cardShadow }} 
+              />
+              
+              <button
+                onClick={startVoiceInput}
+                style={{
+                  padding: '0 14px', borderRadius: '12px', border: '1px solid #38bdf8',
+                  background: isListeningVoice ? '#ef4444' : '#0284c7', color: '#fff', fontSize: '18px', cursor: 'pointer', boxShadow: cardShadow
+                }}
+                title="דבר בעברית לתרגום"
+              >
+                🎙️
+              </button>
+
+              <button onClick={() => handleGlobalClick(() => translateText(hebrewInput))} style={{ padding: '0 16px', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '14px', boxShadow: cardShadow }}>
+                {isTranslating ? '...' : 'תרגם'}
+              </button>
+            </div>
+
+            {italianOutput && (
+              <div style={{ background: isDark ? '#27272a' : '#f0fdf4', padding: '12px 14px', borderRadius: '12px', border: '1px solid #52525b', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
+                <button onClick={() => speakItalian(italianOutput)} style={{ background: '#3f3f46', color: '#fff', border: '1px solid #71717a', borderRadius: '8px', padding: '6px 12px', fontWeight: '800', cursor: 'pointer', boxShadow: cardShadow }}>🔊 השמע</button>
+                <strong style={{ fontSize: '15px', color: isDark ? '#ffffff' : '#166534', direction: 'ltr' }}>{italianOutput}</strong>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {filteredPhrases.slice(0, 10).map((phrase, idx) => (
+                <div key={idx} onClick={() => speakItalian(phrase.it)} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', boxShadow: cardShadow }}>
+                  <button onClick={(e) => { e.stopPropagation(); speakItalian(phrase.it); }} style={{ background: isDark ? '#3f3f46' : '#f1f5f9', border: '1px solid #94a3b8', borderRadius: '8px', width: '36px', height: '36px', fontSize: '15px', cursor: 'pointer', color: isDark ? '#ffffff' : '#1e293b', boxShadow: cardShadow }}>🔊</button>
+                  <div style={{ flex: 1, textAlign: 'right', marginRight: '10px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: blockText, display: 'block' }}>{phrase.he}</span>
+                    <strong style={{ fontSize: '13px', color: isDark ? '#93c5fd' : '#1d4ed8', display: 'block' }}>{phrase.it}</strong>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -1842,64 +2247,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל שיחון */}
-      {modalType === 'phrasebook' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>שיחון איטלקי חכם</h2>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                {(hebrewInput || italianOutput) && (
-                  <button 
-                    onClick={() => handleGlobalClick(clearPhrasebook)} 
-                    style={{ background: isDark ? '#3f3f46' : '#f1f5f9', color: textSub, border: '1px solid #cbd5e1', padding: '6px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: cardShadow }}
-                  >
-                    🧹 נקה הכל
-                  </button>
-                )}
-                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', position: 'relative' }}>
-              <input 
-                type="text" 
-                lang="he" 
-                dir="rtl" 
-                placeholder="הקלד בעברית לתרגום..." 
-                value={hebrewInput} 
-                onChange={(e) => {
-                  setHebrewInput(e.target.value);
-                  if (italianOutput) setItalianOutput('');
-                }} 
-                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: `1px solid ${blockBorder}`, background: blockBg, color: blockText, fontWeight: '700', outline: 'none', fontSize: '16px', boxShadow: cardShadow }} 
-              />
-              <button onClick={() => handleGlobalClick(() => translateText(hebrewInput))} style={{ padding: '0 16px', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', border: '1px solid #94a3b8', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '14px', boxShadow: cardShadow }}>
-                {isTranslating ? '...' : 'תרגם'}
-              </button>
-            </div>
-
-            {italianOutput && (
-              <div style={{ background: isDark ? '#27272a' : '#f0fdf4', padding: '12px 14px', borderRadius: '12px', border: '1px solid #52525b', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
-                <button onClick={() => speakItalian(italianOutput)} style={{ background: '#3f3f46', color: '#fff', border: '1px solid #71717a', borderRadius: '8px', padding: '6px 12px', fontWeight: '800', cursor: 'pointer', boxShadow: cardShadow }}>🔊 השמע</button>
-                <strong style={{ fontSize: '15px', color: isDark ? '#ffffff' : '#166534', direction: 'ltr' }}>{italianOutput}</strong>
-              </div>
-            )}
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {filteredPhrases.slice(0, 10).map((phrase, idx) => (
-                <div key={idx} onClick={() => speakItalian(phrase.it)} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', boxShadow: cardShadow }}>
-                  <button onClick={(e) => { e.stopPropagation(); speakItalian(phrase.it); }} style={{ background: isDark ? '#3f3f46' : '#f1f5f9', border: '1px solid #94a3b8', borderRadius: '8px', width: '36px', height: '36px', fontSize: '15px', cursor: 'pointer', color: isDark ? '#ffffff' : '#1e293b', boxShadow: cardShadow }}>🔊</button>
-                  <div style={{ flex: 1, textAlign: 'right', marginRight: '10px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '800', color: blockText, display: 'block' }}>{phrase.he}</span>
-                    <strong style={{ fontSize: '13px', color: isDark ? '#93c5fd' : '#1d4ed8', display: 'block' }}>{phrase.it}</strong>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* מודל גלריה */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
@@ -1982,21 +2329,6 @@ export default function App() {
               blockText={blockText} 
               cardShadow={cardShadow} 
             />
-          </div>
-        </div>
-      )}
-
-      {/* מודל חניה */}
-      {modalType === 'parking' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>🚗 איך שומרים את הרכב ב-Apple Maps</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
-            </div>
-            <p style={{ fontSize: '14px', lineHeight: '1.7', color: blockText, fontWeight: '600' }}>
-              אם האייפון מחובר ל-Bluetooth או ל-CarPlay ברכב השכור, ברגע שמכבים מנוע ומתנתקים – האייפון שומר <b>אוטומטית</b> את מיקום החניה.
-            </p>
           </div>
         </div>
       )}
