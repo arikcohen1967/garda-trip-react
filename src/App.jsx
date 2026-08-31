@@ -213,6 +213,7 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
+// הפקת מפת Leaflet עם שמות בולטים (Tooltip) ישירות על הנעצים במפה
 const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
@@ -240,8 +241,7 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
       <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #0f172a; }
         #map { width: 100%; height: 100%; }
-        .custom-popup .leaflet-popup-content-wrapper { background: #1e293b; color: #fff; border-radius: 10px; text-align: right; direction: rtl; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-        .custom-popup .leaflet-popup-tip { background: #1e293b; }
+        .custom-tooltip { background: #1e293b; color: #fff; border: 1px solid #38bdf8; font-weight: bold; font-family: sans-serif; padding: 2px 8px; border-radius: 6px; font-size: 12px; direction: rtl; }
       </style>
     </head>
     <body>
@@ -260,8 +260,9 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
         locs.forEach(loc => {
           const isSos = sos && sos.name === loc.name;
           const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-          const titleText = isSos ? '🚨 ' + loc.name + ' (הלך לאיבוד!)' : '👤 ' + loc.name;
-          marker.bindPopup('<div style="font-family: sans-serif; padding: 4px;"><b>' + titleText + '</b><br><small style="color: #94a3b8;">עודכן: ' + loc.updated_at + '</small></div>', {className: 'custom-popup'});
+          const labelName = isSos ? '🚨 ' + loc.name + ' (מצוקה!)' : '👤 ' + loc.name;
+          
+          marker.bindTooltip(labelName, {permanent: true, direction: 'top', className: 'custom-tooltip'});
           markers.push([loc.lat, loc.lng]);
         });
 
@@ -487,7 +488,7 @@ export default function App() {
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
 
-  // ⏱️ טיימר משפחתי מסונכרן + צפצוף אוטומטי וכפתור עצירת צפצוף
+  // ⏱️ טיימר משפחתי מסונכרן בשליטת אריק
   const [activeTimer, setActiveTimer] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-active-timer')) || null;
@@ -659,7 +660,30 @@ export default function App() {
     };
   }, []);
 
-  // ניהול צפצוף מתמשך כשהטיימר מגיע ל-0 או ב-SOS
+  // ספירה לאחור של הטיימר המרכזי
+  useEffect(() => {
+    if (!activeTimer || !activeTimer.endTime) {
+      setTimerRemainingSec(0);
+      return;
+    }
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = Math.max(0, Math.floor((activeTimer.endTime - now) / 1000));
+      setTimerRemainingSec(diff);
+
+      if (diff === 0 && !activeTimer.notified) {
+        startAlarmLoop();
+        speakItalian('Attenzione! Il tempo è scaduto!');
+        setActiveTimer(prev => ({ ...prev, notified: true }));
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [activeTimer]);
+
   const playBeepSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -694,30 +718,6 @@ export default function App() {
       alarmIntervalRef.current = null;
     }
   };
-
-  // ספירה לאחור של הטיימר המרכזי
-  useEffect(() => {
-    if (!activeTimer || !activeTimer.endTime) {
-      setTimerRemainingSec(0);
-      return;
-    }
-
-    const updateTimer = () => {
-      const now = Date.now();
-      const diff = Math.max(0, Math.floor((activeTimer.endTime - now) / 1000));
-      setTimerRemainingSec(diff);
-
-      if (diff === 0 && !activeTimer.notified) {
-        startAlarmLoop();
-        speakItalian('Attenzione! Il tempo è scaduto!');
-        setActiveTimer(prev => ({ ...prev, notified: true }));
-      }
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, [activeTimer]);
 
   const verifyAdminAccess = () => {
     if (isAdminUnlocked || challengeAuthor === 'אריק') return true;
@@ -1886,7 +1886,7 @@ export default function App() {
         </div>
       )}
 
-      {/* פס התראת טיימר פעיל + כפתור עצירת צפצוף */}
+      {/* פס התראת טיימר פעיל */}
       {activeTimer && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('timer'))}
@@ -1911,14 +1911,6 @@ export default function App() {
             <span style={{ fontSize: '16px', letterSpacing: '1px', background: 'rgba(0,0,0,0.2)', padding: '2px 8px', borderRadius: '6px' }}>
               {formatTimerClock(timerRemainingSec)}
             </span>
-            {timerRemainingSec === 0 && !isAlarmMuted && (
-              <button
-                onClick={(e) => { e.stopPropagation(); stopAlarmLoop(); }}
-                style={{ background: '#fff', color: '#dc2626', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
-              >
-                🛑 עצור צפצוף
-              </button>
-            )}
             <span style={{ fontSize: '11px', textDecoration: 'underline' }}>פתח ⚙️</span>
           </div>
         </div>
@@ -2309,7 +2301,7 @@ export default function App() {
             {/* אזור הבקרה והמרחקים מתחת למפה - גלילה חופשית ובטוחה */}
             <div style={{ flex: 1, background: cardBg, padding: '16px 16px 50px 16px', boxSizing: 'border-box' }}>
               
-              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית */}
+              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית (צבעים רגילים ללא סגול) */}
               <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '14px', marginBottom: '14px', boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2363,21 +2355,21 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 👑 פאנל ניהול למנהל הקבוצה (אריק): מעקב חי על כולם */}
+              {/* 👑 פאנל ניהול למנהל הקבוצה (אריק) - בעיצוב מטאלי סטנדרטי נקי */}
               {(challengeAuthor === 'אריק' || isAdminUnlocked) && (
-                <div style={{ background: isDark ? '#312e81' : '#ede9fe', border: '1.5px solid #8b5cf6', borderRadius: '14px', padding: '12px 14px', marginBottom: '14px', boxShadow: cardShadow }}>
+                <div style={{ background: isDark ? '#27272a' : '#f1f5f9', border: `1.5px solid ${borderColor}`, borderRadius: '14px', padding: '12px 14px', marginBottom: '14px', boxShadow: cardShadow }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: '900', color: '#7c3aed' }}>👑 פאנל ניהול (אריק): מעקב קבוצתי</span>
-                    <span style={{ fontSize: '10px', background: '#7c3aed', color: '#fff', padding: '1px 6px', borderRadius: '6px', fontWeight: '800' }}>מנהל</span>
+                    <span style={{ fontSize: '12px', fontWeight: '900', color: textColor }}>👑 פאנל ניהול (אריק): מעקב קבוצתי</span>
+                    <span style={{ fontSize: '10px', background: '#0284c7', color: '#fff', padding: '1px 6px', borderRadius: '6px', fontWeight: '800' }}>מנהל</span>
                   </div>
-                  <p style={{ margin: '0 0 10px', fontSize: '11px', color: isDark ? '#ddd6fe' : '#5b21b6', fontWeight: '700' }}>
+                  <p style={{ margin: '0 0 10px', fontSize: '11px', color: textSub, fontWeight: '700' }}>
                     כמנהל, באפשרותך לבקש רענון מיקום מיידי מכל המכשירים ברשת:
                   </p>
                   <button
                     onClick={adminForceRefreshAllLocations}
                     style={{
-                      width: '100%', padding: '10px', borderRadius: '10px', background: '#7c3aed', color: '#fff',
-                      border: 'none', fontWeight: '900', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 6px rgba(124,58,237,0.3)'
+                      width: '100%', padding: '10px', borderRadius: '10px', background: '#0284c7', color: '#fff',
+                      border: 'none', fontWeight: '900', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 6px rgba(2,132,199,0.3)'
                     }}
                   >
                     🔄 רענן את כל המיקומים של כולם עכשיו
