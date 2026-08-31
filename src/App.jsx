@@ -149,7 +149,7 @@ const QUICK_PHRASES = [
   { cat: '🛒 קניות וחניה', he: 'כמה זה עולה?', it: 'Quanto costa questo?', pro: 'קְוָואנְטוֹ קוֹסְטָה קְוֶוסְטוֹ?' },
   { cat: '🛒 קניות וחניה', he: 'אפשר לשלם באשראי?', it: 'Posso pagare con la carta?', pro: 'פּוֹסוֹ פָּאגָארֶה קוֹן לָה קָארְטָה?' },
   { cat: '🛒 קניות וחניה', he: 'איפה המדחן?', it: 'Dov’è il parcometro?', pro: 'דוֹבֶה אִיל פָּארְקוֹמֶטְרוֹ?' },
-  { cat: '🛒 קניות וחניה', he: 'איפה תחנת הדלק הקרובה?', it: 'Dov’è il distributore di benzina יותר vicino?', pro: 'דוֹבֶה אִיל דִיסְטְרִיבּוּטוֹרֶה...' },
+  { cat: '🛒 קניות וחניה', he: 'איפה תחנת הדלק הקרובה?', it: 'Dov’è il distributore di benzina più vicino?', pro: 'דוֹבֶה אִיל דִיסְטְרִיבּוּטוֹרֶה...' },
   { cat: '👋 בסיסי ונימוס', he: 'שלום / להתראות', it: 'Ciao / Arrivederci', pro: 'צ׳או / אָרִיבֶדֶרְצִ׳י' },
   { cat: '👋 בסיסי ונימוס', he: 'בוקר טוב / ערב טוב', it: 'Buongiorno / Buonasera', pro: 'בּוּאוֹן ג׳וֹרְנוֹ / בּוּאוֹנָה סֶרָה' },
   { cat: '👋 בסיסי ונימוס', he: 'תודה רבה', it: 'Grazie mille!', pro: 'גְרָאצְיֶה מִילֶה' },
@@ -213,13 +213,16 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
-// הפקת מפת Leaflet אינטראקטיבית מלאה
-const generateMapHTML = (familyLocs, myLoc) => {
+// הפקת מפת Leaflet נקייה לחלוטין ללא שום שכבות שמסתירות
+const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
   let centerLng = 10.6816;
   
-  if (myLoc && myLoc.lat) {
+  if (sosState && sosState.lat) {
+    centerLat = sosState.lat;
+    centerLng = sosState.lng;
+  } else if (myLoc && myLoc.lat) {
     centerLat = myLoc.lat;
     centerLng = myLoc.lng;
   } else if (locsArray.length > 0) {
@@ -252,11 +255,14 @@ const generateMapHTML = (familyLocs, myLoc) => {
         }).addTo(map);
 
         const locs = ${JSON.stringify(locsArray)};
+        const sos = ${JSON.stringify(sosState)};
         const markers = [];
 
         locs.forEach(loc => {
+          const isSos = sos && sos.name === loc.name;
           const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-          marker.bindPopup('<div style="font-family: sans-serif; padding: 4px;"><b>👤 ' + loc.name + '</b><br><small style="color: #94a3b8;">עודכן: ' + loc.updated_at + '</small></div>', {className: 'custom-popup'});
+          const titleText = isSos ? '🚨 ' + loc.name + ' (הלך לאיבוד!)' : '👤 ' + loc.name;
+          marker.bindPopup('<div style="font-family: sans-serif; padding: 4px;"><b>' + titleText + '</b><br><small style="color: #94a3b8;">עודכן: ' + loc.updated_at + '</small></div>', {className: 'custom-popup'});
           markers.push([loc.lat, loc.lng]);
         });
 
@@ -458,13 +464,18 @@ export default function App() {
   const [bingoChecked, setBingoChecked] = useState({});
   const [hasBingoWin, setHasBingoWin] = useState(false);
 
-  // רדאר משפחתי חי
+  // רדאר משפחתי חי + SOS
   const [myLocation, setMyLocation] = useState(null);
-  const [radarTrackingMode, setRadarTrackingMode] = useState('manual'); // 'manual' | 'auto'
+  const [radarTrackingMode, setRadarTrackingMode] = useState('manual');
   const [familyLocations, setFamilyLocations] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-family-radar-cache')) || {};
     } catch (e) { return {}; }
+  });
+  const [activeSosAlert, setActiveSosAlert] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('garda-active-sos')) || null;
+    } catch (e) { return null; }
   });
   const watchPositionIdRef = useRef(null);
 
@@ -503,7 +514,7 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
 
-  // לוגיקת מעקב GPS אוטומטי / ידני
+  // שידור מיקום ב-GPS
   const broadcastMyLocation = async (coords) => {
     const currentName = challengeAuthor || 'אריק';
     const locObj = {
@@ -522,6 +533,59 @@ export default function App() {
 
     try {
       await supabase.from('family_radar').upsert([locObj], { onConflict: 'name' });
+    } catch (e) {}
+    return locObj;
+  };
+
+  // 🚨 הפעלת לחצן מצוקה (הלכתי לאיבוד)
+  const triggerSosLostAlert = () => {
+    const currentName = challengeAuthor || 'אריק';
+    if (!navigator.geolocation) {
+      alert('שירותי מיקום אינם נתמכים');
+      return;
+    }
+
+    if (!window.confirm(`להפעיל התראת מצוקה עבור ${currentName}? כל הטלפונים של המשפחה יקבלו התראה ומיקומך יופיע במפה.`)) {
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        await broadcastMyLocation(pos.coords);
+        const sosData = {
+          name: currentName,
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+        };
+        setActiveSosAlert(sosData);
+        localStorage.setItem('garda-active-sos', JSON.stringify(sosData));
+        playAlarmSound();
+
+        try {
+          await supabase.channel('realtime-radar').send({
+            type: 'broadcast',
+            event: 'sos_alert',
+            payload: sosData
+          });
+        } catch (e) {}
+
+        alert('🚨 הודעת המצוקה שודרה לכולם! הישאר במקומך – המשפחה קיבלה את מיקומך המדויק.');
+      },
+      () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון.'),
+      { enableHighAccuracy: true }
+    );
+  };
+
+  const clearSosAlert = async () => {
+    setActiveSosAlert(null);
+    localStorage.removeItem('garda-active-sos');
+    try {
+      await supabase.channel('realtime-radar').send({
+        type: 'broadcast',
+        event: 'sos_clear',
+        payload: {}
+      });
     } catch (e) {}
   };
 
@@ -564,7 +628,6 @@ export default function App() {
     );
   };
 
-  // ניקוי Watcher בעת סגירה
   useEffect(() => {
     return () => {
       if (watchPositionIdRef.current !== null) {
@@ -680,7 +743,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime
+  // סנכרון Realtime ל-SOS, טיימר ומיקומים
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -692,6 +755,18 @@ export default function App() {
             return updated;
           });
         }
+      })
+      .on('broadcast', { event: 'sos_alert' }, ({ payload }) => {
+        if (payload) {
+          setActiveSosAlert(payload);
+          localStorage.setItem('garda-active-sos', JSON.stringify(payload));
+          playAlarmSound();
+          alert(`🚨 התראת מצוקה! ${payload.name} הודיע/ה שהלך/ה לאיבוד! מיקומו/ה מסומן כעת במפה.`);
+        }
+      })
+      .on('broadcast', { event: 'sos_clear' }, () => {
+        setActiveSosAlert(null);
+        localStorage.removeItem('garda-active-sos');
       })
       .on('broadcast', { event: 'bingo_winner' }, ({ payload }) => {
         alert(`🎉 בינגו! ${payload.winner} השלים/ה שורה ראשון/ה! 🏆`);
@@ -840,25 +915,6 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sidebarOpen, modalType]);
-
-  const playClickSound = () => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.04);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.04);
-    } catch (e) {}
-  };
 
   const handleGlobalClick = (callback) => {
     playClickSound();
@@ -1685,6 +1741,8 @@ export default function App() {
     }
   };
 
+  const arikLocation = familyLocations['אריק'];
+
   return (
     <div style={{ 
       background: bgMain, 
@@ -1745,7 +1803,38 @@ export default function App() {
         </button>
       </div>
 
-      {/* פס התרעת טיימר פעיל בראש המסך */}
+      {/* 🚨 פס התראת SOS צף */}
+      {activeSosAlert && (
+        <div
+          onClick={() => handleGlobalClick(() => setModalType('radar'))}
+          style={{
+            background: '#dc2626',
+            color: '#ffffff',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            fontWeight: '900',
+            fontSize: '14px',
+            boxShadow: '0 4px 12px rgba(220,38,38,0.5)',
+            animation: 'pulse 1s infinite'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>🚨</span>
+            <span>{activeSosAlert.name} הלך/ה לאיבוד! (לחץ לצפייה במפה)</span>
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); clearSosAlert(); }}
+            style={{ background: '#7f1d1d', color: '#fff', border: '1px solid #fca5a5', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+          >
+            אישור / נסגר ✓
+          </button>
+        </div>
+      )}
+
+      {/* פס התרעת טיימר פעיל */}
       {activeTimer && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('timer'))}
@@ -1783,7 +1872,7 @@ export default function App() {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'sticky',
-        top: activeTimer ? '88px' : '47px',
+        top: (activeSosAlert ? 48 : 0) + (activeTimer ? 41 : 0) + 47 + 'px',
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box',
@@ -1906,6 +1995,30 @@ export default function App() {
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
           <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: textColor }}>{day.icon} {day.title}</h2>
+          </div>
+
+          {/* כפתורי גישה מהירים */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+            <button
+              onClick={triggerSosLostAlert}
+              style={{
+                padding: '12px', borderRadius: '14px', background: '#fee2e2', color: '#dc2626',
+                border: '1.5px solid #f87171', fontWeight: '900', fontSize: '13px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: cardShadow
+              }}
+            >
+              🚨 הלכתי לאיבוד! (SOS)
+            </button>
+            <button
+              onClick={() => handleGlobalClick(() => setModalType('radar'))}
+              style={{
+                padding: '12px', borderRadius: '14px', background: blockBg, color: '#0284c7',
+                border: '1.5px solid #38bdf8', fontWeight: '900', fontSize: '13px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: cardShadow
+              }}
+            >
+              🧭 מפת המשפחה
+            </button>
           </div>
 
           <div 
@@ -2102,71 +2215,107 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל רדאר משפחתי חי (מפה אינטראקטיבית) */}
+      {/* 📡 מודל רדאר משפחתי חי - מפה פתוחה ומרכז בקרה מעוצב מתחתיה */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflow: 'hidden' }}>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%' }}>
-            {/* Header */}
+            
+            {/* כותרת עליונה */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, padding: '14px 16px', background: cardBg, zIndex: 10 }}>
               <div>
                 <small style={{ color: '#0284c7', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: '900', color: textColor }}>📡 רדאר משפחתי: מפה חיה</h2>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: '900', color: textColor }}>📡 רדאר משפחתי חי</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
             </div>
 
-            {/* Map Area */}
+            {/* שטח המפה - נקי לחלוטין ללא כפתורים מעליו */}
             <div style={{ flex: 1, position: 'relative', width: '100%', background: '#0f172a' }}>
               <iframe
                 title="Family Radar Map"
-                srcDoc={generateMapHTML(familyLocations, myLocation)}
+                srcDoc={generateMapHTML(familyLocations, myLocation, activeSosAlert)}
                 style={{ width: '100%', height: '100%', border: 'none' }}
               />
-              
-              {/* סרגל בקרה צף מעל המפה לבחירת מצב עבודה */}
-              <div style={{
-                position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)',
-                background: isDark ? 'rgba(39, 39, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                padding: '6px 8px', borderRadius: '30px', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                display: 'flex', gap: '8px', zIndex: 1000, backdropFilter: 'blur(4px)', border: `1px solid ${borderColor}`
-              }}>
-                <button
-                  onClick={handleManualLocationUpdate}
-                  style={{
-                    padding: '8px 14px', borderRadius: '20px', fontWeight: '900', fontSize: '12px', cursor: 'pointer',
-                    background: blockBg, color: blockText, border: `1px solid ${blockBorder}`
-                  }}
-                >
-                  📍 עדכן מיקום יזום
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (radarTrackingMode === 'auto') {
-                      stopAutoTracking();
-                    } else {
-                      startAutoTracking();
-                    }
-                  }}
-                  style={{
-                    padding: '8px 14px', borderRadius: '20px', fontWeight: '900', fontSize: '12px', cursor: 'pointer',
-                    background: radarTrackingMode === 'auto' ? '#16a34a' : '#0284c7', color: '#ffffff', border: 'none'
-                  }}
-                >
-                  {radarTrackingMode === 'auto' ? '🛰️ מעקב חי פעיל (כיבוי)' : '🛰️ הפעל מעקב חי אוטומטי'}
-                </button>
-              </div>
             </div>
 
-            {/* רשימת המרחקים מתחת למפה */}
-            <div style={{ height: '30vh', background: cardBg, overflowY: 'auto', borderTop: `1px solid ${borderColor}`, padding: '14px 16px', boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: '900', color: textColor, margin: 0 }}>מרחק משאר בני המשפחה:</h3>
-                <small style={{ color: textSub, fontSize: '10px' }}>
-                  {radarTrackingMode === 'auto' ? '🟢 עדכון חי ברקע' : '⚪ מצב עדכון ידני'}
-                </small>
+            {/* אזור הבקרה והמרחקים מתחת למפה - מעוצב ונקי */}
+            <div style={{ height: '42vh', background: cardBg, overflowY: 'auto', borderTop: `1px solid ${borderColor}`, padding: '16px', boxSizing: 'border-box' }}>
+              
+              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום */}
+              <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '14px', marginBottom: '14px', boxShadow: cardShadow }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '18px' }}>👤</span>
+                    <div>
+                      <strong style={{ fontSize: '14px', color: blockText, display: 'block' }}>פרופיל פעיל: {challengeAuthor || 'אריק'}</strong>
+                      <small style={{ color: textSub, fontSize: '11px' }}>
+                        סטטוס GPS: {radarTrackingMode === 'auto' ? '🟢 שידור רציף פעיל' : (myLocation ? '🟡 מיקום נקודתי נשמר' : '⚪ טרם שותף')}
+                      </small>
+                    </div>
+                  </div>
+                  <button
+                    onClick={triggerSosLostAlert}
+                    style={{
+                      padding: '8px 12px', borderRadius: '10px', background: '#fee2e2', color: '#dc2626',
+                      border: '1.5px solid #f87171', fontWeight: '900', fontSize: '11px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(220,38,38,0.2)'
+                    }}
+                  >
+                    🚨 הלכתי לאיבוד!
+                  </button>
+                </div>
+
+                {/* שני כפתורי הבקרה - מתחת לפרטי המשתמש ולא על המפה */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <button
+                    onClick={handleManualLocationUpdate}
+                    style={{
+                      padding: '10px', borderRadius: '10px', fontWeight: '900', fontSize: '12px', cursor: 'pointer',
+                      background: isDark ? '#3f3f46' : '#ffffff', color: blockText, border: `1px solid ${blockBorder}`,
+                      boxShadow: cardShadow
+                    }}
+                  >
+                    📍 עדכן מיקום יזום
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (radarTrackingMode === 'auto') {
+                        stopAutoTracking();
+                      } else {
+                        startAutoTracking();
+                      }
+                    }}
+                    style={{
+                      padding: '10px', borderRadius: '10px', fontWeight: '900', fontSize: '12px', cursor: 'pointer',
+                      background: radarTrackingMode === 'auto' ? '#16a34a' : '#0284c7', color: '#ffffff', border: 'none',
+                      boxShadow: '0 2px 6px rgba(2,132,199,0.3)'
+                    }}
+                  >
+                    {radarTrackingMode === 'auto' ? '🛰️ כבה מעקב חי' : '🛰️ הפעל מעקב חי'}
+                  </button>
+                </div>
               </div>
 
+              {/* ניווט מהיר לאבא / אריק */}
+              {arikLocation && challengeAuthor !== 'אריק' && (
+                <div style={{ background: isDark ? '#1e3a8a' : '#eff6ff', border: '1.5px solid #3b82f6', borderRadius: '14px', padding: '12px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '12px', fontWeight: '900', color: isDark ? '#93c5fd' : '#1d4ed8', display: 'block' }}>🧭 איבדת את הקבוצה?</span>
+                    <strong style={{ fontSize: '13px', color: isDark ? '#ffffff' : '#0f172a' }}>נווט חזרה לאבא (אריק)</strong>
+                  </div>
+                  <a
+                    href={`https://maps.apple.com/?daddr=${arikLocation.lat},${arikLocation.lng}&dirflg=w`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ padding: '9px 14px', borderRadius: '10px', background: '#2563eb', color: '#fff', textDecoration: 'none', fontSize: '12px', fontWeight: '900', boxShadow: '0 2px 6px rgba(37,99,235,0.3)' }}
+                  >
+                    🚶‍♂️ נווט ברגל לאבא
+                  </a>
+                </div>
+              )}
+
+              {/* רשימת המרחקים של כל המשפחה */}
+              <h3 style={{ fontSize: '13px', fontWeight: '900', color: textColor, margin: '0 0 8px' }}>מיקומי כל בני המשפחה:</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {Object.keys(familyLocations).length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '16px', color: textSub, fontSize: '12px', fontWeight: '600' }}>
@@ -2175,15 +2324,18 @@ export default function App() {
                 ) : (
                   Object.values(familyLocations).map((member, i) => {
                     const distStr = myLocation ? calculateDistanceKm(myLocation.lat, myLocation.lng, member.lat, member.lng) : null;
+                    const isSosMember = activeSosAlert && activeSosAlert.name === member.name;
                     return (
-                      <div key={i} style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '10px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
+                      <div key={i} style={{ background: isSosMember ? '#fee2e2' : blockBg, border: `1px solid ${isSosMember ? '#f87171' : blockBorder}`, borderRadius: '12px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
                         <div>
-                          <b style={{ fontSize: '14px', color: blockText, display: 'block' }}>👤 {member.name}</b>
+                          <b style={{ fontSize: '14px', color: isSosMember ? '#dc2626' : blockText, display: 'block' }}>
+                            {isSosMember ? '🚨 ' : '👤 '}{member.name} {isSosMember && '(הלך לאיבוד!)'}
+                          </b>
                           <small style={{ color: textSub, fontSize: '10px', fontWeight: '700' }}>עודכן: {member.updated_at}</small>
                         </div>
                         <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}>
                           {distStr && (
-                            <span style={{ fontSize: '12px', fontWeight: '900', color: '#059669' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '900', color: isSosMember ? '#dc2626' : '#059669' }}>
                               📏 {distStr}
                             </span>
                           )}
@@ -2191,7 +2343,7 @@ export default function App() {
                             href={`https://maps.apple.com/?daddr=${member.lat},${member.lng}&dirflg=w`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ padding: '6px 10px', borderRadius: '8px', background: '#0284c7', color: '#fff', textDecoration: 'none', fontSize: '11px', fontWeight: '900' }}
+                            style={{ padding: '6px 12px', borderRadius: '8px', background: isSosMember ? '#dc2626' : '#0284c7', color: '#fff', textDecoration: 'none', fontSize: '11px', fontWeight: '900' }}
                           >
                             🚶 נווט
                           </a>
@@ -2201,6 +2353,7 @@ export default function App() {
                   })
                 )}
               </div>
+
             </div>
           </div>
         </div>
@@ -2370,7 +2523,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל שיחון */}
+      {/* מודל שיחון מתוקן עיצובית עם מיקרופון */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
@@ -2411,8 +2564,7 @@ export default function App() {
                   onClick={startVoiceInput}
                   style={{
                     position: 'absolute', right: '8px', background: 'none', border: 'none',
-                    fontSize: '18px', cursor: 'pointer', opacity: isListeningVoice ? 1 : 0.7,
-                    animation: isListeningVoice ? 'pulse 1s infinite' : 'none'
+                    fontSize: '18px', cursor: 'pointer', opacity: isListeningVoice ? 1 : 0.7
                   }}
                   title="דבר בעברית לתרגום"
                 >
