@@ -213,7 +213,6 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
-// הפקת מפת Leaflet נקייה לחלוטין ללא שום שכבות שמסתירות
 const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
@@ -508,7 +507,6 @@ export default function App() {
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
   
-  const audioContextRef = useRef(false);
   const currentUtteranceRef = useRef(null);
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
@@ -916,17 +914,37 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sidebarOpen, modalType]);
 
+  const playClickSound = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.04);
+    } catch (e) {}
+  };
+
+  // פונקציית לחיצה מאובטחת - מבטיחה שכל כפתור ירוץ תמיד ללא חסימות!
   const handleGlobalClick = (callback) => {
-    playClickSound();
-    if (!audioContextRef.current) {
-      if ('speechSynthesis' in window) {
-        const silent = new SpeechSynthesisUtterance('');
-        silent.volume = 0;
-        window.speechSynthesis.speak(silent);
+    try {
+      playClickSound();
+    } catch (e) {}
+    if (typeof callback === 'function') {
+      try {
+        callback();
+      } catch (err) {
+        console.error('Action error:', err);
       }
-      audioContextRef.current = true;
     }
-    if (typeof callback === 'function') callback();
   };
 
   const closeModal = () => {
@@ -1440,6 +1458,7 @@ export default function App() {
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
+      setHebrewInput('');
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
       speakItalian(italianText);
