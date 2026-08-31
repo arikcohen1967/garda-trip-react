@@ -224,6 +224,88 @@ const cacheMediaOffline = async (url) => {
   return url;
 };
 
+// רכיב צפייה במסמכים עם טיפול מבודד ב-Blob ומניעת דליפת זיכרון
+function DocumentViewer({ item, isDark, blockText, cardShadow }) {
+  const [blobUrl, setBlobUrl] = useState(null);
+
+  useEffect(() => {
+    if (item?.blob) {
+      const url = URL.createObjectURL(item.blob);
+      setBlobUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setBlobUrl(null);
+    }
+  }, [item?.blob]);
+
+  return (
+    <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600' }}>
+      {item.isHotelInfo && (
+        <>
+          <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
+          <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
+          <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
+          <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#93c5fd' : '#1d4ed8', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
+          
+          <a 
+            href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
+          >
+            {WAZE_SVG} נווט למלון ב-Waze לפי הכתובת
+          </a>
+        </>
+      )}
+
+      {item.isFlightInfo && (
+        <>
+          <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
+          <p><b>מספר הזמנה:</b> 4623652</p>
+          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ ורונה (VRN)</p>
+          <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
+        </>
+      )}
+
+      {item.isInsuranceInfo && (
+        <>
+          <p><b>מבטח:</b> AIG ישראל</p>
+          <p><b>מספר פוליסה:</b> 170270213826</p>
+          <p><b>כיסוי:</b> ביטוח נסיעות ורפואי מלא לחו"ל כולל הרחבות וספורט ימי (ראפטינג).</p>
+        </>
+      )}
+
+      {item.isCarVoucher && (
+        <>
+          <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
+          <p><b>מספר שובר:</b> 724715780</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
+        </>
+      )}
+
+      {blobUrl && (
+        <div style={{ marginTop: '16px', textAlign: 'center' }}>
+          {item.type?.startsWith('image/') ? (
+            <img 
+              src={blobUrl} 
+              alt={item.title || item.name} 
+              style={{ maxWidth: '100%', borderRadius: '12px', boxShadow: cardShadow }} 
+            />
+          ) : (
+            <a 
+              href={blobUrl} 
+              download={item.name} 
+              style={{ display: 'inline-block', padding: '12px 20px', background: 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontWeight: '800', boxShadow: cardShadow }}
+            >
+              📥 פתח / הורד קובץ ({item.name})
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function App() {
   const [tripDays, setTripDays] = useState(INITIAL_TRIP_DAYS);
   const [activeDay, setActiveDay] = useState(0);
@@ -232,6 +314,10 @@ export default function App() {
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [themeMode, setThemeMode] = useState('light');
+
+  // PWA Support States
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
@@ -279,9 +365,42 @@ export default function App() {
   
   const audioContextRef = useRef(false);
   const currentUtteranceRef = useRef(null);
-  const currentBlobUrlRef = useRef(null);
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
+
+  // רישום Service Worker והאזנה להתקנת PWA
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+      });
+    }
+
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBanner(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) {
+      alert('להתקנה באייפון: לחץ על כפתור השיתוף (Share) בתחתית הדפדפן ובחר ב-"הוסף למסך הבית" (Add to Home Screen)');
+      return;
+    }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBanner(false);
+    }
+    setDeferredPrompt(null);
+  };
 
   useEffect(() => {
     if (modalType || sidebarOpen) {
@@ -335,10 +454,6 @@ export default function App() {
   };
 
   const closeModal = () => {
-    if (currentBlobUrlRef.current) {
-      URL.revokeObjectURL(currentBlobUrlRef.current);
-      currentBlobUrlRef.current = null;
-    }
     setViewerItem(null);
     setModalType(null);
     setShowGalleryUpload(false);
@@ -478,7 +593,6 @@ export default function App() {
       supabase.removeChannel(galleryChannel);
       supabase.removeChannel(challengesChannel);
       if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
-      if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
       if (translationAbortRef.current) translationAbortRef.current.abort();
     };
   }, []);
@@ -678,12 +792,16 @@ export default function App() {
       alert('קוד שגוי!');
       return;
     }
+    
+    // עדכון מיידי ללא תלות ב-Closure
+    const updated = galleryItems.filter(item => item.id !== id);
+    setGalleryItems(updated);
+    localStorage.setItem('garda-gallery-cache', JSON.stringify(updated));
+
     try {
       await supabase.from('gallery').delete().eq('id', id);
-      setGalleryItems(prev => prev.filter(item => item.id !== id));
-      localStorage.setItem('garda-gallery-cache', JSON.stringify(galleryItems.filter(item => item.id !== id)));
     } catch (err) {
-      setGalleryItems(prev => prev.filter(item => item.id !== id));
+      console.error(err);
     }
   };
 
@@ -1140,23 +1258,44 @@ export default function App() {
           <span>{isOnline ? 'on-line' : 'off-line'}</span>
         </div>
 
-        <button
-          onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'darkSilver'))}
-          style={{
-            background: 'rgba(255, 255, 255, 0.15)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            color: '#ffffff',
-            padding: '6px 12px',
-            borderRadius: '10px',
-            fontSize: '11px',
-            fontWeight: '900',
-            cursor: 'pointer',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.2)',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          {isDark ? '✨ גרסה כהה (פעיל)' : '🎨 עבור לגרסה כהה'}
-        </button>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          {showInstallBanner && (
+            <button
+              onClick={handleInstallPWA}
+              style={{
+                background: '#38bdf8',
+                border: '1px solid #0284c7',
+                color: '#0f172a',
+                padding: '6px 10px',
+                borderRadius: '10px',
+                fontSize: '11px',
+                fontWeight: '900',
+                cursor: 'pointer',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+              }}
+            >
+              📲 התקן אפליקציה
+            </button>
+          )}
+
+          <button
+            onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'darkSilver'))}
+            style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: '#ffffff',
+              padding: '6px 12px',
+              borderRadius: '10px',
+              fontSize: '11px',
+              fontWeight: '900',
+              cursor: 'pointer',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.2)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            {isDark ? '✨ כהה (פעיל)' : '🎨 עבור לכהה'}
+          </button>
+        </div>
       </div>
 
       <header style={{
@@ -1724,79 +1863,12 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
             </div>
             
-            <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600' }}>
-              {viewerItem.isHotelInfo && (
-                <>
-                  <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
-                  <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
-                  <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
-                  <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#93c5fd' : '#1d4ed8', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
-                  
-                  <a 
-                    href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
-                    onClick={() => playClickSound()} 
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
-                  >
-                    {WAZE_SVG} נווט למלון ב-Waze לפי הכתובת
-                  </a>
-                </>
-              )}
-
-              {viewerItem.isFlightInfo && (
-                <>
-                  <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
-                  <p><b>מספר הזמנה:</b> 4623652</p>
-                  <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ ורונה (VRN)</p>
-                  <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
-                </>
-              )}
-
-              {viewerItem.isInsuranceInfo && (
-                <>
-                  <p><b>מבטח:</b> AIG ישראל</p>
-                  <p><b>מספר פוליסה:</b> 170270213826</p>
-                  <p><b>כיסוי:</b> ביטוח נסיעות ורפואי מלא לחו"ל כולל הרחבות וספורט ימי (ראפטינג).</p>
-                </>
-              )}
-
-              {viewerItem.isCarVoucher && (
-                <>
-                  <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
-                  <p><b>מספר שובר:</b> 724715780</p>
-                  <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
-                </>
-              )}
-
-              {viewerItem.blob && (
-                <div style={{ marginTop: '16px', textAlign: 'center' }}>
-                  {viewerItem.type?.startsWith('image/') ? (
-                    <img 
-                      src={(() => {
-                        if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
-                        const url = URL.createObjectURL(viewerItem.blob);
-                        currentBlobUrlRef.current = url;
-                        return url;
-                      })()} 
-                      alt={viewerItem.title} 
-                      style={{ maxWidth: '100%', borderRadius: '12px', boxShadow: cardShadow }} 
-                    />
-                  ) : (
-                    <a 
-                      href={(() => {
-                        if (currentBlobUrlRef.current) URL.revokeObjectURL(currentBlobUrlRef.current);
-                        const url = URL.createObjectURL(viewerItem.blob);
-                        currentBlobUrlRef.current = url;
-                        return url;
-                      })()} 
-                      download={viewerItem.name} 
-                      style={{ display: 'inline-block', padding: '12px 20px', background: 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontWeight: '800', boxShadow: cardShadow }}
-                    >
-                      📥 פתח / הורד קובץ ({viewerItem.name})
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
+            <DocumentViewer 
+              item={viewerItem} 
+              isDark={isDark} 
+              blockText={blockText} 
+              cardShadow={cardShadow} 
+            />
           </div>
         </div>
       )}
@@ -1816,7 +1888,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי עם כפתור עצירת דרך / Autogrill ותחנת דלק */}
+      {/* מודל סביבי */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
