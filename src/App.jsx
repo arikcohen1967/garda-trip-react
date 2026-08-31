@@ -626,6 +626,29 @@ export default function App() {
     );
   };
 
+  // 👑 כלי ניהול של אריק: פקודה מרחוק לכל המשפחה לעדכן מיקום מיידית
+  const adminForceRefreshAllLocations = async () => {
+    if (challengeAuthor !== 'אריק' && !isAdminUnlocked) {
+      const pass = window.prompt('הזן קוד מנהל לפעולה זו:');
+      if (pass !== '1967') {
+        alert('קוד שגוי!');
+        return;
+      }
+      setIsAdminUnlocked(true);
+    }
+
+    try {
+      await supabase.channel('realtime-radar').send({
+        type: 'broadcast',
+        event: 'admin_request_location',
+        payload: { requestedBy: 'אריק' }
+      });
+      alert('📡 נשלחה בקשת רענון מיקום מרחוק לכל בני המשפחה!');
+    } catch (e) {
+      alert('שגיאה בשליחת הפקודה');
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (watchPositionIdRef.current !== null) {
@@ -765,6 +788,16 @@ export default function App() {
       .on('broadcast', { event: 'sos_clear' }, () => {
         setActiveSosAlert(null);
         localStorage.removeItem('garda-active-sos');
+      })
+      .on('broadcast', { event: 'admin_request_location' }, () => {
+        // אם אריק ביקש רענון מכל המכשירים, נבצע דגימה ושליחה אוטומטית אם המיקום זמין
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => broadcastMyLocation(pos.coords),
+            () => {},
+            { enableHighAccuracy: true }
+          );
+        }
       })
       .on('broadcast', { event: 'bingo_winner' }, ({ payload }) => {
         alert(`🎉 בינגו! ${payload.winner} השלים/ה שורה ראשון/ה! 🏆`);
@@ -914,26 +947,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sidebarOpen, modalType]);
 
-  const playClickSound = () => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.04);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.04);
-    } catch (e) {}
-  };
-
-  // פונקציית לחיצה מאובטחת - מבטיחה שכל כפתור ירוץ תמיד ללא חסימות!
   const handleGlobalClick = (callback) => {
     try {
       playClickSound();
@@ -1458,7 +1471,6 @@ export default function App() {
 
     const finishTranslation = (italianText) => {
       setItalianOutput(italianText);
-      setHebrewInput('');
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
       speakItalian(italianText);
@@ -1500,70 +1512,6 @@ export default function App() {
       if (e.name !== 'AbortError') {
         callback(isOnline ? 'שגיאה בתרגום' : 'זמין במצב מקוון');
       }
-    }
-  };
-
-  const nextTriviaQuestion = () => {
-    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
-    setSelectedAnswer(null);
-    setIsAnswerCorrect(null);
-    setTriviaIndex(prev => (prev + 1) % triviaQuestions.length);
-    setTravelerIndex(prev => (prev + 1) % travelers.length);
-  };
-
-  const handleTriviaAnswer = (optionIdx) => {
-    if (selectedAnswer !== null) return;
-    setSelectedAnswer(optionIdx);
-    const currentQ = triviaQuestions[triviaIndex];
-    const currentTraveler = travelers[travelerIndex];
-
-    if (optionIdx === currentQ.correct) {
-      setIsAnswerCorrect(true);
-      setTravelerScores(prev => ({
-        ...prev,
-        [currentTraveler]: (prev[currentTraveler] || 0) + 10
-      }));
-    } else {
-      setIsAnswerCorrect(false);
-    }
-
-    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
-    triviaTimerRef.current = setTimeout(() => {
-      nextTriviaQuestion();
-    }, 1500);
-  };
-
-  const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
-    if (pass !== '1967') {
-      alert('קוד שגוי! לא ניתן לאפס את המשחק.');
-      return;
-    }
-    if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
-    setTriviaQuestions(generateMassiveTrivia());
-    setTriviaIndex(0);
-    setTravelerIndex(0);
-    setSelectedAnswer(null);
-    setIsAnswerCorrect(null);
-    const initialScores = { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
-    setTravelerScores(initialScores);
-    localStorage.setItem('garda-trivia-scores', JSON.stringify(initialScores));
-    localStorage.setItem('garda-trivia-index', '0');
-    localStorage.setItem('garda-trivia-traveler-idx', '0');
-    alert('המשחק והניקוד אופסו בהצלחה!');
-  };
-
-  const handleToggleAdminQuests = () => {
-    if (isAdminUnlocked) {
-      setIsAdminUnlocked(false);
-      return;
-    }
-    const pass = window.prompt('הזן קוד מנהל לחשיפת כל המשימות:');
-    if (pass === '1967') {
-      setIsAdminUnlocked(true);
-      alert('הרשאת מנהל הופעלה! כל המשימות פתוחות לצפייה.');
-    } else {
-      alert('קוד שגוי!');
     }
   };
 
@@ -2234,7 +2182,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר משפחתי חי - מפה פתוחה ומרכז בקרה מעוצב מתחתיה */}
+      {/* 📡 מודל רדאר משפחתי חי - מפה פתוחה לחלוטין ומרכז בקרה מתחתיה + שליטת מנהל (אריק) */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflow: 'hidden' }}>
           <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%' }}>
@@ -2248,7 +2196,7 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
             </div>
 
-            {/* שטח המפה - נקי לחלוטין ללא כפתורים מעליו */}
+            {/* שטח המפה - נקי לחלוטין ללא שום כפתור מסתיר */}
             <div style={{ flex: 1, position: 'relative', width: '100%', background: '#0f172a' }}>
               <iframe
                 title="Family Radar Map"
@@ -2257,10 +2205,10 @@ export default function App() {
               />
             </div>
 
-            {/* אזור הבקרה והמרחקים מתחת למפה - מעוצב ונקי */}
-            <div style={{ height: '42vh', background: cardBg, overflowY: 'auto', borderTop: `1px solid ${borderColor}`, padding: '16px', boxSizing: 'border-box' }}>
+            {/* אזור הבקרה והמרחקים מתחת למפה - כולל פאנל ניהול של אריק */}
+            <div style={{ height: '44vh', background: cardBg, overflowY: 'auto', borderTop: `1px solid ${borderColor}`, padding: '16px', boxSizing: 'border-box' }}>
               
-              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום */}
+              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית */}
               <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '14px', marginBottom: '14px', boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2283,7 +2231,6 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* שני כפתורי הבקרה - מתחת לפרטי המשתמש ולא על המפה */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <button
                     onClick={handleManualLocationUpdate}
@@ -2314,6 +2261,28 @@ export default function App() {
                   </button>
                 </div>
               </div>
+
+              {/* 👑 פאנל ניהול למנהל הקבוצה (אריק): מעקב חי על כולם */}
+              {(challengeAuthor === 'אריק' || isAdminUnlocked) && (
+                <div style={{ background: isDark ? '#312e81' : '#ede9fe', border: '1.5px solid #8b5cf6', borderRadius: '14px', padding: '12px 14px', marginBottom: '14px', boxShadow: cardShadow }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '900', color: '#7c3aed' }}>👑 פאנל ניהול (אריק): מעקב קבוצתי</span>
+                    <span style={{ fontSize: '10px', background: '#7c3aed', color: '#fff', padding: '1px 6px', borderRadius: '6px', fontWeight: '800' }}>מנהל</span>
+                  </div>
+                  <p style={{ margin: '0 0 10px', fontSize: '11px', color: isDark ? '#ddd6fe' : '#5b21b6', fontWeight: '700' }}>
+                    כמנהל, באפשרותך לבקש רענון מיקום מיידי מכל המכשירים ברשת:
+                  </p>
+                  <button
+                    onClick={adminForceRefreshAllLocations}
+                    style={{
+                      width: '100%', padding: '10px', borderRadius: '10px', background: '#7c3aed', color: '#fff',
+                      border: 'none', fontWeight: '900', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 6px rgba(124,58,237,0.3)'
+                    }}
+                  >
+                    🔄 רענן את כל המיקומים של כולם עכשיו
+                  </button>
+                </div>
+              )}
 
               {/* ניווט מהיר לאבא / אריק */}
               {arikLocation && challengeAuthor !== 'אריק' && (
@@ -2546,7 +2515,7 @@ export default function App() {
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textColor }}>שיחון איטלקי חכם</h2>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 {(hebrewInput || italianOutput) && (
