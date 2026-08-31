@@ -199,7 +199,7 @@ const BINGO_ITEMS_POOL = [
 ];
 
 const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
-  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+  if (!lat1 || !lon1 || !lon2 || !lat2) return null;
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -213,7 +213,7 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
-// הפקת מפת Leaflet עם האות הראשונה של כל שם על הנעץ
+// הפקת מפת Leaflet עם האות הראשונה בלבד על הנעץ לחסכון במקום
 const generateMapHTML = (familyLocs, myLoc, sosState) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
@@ -241,7 +241,7 @@ const generateMapHTML = (familyLocs, myLoc, sosState) => {
       <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #0f172a; }
         #map { width: 100%; height: 100%; }
-        .custom-tooltip { background: #1e293b; color: #fff; border: 1.5px solid #38bdf8; font-weight: 900; font-family: sans-serif; padding: 2px 8px; border-radius: 6px; font-size: 13px; direction: rtl; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        .custom-tooltip { background: #1e293b; color: #fff; border: 1.5px solid #38bdf8; font-weight: 900; font-family: sans-serif; padding: 3px 8px; border-radius: 6px; font-size: 13px; direction: rtl; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
       </style>
     </head>
     <body>
@@ -2277,7 +2277,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר משפחתי חי - מעוצב מחדש בגלילה מושלמת ללא חיתוכים */}
+      {/* 📡 מודל רדאר משפחתי חי - מעוצב בדיוק כמו כרטיסי המסלול היומי (צבעים רגילים ופונטים תואמים) */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
@@ -2285,7 +2285,7 @@ export default function App() {
             {/* כותרת עליונה */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, padding: '16px', background: cardBg, position: 'sticky', top: 0, zIndex: 100 }}>
               <div>
-                <small style={{ color: '#0284c7', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
+                <small style={{ color: textSub, fontWeight: '900', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: '900', color: textColor }}>📡 רדאר משפחתי חי</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#3f3f46' : '#f1f5f9', color: textColor, border: '2px solid #94a3b8' }}>✕</button>
@@ -2300,17 +2300,17 @@ export default function App() {
               />
             </div>
 
-            {/* אזור הבקרה והמרחקים מתחת למפה - גלילה חופשית ובטוחה */}
+            {/* אזור הבקרה והמרחקים מתחת למפה - מעוצב כמו כרטיסי הטיול */}
             <div style={{ flex: 1, background: cardBg, padding: '16px 16px 50px 16px', boxSizing: 'border-box' }}>
               
-              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית */}
-              <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '16px', padding: '14px', marginBottom: '14px', boxShadow: cardShadow }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              {/* כרטיס פרופיל משתמש ובקרת שידור מיקום אישית בסגנון כרטיס טיול */}
+              <div style={{ background: blockBg, border: `1px solid ${blockBorder}`, borderRadius: '20px', padding: '18px', marginBottom: '16px', boxShadow: cardShadow }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '18px' }}>👤</span>
                     <div>
-                      <strong style={{ fontSize: '14px', color: blockText, display: 'block' }}>פרופיל פעיל: {challengeAuthor || 'אריק'}</strong>
-                      <small style={{ color: textSub, fontSize: '11px' }}>
+                      <strong style={{ fontSize: '15px', color: blockText, fontWeight: '900', display: 'block' }}>פרופיל פעיל: {challengeAuthor || 'אריק'}</strong>
+                      <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>
                         סטטוס GPS: {radarTrackingMode === 'auto' ? '🟢 שידור רציף פעיל' : (myLocation ? '🟡 מיקום נקודתי נשמר' : '⚪ טרם שותף')}
                       </small>
                     </div>
@@ -2319,19 +2319,19 @@ export default function App() {
                     onClick={triggerSosLostAlert}
                     style={{
                       padding: '8px 12px', borderRadius: '10px', background: '#fee2e2', color: '#dc2626',
-                      border: '1.5px solid #f87171', fontWeight: '900', fontSize: '11px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(220,38,38,0.2)'
+                      border: '1.5px solid #f87171', fontWeight: '900', fontSize: '11px', cursor: 'pointer', boxShadow: cardShadow
                     }}
                   >
                     🚨 הלכתי לאיבוד!
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <button
                     onClick={handleManualLocationUpdate}
                     style={{
-                      padding: '10px', borderRadius: '10px', fontWeight: '900', fontSize: '12px', cursor: 'pointer',
-                      background: isDark ? '#3f3f46' : '#ffffff', color: blockText, border: `1px solid ${blockBorder}`,
+                      padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer',
+                      background: blockBg, color: blockText, border: `1px solid ${blockBorder}`,
                       boxShadow: cardShadow
                     }}
                   >
@@ -2347,9 +2347,10 @@ export default function App() {
                       }
                     }}
                     style={{
-                      padding: '10px', borderRadius: '10px', fontWeight: '900', fontSize: '12px', cursor: 'pointer',
-                      background: radarTrackingMode === 'auto' ? '#16a34a' : '#0284c7', color: '#ffffff', border: 'none',
-                      boxShadow: '0 2px 6px rgba(2,132,199,0.3)'
+                      padding: '12px', borderRadius: '12px', fontWeight: '900', fontSize: '13px', cursor: 'pointer',
+                      background: radarTrackingMode === 'auto' ? '#16a34a' : (isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)'),
+                      color: '#ffffff', border: `1px solid ${radarTrackingMode === 'auto' ? '#16a34a' : '#0f172a'}`,
+                      boxShadow: cardShadow
                     }}
                   >
                     {radarTrackingMode === 'auto' ? '🛰️ כבה מעקב חי' : '🛰️ הפעל מעקב חי'}
@@ -2357,21 +2358,21 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 👑 פאנל ניהול למנהל הקבוצה (אריק) - עיצוב מטאלי סטנדרטי נקי */}
+              {/* 👑 פאנל ניהול למנהל הקבוצה (אריק) - בעיצוב מטאלי סטנדרטי נקי */}
               {(challengeAuthor === 'אריק' || isAdminUnlocked) && (
-                <div style={{ background: isDark ? '#27272a' : '#f1f5f9', border: `1.5px solid ${borderColor}`, borderRadius: '14px', padding: '12px 14px', marginBottom: '14px', boxShadow: cardShadow }}>
+                <div style={{ background: blockBg, border: `1.5px solid ${blockBorder}`, borderRadius: '20px', padding: '16px', marginBottom: '16px', boxShadow: cardShadow }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: '900', color: textColor }}>👑 פאנל ניהול (אריק): מעקב קבוצתי</span>
-                    <span style={{ fontSize: '10px', background: '#0284c7', color: '#fff', padding: '1px 6px', borderRadius: '6px', fontWeight: '800' }}>מנהל</span>
+                    <span style={{ fontSize: '13px', fontWeight: '900', color: textColor }}>👑 פאנל ניהול (אריק): מעקב קבוצתי</span>
+                    <span style={{ fontSize: '11px', background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, padding: '2px 8px', borderRadius: '8px', fontWeight: '900' }}>מנהל</span>
                   </div>
-                  <p style={{ margin: '0 0 10px', fontSize: '11px', color: textSub, fontWeight: '700' }}>
+                  <p style={{ margin: '0 0 12px', fontSize: '12px', color: textSub, fontWeight: '700' }}>
                     כמנהל, באפשרותך לבקש רענון מיקום מיידי מכל המכשירים ברשת:
                   </p>
                   <button
                     onClick={adminForceRefreshAllLocations}
                     style={{
-                      width: '100%', padding: '10px', borderRadius: '10px', background: '#0284c7', color: '#fff',
-                      border: 'none', fontWeight: '900', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 6px rgba(2,132,199,0.3)'
+                      width: '100%', padding: '12px', borderRadius: '12px', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff',
+                      border: '1px solid #0f172a', fontWeight: '900', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow
                     }}
                   >
                     🔄 רענן את כל המיקומים של כולם עכשיו
@@ -2381,16 +2382,16 @@ export default function App() {
 
               {/* ניווט מהיר לאבא / אריק */}
               {arikLocation && challengeAuthor !== 'אריק' && (
-                <div style={{ background: isDark ? '#1e3a8a' : '#eff6ff', border: '1.5px solid #3b82f6', borderRadius: '14px', padding: '12px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '20px', padding: '16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
                   <div>
-                    <span style={{ fontSize: '12px', fontWeight: '900', color: isDark ? '#93c5fd' : '#1d4ed8', display: 'block' }}>🧭 איבדת את הקבוצה?</span>
-                    <strong style={{ fontSize: '13px', color: isDark ? '#ffffff' : '#0f172a' }}>נווט חזרה לאבא (אריק)</strong>
+                    <span style={{ fontSize: '12px', fontWeight: '900', color: textSub, display: 'block' }}>🧭 איבדת את הקבוצה?</span>
+                    <strong style={{ fontSize: '14px', color: textColor, fontWeight: '900' }}>נווט חזרה לאבא (אריק)</strong>
                   </div>
                   <a
                     href={`https://maps.apple.com/?daddr=${arikLocation.lat},${arikLocation.lng}&dirflg=w`}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ padding: '9px 14px', borderRadius: '10px', background: '#2563eb', color: '#fff', textDecoration: 'none', fontSize: '12px', fontWeight: '900', boxShadow: '0 2px 6px rgba(37,99,235,0.3)' }}
+                    style={{ padding: '10px 16px', borderRadius: '12px', background: isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: '#fff', textDecoration: 'none', fontSize: '12px', fontWeight: '900', boxShadow: cardShadow }}
                   >
                     🚶‍♂️ נווט ברגל לאבא
                   </a>
@@ -2398,10 +2399,10 @@ export default function App() {
               )}
 
               {/* רשימת המרחקים של כל המשפחה */}
-              <h3 style={{ fontSize: '13px', fontWeight: '900', color: textColor, margin: '0 0 8px' }}>מיקומי כל בני המשפחה:</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: '900', color: textColor, margin: '0 0 10px' }}>מיקומי כל בני המשפחה:</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {Object.keys(familyLocations).length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '16px', color: textSub, fontSize: '12px', fontWeight: '600' }}>
+                  <div style={{ textAlign: 'center', padding: '20px', color: textSub, fontSize: '13px', fontWeight: '600' }}>
                     טרם נרשם מיקום. לחצו על "עדכן מיקום יזום" או הפעילו מעקב חי.
                   </div>
                 ) : (
@@ -2409,16 +2410,16 @@ export default function App() {
                     const distStr = myLocation ? calculateDistanceKm(myLocation.lat, myLocation.lng, member.lat, member.lng) : null;
                     const isSosMember = activeSosAlert && activeSosAlert.name === member.name;
                     return (
-                      <div key={i} style={{ background: isSosMember ? '#fee2e2' : blockBg, border: `1px solid ${isSosMember ? '#f87171' : blockBorder}`, borderRadius: '12px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
+                      <div key={i} style={{ background: isSosMember ? '#fee2e2' : cardBg, border: `1px solid ${isSosMember ? '#f87171' : borderColor}`, borderRadius: '16px', padding: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: cardShadow }}>
                         <div>
-                          <b style={{ fontSize: '14px', color: isSosMember ? '#dc2626' : blockText, display: 'block' }}>
+                          <b style={{ fontSize: '15px', color: isSosMember ? '#dc2626' : textColor, display: 'block', fontWeight: '900' }}>
                             {isSosMember ? '🚨 ' : '👤 '}{member.name} {isSosMember && '(הלך לאיבוד!)'}
                           </b>
-                          <small style={{ color: textSub, fontSize: '10px', fontWeight: '700' }}>עודכן: {member.updated_at}</small>
+                          <small style={{ color: textSub, fontSize: '11px', fontWeight: '700' }}>עודכן: {member.updated_at}</small>
                         </div>
-                        <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '10px' }}>
                           {distStr && (
-                            <span style={{ fontSize: '12px', fontWeight: '900', color: isSosMember ? '#dc2626' : '#059669' }}>
+                            <span style={{ fontSize: '13px', fontWeight: '900', color: isSosMember ? '#dc2626' : '#059669' }}>
                               📏 {distStr}
                             </span>
                           )}
@@ -2426,7 +2427,7 @@ export default function App() {
                             href={`https://maps.apple.com/?daddr=${member.lat},${member.lng}&dirflg=w`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ padding: '6px 12px', borderRadius: '8px', background: isSosMember ? '#dc2626' : '#0284c7', color: '#fff', textDecoration: 'none', fontSize: '11px', fontWeight: '900' }}
+                            style={{ padding: '8px 14px', borderRadius: '10px', background: isSosMember ? '#dc2626' : (isDark ? '#3f3f46' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)'), color: '#fff', textDecoration: 'none', fontSize: '12px', fontWeight: '900', boxShadow: cardShadow }}
                           >
                             🚶 נווט
                           </a>
@@ -3050,7 +3051,7 @@ export default function App() {
                 <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <button onClick={() => handleGlobalClick(() => document.getElementById('cameraInput').click())} style={{ ...uploadBtnStyle, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>📷 צלם במצלמה</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>📁 בחר מהמכשיר</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: blockBg, color: blockText, border: `1px solid ${blockBorder}`, boxShadow: cardShadow }}>📁 בחר קובץ מהמכשיר</button>
                 </div>
               </div>
             )}
