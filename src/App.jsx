@@ -1635,17 +1635,19 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  const bgMain = isDark ? '#121212' : '#f8f9fa';
+  // רקע לבן נקי לחלוטין (במצב כהה שחור עמוק)
+  const bgMain = isDark ? '#121212' : '#ffffff';
   const cardBg = isDark ? '#1e1e1e' : '#ffffff';
   const textColor = isDark ? '#e0e0e0' : '#222222';
   const textSub = isDark ? '#aaaaaa' : '#666666';
   const borderColor = isDark ? '#333333' : '#e5e7eb';
 
+  // צללית מודגשת ועמוקה יותר כדי שהמלבנים והריבועים יבלטו היטב על רקע לבן
   const cardShadow = isDark 
-    ? '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)'
-    : '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)';
+    ? '0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4)'
+    : '0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.07)';
 
-  const blockBg = isDark ? '#262626' : '#f3f4f6';
+  const blockBg = isDark ? '#262626' : '#fafafa';
   const blockText = textColor; 
   const blockBorder = borderColor;
 
@@ -1673,7 +1675,7 @@ export default function App() {
         <button 
           onClick={() => handleGlobalClick(cfg.action)} 
           style={{ 
-            background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+            background: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: `1px solid ${borderColor}`,
@@ -1689,11 +1691,11 @@ export default function App() {
             gap: '14px',
             boxSizing: 'border-box',
             width: '100%',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
             transition: 'transform 0.15s ease, background 0.15s ease'
           }}
         >
-          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
+          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6', borderRadius: '8px' }}>
             {cfg.icon}
           </span>
           <span style={{ flex: 1, letterSpacing: '-0.01em' }}>{cfg.label}</span>
@@ -1727,7 +1729,7 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* פס עליון מקורי */}
+      {/* פס עליון נקי */}
       <div style={{
         background: isDark ? '#1e1e1e' : '#ffffff',
         color: textColor,
@@ -1743,7 +1745,8 @@ export default function App() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: `1px solid ${borderColor}`
+        borderBottom: `1px solid ${borderColor}`,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#f59e0b' }}></span>
@@ -1781,7 +1784,7 @@ export default function App() {
             cursor: 'pointer',
             fontWeight: 'bold',
             fontSize: '14px',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.2)'
+            boxShadow: '0 6px 12px rgba(220,38,38,0.3)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1810,7 +1813,8 @@ export default function App() {
             justifyContent: 'space-between',
             cursor: 'pointer',
             fontWeight: 'bold',
-            fontSize: '13px'
+            fontSize: '13px',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1838,7 +1842,7 @@ export default function App() {
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box',
-        boxShadow: cardShadow
+        boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
       }}>
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
@@ -1891,14 +1895,14 @@ export default function App() {
         />
       )}
       
-      {/* תפריט צד מעודכן (העיצוב החדש) */}
+      {/* תפריט צד מעוצב */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={() => handleTouchEnd(() => setSidebarOpen(false))}
         style={{
           position: 'fixed', top: 0, bottom: 0, right: 0, width: '320px', maxWidth: '85vw',
-          background: isDark ? '#1c1c1e' : '#f5f5f7', zIndex: 2600, boxShadow: '-20px 0 50px rgba(0,0,0,0.2)',
+          background: isDark ? '#1c1c1e' : '#ffffff', zIndex: 2600, boxShadow: '-20px 0 50px rgba(0,0,0,0.25)',
           transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)', padding: '24px 16px',
           display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
@@ -1909,11 +1913,11 @@ export default function App() {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button 
               onClick={() => handleGlobalClick(() => setIsEditingMenu(!isEditingMenu))}
-              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'), color: isEditingMenu ? '#fff' : textColor, border: 'none', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6'), color: isEditingMenu ? '#fff' : textColor, border: 'none', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
             >
               {isEditingMenu ? '✓ סיום' : '⚙️ עריכה'}
             </button>
-            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)', color: textColor, border: 'none' }}>✕</button>
+            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
           </div>
         </div>
 
@@ -1922,7 +1926,7 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
-        {/* כפתורי ימי הטיול המקוריים */}
+        {/* כפתורי ימי הטיול */}
         <div style={{ 
           display: 'flex', 
           gap: '8px', 
@@ -1962,7 +1966,7 @@ export default function App() {
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* כפתורי גישה מהירים מקוריים */}
+          {/* כפתורי גישה מהירים עם צללית מודגשת */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
             <button
               onClick={triggerSosLostAlert}
@@ -2019,7 +2023,8 @@ export default function App() {
               background: isDark ? '#333' : '#f3f4f6',
               color: textColor,
               padding: '6px 12px', borderRadius: '10px',
-              fontSize: '12px', fontWeight: 'bold', flexShrink: 0
+              fontSize: '12px', fontWeight: 'bold', flexShrink: 0,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.04)'
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח 🚀'}
             </span>
@@ -2031,17 +2036,17 @@ export default function App() {
               <div key={idx} style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '16px', padding: '16px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: textColor }}>{stop.name}</h3>
-                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, background: isDark ? '#333' : '#f3f4f6', padding: '4px 8px', borderRadius: '8px' }}>{stop.time}</span>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, background: isDark ? '#333' : '#f3f4f6', padding: '4px 8px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>{stop.time}</span>
                 </div>
                 <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 12px', lineHeight: '1.4' }}>{stop.note}</p>
 
                 {stop.food && (
-                  <div style={{ fontSize: '13px', background: blockBg, color: blockText, padding: '10px 12px', borderRadius: '12px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ fontSize: '13px', background: blockBg, color: blockText, padding: '10px 12px', borderRadius: '12px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1px solid ${borderColor}`, boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
                     <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
                       onClick={() => playClickSound()}
-                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: isDark ? '#1e1e1e' : '#ffffff', color: '#2563eb', fontWeight: 'bold', fontSize: '12px', padding: '8px 12px', borderRadius: '10px', textDecoration: 'none', border: `1px solid ${borderColor}`, alignSelf: 'flex-start' }}
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: isDark ? '#1e1e1e' : '#ffffff', color: '#2563eb', fontWeight: 'bold', fontSize: '12px', padding: '8px 12px', borderRadius: '10px', textDecoration: 'none', border: `1px solid ${borderColor}`, alignSelf: 'flex-start', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}
                     >
                       {WAZE_SVG} נווט למסעדה ב-Waze
                     </a>
@@ -2049,10 +2054,10 @@ export default function App() {
                 )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: `1px solid ${borderColor}` }}>
-                  <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: isDark ? '#262626' : '#f8f9fa', color: textColor, border: `1px solid ${borderColor}` }}>
+                  <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: isDark ? '#262626' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, boxShadow: '0 2px 5px rgba(0,0,0,0.04)' }}>
                     {MAPS_SVG} Apple Maps
                   </a>
-                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: isDark ? '#082f49' : '#e0f2fe', color: '#0284c7', border: 'none' }}>
+                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: isDark ? '#082f49' : '#e0f2fe', color: '#0284c7', border: 'none', boxShadow: '0 2px 5px rgba(2,132,199,0.15)' }}>
                     {WAZE_SVG} Waze
                   </a>
                 </div>
@@ -2062,15 +2067,15 @@ export default function App() {
                     onClick={() => handleGlobalClick(() => setModalType('parking'))}
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                      padding: '8px 12px', borderRadius: '10px', background: isDark ? '#262626' : '#f8f9fa', color: textColor,
-                      border: `1px solid ${borderColor}`, fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxSizing: 'border-box'
+                      padding: '8px 12px', borderRadius: '10px', background: isDark ? '#262626' : '#ffffff', color: textColor,
+                      border: `1px solid ${borderColor}`, fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxSizing: 'border-box', boxShadow: '0 2px 5px rgba(0,0,0,0.04)'
                     }}
                   >
                     🚗 שמור/מצא רכב חונה
                   </button>
                   <button 
                     onClick={() => handleGlobalClick(() => setModalType('timer'))}
-                    style={{ border: 'none', background: isDark ? '#451a03' : '#fef3c7', color: '#d97706', borderRadius: '10px', padding: '0 12px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}
+                    style={{ border: 'none', background: isDark ? '#451a03' : '#fef3c7', color: '#d97706', borderRadius: '10px', padding: '0 12px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 5px rgba(217,119,6,0.15)' }}
                     title="טיימר מרכזי"
                   >
                     ⏱️
@@ -2096,7 +2101,7 @@ export default function App() {
             </div>
 
             {activeTimer ? (
-              <div style={{ background: blockBg, borderRadius: '16px', padding: '20px', textAlign: 'center', marginBottom: '16px' }}>
+              <div style={{ background: blockBg, borderRadius: '16px', padding: '20px', textAlign: 'center', marginBottom: '16px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#d97706', display: 'block', marginBottom: '6px' }}>
                   🎯 פעילות: {activeTimer.title}
                 </span>
@@ -2111,27 +2116,27 @@ export default function App() {
                   {timerRemainingSec === 0 && !isAlarmMuted && (
                     <button
                       onClick={stopAlarmLoop}
-                      style={{ padding: '8px 14px', borderRadius: '10px', background: '#22c55e', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}
+                      style={{ padding: '8px 14px', borderRadius: '10px', background: '#22c55e', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(34,197,94,0.2)' }}
                     >
                       🛑 עצור צפצוף
                     </button>
                   )}
                   <button
                     onClick={cancelGlobalTimer}
-                    style={{ padding: '8px 14px', borderRadius: '10px', background: '#dc2626', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}
+                    style={{ padding: '8px 14px', borderRadius: '10px', background: '#dc2626', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(220,38,38,0.2)' }}
                   >
                     ⏹️ בטל טיימר
                   </button>
                   <button
                     onClick={() => startGlobalTimer(Number(activeTimer.durationMinutes) + 5, activeTimer.title)}
-                    style={{ padding: '8px 14px', borderRadius: '10px', background: '#f59e0b', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}
+                    style={{ padding: '8px 14px', borderRadius: '10px', background: '#f59e0b', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(245,158,11,0.2)' }}
                   >
                     ➕ הוסף 5 דקות
                   </button>
                 </div>
               </div>
             ) : (
-              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>שם הפעילות:</label>
                   <input
@@ -2158,10 +2163,10 @@ export default function App() {
                         onClick={() => setCustomTimerMinutes(mins)}
                         style={{
                           padding: '8px 4px', borderRadius: '8px',
-                          background: customTimerMinutes === mins ? '#2563eb' : (isDark ? '#333' : '#e5e7eb'),
+                          background: customTimerMinutes === mins ? '#2563eb' : (isDark ? '#333' : '#ffffff'),
                           color: customTimerMinutes === mins ? '#ffffff' : textColor,
-                          border: 'none',
-                          fontWeight: 'bold', fontSize: '12px', cursor: 'pointer'
+                          border: `1px solid ${borderColor}`,
+                          fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
                         }}
                       >
                         {mins} דק'
@@ -2172,7 +2177,7 @@ export default function App() {
 
                 <button
                   onClick={() => startGlobalTimer(customTimerMinutes, customTimerTitle)}
-                  style={{ padding: '12px', borderRadius: '12px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', marginTop: '4px' }}
+                  style={{ padding: '12px', borderRadius: '12px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', marginTop: '4px', boxShadow: '0 4px 10px rgba(37,99,235,0.25)' }}
                 >
                   🚀 הפעל טיימר משפחתי
                 </button>
@@ -2187,7 +2192,7 @@ export default function App() {
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, padding: '16px', background: cardBg, position: 'sticky', top: 0, zIndex: 100 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, padding: '16px', background: cardBg, position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
               <div>
                 <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📡 רדאר משפחתי חי</h2>
@@ -2205,7 +2210,7 @@ export default function App() {
 
             <div style={{ flex: 1, background: cardBg, padding: '16px 16px 50px 16px', boxSizing: 'border-box' }}>
               
-              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px' }}>
+              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '18px' }}>👤</span>
@@ -2220,7 +2225,7 @@ export default function App() {
                     onClick={triggerSosLostAlert}
                     style={{
                       padding: '6px 10px', borderRadius: '10px', background: '#dc2626', color: '#fff',
-                      border: 'none', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer'
+                      border: 'none', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(220,38,38,0.2)'
                     }}
                   >
                     🚨 הלכתי לאיבוד!
@@ -2232,7 +2237,7 @@ export default function App() {
                     onClick={handleManualLocationUpdate}
                     style={{
                       padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-                      background: cardBg, color: textColor, border: `1px solid ${borderColor}`
+                      background: cardBg, color: textColor, border: `1px solid ${borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
                     }}
                   >
                     📍 עדכן מיקום יזום
@@ -2249,7 +2254,7 @@ export default function App() {
                     style={{
                       padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
                       background: radarTrackingMode === 'auto' ? '#22c55e' : '#2563eb',
-                      color: '#ffffff', border: 'none'
+                      color: '#ffffff', border: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                     }}
                   >
                     {radarTrackingMode === 'auto' ? '🛰️ כבה מעקב חי' : '🛰️ הפעל מעקב חי'}
@@ -2258,7 +2263,7 @@ export default function App() {
               </div>
 
               {(challengeAuthor === 'אריק' || isAdminUnlocked) && (
-                <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px' }}>
+                <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <span style={{ fontSize: '13px', fontWeight: 'bold', color: textColor }}>👑 פאנל ניהול (אריק)</span>
                   </div>
@@ -2266,7 +2271,7 @@ export default function App() {
                     onClick={adminForceRefreshAllLocations}
                     style={{
                       width: '100%', padding: '10px', borderRadius: '10px', background: '#2563eb', color: '#fff',
-                      border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', marginTop: '4px'
+                      border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', marginTop: '4px', boxShadow: '0 2px 5px rgba(37,99,235,0.2)'
                     }}
                   >
                     🔄 רענן את כל המיקומים עכשיו
@@ -2285,7 +2290,7 @@ export default function App() {
                     const distStr = myLocation ? calculateDistanceKm(myLocation.lat, myLocation.lng, member.lat, member.lng) : null;
                     const isSosMember = activeSosAlert && activeSosAlert.name === member.name;
                     return (
-                      <div key={i} style={{ background: isSosMember ? (isDark ? '#3f1515' : '#fee2e2') : blockBg, borderRadius: '12px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div key={i} style={{ background: isSosMember ? (isDark ? '#3f1515' : '#fee2e2') : blockBg, borderRadius: '12px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${borderColor}`, boxShadow: '0 2px 5px rgba(0,0,0,0.03)' }}>
                         <div>
                           <b style={{ fontSize: '14px', color: isSosMember ? '#dc2626' : textColor, display: 'block' }}>
                             {isSosMember ? '🚨 ' : '👤 '}{member.name}
@@ -2302,7 +2307,7 @@ export default function App() {
                             href={`https://maps.apple.com/?daddr=${member.lat},${member.lng}&dirflg=w`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ padding: '6px 10px', borderRadius: '8px', background: '#2563eb', color: '#fff', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}
+                            style={{ padding: '6px 10px', borderRadius: '8px', background: '#2563eb', color: '#fff', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(37,99,235,0.2)' }}
                           >
                             🚶 נווט
                           </a>
@@ -2332,7 +2337,7 @@ export default function App() {
             </div>
 
             {savedParking ? (
-              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px' }}>
+              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#16a34a', display: 'block', marginBottom: '4px' }}>✅ רכב שמור במערכת</span>
                 <p style={{ margin: '0 0 6px', fontSize: '14px', fontWeight: 'bold', color: textColor }}>
                   📌 {savedParking.note}
@@ -2342,7 +2347,7 @@ export default function App() {
                 </small>
 
                 {savedParking.photo && (
-                  <img src={savedParking.photo} alt="Parking place" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px' }} />
+                  <img src={savedParking.photo} alt="Parking place" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px', border: `1px solid ${borderColor}` }} />
                 )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
@@ -2350,13 +2355,13 @@ export default function App() {
                     href={`https://maps.apple.com/?daddr=${savedParking.lat},${savedParking.lng}&dirflg=w`}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ ...navBtnStyle, background: '#2563eb', color: '#fff', border: 'none', textDecoration: 'none' }}
+                    style={{ ...navBtnStyle, background: '#2563eb', color: '#fff', border: 'none', textDecoration: 'none', boxShadow: '0 2px 5px rgba(37,99,235,0.2)' }}
                   >
                     🚶 נווט ברגל לרכב
                   </a>
                   <a
                     href={`https://www.waze.com/ul?ll=${savedParking.lat},${savedParking.lng}&navigate=yes`}
-                    style={{ ...navBtnStyle, background: '#33ccff', color: '#000', border: 'none', textDecoration: 'none' }}
+                    style={{ ...navBtnStyle, background: '#33ccff', color: '#000', border: 'none', textDecoration: 'none', boxShadow: '0 2px 5px rgba(51,204,255,0.2)' }}
                   >
                     {WAZE_SVG} Waze
                   </a>
@@ -2367,7 +2372,7 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>תיאור מקום החניה / קומה / עמוד:</label>
                   <input
@@ -2382,14 +2387,14 @@ export default function App() {
                 <input type="file" id="parkingCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleParkingPhotoUpload} />
                 <button
                   onClick={() => document.getElementById('parkingCamera').click()}
-                  style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}
+                  style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
                 >
                   📷 {parkingPhotoUrl ? '✓ תמונת חניה צולמה' : 'צלם תמונה של עמוד החניה'}
                 </button>
 
                 <button
                   onClick={saveSmartParkingLocation}
-                  style={{ padding: '12px', borderRadius: '12px', background: '#22c55e', color: '#ffffff', border: 'none', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}
+                  style={{ padding: '12px', borderRadius: '12px', background: '#22c55e', color: '#ffffff', border: 'none', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', marginTop: '4px', boxShadow: '0 4px 10px rgba(34,197,94,0.25)' }}
                 >
                   📍 שמור מיקום GPS מדויק עכשיו
                 </button>
@@ -2425,7 +2430,7 @@ export default function App() {
               </div>
             ) : (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', background: blockBg, padding: '10px 14px', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', background: blockBg, padding: '10px 14px', borderRadius: '12px', border: `1px solid ${borderColor}` }}>
                   <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#2563eb' }}>לוח של: {bingoPlayer} 🎲</span>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button onClick={() => initBingoGame(bingoPlayer)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>🔀 ערבב</button>
@@ -2434,7 +2439,7 @@ export default function App() {
                 </div>
 
                 {hasBingoWin && (
-                  <div style={{ background: '#22c55e', color: '#fff', padding: '14px', borderRadius: '14px', textAlign: 'center', marginBottom: '14px' }}>
+                  <div style={{ background: '#22c55e', color: '#fff', padding: '14px', borderRadius: '14px', textAlign: 'center', marginBottom: '14px', boxShadow: '0 4px 10px rgba(34,197,94,0.3)' }}>
                     <h3 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 'bold' }}>🏆 בינגו! כל הכבוד {bingoPlayer}! 🎉</h3>
                     <p style={{ margin: 0, fontSize: '11px' }}>השלמת רצף מנצח! שודרה התראה לכולם</p>
                   </div>
@@ -2534,7 +2539,7 @@ export default function App() {
                 style={{
                   padding: '0 16px', background: '#2563eb',
                   color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold',
-                  cursor: 'pointer', fontSize: '13px', flexShrink: 0
+                  cursor: 'pointer', fontSize: '13px', flexShrink: 0, boxShadow: '0 2px 5px rgba(37,99,235,0.2)'
                 }}
               >
                 {isTranslating ? '...' : 'תרגם'}
@@ -2542,16 +2547,16 @@ export default function App() {
             </div>
 
             {italianOutput && (
-              <div style={{ background: blockBg, padding: '12px 14px', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button onClick={() => speakItalian(italianOutput)} style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: '8px', padding: '4px 10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>🔊 השמע</button>
+              <div style={{ background: blockBg, padding: '12px 14px', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${borderColor}`, boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <button onClick={() => speakItalian(italianOutput)} style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: '8px', padding: '4px 10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 4px rgba(37,99,235,0.2)' }}>🔊 השמע</button>
                 <strong style={{ fontSize: '15px', color: textColor, direction: 'ltr', fontWeight: 'bold' }}>{italianOutput}</strong>
               </div>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {filteredPhrases.slice(0, 10).map((phrase, idx) => (
-                <div key={idx} onClick={() => speakItalian(phrase.it)} style={{ background: blockBg, borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-                  <button onClick={(e) => { e.stopPropagation(); speakItalian(phrase.it); }} style={{ background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, borderRadius: '8px', width: '32px', height: '32px', fontSize: '14px', cursor: 'pointer', color: textColor }}>🔊</button>
+                <div key={idx} onClick={() => speakItalian(phrase.it)} style={{ background: blockBg, borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', border: `1px solid ${borderColor}`, boxShadow: '0 1px 4px rgba(0,0,0,0.02)' }}>
+                  <button onClick={(e) => { e.stopPropagation(); speakItalian(phrase.it); }} style={{ background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, borderRadius: '8px', width: '32px', height: '32px', fontSize: '14px', cursor: 'pointer', color: textColor, boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>🔊</button>
                   <div style={{ flex: 1, textAlign: 'right', marginRight: '10px' }}>
                     <span style={{ fontSize: '13px', fontWeight: 'bold', color: textColor, display: 'block' }}>{phrase.he}</span>
                     <strong style={{ fontSize: '12px', color: '#2563eb', display: 'block' }}>{phrase.it}</strong>
@@ -2587,14 +2592,14 @@ export default function App() {
             </div>
 
             {isTriviaPaused ? (
-              <div style={{ textAlign: 'center', padding: '30px 16px', background: blockBg, borderRadius: '16px' }}>
+              <div style={{ textAlign: 'center', padding: '30px 16px', background: blockBg, borderRadius: '16px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <span style={{ fontSize: '36px', display: 'block', marginBottom: '8px' }}>⏸️</span>
                 <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: textColor, margin: '0 0 6px' }}>המשחק מושהה</h3>
                 <p style={{ fontSize: '12px', color: textSub, margin: 0 }}>הניקוד והשאלה שמורים בבטחה.</p>
               </div>
             ) : (
               <>
-                <div style={{ background: blockBg, borderRadius: '12px', padding: '10px 14px', marginBottom: '12px', textAlign: 'center' }}>
+                <div style={{ background: blockBg, borderRadius: '12px', padding: '10px 14px', marginBottom: '12px', textAlign: 'center', border: `1px solid ${borderColor}`, boxShadow: '0 1px 4px rgba(0,0,0,0.02)' }}>
                   <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#2563eb' }}>
                     🎯 תורו/ה של: <u style={{ fontSize: '15px' }}>{travelers[travelerIndex]}</u>!
                   </span>
@@ -2602,7 +2607,7 @@ export default function App() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', marginBottom: '14px' }}>
                   {travelers.map((name, idx) => (
-                    <div key={idx} style={{ background: travelerIndex === idx ? '#2563eb' : blockBg, color: travelerIndex === idx ? '#fff' : textColor, borderRadius: '10px', padding: '6px 2px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold' }}>
+                    <div key={idx} style={{ background: travelerIndex === idx ? '#2563eb' : blockBg, color: travelerIndex === idx ? '#fff' : textColor, borderRadius: '10px', padding: '6px 2px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', border: `1px solid ${borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
                       <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
                       <div style={{ fontSize: '12px', fontWeight: 'bold', color: travelerIndex === idx ? '#fff' : '#16a34a' }}>{travelerScores[name] || 0} נק'</div>
                     </div>
@@ -2610,14 +2615,14 @@ export default function App() {
                 </div>
 
                 {selectedAnswer !== null && (
-                  <div style={{ textAlign: 'center', marginBottom: '14px', background: blockBg, padding: '10px', borderRadius: '12px' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '14px', background: blockBg, padding: '10px', borderRadius: '12px', border: `1px solid ${borderColor}` }}>
                     <p style={{ fontSize: '14px', fontWeight: 'bold', color: isAnswerCorrect ? '#16a34a' : '#dc2626', margin: 0 }}>
                       {isAnswerCorrect ? `🎉 כל הכבוד ${travelers[travelerIndex]}! (+10 נק')` : `❌ לא מדויק! עוברים הלאה...`}
                     </p>
                   </div>
                 )}
 
-                <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', boxSizing: 'border-box' }}>
+                <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', boxSizing: 'border-box', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                   <p style={{ margin: 0, fontSize: '15px', fontWeight: 'bold', color: textColor, lineHeight: '1.4' }}>
                     {triviaQuestions[triviaIndex]?.q}
                   </p>
@@ -2646,6 +2651,7 @@ export default function App() {
                         style={{
                           padding: '12px 14px', borderRadius: '12px', textAlign: 'right', fontSize: '13px', fontWeight: 'bold',
                           background: btnBg, color: btnColor, border: `1px solid ${borderColor}`, cursor: selectedAnswer === null ? 'pointer' : 'default',
+                          boxShadow: '0 2px 5px rgba(0,0,0,0.03)',
                           transition: 'all 0.15s ease'
                         }}
                       >
@@ -2669,7 +2675,7 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
             </div>
 
-            <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', textAlign: 'center' }}>
+            <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', textAlign: 'center', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
               <span style={{ fontSize: '28px', display: 'block', marginBottom: '4px' }}>🎯</span>
               <h3 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 'bold', color: textColor }}>{day.challenge}</h3>
               <p style={{ margin: 0, fontSize: '13px', color: textSub, lineHeight: '1.4' }}>{day.challengeDesc}</p>
@@ -2696,8 +2702,8 @@ export default function App() {
               <input type="file" id="questPhotoInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) saveDailyChallenge(e.target.files[0]); }} />
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <button onClick={() => handleGlobalClick(() => document.getElementById('questPhotoInput').click())} style={{ padding: '12px', borderRadius: '12px', background: blockBg, color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>📸 צלם לאלבום</button>
-                <button onClick={() => handleGlobalClick(() => saveDailyChallenge(null))} style={{ padding: '12px', borderRadius: '12px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>✅ סמן כהושלם</button>
+                <button onClick={() => handleGlobalClick(() => document.getElementById('questPhotoInput').click())} style={{ padding: '12px', borderRadius: '12px', background: blockBg, color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.03)' }}>📸 צלם לאלבום</button>
+                <button onClick={() => handleGlobalClick(() => saveDailyChallenge(null))} style={{ padding: '12px', borderRadius: '12px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(37,99,235,0.25)' }}>✅ סמן כהושלם</button>
               </div>
 
               {isCurrentDayCompleted && (
@@ -2729,7 +2735,7 @@ export default function App() {
                 const log = completedChallenges[d.date] || completedChallenges[String(idx)];
                 const isUnlocked = isAdminUnlocked || log?.completed;
                 return (
-                  <div key={idx} style={{ background: blockBg, borderRadius: '14px', padding: '14px', boxSizing: 'border-box', width: '100%' }}>
+                  <div key={idx} style={{ background: blockBg, borderRadius: '14px', padding: '14px', boxSizing: 'border-box', width: '100%', border: `1px solid ${borderColor}`, boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                       <span style={{ fontSize: '10px', fontWeight: 'bold', padding: '2px 6px', borderRadius: '6px', background: log?.completed ? '#22c55e' : textSub, color: '#fff' }}>
                         {log?.completed ? 'בוצע! 🎉' : 'טרם בוצע'}
@@ -2740,7 +2746,7 @@ export default function App() {
                       <div>
                         <b style={{ fontSize: '13px', color: textColor, display: 'block', marginBottom: '4px' }}>🎯 {d.challenge}</b>
                         {log?.text && (
-                          <div style={{ fontSize: '12px', color: '#16a34a', marginTop: '4px', background: isDark ? '#064e3b' : '#f0fdf4', padding: '8px', borderRadius: '8px' }}>
+                          <div style={{ fontSize: '12px', color: '#16a34a', marginTop: '4px', background: isDark ? '#064e3b' : '#f0fdf4', padding: '8px', borderRadius: '8px', border: `1px solid ${borderColor}` }}>
                             💬 <b>{log.author || 'משפחה'}:</b> "{log.text}"
                           </div>
                         )}
@@ -2765,10 +2771,10 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
             </div>
 
-            <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: '#2563eb', color: '#fff', border: 'none', marginBottom: '16px' }}>📷 הוסף תמונה / סרטון</button>
+            <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: '#2563eb', color: '#fff', border: 'none', marginBottom: '16px', boxShadow: '0 4px 10px rgba(37,99,235,0.25)' }}>📷 הוסף תמונה / סרטון</button>
             
             {showGalleryUpload && (
-              <div style={{ background: blockBg, padding: '14px', borderRadius: '14px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ background: blockBg, padding: '14px', borderRadius: '14px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <input 
                   type="text" 
                   placeholder="תיאור התמונה..." 
@@ -2779,15 +2785,15 @@ export default function App() {
                 <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
                 <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>📸 צלם עכשיו</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>📁 בחר מהמכשיר</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>📸 צלם עכשיו</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>📁 בחר מהמכשיר</button>
                 </div>
               </div>
             )}
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '8px' }}>
               {galleryItems.map((item, i) => (
-                <div key={item.id || i} style={{ background: blockBg, borderRadius: '12px', padding: '6px', boxSizing: 'border-box', position: 'relative' }}>
+                <div key={item.id || i} style={{ background: blockBg, borderRadius: '12px', padding: '6px', boxSizing: 'border-box', position: 'relative', border: `1px solid ${borderColor}`, boxShadow: '0 2px 5px rgba(0,0,0,0.03)' }}>
                   {item.media_url && (
                     <img 
                       src={item.media_url} 
@@ -2801,7 +2807,7 @@ export default function App() {
                   {item.id && (
                     <button 
                       onClick={(e) => deleteGalleryItem(item.id, e)} 
-                      style={{ position: 'absolute', top: '10px', left: '10px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '22px', height: '22px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ position: 'absolute', top: '10px', left: '10px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '22px', height: '22px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
                     >
                       ✕
                     </button>
@@ -2842,15 +2848,15 @@ export default function App() {
             </div>
             <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך:</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: blockBg, color: '#f59e0b', gridColumn: 'span 2' }}>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: blockBg, color: '#f59e0b', gridColumn: 'span 2', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 ☕ <span>עצירת דרך / Autogrill & שירותים</span>
               </button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: blockBg, color: textColor }}>⛽ <span>תחנת דלק</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: blockBg, color: textColor }}>💊 <span>פארם</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: blockBg, color: textColor }}>🍕 <span>פיצה</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: blockBg, color: textColor }}>🍦 <span>גלידה</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: blockBg, color: textColor }}>🛒 <span>סופרמרקט</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: blockBg, color: textColor }}>🍝 <span>מסעדות</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: blockBg, color: textColor, border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>⛽ <span>תחנת דלק</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: blockBg, color: textColor, border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>💊 <span>פארם</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: blockBg, color: textColor, border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🍕 <span>פיצה</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: blockBg, color: textColor, border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🍦 <span>גלידה</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: blockBg, color: textColor, border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🛒 <span>סופרמרקט</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: blockBg, color: textColor, border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🍝 <span>מסעדות</span></button>
             </div>
           </div>
         </div>
@@ -2865,8 +2871,8 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none' }}>🚨 חירום כללי: 112</a>
-              <a href="tel:118" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none' }}>🚑 אמבולנס: 118</a>
+              <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
+              <a href="tel:118" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🚑 אמבולנס: 118</a>
             </div>
           </div>
         </div>
@@ -2885,16 +2891,16 @@ export default function App() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
-              <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: 'none', background: '#2563eb', color: '#fff' }}>
+              <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: 'none', background: '#2563eb', color: '#fff', boxShadow: '0 4px 10px rgba(37,99,235,0.25)' }}>
                 ➕ הוסף כרטיס
               </button>
-              <button onClick={() => handleGlobalClick(addNewFolder)} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: 'none', background: isDark ? '#333' : '#e5e7eb', color: textColor }}>
+              <button onClick={() => handleGlobalClick(addNewFolder)} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: `1px solid ${borderColor}`, background: isDark ? '#333' : '#ffffff', color: textColor, boxShadow: '0 2px 5px rgba(0,0,0,0.03)' }}>
                 📁 תקייה חדשה
               </button>
             </div>
 
             {showUploadBox && (
-              <div style={{ background: blockBg, padding: '14px', borderRadius: '14px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '10px', boxSizing: 'border-box', width: '100%' }}>
+              <div style={{ background: blockBg, padding: '14px', borderRadius: '14px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '10px', boxSizing: 'border-box', width: '100%', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <div>
                   <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>בחר תקייה:</label>
                   <select value={selectedUploadFolder} onChange={(e) => setSelectedUploadFolder(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }}>
@@ -2908,8 +2914,8 @@ export default function App() {
                 <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                 <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('cameraInput').click())} style={{ ...uploadBtnStyle, background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}` }}>📷 צלם במצלמה</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}` }}>📁 בחר מהמכשיר</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('cameraInput').click())} style={{ ...uploadBtnStyle, background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>📷 צלם במצלמה</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('fileInput').click())} style={{ ...uploadBtnStyle, background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>📁 בחר מהמכשיר</button>
                 </div>
               </div>
             )}
@@ -2925,7 +2931,8 @@ export default function App() {
                     background: activeFolder === f ? '#2563eb' : blockBg,
                     color: activeFolder === f ? '#ffffff' : textColor,
                     border: `1px solid ${activeFolder === f ? '#2563eb' : borderColor}`,
-                    cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box'
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.03)'
                   }}
                 >
                   <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px' }}>{f}</strong>
@@ -2949,7 +2956,8 @@ export default function App() {
                     style={{ 
                       display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', 
                       gap: '10px', padding: '12px', borderRadius: '14px', background: blockBg, 
-                      border: `1px solid ${borderColor}`, cursor: 'pointer', boxSizing: 'border-box', width: '100%' 
+                      border: `1px solid ${borderColor}`, cursor: 'pointer', boxSizing: 'border-box', width: '100%',
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.03)'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
