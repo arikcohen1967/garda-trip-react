@@ -1661,7 +1661,6 @@ export default function App() {
 
   const isDark = themeMode === 'dark';
 
-  // 💎 מסגרות מעט יותר עבות ומשודרגות עם צללית ברורה לגרסה הבהירה
   const lightCardBorder = '#cbd5e1'; 
   const lightCardShadow = '0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04)'; 
 
@@ -1781,7 +1780,7 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* פס עליון מעודכן: שילוב סטטוס רשת וימין-שמאל מדויק לפי הבקשה */}
+      {/* פס עליון מעודכן */}
       <div style={{
         background: cardBg,
         color: textColor,
@@ -1797,10 +1796,9 @@ export default function App() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: `1px solid ${borderColor}`,
+        borderBottom: `1.5px solid ${borderColor}`,
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
       }}>
-        {/* שלושת השווים של התפריט הימני הועלו לכאן ליד מצב מקוון / לא מקוון */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button 
             onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
@@ -1894,80 +1892,96 @@ export default function App() {
         </div>
       )}
 
-      <header style={{
-        padding: '14px 20px',
-        background: bgMain,
-        borderBottom: `1px solid ${borderColor}`,
+      {/* 🌤️ הווידג'ט המאוחד והמשודרג מוקם בחלק העליון (מתחת לפס הניווט) */}
+      <div style={{
         display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '10px',
+        background: cardBg,
+        border: `1.5px solid ${borderColor}`,
+        borderRadius: '16px',
+        padding: '10px 14px',
+        margin: '12px 16px 4px 16px',
+        boxShadow: cardShadow,
+        boxSizing: 'border-box',
+        width: 'calc(100% - 32px)',
         position: 'sticky',
-        top: '33px',
-        zIndex: 900,
-        width: '100%',
-        boxSizing: 'border-box'
+        top: '43px',
+        zIndex: 890
       }}>
-        {/* ווידג'ט מזג אוויר מסונכרן לאגם גארדה (במקום הריבוע הישן) כולל כפתור החלפת הגרסאות וכפתור ניווט למלון */}
-        <div style={{
-          background: cardBg,
-          border: `1.5px solid ${borderColor}`,
-          borderRadius: '14px',
-          padding: '8px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          boxShadow: cardShadow,
-          flex: 1,
-          maxWidth: '260px'
-        }}>
-          <span style={{ fontSize: '22px' }}>☀️</span>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '12px', fontWeight: 'bold', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{weatherData.location} · {weatherData.temp}</div>
-            <div style={{ fontSize: '10px', color: textSub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{weatherData.condition}</div>
+        {/* חלק ימני: מזג אוויר ומידע על היעד */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+          <span style={{ fontSize: '24px', flexShrink: 0 }}>☀️</span>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: '13px', fontWeight: 'bold', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {weatherData.location} · {weatherData.temp}
+            </div>
+            <div style={{ fontSize: '11px', color: textSub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {weatherData.condition}
+            </div>
           </div>
-          {/* כפתור המעבר בין הגרסאות בתוך ווידג'ט מזג האוויר */}
-          <button
-            onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'dark'))}
-            style={{
-              background: isDark ? '#2c2c2e' : '#f1f5f9',
-              border: `1px solid ${borderColor}`,
-              color: textColor,
-              padding: '6px 10px',
-              borderRadius: '10px',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              flexShrink: 0
-            }}
-            title="החלף גרסה (בהיר / כהה)"
-          >
-            {isDark ? '☀️ בהיר' : '🌙 כהה'}
-          </button>
         </div>
 
-        <div style={{ textAlign: 'center', margin: '0 8px' }}>
-          <h1 style={{ fontSize: '15px', fontWeight: 'bold', margin: '0 0 2px', color: textColor }}>אגם Garda וונציה</h1>
-          <p style={{ fontSize: '10px', color: textSub, margin: 0 }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
-        </div>
+        {/* חלק אמצעי: כפתור החלפת ערכת נושא (בהיר / כהה) */}
+        <button
+          onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'dark'))}
+          style={{
+            background: isDark ? '#2c2c2e' : '#f1f5f9',
+            border: `1px solid ${borderColor}`,
+            color: textColor,
+            padding: '6px 10px',
+            borderRadius: '10px',
+            fontSize: '11px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            flexShrink: 0,
+            boxShadow: cardShadow
+          }}
+          title="החלף ערכת נושא"
+        >
+          {isDark ? '☀️ בהיר' : '🌙 כהה'}
+        </button>
 
-        {/* כפתור ניווט למלון בתוך הווידג'ט החדש בצד שמאל של ההדר */}
-        <a 
+        {/* חלק שמאלי ביותר: כפתור ניווט מהיר למלון Bio Vojon ב-Waze */}
+        <a
           href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
           onClick={() => playClickSound()}
           style={{
-            background: cardBg, 
-            border: `1.5px solid ${borderColor}`, 
+            background: '#33ccff',
+            color: '#000000',
+            border: 'none',
             padding: '8px 12px',
-            borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', 
-            color: textColor, cursor: 'pointer', textDecoration: 'none',
-            display: 'flex', alignItems: 'center', gap: '6px',
-            boxShadow: cardShadow,
-            flexShrink: 0
+            borderRadius: '12px',
+            fontSize: '12px',
+            fontWeight: '900',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            flexShrink: 0,
+            boxShadow: '0 4px 12px rgba(51, 204, 255, 0.3)'
           }}
-          title="נווט למלון ב-Waze"
+          title="נווט למלון Bio Vojon ב-Waze"
         >
-          {WAZE_SVG} למלון
+          {WAZE_SVG} למלון Vojon
         </a>
+      </div>
+
+      <header style={{
+        padding: '10px 20px',
+        background: bgMain,
+        borderBottom: `1px solid ${borderColor}`,
+        textAlign: 'center',
+        position: 'sticky',
+        top: '105px',
+        zIndex: 880,
+        width: '100%',
+        boxSizing: 'border-box'
+      }}>
+        <h1 style={{ fontSize: '15px', fontWeight: 'bold', margin: '0 0 2px', color: textColor }}>אגם Garda וונציה</h1>
+        <p style={{ fontSize: '10px', color: textSub, margin: 0 }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
       </header>
 
       {sidebarOpen && (
@@ -3153,7 +3167,7 @@ const gridModalBtn = {
   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', boxSizing: 'border-box', width: '100%', border: 'none'
 };
 
-The uploadBtnStyle = {
+const uploadBtnStyle = {
   width: '100%', padding: '10px', borderRadius: '10px',
   fontWeight: 'bold', cursor: 'pointer', fontSize: '12px', boxSizing: 'border-box'
 };
