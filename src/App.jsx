@@ -2478,6 +2478,31 @@ export default function App() {
             </button>
           </div>
 
+          {/* כפתור גישה ישירה לאלבום התמונות המרכזי במסך הראשי */}
+          <div style={{ marginBottom: '16px' }}>
+            <button
+              onClick={() => handleGlobalClick(() => setModalType('gallery'))}
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: '14px',
+                background: cardBg,
+                color: textColor,
+                border: `1.5px solid ${borderColor}`,
+                fontWeight: 'bold',
+                fontSize: '14px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                boxShadow: cardShadow
+              }}
+            >
+              📸 פתח את אלבום התמונות המשפחתי המרכזי ({galleryItems.length} תמונות)
+            </button>
+          </div>
+
           <div 
             onClick={() => handleGlobalClick(() => setModalType('questModal'))}
             style={{
@@ -2868,7 +2893,6 @@ export default function App() {
                   </a>
                 </div>
 
-                {/* 🎨 עיצוב יפה ומעוצב לכפתור מחיקת החניה */}
                 <button 
                   onClick={clearSavedParking} 
                   style={{ 
