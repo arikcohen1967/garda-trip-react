@@ -711,7 +711,6 @@ export default function App() {
         } catch (e) {}
       },
       () => {
-        // גם אם ה-GPS נכשל, נפעיל מיד את התראת ה-SOS המקומית והמרוחקת
         const sosData = {
           name: currentName,
           lat: 45.4384,
@@ -1661,6 +1660,8 @@ export default function App() {
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
       speakItalian(italianText);
+      // ניקוי תיבת הקלט מיד עם סיום התרגום והשמעת השאלה
+      setHebrewInput('');
     };
 
     const matched = QUICK_PHRASES.find(p => query.includes(p.he) || p.he.includes(query));
@@ -3002,7 +3003,7 @@ export default function App() {
                   style={{
                     width: '100%', padding: '12px 40px 12px 12px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
-                    outline: 'none', fontSize: '14px', boxSizing: 'border-box'
+                    outline: 'none', fontSize: '16px', boxSizing: 'border-box'
                   }} 
                 />
                 <button
