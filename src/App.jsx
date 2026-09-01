@@ -607,22 +607,33 @@ export default function App() {
     }
   };
 
-  // 🔔 שליחת צליל חזק והודעה דחופה לכלל המכשירים במשפחה דרך Supabase
+  // 🔔 שליחת צליל חזק והודעה דחופה לכלל המכשירים במשפחה דרך Supabase (כולל כתיבה לטבלה לגיבוי אמין)
   const sendSoundAlertToMember = async (memberName) => {
     const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
     if (!msg) return;
 
+    const alertPayload = {
+      senderName: challengeAuthor || 'אריק',
+      targetName: memberName,
+      message: msg,
+      time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+    };
+
     try {
+      // 1. שמירה במסד הנתונים כדי להבטיח שגם אם המכשיר השני לא היה באותו שנייה במסך הרדאר הוא יקבל את זה
+      await supabase.from('family_alerts').insert([{
+        sender_name: alertPayload.senderName,
+        target_name: alertPayload.targetName,
+        message: alertPayload.message
+      }]);
+
+      // 2. שידור מיידי בזמן אמת
       await supabase.channel('realtime-radar').send({
         type: 'broadcast',
         event: 'sound_alert_with_msg',
-        payload: {
-          senderName: challengeAuthor || 'אריק',
-          targetName: memberName,
-          message: msg,
-          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-        }
+        payload: alertPayload
       });
+
       alert(`🔔 נשלחה התראה קולית חזקה והודעה דחופה אל ${memberName}!`);
     } catch (e) {
       alert('שגיאה בשליחת ההתראה');
@@ -934,7 +945,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime אמין למסירת ההתראות לכל המכשירים ברשת
+  // סנכרון Realtime משולב עם האזנה לטבלת ההתראות (Family Alerts)
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -945,6 +956,16 @@ export default function App() {
             localStorage.setItem('garda-family-radar-cache', JSON.stringify(updated));
             return updated;
           });
+        }
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'family_alerts' }, payload => {
+        if (payload.new) {
+          setIncomingSoundAlert({
+            senderName: payload.new.sender_name,
+            message: payload.new.message,
+            time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+          });
+          startEscalatingAlarm();
         }
       })
       .on('broadcast', { event: 'sos_alert' }, ({ payload }) => {
@@ -1734,7 +1755,7 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאפס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
