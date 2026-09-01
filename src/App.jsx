@@ -1913,7 +1913,7 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* פס עליון מעודכן (ללא סטטוס גרסה מיותר, כפתור תפריט מוגדל ובולט) */}
+      {/* פס עליון מתוקן ומאוד מסודר (תפריט מימין, חיווי משמאל) */}
       <div style={{
         background: cardBg,
         color: textColor,
@@ -1932,7 +1932,7 @@ export default function App() {
         borderBottom: `1.5px solid ${borderColor}`,
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
       }}>
-        {/* כפתור תפריט ☰ מוגדל ובולט */}
+        {/* כפתור תפריט ☰ מוגדל ובולט בצד ימין */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
@@ -1955,7 +1955,7 @@ export default function App() {
           ☰
         </button>
 
-        {/* חיווי חיבור מקוון / לא מקוון */}
+        {/* חיווי חיבור מקוון / לא מקוון בצד שמאל */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#f59e0b' }}></span>
           <span style={{ color: textColor, fontWeight: 'bold' }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
@@ -2039,7 +2039,7 @@ export default function App() {
           boxSizing: 'border-box',
           width: 'calc(100% - 32px)',
           position: 'sticky',
-          top: '53px',
+          top: '63px',
           zIndex: 890,
           cursor: 'pointer'
         }}
@@ -2089,7 +2089,7 @@ export default function App() {
         borderBottom: `1px solid ${borderColor}`,
         textAlign: 'center',
         position: 'sticky',
-        top: '115px',
+        top: '125px',
         zIndex: 880,
         width: '100%',
         boxSizing: 'border-box'
@@ -2242,7 +2242,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מעודכן עם חיפוש חופשי, השלמה אוטומטית ומיקרופון */}
+      {/* מודל סביבי מתוקן לחלוטין (כיווניות RTL מושלמת, ללא חיתוך טקסט וללא השלמה אוטומטית מציקה) */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2251,19 +2251,19 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            {/* שורת חיפוש חופשי עם השלמה אוטומטית מתקדמת */}
+            {/* שורת חיפוש חופשי עם כיווניות RTL אמיתית */}
             <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: filteredSuggestions.length > 0 ? '4px' : '16px' }}>
               <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
                 <input
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_fixed"
-                  placeholder="הקלד או חפש כל דבר (לדוגמה: פארק, בית מרקחת)..."
+                  name="around_custom_search_input_fixed_final"
+                  placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
                   style={{
-                    width: '100%', padding: '12px 12px 12px 42px', borderRadius: '12px',
+                    width: '100%', padding: '12px 42px 12px 12px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
                     outline: 'none', fontSize: '13px', boxSizing: 'border-box', textAlign: 'right'
                   }}
@@ -2272,7 +2272,7 @@ export default function App() {
                   type="button"
                   onClick={startAroundVoiceSearch}
                   style={{
-                    position: 'absolute', left: '10px', background: 'none', border: 'none',
+                    position: 'absolute', right: '10px', background: 'none', border: 'none',
                     fontSize: '18px', cursor: 'pointer', opacity: isAroundListening ? 1 : 0.7
                   }}
                   title="חיפוש קולי"
@@ -2300,7 +2300,7 @@ export default function App() {
                     key={idx}
                     onClick={() => selectSuggestion(item)}
                     style={{
-                      padding: '10px 14px', fontSize: '13px', cursor: 'pointer',
+                      padding: '10px 14px', fontSize: '13px', cursor: 'pointer', textAlign: 'right',
                       borderBottom: idx < filteredSuggestions.length - 1 ? `1px solid ${borderColor}` : 'none',
                       color: textColor
                     }}
