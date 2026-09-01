@@ -374,7 +374,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
           <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה وרונה (VRN)</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
         </>
       )}
 
@@ -462,9 +462,12 @@ export default function App() {
 
   // 🎙️ מצב האזנה מרחוק (מיקרופון)
   const [listeningStream, setListeningStream] = useState(null);
+  
+  // רפרנסים לשמע (Web Audio API)
   const audioCtxRef = useRef(null);
   const oscillatorRef = useRef(null);
   const alarmGainRef = useRef(null);
+  const rampIntervalRef = useRef(null);
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
@@ -586,7 +589,7 @@ export default function App() {
     }
   };
 
-  // 🔔 שליחת צליל והודעה דחופה מתחזקת למשתמש ברדאר
+  // 🔔 שליחת צליל מתחזק והודעה דחופה למשתמש ברדאר
   const sendSoundAlertToMember = async (memberName) => {
     const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
     if (!msg) return;
@@ -813,34 +816,42 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTimer]);
 
-  // מערכת צליל הולך ומתחזק (Escalating Alarm Oscillator)
+  // 🚨 מערכת צליל מתחזק (Escalating Alarm) מותאמת לדפדפנים ניידים
   const startEscalatingAlarm = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
+      
+      if (audioCtxRef.current) {
+        try { audioCtxRef.current.close(); } catch (e) {}
+      }
+
       const ctx = new AudioCtx();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
       audioCtxRef.current = ctx;
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'sawtooth'; // צליל חד וצורם יותר שאי אפשר להתעלם ממנו
-      osc.frequency.setValueAtTime(400, ctx.currentTime);
-
-      // מתחיל חלש מאוד ומתחזק בהדרגה
-      gain.gain.setValueAtTime(0.02, ctx.currentTime);
       
-      // הגברה רציפה לאורך זמן
-      let currentVol = 0.02;
-      const rampInterval = setInterval(() => {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(350, ctx.currentTime);
+      gain.gain.setValueAtTime(0.01, ctx.currentTime);
+
+      let currentVol = 0.01;
+      if (rampIntervalRef.current) clearInterval(rampIntervalRef.current);
+      
+      rampIntervalRef.current = setInterval(() => {
         if (!audioCtxRef.current) {
-          clearInterval(rampInterval);
+          clearInterval(rampIntervalRef.current);
           return;
         }
-        currentVol = Math.min(1.0, currentVol + 0.08); // מתחזק עד למקסימום עוצמה
+        currentVol = Math.min(1.0, currentVol + 0.12); // עולה במהירות לעוצמה מלאה ומקסימלית
         try {
           gain.gain.setValueAtTime(currentVol, ctx.currentTime);
         } catch (e) {}
-      }, 800);
+      }, 500);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -848,11 +859,17 @@ export default function App() {
 
       oscillatorRef.current = osc;
       alarmGainRef.current = gain;
-    } catch (e) {}
+    } catch (e) {
+      console.warn('AudioContext error:', e);
+    }
   };
 
   const stopEscalatingAlarm = () => {
     try {
+      if (rampIntervalRef.current) {
+        clearInterval(rampIntervalRef.current);
+        rampIntervalRef.current = null;
+      }
       if (oscillatorRef.current) {
         oscillatorRef.current.stop();
         oscillatorRef.current.disconnect();
@@ -962,7 +979,6 @@ export default function App() {
       })
       .on('broadcast', { event: 'mic_listen_request' }, async ({ payload }) => {
         if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
-          // בקשת מיקרופון מהדפדפן של המשתמש
           try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             setListeningStream(stream);
@@ -1374,7 +1390,7 @@ export default function App() {
     try {
       const db = await openDb();
       const tx = db.transaction('files', 'readonly');
-      const req = tx.objectStore('files').index('folder').getAll(folder);
+      const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
       req.onsuccess = () => {
         const dbFiles = req.result || [];
         const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
@@ -1905,23 +1921,23 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* 🚨 פס התראה קופץ עבור הודעה וצליל מתחזק נכנס */}
+      {/* 🚨 פס התראה קופץ עבור הודעה וצליל מתחזק נכנס (מחייב אישור משתמש להפסקה) */}
       {incomingSoundAlert && (
         <div style={{
-          position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.85)',
+          position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.9)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', direction: 'rtl'
         }}>
           <div style={{
-            background: cardBg, color: textColor, padding: '24px', borderRadius: '20px',
-            width: '100%', maxWidth: '400px', border: '3px solid #dc2626', textAlign: 'center',
-            boxShadow: '0 25px 50px rgba(220,38,38,0.5)'
+            background: cardBg, color: textColor, padding: '28px', borderRadius: '24px',
+            width: '100%', maxWidth: '420px', border: '4px solid #dc2626', textAlign: 'center',
+            boxShadow: '0 25px 60px rgba(220,38,38,0.7)', animation: 'pulse 1s infinite'
           }}>
-            <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>🚨</span>
-            <h2 style={{ color: '#dc2626', margin: '0 0 8px', fontSize: '22px' }}>התראה דחופה!</h2>
-            <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 6px' }}>
+            <span style={{ fontSize: '56px', display: 'block', marginBottom: '12px' }}>🚨</span>
+            <h2 style={{ color: '#dc2626', margin: '0 0 10px', fontSize: '24px', fontWeight: '900' }}>התרעת חירום ממשפחה!</h2>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 8px' }}>
               {incomingSoundAlert.senderName} דורש/ת תשומת לב מיידית:
             </p>
-            <div style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', padding: '12px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', marginBottom: '20px', border: '1px solid #fecaca' }}>
+            <div style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', padding: '14px', borderRadius: '14px', fontSize: '16px', fontWeight: 'bold', marginBottom: '24px', border: '1px solid #fecaca' }}>
               "{incomingSoundAlert.message}"
             </div>
             <button
@@ -1930,9 +1946,9 @@ export default function App() {
                 setIncomingSoundAlert(null);
               }}
               style={{
-                width: '100%', padding: '14px', background: '#22c55e', color: '#fff',
-                border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(34,197,94,0.3)'
+                width: '100%', padding: '16px', background: '#22c55e', color: '#fff',
+                border: 'none', borderRadius: '14px', fontWeight: '900', fontSize: '16px', cursor: 'pointer',
+                boxShadow: '0 6px 16px rgba(34,197,94,0.4)'
               }}
             >
               הפסק צפצוף וצור קשר ✓
@@ -3067,7 +3083,7 @@ export default function App() {
                 </button>
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
-                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
                 >
                   🔒 איפוס
                 </button>
