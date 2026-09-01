@@ -1635,25 +1635,25 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // ❄️ רקע לבן שלג אמיתי לחלוטין ברמת ה-Root וגם לכל הכרטיסים והבלוקים!
+  // ❄️ רקע לבן שלג נקי לחלוטין (#ffffff)
   const bgMain = isDark ? '#000000' : '#ffffff';
-  const cardBg = isDark ? '#1c1c1e' : '#ffffff';
   const textColor = isDark ? '#f5f5f7' : '#1d1d1f';
   const textSub = isDark ? '#86868b' : '#6b7280';
   const borderColor = isDark ? '#38383a' : '#e5e7eb';
 
-  // 🌑 צללית עדינה ומקצועית מסביב למלבנים, ריבועים וכפתורים שיוצרת עומק נקי על רקע לבן שלג
+  // 🔲 הפנים של המלבנים, הריבועים והכרטיסים הוגדרו באפור בהיר נקי וסטרילי
+  const cardBg = isDark ? '#1c1c1e' : '#f3f4f6';
+  const blockBg = isDark ? '#2c2c2e' : '#f3f4f6';
+  const blockText = textColor; 
+
+  // 🌑 צללית נקייה ומקצועית להדגשת המסגרות על גבי רקע לבן
   const cardShadow = isDark 
     ? '0 6px 20px rgba(0, 0, 0, 0.5)'
-    : '0 8px 30px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.03)';
+    : '0 4px 14px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03)';
 
-  // 🔘 צבע אפור מטאלי כהה (כמו בתמונה) עבור כפתורים ואלמנטים
+  // 🔘 צבע אפור מטאלי כהה עבור כפתורי הלחיצה
   const metallicGreyBg = isDark ? '#3a3a3c' : '#57585a';
   const metallicGreyText = '#ffffff';
-
-  const blockBg = isDark ? '#2c2c2e' : '#ffffff';
-  const blockText = textColor; 
-  const blockBorder = borderColor;
 
   const renderMenuItem = (id, index) => {
     const menuConfigs = {
@@ -1679,7 +1679,7 @@ export default function App() {
         <button 
           onClick={() => handleGlobalClick(cfg.action)} 
           style={{ 
-            background: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+            background: isDark ? 'rgba(255, 255, 255, 0.05)' : '#f3f4f6',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: `1px solid ${borderColor}`,
@@ -1699,7 +1699,7 @@ export default function App() {
             transition: 'transform 0.15s ease, background 0.15s ease'
           }}
         >
-          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : '#ffffff', borderRadius: '8px', border: `1px solid ${borderColor}` }}>
+          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb', borderRadius: '8px' }}>
             {cfg.icon}
           </span>
           <span style={{ flex: 1, letterSpacing: '-0.01em' }}>{cfg.label}</span>
@@ -1760,15 +1760,14 @@ export default function App() {
         <button
           onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'darkSilver'))}
           style={{
-            background: isDark ? '#333' : '#ffffff',
-            border: `1px solid ${borderColor}`,
+            background: isDark ? '#333' : '#f3f4f6',
+            border: 'none',
             color: textColor,
             padding: '4px 10px',
             borderRadius: '12px',
             fontSize: '11px',
             fontWeight: 'bold',
-            cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+            cursor: 'pointer'
           }}
         >
           {isDark ? '☀️ מצב בהיר' : '🌙 מצב כהה'}
@@ -1837,7 +1836,7 @@ export default function App() {
 
       <header style={{
         padding: '14px 20px',
-        background: cardBg,
+        background: bgMain,
         borderBottom: `1px solid ${borderColor}`,
         display: 'flex',
         justifyContent: 'space-between',
@@ -1846,13 +1845,12 @@ export default function App() {
         top: '33px',
         zIndex: 900,
         width: '100%',
-        boxSizing: 'border-box',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.04)'
+        boxSizing: 'border-box'
       }}>
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
-            background: isDark ? '#333' : '#ffffff', 
+            background: isDark ? '#333' : '#f3f4f6', 
             border: `1px solid ${borderColor}`, 
             width: '38px', 
             height: '38px',
@@ -1863,8 +1861,7 @@ export default function App() {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            color: textColor,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+            color: textColor
           }}
           title="תפריט מהיר"
         >
@@ -1882,13 +1879,12 @@ export default function App() {
             setModalType('viewer');
           })}
           style={{
-            background: isDark ? '#333' : '#ffffff', 
+            background: isDark ? '#333' : '#f3f4f6', 
             border: `1px solid ${borderColor}`, 
             padding: '6px 12px',
             borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', 
             color: textColor, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '6px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+            display: 'flex', alignItems: 'center', gap: '6px'
           }}
         >
           🏡 Bio Vojon
@@ -1920,11 +1916,11 @@ export default function App() {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button 
               onClick={() => handleGlobalClick(() => setIsEditingMenu(!isEditingMenu))}
-              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : '#ffffff'), border: `1px solid ${borderColor}`, color: isEditingMenu ? '#fff' : textColor, padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}
+              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6'), color: isEditingMenu ? '#fff' : textColor, border: 'none', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
             >
               {isEditingMenu ? '✓ סיום' : '⚙️ עריכה'}
             </button>
-            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
+            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
           </div>
         </div>
 
@@ -1973,7 +1969,7 @@ export default function App() {
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* כפתורי גישה מהירים עם צללית מודגשת */}
+          {/* כפתורי גישה מהירים עם פנים אפור בהיר וצללית מודגשת */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
             <button
               onClick={triggerSosLostAlert}
@@ -2049,7 +2045,7 @@ export default function App() {
                 <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 12px', lineHeight: '1.4' }}>{stop.note}</p>
 
                 {stop.food && (
-                  <div style={{ fontSize: '13px', background: blockBg, color: blockText, padding: '10px 12px', borderRadius: '12px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1px solid ${borderColor}`, boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                  <div style={{ fontSize: '13px', background: blockBg, color: blockText, padding: '10px 12px', borderRadius: '12px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1px solid ${borderColor}`, boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
                     <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
