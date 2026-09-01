@@ -463,11 +463,8 @@ export default function App() {
   // 🎙️ מצב האזנה מרחוק (מיקרופון)
   const [listeningStream, setListeningStream] = useState(null);
   
-  // רפרנסים לשמע (Web Audio API)
-  const audioCtxRef = useRef(null);
-  const oscillatorRef = useRef(null);
-  const alarmGainRef = useRef(null);
-  const rampIntervalRef = useRef(null);
+  // רפרנס לאודיו HTML5 לצליל אזעקה חזק ומתחזק
+  const alarmAudioRef = useRef(null);
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
@@ -589,7 +586,7 @@ export default function App() {
     }
   };
 
-  // 🔔 שליחת צליל מתחזק והודעה דחופה לכלל המכשירים במשפחה
+  // 🔔 שליחת צליל חזק והודעה דחופה לכלל המכשירים במשפחה
   const sendSoundAlertToMember = async (memberName) => {
     const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
     if (!msg) return;
@@ -605,7 +602,7 @@ export default function App() {
           time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
         }
       });
-      alert(`🔔 נשלחה התראה קולית מתחזקת והודעה דחופה אל ${memberName}!`);
+      alert(`🔔 נשלחה התראה קולית חזקה והודעה דחופה אל ${memberName}!`);
     } catch (e) {
       alert('שגיאה בשליחת ההתראה');
     }
@@ -816,52 +813,28 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTimer]);
 
-  // 🚨 מערכת צליל מתחזק (Escalating Alarm) מותאמת לדפדפנים ניידים
+  // 🚨 מערכת אזעקת שמע חזקה מבוססת אלמנט Audio אמיתי (עוקפת מגבלות נייד) עם עוצמה עולה
   const startEscalatingAlarm = () => {
     try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      
-      if (audioCtxRef.current) {
-        try { audioCtxRef.current.close(); } catch (e) {}
+      if (!alarmAudioRef.current) {
+        // צליל ביפ מהיר באיכות גבוהה בפורמט Data URI שמנגן אזעקה רציפה
+        const beepDataUri = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJ_u3N2UjV6ZlYyNjYeHdXB0bmlraW12Z2dkZXR1cHBsaWhoaWlrYWpkZWRlZmZnbG5tcHV2d3h5enp7fH19f35_gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA=';
+        const audio = new Audio(beepDataUri);
+        audio.loop = true;
+        audio.volume = 0.1; // מתחיל חלש
+        alarmAudioRef.current = audio;
       }
-
-      const ctx = new AudioCtx();
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-      audioCtxRef.current = ctx;
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
       
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(350, ctx.currentTime);
-      gain.gain.setValueAtTime(0.01, ctx.currentTime);
+      alarmAudioRef.current.play().catch(e => console.log('Audio play blocked:', e));
 
-      let currentVol = 0.01;
+      // הגברה הדרגתית עד 100% עוצמה
       if (rampIntervalRef.current) clearInterval(rampIntervalRef.current);
-      
       rampIntervalRef.current = setInterval(() => {
-        if (!audioCtxRef.current) {
-          clearInterval(rampIntervalRef.current);
-          return;
+        if (alarmAudioRef.current) {
+          alarmAudioRef.current.volume = Math.min(1.0, alarmAudioRef.current.volume + 0.2);
         }
-        currentVol = Math.min(1.0, currentVol + 0.12);
-        try {
-          gain.gain.setValueAtTime(currentVol, ctx.currentTime);
-        } catch (e) {}
-      }, 500);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-
-      oscillatorRef.current = osc;
-      alarmGainRef.current = gain;
-    } catch (e) {
-      console.warn('AudioContext error:', e);
-    }
+      }, 400);
+    } catch (e) {}
   };
 
   const stopEscalatingAlarm = () => {
@@ -870,14 +843,10 @@ export default function App() {
         clearInterval(rampIntervalRef.current);
         rampIntervalRef.current = null;
       }
-      if (oscillatorRef.current) {
-        oscillatorRef.current.stop();
-        oscillatorRef.current.disconnect();
-        oscillatorRef.current = null;
-      }
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
-        audioCtxRef.current = null;
+      if (alarmAudioRef.current) {
+        alarmAudioRef.current.pause();
+        alarmAudioRef.current.currentTime = 0;
+        alarmAudioRef.current = null;
       }
     } catch (e) {}
   };
@@ -946,7 +915,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime מתוקן לחלוטין (מקבל את כל הודעות הצליל והטקסט ללא סינון שמות מגביל)
+  // סנכרון Realtime
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -973,7 +942,6 @@ export default function App() {
       })
       .on('broadcast', { event: 'sound_alert_with_msg' }, ({ payload }) => {
         if (payload) {
-          // מציג את ההודעה והצליל לכל מי שפתוחה לו האפליקציה ברדאר או במסך
           setIncomingSoundAlert(payload);
           startEscalatingAlarm();
         }
