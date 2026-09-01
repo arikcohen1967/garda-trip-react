@@ -1635,19 +1635,19 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // ❄️ רקע לבן שלג נקי לחלוטין ברמת ה-Root
+  // ❄️ רקע לבן שלג אמיתי לחלוטין (#ffffff) בכל מצב בהיר
   const bgMain = isDark ? '#000000' : '#ffffff';
   const cardBg = isDark ? '#1c1c1e' : '#ffffff';
   const textColor = isDark ? '#f5f5f7' : '#1d1d1f';
   const textSub = isDark ? '#86868b' : '#6b7280';
   const borderColor = isDark ? '#38383a' : '#e5e7eb';
 
-  // 🌑 צללית מקצועית ועדינה כדי שכל הריבועים והמלבנים יבלטו על רקע לבן שלג
+  // 🌑 צללית עדינה ומקצועית מסביב למלבנים, ריבועים וכפתורים שיוצרת עומק נקי על רקע לבן שלג
   const cardShadow = isDark 
     ? '0 6px 20px rgba(0, 0, 0, 0.5)'
-    : '0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.03)';
+    : '0 8px 30px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.03)';
 
-  // 🔘 צבע אפור מטאלי כהה (כמו בתמונה) עבור כפתורים ואלמנטים
+  // 🔘 צבע אפור מטאלי כהה (כמו בתמונה ששלחת) עבור כפתורים ואלמנטים
   const metallicGreyBg = isDark ? '#3a3a3c' : '#57585a';
   const metallicGreyText = '#ffffff';
 
@@ -2495,7 +2495,7 @@ export default function App() {
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>שיחון איטלקי חכם</h2>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 {(hebrewInput || italianOutput) && (
