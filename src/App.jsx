@@ -409,93 +409,8 @@ export default function App() {
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   
-  // מצב תצוגה: 'light' או 'dark' (Contrast)
+  // מצב תצוגה: 'light' או 'dark' (High Contrast)
   const [themeMode, setThemeMode] = useState('light');
-
-  // מזג אוויר מקומי באגם גארדה (עם תמיכה בנתונים חיים ומיקום)
-  const [weatherData, setWeatherData] = useState({ 
-    temp: '24°C', 
-    condition: '☀️ שמש נעימה באגם', 
-    location: 'אגם Garda (איטליה)',
-    humidity: '58%',
-    wind: '12 קמ"ש',
-    updated: 'מעודכן כעת'
-  });
-
-  // שליפת מזג אוויר חי לפי מיקום או ברירת מחדל לאגם גארדה
-  useEffect(() => {
-    async function fetchLiveWeather() {
-      try {
-        let lat = 45.4654;
-        let lon = 10.5356;
-
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition((pos) => {
-            if (pos.coords.latitude > 35 && pos.coords.latitude < 50) {
-              lat = pos.coords.latitude;
-              lon = pos.coords.longitude;
-            }
-          }, () => {}, { timeout: 5000 });
-        }
-
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
-        const data = await res.json();
-        if (data && data.current) {
-          const tempVal = Math.round(data.current.temperature_2m);
-          const humVal = data.current.relative_humidity_2m;
-          const windVal = data.current.wind_speed_10m;
-          setWeatherData({
-            temp: `${tempVal}°C`,
-            condition: tempVal > 22 ? '☀️ שמש נעימה ובהירה' : '⛅ מעונן חלקית ונעים',
-            location: 'אגם Garda (לייב)',
-            humidity: `${humVal}%`,
-            wind: `${windVal} קמ"ש`,
-            updated: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-          });
-        }
-      } catch (e) {}
-    }
-    fetchLiveWeather();
-  }, []);
-
-  // חיפוש חופשי ב"סביבי" (Around Me) יציב לחלוטין
-  const [aroundSearchQuery, setAroundSearchQuery] = useState('');
-  const [isAroundListening, setIsAroundListening] = useState(false);
-  const aroundSpeechRecRef = useRef(null);
-
-  const startAroundVoiceSearch = () => {
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) {
-      alert('זיהוי קולי אינו נתמך בדפדפן זה.');
-      return;
-    }
-    try {
-      if (aroundSpeechRecRef.current) aroundSpeechRecRef.current.stop();
-      const rec = new SpeechRec();
-      aroundSpeechRecRef.current = rec;
-      rec.lang = 'he-IL';
-      rec.interimResults = false;
-      rec.onstart = () => setIsAroundListening(true);
-      rec.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        if (text) {
-          setAroundSearchQuery(text);
-          window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(text)}`;
-        }
-      };
-      rec.onerror = () => setIsAroundListening(false);
-      rec.onend = () => setIsAroundListening(false);
-      rec.start();
-    } catch (err) {
-      setIsAroundListening(false);
-    }
-  };
-
-  const handleAroundCustomSearch = (e) => {
-    e.preventDefault();
-    if (!aroundSearchQuery.trim()) return;
-    window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery.trim())}`;
-  };
 
   // כלי עריכת צבעים מותאמים אישית (Theme Customizer)
   const [customTheme, setCustomTheme] = useState(() => {
@@ -507,7 +422,7 @@ export default function App() {
   const [tempBgMain, setTempBgMain] = useState('#ffffff');
   const [tempCardBg, setTempCardBg] = useState('#ffffff');
   const [tempTextColor, setTempTextColor] = useState('#1d1d1f');
-  const [tempBorderColor, setTempBorderColor] = useState('#cbd5e1');
+  const [tempBorderColor, setTempBorderColor] = useState('#e5e7eb');
 
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
@@ -537,7 +452,7 @@ export default function App() {
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
-  // טריוויה (המשכית מלאה עם שמירה אוטומטית ל-localStorage)
+  // טריוויה
   const [travelerIndex, setTravelerIndex] = useState(() => {
     try {
       const saved = localStorage.getItem('garda-trivia-traveler-idx');
@@ -560,29 +475,11 @@ export default function App() {
     return { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
   });
 
-  const [triviaQuestions, setTriviaQuestions] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('garda-trivia-questions'));
-      if (Array.isArray(saved) && saved.length > 0) return saved;
-    } catch (e) {}
-    const generated = generateMassiveTrivia();
-    localStorage.setItem('garda-trivia-questions', JSON.stringify(generated));
-    return generated;
-  });
-
+  const [triviaQuestions, setTriviaQuestions] = useState(() => generateMassiveTrivia());
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const triviaTimerRef = useRef(null);
-
-  // שמירת מצב הטריוויה באופן רציף והמשכי
-  useEffect(() => {
-    try {
-      localStorage.setItem('garda-trivia-index', triviaIndex);
-      localStorage.setItem('garda-trivia-traveler-idx', travelerIndex);
-      localStorage.setItem('garda-trivia-scores', JSON.stringify(travelerScores));
-    } catch (e) {}
-  }, [triviaIndex, travelerIndex, travelerScores]);
 
   // בינגו
   const [bingoPlayer, setBingoPlayer] = useState('');
@@ -660,9 +557,9 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 13) return saved;
+      if (Array.isArray(saved) && saved.length === 12) return saved;
     } catch (e) {}
-    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
+    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -867,7 +764,7 @@ export default function App() {
       const ctx = new AudioCtx();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'sine';
+      osc.type = 'square';
       osc.frequency.setValueAtTime(880, ctx.currentTime);
       gain.gain.setValueAtTime(0.3, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
@@ -1744,7 +1641,7 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל לאפוס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
@@ -2121,7 +2018,7 @@ export default function App() {
           background: cardBg, zIndex: 2600, boxShadow: '-20px 0 50px rgba(0,0,0,0.25)',
           transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)', padding: '24px 16px',
-          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
+          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1.5px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '10px' }}>
@@ -2263,7 +2160,7 @@ export default function App() {
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_safe_v6"
+                  name="around_custom_search_input_safe_v7"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => setAroundSearchQuery(e.target.value)}
@@ -2954,7 +2851,7 @@ export default function App() {
                   style={{
                     width: '100%', padding: '12px 40px 12px 12px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
-                    outline: 'none', fontSize: '16px', boxSizing: 'border-box'
+                    outline: 'none', fontSize: '14px', boxSizing: 'border-box'
                   }} 
                 />
                 <button
@@ -3130,7 +3027,7 @@ export default function App() {
 
               <div>
                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>💬 כתוב בדיחה, משפט או סיכום:</label>
-                <textarea rows="3" placeholder="לדוגמה: עמית צעקה הכי חזק..." value={challengeNote} onChange={(e) => setChallengeNote(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontSize: '16px', boxSizing: 'border-box', outline: 'none' }} />
+                <textarea rows="3" placeholder="לדוגמה: עמית צעקה הכי חזק..." value={challengeNote} onChange={(e) => setChallengeNote(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontSize: '13px', boxSizing: 'border-box', outline: 'none' }} />
               </div>
 
               <input type="file" id="questPhotoInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) saveDailyChallenge(e.target.files[0]); }} />
@@ -3214,7 +3111,7 @@ export default function App() {
                   placeholder="תיאור התמונה..." 
                   value={galleryCaption} 
                   onChange={(e) => setGalleryCaption(e.target.value)} 
-                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none', fontSize: '16px' }} 
+                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
                 />
                 <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
                 <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
@@ -3253,41 +3150,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל צפייה במסמכים */}
-      {modalType === 'viewer' && viewerItem && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: textColor }}>{viewerItem.title || viewerItem.name}</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
-            </div>
-            
-            <DocumentViewer 
-              item={viewerItem} 
-              isDark={isDark} 
-              blockText={blockText} 
-              cardShadow={cardShadow} 
-            />
-          </div>
-        </div>
-      )}
-
-      {/* מודל חירום */}
-      {modalType === 'emergency' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#dc2626' }}>🆘 מספרי חירום באיטליה</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
-              <a href="tel:118" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚑 אמבולנס: 118</a>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* מודל כרטיסים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
@@ -3319,7 +3181,7 @@ export default function App() {
                 </div>
                 <div>
                   <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>שם המסמך:</label>
-                  <input type="text" placeholder="לדוגמה: כרטיס כניסה" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none', fontSize: '16px' }} />
+                  <input type="text" placeholder="לדוגמה: כרטיס כניסה" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} />
                 </div>
                 <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                 <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
