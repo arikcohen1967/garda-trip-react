@@ -819,7 +819,6 @@ export default function App() {
     };
   }, []);
 
-  // ⏱️ תיקון הטיימר כך שירוץ באמינות מלאה במסך הראשי ובכל מסך
   useEffect(() => {
     if (!activeTimer || !activeTimer.endTime) {
       setTimerRemainingSec(0);
@@ -2107,7 +2106,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌤️ ווידג'ט מזג אוויר מעודכן: מציג נתונים גם בארץ וגם באיטליה */}
       <div 
         onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
         style={{
@@ -2853,7 +2851,7 @@ export default function App() {
                   <img src={savedParking.photo} alt="Parking place" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px', border: `1.5px solid ${borderColor}` }} />
                 )}
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
                   <a
                     href={`https://maps.apple.com/?daddr=${savedParking.lat},${savedParking.lng}&dirflg=w`}
                     target="_blank"
@@ -2870,7 +2868,26 @@ export default function App() {
                   </a>
                 </div>
 
-                <button onClick={clearSavedParking} style={{ width: '100%', padding: '8px', background: 'none', border: 'none', color: '#dc2626', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
+                {/* 🎨 עיצוב יפה ומעוצב לכפתור מחיקת החניה */}
+                <button 
+                  onClick={clearSavedParking} 
+                  style={{ 
+                    width: '100%', 
+                    padding: '12px', 
+                    borderRadius: '12px',
+                    background: isDark ? '#3f1515' : '#fee2e2', 
+                    color: '#dc2626', 
+                    border: '1.5px solid #fecaca', 
+                    fontSize: '13px', 
+                    fontWeight: 'bold', 
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: cardShadow
+                  }}
+                >
                   🗑️ מחק חניה זו והזן חדשה
                 </button>
               </div>
@@ -3340,7 +3357,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🚨 מודל מספרי חירום משודרג: משטרה, אמבולנס ושגרירות ישראל */}
       {modalType === 'emergency' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
