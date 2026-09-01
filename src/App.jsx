@@ -412,8 +412,55 @@ export default function App() {
   // מצב תצוגה: 'light' או 'dark' (Contrast)
   const [themeMode, setThemeMode] = useState('light');
 
-  // מזג אוויר מקומי באגם גארדה
-  const [weatherData, setWeatherData] = useState({ temp: '25°C - 24°C', condition: '☀️ שמש נעימה באגם (ספטמבר-אוקטובר)', location: 'אגם Garda' });
+  // מזג אוויר מקומי באגם גארדה (עם תמיכה בנתונים חיים ומיקום)
+  const [weatherData, setWeatherData] = useState({ 
+    temp: '24°C', 
+    condition: '☀️ שמש נעימה באגם', 
+    location: 'אגם Garda (איטליה)',
+    humidity: '58%',
+    wind: '12 קמ"ש',
+    updated: 'מעודכן כעת'
+  });
+
+  // שליפת מזג אוויר חי לפי מיקום או ברירת מחדל לאגם גארדה
+  useEffect(() => {
+    async function fetchLiveWeather() {
+      try {
+        // קואורדינטות אגם גארדה / דזנזאנו או מיקום נוכחי
+        let lat = 45.4654;
+        let lon = 10.5356;
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((pos) => {
+            // אם המשתמש נמצא באיטליה או קרוב, נשתמש במיקומו, אחרת נישאר באגם גארדה
+            if (pos.coords.latitude > 35 && pos.coords.latitude < 50) {
+              lat = pos.coords.latitude;
+              lon = pos.coords.longitude;
+            }
+          }, () => {}, { timeout: 5000 });
+        }
+
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
+        const data = await res.json();
+        if (data && data.current) {
+          const tempVal = Math.round(data.current.temperature_2m);
+          const humVal = data.current.relative_humidity_2m;
+          const windVal = data.current.wind_speed_10m;
+          setWeatherData({
+            temp: `${tempVal}°C`,
+            condition: tempVal > 22 ? '☀️ שמש נעימה ובהירה' : '⛅ מעונן חלקית ונעים',
+            location: 'אגם Garda (לייב)',
+            humidity: `${humVal}%`,
+            wind: `${windVal} קמ"ש`,
+            updated: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+          });
+        }
+      } catch (e) {
+        // נשאר עם ערכי ברירת המחדל המעולים אם אין רשת
+      }
+    }
+    fetchLiveWeather();
+  }, []);
 
   // כלי עריכת צבעים מותאמים אישית (Theme Customizer)
   const [customTheme, setCustomTheme] = useState(() => {
@@ -2010,27 +2057,43 @@ export default function App() {
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
 
-      {/* מודל פרטי מזג האוויר (נפתח בלחיצה על הווידג'ט) */}
+      {/* מודל פרטי מזג האוויר המעודכנים (נפתח בלחיצה על הווידג'ט) */}
       {modalType === 'weatherModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>METEO LAGO DI GARDA</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>☀️ תחזית ואקלים בספטמבר-אוקטובר</h2>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>METEO LIVE & LOCATION</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>☀️ תחזית ומזג אוויר עדכני</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
             <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6' }}>
-              <p style={{ margin: '0 0 10px', fontSize: '14px', color: textColor }}>
-                <b>מצב מזג האוויר באזור אגם גארדה בתקופה זו (סוף ספטמבר עד תחילת אוקטובר):</b>
+              <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
+                <b>מידע בזמן אמת עבור האזור שלך באגם גארדה:</b>
               </p>
-              <ul style={{ margin: 0, paddingRight: '20px', fontSize: '13px', color: textSub }}>
-                <li><b>טמפרטורת יום ממוצעת:</b> סביב 24°C - 25°C, נעים מאוד לטיולים ופארקים.</li>
-                <li><b>טמפרטורת לילה:</b> יורדת לאזור 14°C - 15°C (מומלץ לקחת עליונית קלה לשעות הערב).</li>
-                <li><b>אופי האקלים:</b> שמש נעימה לצד בריזה קלה באגם, סיכוי נמוך למשקעים אך מומלץ להיות מוכנים למעט ממטרים קלים.</li>
-              </ul>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>טמפרטורה</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.temp}</strong>
+                </div>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>לחות יחסית</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.humidity || '58%'}</strong>
+                </div>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>מהירות רוח</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.wind || '12 קמ"ש'}</strong>
+                </div>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>עדכון אחרון</small>
+                  <strong style={{ fontSize: '14px', color: textColor }}>{weatherData.updated || 'כעת'}</strong>
+                </div>
+              </div>
+              <p style={{ margin: 0, fontSize: '12px', color: textSub }}>
+                💡 <b>טיפ לדרך:</b> מזג האוויר בספטמבר-אוקטובר באגם גארדה אידיאלי לפארקי שעשועים וטיולי טבע, אך מומלץ להצטייד בלבוש קל לשעות הערב.
+              </p>
             </div>
 
             <button
