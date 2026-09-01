@@ -458,32 +458,10 @@ export default function App() {
     fetchLiveWeather();
   }, []);
 
-  // חיפוש חופשי ב"סביבי" (Around Me) מוגן לחלוטין מפני קפיצות זום
+  // חיפוש חופשי ב"סביבי" (Around Me) יציב לחלוטין
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
   const aroundSpeechRecRef = useRef(null);
-  
-  const commonSearchSuggestions = [
-    'פיצה', 'גלידה', 'תחנת דלק', 'פארם', 'סופרמרקט', 'מסעדות', 
-    'Gardaland', 'Movieland', 'ונציה', 'ורונה', 'בית מרקחת', 'כספומט', 'חניה'
-  ];
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-
-  const handleAroundInputChange = (val) => {
-    setAroundSearchQuery(val);
-    if (!val.trim()) {
-      setFilteredSuggestions([]);
-    } else {
-      const matches = commonSearchSuggestions.filter(item => item.toLowerCase().includes(val.toLowerCase()));
-      setFilteredSuggestions(matches);
-    }
-  };
-
-  const selectSuggestion = (item) => {
-    setAroundSearchQuery(item);
-    setFilteredSuggestions([]);
-    window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(item)}`;
-  };
 
   const startAroundVoiceSearch = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -502,7 +480,6 @@ export default function App() {
         const text = e.results[0][0].transcript;
         if (text) {
           setAroundSearchQuery(text);
-          setFilteredSuggestions([]);
           window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(text)}`;
         }
       };
@@ -517,7 +494,6 @@ export default function App() {
   const handleAroundCustomSearch = (e) => {
     e.preventDefault();
     if (!aroundSearchQuery.trim()) return;
-    setFilteredSuggestions([]);
     window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery.trim())}`;
   };
 
@@ -1768,7 +1744,7 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאפוס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
@@ -2281,16 +2257,16 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: filteredSuggestions.length > 0 ? '4px' : '16px', width: '100%', boxSizing: 'border-box' }}>
+            <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: '16px', width: '100%', boxSizing: 'border-box' }}>
               <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
                 <input
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_safe_v5"
+                  name="around_custom_search_input_safe_v6"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
-                  onChange={(e) => handleAroundInputChange(e.target.value)}
+                  onChange={(e) => setAroundSearchQuery(e.target.value)}
                   style={{
                     width: '100%', padding: '12px 42px 12px 12px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
@@ -2320,24 +2296,6 @@ export default function App() {
                 חפש
               </button>
             </form>
-
-            {filteredSuggestions.length > 0 && (
-              <div style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', boxShadow: cardShadow, width: '100%', boxSizing: 'border-box' }}>
-                {filteredSuggestions.map((item, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => selectSuggestion(item)}
-                    style={{
-                      padding: '10px 14px', fontSize: '13px', cursor: 'pointer', textAlign: 'right',
-                      borderBottom: idx < filteredSuggestions.length - 1 ? `1px solid ${borderColor}` : 'none',
-                      color: textColor, boxSizing: 'border-box'
-                    }}
-                  >
-                    🔍 {item}
-                  </div>
-                ))}
-              </div>
-            )}
 
             <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>או בחר קטגוריה מהירה לחיפוש במפה:</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
