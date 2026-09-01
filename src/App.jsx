@@ -589,9 +589,9 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
+      if (Array.isArray(saved) && saved.length === 13) return saved;
     } catch (e) {}
-    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
+    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -1784,7 +1784,8 @@ export default function App() {
       gallery: { label: 'יומן ואלבום תמונות משפחתי', icon: '📸', action: () => { setSidebarOpen(false); setModalType('gallery'); } },
       around: { label: 'סביבי (Around Me)', icon: '📍', action: () => { setSidebarOpen(false); setModalType('around'); } },
       tickets: { label: 'ארנק כרטיסים ומסמכים', icon: '🎟️', action: () => { setSidebarOpen(false); setModalType('tickets'); } },
-      emergency: { label: 'מספרי חירום', icon: '🆘', action: () => { setSidebarOpen(false); setModalType('emergency'); } }
+      emergency: { label: 'מספרי חירום', icon: '🆘', action: () => { setSidebarOpen(false); setModalType('emergency'); } },
+      appleMusic: { label: 'פלייליסט נסיעה (Apple Music)', icon: '🎵', action: () => { setSidebarOpen(false); setModalType('appleMusicModal'); } }
     };
 
     const cfg = menuConfigs[id];
@@ -2075,6 +2076,59 @@ export default function App() {
 
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
+
+      {/* מודל פלייליסט Apple Music */}
+      {modalType === 'appleMusicModal' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>APPLE MUSIC INTEGRATION</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎵 פלייליסט נסיעה (Apple Music)</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
+            </div>
+
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6', textAlign: 'center' }}>
+              <span style={{ fontSize: '42px', display: 'block', marginBottom: '10px' }}>🎧</span>
+              <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
+                <b>חיבור לחשבון Apple Music ליצירת פלייליסט משפחתי לדרך:</b>
+              </p>
+              <p style={{ fontSize: '12px', color: textSub, marginBottom: '20px' }}>
+                באפשרותך לייבא או ליצור רשימת השמעה ייעודית שתלווה אתכם בנסיעות באגם גארדה, פארקי השעשועים ובדרך לוונציה.
+              </p>
+              <a
+                href="https://music.apple.com"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  background: '#fa233b',
+                  color: '#ffffff',
+                  borderRadius: '12px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  boxShadow: '0 4px 12px rgba(250,35,59,0.3)'
+                }}
+              >
+                פתח את Apple Music והתחבר 🎵
+              </a>
+            </div>
+
+            <button
+              onClick={() => handleGlobalClick(closeModal)}
+              style={{ width: '100%', padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}
+            >
+              סגור וחזור למסלול
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* מודל פרטי מזג האוויר המעודכנים (נפתח בלחיצה על הווידג'ט) */}
       {modalType === 'weatherModal' && (
