@@ -458,7 +458,7 @@ export default function App() {
     fetchLiveWeather();
   }, []);
 
-  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete) מתוקן
+  // חיפוש חופשי ב"סביבי" (Around Me) מוגן לחלוטין מפני קפיצות זום
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
   const aroundSpeechRecRef = useRef(null);
@@ -2240,7 +2240,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי עם פונט 16px למניעת Zoom במוביל */}
+      {/* מודל סביבי עם פונט 16px קבוע שמונע לחלוטין את בעיית הזום במובייל */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2255,7 +2255,7 @@ export default function App() {
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_safe_v2"
+                  name="around_custom_search_input_fixed_v3"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
