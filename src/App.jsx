@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const WAZE_SVG = (
   <svg viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-    <rect width="512" height="512" rx="110" fill="#33ccff"/>
+    <rect width="512" height="512" rx="110" fill="#71717a"/>
     <path d="M375.4 233.5c-3.7-31.8-29.3-56.7-61.6-59.5-35.3-3.1-66.5 19.3-73.8 53.6-1.5 7-1.4 14.3.4 21.2-22.1 4.7-38.6 24.1-38.6 47.3 0 17.5 9.7 32.7 24.1 40.5l-10.7 33.3c-2.4 7.4 2.8 15 10.6 15 3.3 0 6.4-1.4 8.6-3.8l21.9-23.7c13.7 4.9 28.7 7.5 44.1 7.5 70.7 0 128-50.5 128-112.7 0-11.8-1.8-23.3-5.2-34.4zm-146 5.3c0-11 9-20 20-20s20 9 20 20-9 20-20 20-20-9-20-20zm112 40c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20zm-56 22c-29.8 0-54-15.6-54-35 0-3.3 2.7-6 6-6h96c3.3 0 6 2.7 6 6 0 19.4-24.2 35-54 35z" fill="#fff"/>
     <path d="M220.5 240c-1.2 5.5-6.2 9.5-12 9.5s-10.8-4-12-9.5-2.8-12.7-14.2-22-27.5-22-15.5 0-28 12.5-28 28s12.5 28 28 28c4.4 0 8 3.6 8 8s-3.6 8-8 8c-24.3 0-44-19.7-44-44s19.7-44 44-44c21.2 0 39.1 14.7 43.5 34.5z" fill="#18181b"/>
     <circle cx="178" cy="246" r="10" fill="#18181b"/>
@@ -19,11 +19,21 @@ const WAZE_SVG = (
 
 const MAPS_SVG = (
   <svg viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-    <rect width="512" height="512" rx="110" fill="#f1f5f9"/>
+    <rect width="512" height="512" rx="110" fill="#71717a"/>
     <path d="M120 392l80-160 160-80-80 160z" fill="#10b981"/>
     <path d="M200 232l152-72-72 152-80-80z" fill="#3b82f6"/>
     <circle cx="260" cy="260" r="50" fill="#fff"/>
     <polygon points="260,225 240,290 260,275 280,290" fill="#2563eb"/>
+  </svg>
+);
+
+// אייקון טיימר מקצועי וחדש (SVG מדויק)
+const TIMER_SVG = (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="13" r="9"/>
+    <polyline points="12 9 12 13 15 16"/>
+    <path d="M12 2v2"/>
+    <path d="M5 5l1.5 1.5"/>
   </svg>
 );
 
@@ -1642,23 +1652,23 @@ export default function App() {
   const textSub = isDark ? '#86868b' : '#6b7280';
   const borderColor = isDark ? '#38383a' : '#e5e7eb';
 
-  // 🔲 פנים המלבנים והריבועים - לבן שלג נקי לחלוטין (#ffffff)
+  // 🔲 פנים המלבנים והריבועים - לבן נקי לחלוטין (#ffffff)
   const blockBg = isDark ? '#2c2c2e' : '#ffffff';
   const blockText = textColor; 
 
-  // 🌑 צללית נקייה ומקצועית להדגשת המלבנים והכפתורים על גבי רקע לבן
+  // 🌑 צללית נקייה ומקצועית להדגשת המלבנים על גבי רקע לבן
   const cardShadow = isDark 
     ? '0 6px 20px rgba(0, 0, 0, 0.5)'
     : '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03)';
 
-  // 🔘 צבע אפור נירוסטה כהה עבור כפתורי הלחיצה
+  // 🔘 צבע אפור נירוסטה עבור הכפתורים (לפי התמונה שלך: #4b5563)
   const metallicGreyBg = isDark ? '#3a3a3c' : '#4b5563';
   const metallicGreyText = '#ffffff';
 
   const renderMenuItem = (id, index) => {
     const menuConfigs = {
       schedule: { label: 'מסלול ימי הטיול', icon: '📅', action: () => { setSidebarOpen(false); closeModal(); } },
-      timer: { label: `טיימר משפחתי ${activeTimer ? `(${formatTimerClock(timerRemainingSec)})` : ''}`, icon: '⏱️', action: () => { setSidebarOpen(false); setModalType('timer'); } },
+      timer: { label: `טיימר משפחתי ${activeTimer ? `(${formatTimerClock(timerRemainingSec)})` : ''}`, icon: TIMER_SVG, action: () => { setSidebarOpen(false); setModalType('timer'); } },
       radar: { label: 'רדאר משפחתי חי', icon: '🧭', action: () => { setSidebarOpen(false); setModalType('radar'); } },
       parking: { label: 'שמירת מיקום רכב חכם', icon: '🚗', action: () => { setSidebarOpen(false); setModalType('parking'); } },
       challenges: { label: 'יומן אתגרים ובדיחות', icon: '🏆', action: () => { setSidebarOpen(false); setModalType('challengesLog'); } },
@@ -2061,11 +2071,12 @@ export default function App() {
                   </div>
                 )}
 
+                {/* Apple Maps ו-Waze באותו צבע אפור נירוסטה ובאותו גודל בדיוק */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: metallicGreyBg, color: metallicGreyText, border: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                     {MAPS_SVG} Apple Maps
                   </a>
-                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: isDark ? '#082f49' : '#e0f2fe', color: '#0284c7', border: 'none', boxShadow: '0 2px 5px rgba(2,132,199,0.15)' }}>
+                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: metallicGreyBg, color: metallicGreyText, border: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                     {WAZE_SVG} Waze
                   </a>
                 </div>
@@ -2083,10 +2094,10 @@ export default function App() {
                   </button>
                   <button 
                     onClick={() => handleGlobalClick(() => setModalType('timer'))}
-                    style={{ border: 'none', background: isDark ? '#451a03' : '#fef3c7', color: '#d97706', borderRadius: '10px', padding: '0 12px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 5px rgba(217,119,6,0.15)' }}
+                    style={{ border: `1px solid ${borderColor}`, background: '#ffffff', color: '#d97706', borderRadius: '10px', padding: '0 12px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.04)' }}
                     title="טיימר מרכזי"
                   >
-                    ⏱️
+                    {TIMER_SVG}
                   </button>
                 </div>
 
@@ -2372,7 +2383,7 @@ export default function App() {
                   </a>
                   <a
                     href={`https://www.waze.com/ul?ll=${savedParking.lat},${savedParking.lng}&navigate=yes`}
-                    style={{ ...navBtnStyle, background: '#33ccff', color: '#000', border: 'none', textDecoration: 'none', boxShadow: '0 2px 5px rgba(51,204,255,0.2)' }}
+                    style={{ ...navBtnStyle, background: metallicGreyBg, color: metallicGreyText, border: 'none', textDecoration: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
                   >
                     {WAZE_SVG} Waze
                   </a>
