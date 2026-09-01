@@ -458,10 +458,32 @@ export default function App() {
     fetchLiveWeather();
   }, []);
 
-  // חיפוש חופשי ב"סביבי" (Around Me)
+  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete)
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
   const aroundSpeechRecRef = useRef(null);
+  
+  const commonSearchSuggestions = [
+    'פיצה', 'גלידה', 'תחנת דלק', 'פארם', 'סופרמרקט', 'מסעדות', 
+    'Gardaland', 'Movieland', 'ונציה', 'ורונה', 'בית מרקחת', 'כספומט', 'חניה'
+  ];
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+
+  const handleAroundInputChange = (val) => {
+    setAroundSearchQuery(val);
+    if (!val.trim()) {
+      setFilteredSuggestions([]);
+    } else {
+      const matches = commonSearchSuggestions.filter(item => item.toLowerCase().includes(val.toLowerCase()));
+      setFilteredSuggestions(matches);
+    }
+  };
+
+  const selectSuggestion = (item) => {
+    setAroundSearchQuery(item);
+    setFilteredSuggestions([]);
+    window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(item)}`;
+  };
 
   const startAroundVoiceSearch = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -480,6 +502,7 @@ export default function App() {
         const text = e.results[0][0].transcript;
         if (text) {
           setAroundSearchQuery(text);
+          setFilteredSuggestions([]);
           window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(text)}`;
         }
       };
@@ -494,6 +517,7 @@ export default function App() {
   const handleAroundCustomSearch = (e) => {
     e.preventDefault();
     if (!aroundSearchQuery.trim()) return;
+    setFilteredSuggestions([]);
     window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery.trim())}`;
   };
 
@@ -2218,7 +2242,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מעודכן עם חיפוש חופשי, כיווניות תקינה ונטול השלמה אוטומטית מציקה */}
+      {/* מודל סביבי מעודכן עם חיפוש חופשי, השלמה אוטומטית ומיקרופון */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2227,17 +2251,17 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            {/* שורת חיפוש חופשי מתוקנת (כיווניות RTL מלאה + ביטול autofill מציק) */}
-            <form onSubmit={handleAroundCustomSearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            {/* שורת חיפוש חופשי עם השלמה אוטומטית מתקדמת */}
+            <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: filteredSuggestions.length > 0 ? '4px' : '16px' }}>
               <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
                 <input
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input"
+                  name="around_custom_search_input_fixed"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק, בית מרקחת)..."
                   value={aroundSearchQuery}
-                  onChange={(e) => setAroundSearchQuery(e.target.value)}
+                  onChange={(e) => handleAroundInputChange(e.target.value)}
                   style={{
                     width: '100%', padding: '12px 12px 12px 42px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
@@ -2267,6 +2291,25 @@ export default function App() {
                 חפש
               </button>
             </form>
+
+            {/* תיבת הצעות השלמה אוטומטית */}
+            {filteredSuggestions.length > 0 && (
+              <div style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', boxShadow: cardShadow, zIndex: 50 }}>
+                {filteredSuggestions.map((item, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => selectSuggestion(item)}
+                    style={{
+                      padding: '10px 14px', fontSize: '13px', cursor: 'pointer',
+                      borderBottom: idx < filteredSuggestions.length - 1 ? `1px solid ${borderColor}` : 'none',
+                      color: textColor
+                    }}
+                  >
+                    🔍 {item}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>או בחר קטגוריה מהירה לחיפוש במפה:</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
