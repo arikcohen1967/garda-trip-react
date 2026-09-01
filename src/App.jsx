@@ -1635,7 +1635,7 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // ❄️ רקע לבן שלג אמיתי לחלוטין (#ffffff) בכל מצב בהיר
+  // ❄️ רקע לבן שלג אמיתי לחלוטין ברמת ה-Root וגם לכל הכרטיסים והבלוקים!
   const bgMain = isDark ? '#000000' : '#ffffff';
   const cardBg = isDark ? '#1c1c1e' : '#ffffff';
   const textColor = isDark ? '#f5f5f7' : '#1d1d1f';
@@ -1647,7 +1647,7 @@ export default function App() {
     ? '0 6px 20px rgba(0, 0, 0, 0.5)'
     : '0 8px 30px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.03)';
 
-  // 🔘 צבע אפור מטאלי כהה (כמו בתמונה ששלחת) עבור כפתורים ואלמנטים
+  // 🔘 צבע אפור מטאלי כהה (כמו בתמונה) עבור כפתורים ואלמנטים
   const metallicGreyBg = isDark ? '#3a3a3c' : '#57585a';
   const metallicGreyText = '#ffffff';
 
@@ -1699,7 +1699,7 @@ export default function App() {
             transition: 'transform 0.15s ease, background 0.15s ease'
           }}
         >
-          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6', borderRadius: '8px' }}>
+          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : '#ffffff', borderRadius: '8px', border: `1px solid ${borderColor}` }}>
             {cfg.icon}
           </span>
           <span style={{ flex: 1, letterSpacing: '-0.01em' }}>{cfg.label}</span>
@@ -1760,14 +1760,15 @@ export default function App() {
         <button
           onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'darkSilver'))}
           style={{
-            background: isDark ? '#333' : '#f3f4f6',
-            border: 'none',
+            background: isDark ? '#333' : '#ffffff',
+            border: `1px solid ${borderColor}`,
             color: textColor,
             padding: '4px 10px',
             borderRadius: '12px',
             fontSize: '11px',
             fontWeight: 'bold',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
           }}
         >
           {isDark ? '☀️ מצב בהיר' : '🌙 מצב כהה'}
@@ -1846,13 +1847,13 @@ export default function App() {
         zIndex: 900,
         width: '100%',
         boxSizing: 'border-box',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+        boxShadow: '0 4px 12px rgba(0,0,0,0.04)'
       }}>
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
-            background: isDark ? '#333' : '#f3f4f6', 
-            border: 'none', 
+            background: isDark ? '#333' : '#ffffff', 
+            border: `1px solid ${borderColor}`, 
             width: '38px', 
             height: '38px',
             borderRadius: '10px', 
@@ -1862,7 +1863,8 @@ export default function App() {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            color: textColor
+            color: textColor,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
           }}
           title="תפריט מהיר"
         >
@@ -1880,12 +1882,13 @@ export default function App() {
             setModalType('viewer');
           })}
           style={{
-            background: isDark ? '#333' : '#f3f4f6', 
-            border: 'none', 
+            background: isDark ? '#333' : '#ffffff', 
+            border: `1px solid ${borderColor}`, 
             padding: '6px 12px',
             borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', 
             color: textColor, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '6px'
+            display: 'flex', alignItems: 'center', gap: '6px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
           }}
         >
           🏡 Bio Vojon
@@ -1917,11 +1920,11 @@ export default function App() {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button 
               onClick={() => handleGlobalClick(() => setIsEditingMenu(!isEditingMenu))}
-              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6'), color: isEditingMenu ? '#fff' : textColor, border: 'none', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : '#ffffff'), border: `1px solid ${borderColor}`, color: isEditingMenu ? '#fff' : textColor, padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}
             >
               {isEditingMenu ? '✓ סיום' : '⚙️ עריכה'}
             </button>
-            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
           </div>
         </div>
 
@@ -1976,7 +1979,7 @@ export default function App() {
               onClick={triggerSosLostAlert}
               style={{
                 padding: '12px', borderRadius: '14px', background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626',
-                border: 'none', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer',
+                border: '1px solid #fecaca', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: cardShadow
               }}
             >
@@ -2028,7 +2031,7 @@ export default function App() {
               color: metallicGreyText,
               padding: '6px 12px', borderRadius: '10px',
               fontSize: '12px', fontWeight: 'bold', flexShrink: 0,
-              border: `1px solid ${borderColor}`,
+              border: 'none',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח 🚀'}
@@ -2041,12 +2044,12 @@ export default function App() {
               <div key={idx} style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: '16px', padding: '16px', boxSizing: 'border-box', width: '100%', boxShadow: cardShadow }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: textColor }}>{stop.name}</h3>
-                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, background: isDark ? '#333' : '#f3f4f6', padding: '4px 8px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>{stop.time}</span>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, padding: '4px 8px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>{stop.time}</span>
                 </div>
                 <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 12px', lineHeight: '1.4' }}>{stop.note}</p>
 
                 {stop.food && (
-                  <div style={{ fontSize: '13px', background: blockBg, color: blockText, padding: '10px 12px', borderRadius: '12px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1px solid ${borderColor}`, boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                  <div style={{ fontSize: '13px', background: blockBg, color: blockText, padding: '10px 12px', borderRadius: '12px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1px solid ${borderColor}`, boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                     <span><b>🍴 המלצה קולינרית:</b> {stop.food.name}</span>
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
@@ -2102,7 +2105,7 @@ export default function App() {
                 <small style={{ color: '#d97706', fontWeight: 'bold', fontSize: '11px' }}>FAMILY SYNC TIMER</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>⏱️ טיימר משפחתי</h2>
               </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
 
             {activeTimer ? (
@@ -2202,7 +2205,7 @@ export default function App() {
                 <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📡 רדאר משפחתי חי</h2>
               </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
 
             <div style={{ width: '100%', height: '300px', position: 'relative', background: '#0f172a', flexShrink: 0 }}>
@@ -2338,7 +2341,7 @@ export default function App() {
                 <small style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '11px' }}>CAR FINDER</small>
                 <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🚗 שמירת מיקום רכב חכם</h3>
               </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
 
             {savedParking ? (
@@ -2415,7 +2418,7 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎯 בינגו דרכים לאוטו</h2>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
 
             {!bingoPlayer ? (
@@ -2439,7 +2442,7 @@ export default function App() {
                   <span style={{ fontSize: '13px', fontWeight: 'bold', color: textColor }}>לוח של: {bingoPlayer} 🎲</span>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button onClick={() => initBingoGame(bingoPlayer)} style={{ background: metallicGreyBg, color: metallicGreyText, border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>🔀 ערבב</button>
-                    <button onClick={() => setBingoPlayer('')} style={{ background: isDark ? '#333' : '#e5e7eb', color: textColor, border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>שחקן</button>
+                    <button onClick={() => setBingoPlayer('')} style={{ background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor, padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>שחקן</button>
                   </div>
                 </div>
 
@@ -2495,18 +2498,18 @@ export default function App() {
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: cardBg }}>
           <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>שיחון איטלקי חכם</h2>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 {(hebrewInput || italianOutput) && (
                   <button 
                     onClick={() => handleGlobalClick(clearPhrasebook)} 
-                    style={{ background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
+                    style={{ background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor, padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
                   >
                     נקה
                   </button>
                 )}
-                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
               </div>
             </div>
 
@@ -2582,17 +2585,17 @@ export default function App() {
               <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <button 
                   onClick={() => handleGlobalClick(() => setIsTriviaPaused(!isTriviaPaused))}
-                  style={{ background: isTriviaPaused ? '#f59e0b' : (isDark ? '#333' : '#f3f4f6'), color: isTriviaPaused ? '#fff' : textColor, border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
+                  style={{ background: isTriviaPaused ? '#f59e0b' : (isDark ? '#333' : '#ffffff'), border: `1px solid ${borderColor}`, color: isTriviaPaused ? '#fff' : textColor, padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
                 >
                   {isTriviaPaused ? '▶️ המשך' : '⏸️ השהה'}
                 </button>
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
-                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
+                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
                 >
                   🔒 איפוס
                 </button>
-                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
               </div>
             </div>
 
@@ -2677,7 +2680,7 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>הפתעת הבוקר והאתגר!</h2>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
 
             <div style={{ background: blockBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', textAlign: 'center', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
@@ -2712,7 +2715,7 @@ export default function App() {
               </div>
 
               {isCurrentDayCompleted && (
-                <button onClick={() => handleGlobalClick(() => resetSingleChallenge(activeDay))} style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: 'none', padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', width: '100%', boxSizing: 'border-box' }}>🔒 אפס משימה זו (מנהל)</button>
+                <button onClick={() => handleGlobalClick(() => resetSingleChallenge(activeDay))} style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', width: '100%', boxSizing: 'border-box' }}>🔒 אפס משימה זו (מנהל)</button>
               )}
             </div>
           </div>
@@ -2733,7 +2736,7 @@ export default function App() {
                   {isAdminUnlocked ? '🔓 מנהל (הכל פתוח)' : '🔒 פתח נעילת מנהל (1967)'}
                 </button>
               </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {tripDays.map((d, idx) => {
@@ -2773,7 +2776,7 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
 
             <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: metallicGreyBg, color: metallicGreyText, border: 'none', marginBottom: '16px', boxShadow: '0 4px 10px rgba(0,0,0,0.15)' }}>📷 הוסף תמונה / סרטון</button>
@@ -2830,7 +2833,7 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: textColor }}>{viewerItem.title || viewerItem.name}</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
             
             <DocumentViewer 
@@ -2849,7 +2852,7 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px' }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📍 סביבי (Around Me)</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
             <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך:</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -2873,7 +2876,7 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px' }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#dc2626' }}>🆘 מספרי חירום באיטליה</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
@@ -2892,7 +2895,7 @@ export default function App() {
                 <small style={{ color: textSub, fontWeight: 'bold', textTransform: 'uppercase', display: 'block', fontSize: '10px' }}>ארנק דיגיטלי</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
               </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ ...modalCloseBtn, background: isDark ? '#333' : '#ffffff', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
