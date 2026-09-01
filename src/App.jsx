@@ -1647,7 +1647,7 @@ export default function App() {
     ? '0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4)'
     : '0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.07)';
 
-  const blockBg = isDark ? '#262626' : '#fafafa';
+  const blockBg = isDark ? '#262626' : '#ffffff';
   const blockText = textColor; 
   const blockBorder = borderColor;
 
@@ -2387,7 +2387,7 @@ export default function App() {
                 <input type="file" id="parkingCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleParkingPhotoUpload} />
                 <button
                   onClick={() => document.getElementById('parkingCamera').click()}
-                  style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+                  style={{ padding: '10px', borderRadius: '10px', background: isDark ? '#333' : '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}
                 >
                   📷 {parkingPhotoUrl ? '✓ תמונת חניה צולמה' : 'צלם תמונה של עמוד החניה'}
                 </button>
