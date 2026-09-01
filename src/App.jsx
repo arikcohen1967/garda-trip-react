@@ -339,7 +339,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
     <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600' }}>
       {item.isHotelInfo && (
         <>
-          <p><b>סטטוס הזמנה:</b> <span style={{ color: isDark ? '#34d399' : '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
+          <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
           <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
           <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
           <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#60a5fa' : '#1d4ed8', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
@@ -409,8 +409,20 @@ export default function App() {
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   
-  // מצב תצוגה: 'light' (בהיר מקורי) או 'dark' (כהה High Contrast לפי אותו מבנה בדיוק)
+  // מצב תצוגה: 'light' או 'dark' (High Contrast)
   const [themeMode, setThemeMode] = useState('light');
+
+  // כלי עריכת צבעים מותאמים אישית (Theme Customizer)
+  const [customTheme, setCustomTheme] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('garda-custom-theme')) || null;
+    } catch (e) { return null; }
+  });
+  const [showThemeBuilder, setShowThemeBuilder] = useState(false);
+  const [tempBgMain, setTempBgMain] = useState('#ffffff');
+  const [tempCardBg, setTempCardBg] = useState('#ffffff');
+  const [tempTextColor, setTempTextColor] = useState('#1d1d1f');
+  const [tempBorderColor, setTempBorderColor] = useState('#e5e7eb');
 
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
@@ -1646,23 +1658,43 @@ export default function App() {
 
   const isDark = themeMode === 'dark';
 
-  // 🎨 הגדרת ערכות צבעים מדויקות לשתי הגרסאות לפי הבקשה שלך
-  const bgMain = isDark ? '#000000' : '#ffffff';
-  const cardBg = isDark ? '#1c1c1e' : '#ffffff';
-  const textColor = isDark ? '#f5f5f7' : '#1d1d1f';
+  // 🎨 ניהול צבעים דינמי (Light / High Contrast Dark או Custom Theme שנוצר על ידי המשתמש)
+  const baseBgMain = isDark ? '#000000' : '#ffffff';
+  const baseCardBg = isDark ? '#1c1c1e' : '#ffffff';
+  const baseTextColor = isDark ? '#f5f5f7' : '#1d1d1f';
+  const baseBorderColor = isDark ? '#38383a' : '#e5e7eb';
+
+  const bgMain = customTheme ? customTheme.bgMain : baseBgMain;
+  const cardBg = customTheme ? customTheme.cardBg : baseCardBg;
+  const textColor = customTheme ? customTheme.textColor : baseTextColor;
+  const borderColor = customTheme ? customTheme.borderColor : baseBorderColor;
+
   const textSub = isDark ? '#98989d' : '#6b7280';
-  const borderColor = isDark ? '#38383a' : '#e5e7eb';
-
-  const blockBg = cardBg;
   const blockText = textColor; 
+  const cardShadow = isDark ? '0 6px 20px rgba(0, 0, 0, 0.6)' : '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03)';
 
-  const cardShadow = isDark 
-    ? '0 6px 20px rgba(0, 0, 0, 0.6)'
-    : '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03)';
-
-  // כפתור פעיל / נירוסטה
-  const metallicGreyBg = isDark ? '#4b5563' : '#4b5563';
+  const metallicGreyBg = '#4b5563';
   const metallicGreyText = '#ffffff';
+
+  const saveCustomTheme = () => {
+    const newTheme = {
+      bgMain: tempBgMain,
+      cardBg: tempCardBg,
+      textColor: tempTextColor,
+      borderColor: tempBorderColor
+    };
+    setCustomTheme(newTheme);
+    localStorage.setItem('garda-custom-theme', JSON.stringify(newTheme));
+    setShowThemeBuilder(false);
+    alert('🎨 הגרסה/העיצוב האישי נוצרו ונשמרו בהצלחה!');
+  };
+
+  const resetCustomTheme = () => {
+    setCustomTheme(null);
+    localStorage.removeItem('garda-custom-theme');
+    setShowThemeBuilder(false);
+    alert('איפוס בוצע לחלוטין.');
+  };
 
   const renderMenuItem = (id, index) => {
     const menuConfigs = {
@@ -1742,7 +1774,7 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* פס עליון */}
+      {/* פס עליון נקי */}
       <div style={{
         background: cardBg,
         color: textColor,
@@ -1766,22 +1798,23 @@ export default function App() {
           <span style={{ color: textSub }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
         </div>
 
-        <button
-          onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'dark'))}
-          style={{
-            background: cardBg,
-            border: `1px solid ${borderColor}`,
-            color: textColor,
-            padding: '4px 10px',
-            borderRadius: '12px',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            boxShadow: cardShadow
-          }}
-        >
-          {isDark ? '☀️ מצב בהיר' : '🌙 מצב כהה (Contrast)'}
-        </button>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <button
+            onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'dark'))}
+            style={{
+              background: cardBg,
+              border: `1px solid ${borderColor}`,
+              color: textColor,
+              padding: '4px 8px',
+              borderRadius: '10px',
+              fontSize: '11px',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            {isDark ? '☀️ בהיר' : '🌙 כהה Contrast'}
+          </button>
+        </div>
       </div>
 
       {/* 🚨 פס התראת SOS צף */}
@@ -1911,7 +1944,7 @@ export default function App() {
         />
       )}
       
-      {/* תפריט צד */}
+      {/* תפריט צד (כולל כפתור עריכה ליצירת גרסה אישית בעצמך) */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -1927,11 +1960,18 @@ export default function App() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '10px' }}>
           <h3 style={{ fontSize: '20px', fontWeight: '600', margin: 0, color: textColor, letterSpacing: '-0.02em' }}>תפריט מהיר</h3>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* כפתור עריכת עיצוב גרסאות בתפריט הימני */}
+            <button 
+              onClick={() => handleGlobalClick(() => setShowThemeBuilder(true))}
+              style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+            >
+              🎨 עריכת גרסה
+            </button>
             <button 
               onClick={() => handleGlobalClick(() => setIsEditingMenu(!isEditingMenu))}
               style={{ background: isEditingMenu ? '#22c55e' : cardBg, color: isEditingMenu ? '#fff' : textColor, border: `1px solid ${borderColor}`, padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', boxShadow: cardShadow }}
             >
-              {isEditingMenu ? '✓ סיום' : '⚙️ עריכה'}
+              {isEditingMenu ? '✓ סיום' : '⚙️ סדר'}
             </button>
             <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
           </div>
@@ -1939,6 +1979,43 @@ export default function App() {
 
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
+
+      {/* מודל יצירת גרסת עיצוב אישית */}
+      {showThemeBuilder && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', direction: 'rtl' }}>
+          <div style={{ background: cardBg, color: textColor, padding: '24px', borderRadius: '20px', width: '100%', maxWidth: '400px', border: `1px solid ${borderColor}`, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: 'bold' }}>🛠️ כלי עריכה ויצירת גרסה אישית</h3>
+            <p style={{ fontSize: '12px', color: textSub, marginBottom: '16px' }}>שלוט בצבעים וצור גרסה מותאמת אישית משלך:</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע רקע כללי (Bg Main):</label>
+                <input type="color" value={tempBgMain} onChange={(e) => setTempBgMain(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע רקע כרטיסים (Card Bg):</label>
+                <input type="color" value={tempCardBg} onChange={(e) => setTempCardBg(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע טקסט ראשי:</label>
+                <input type="color" value={tempTextColor} onChange={(e) => setTempTextColor(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע מסגרות:</label>
+                <input type="color" value={tempBorderColor} onChange={(e) => setTempBorderColor(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={saveCustomTheme} style={{ flex: 1, padding: '12px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>שמור גרסה</button>
+              {customTheme && (
+                <button onClick={resetCustomTheme} style={{ padding: '12px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>איפוס</button>
+              )}
+              <button onClick={() => setShowThemeBuilder(false)} style={{ padding: '12px 16px', background: cardBg, color: textColor, border: `1px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>ביטול</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
@@ -2977,7 +3054,7 @@ export default function App() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: cardBg, border: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: isDark ? '#2c2c2e' : '#ffffff', border: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
                         {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
                       </div>
                       <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
