@@ -458,7 +458,7 @@ export default function App() {
     fetchLiveWeather();
   }, []);
 
-  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete) מתוקן
+  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete) מתוקן ויציב
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
   const aroundSpeechRecRef = useRef(null);
@@ -2113,7 +2113,7 @@ export default function App() {
           background: cardBg, zIndex: 2600, boxShadow: '-20px 0 50px rgba(0,0,0,0.25)',
           transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)', padding: '24px 16px',
-          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1.5px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
+          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '10px' }}>
@@ -2240,7 +2240,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מתוקן לחלוטין (נעול גיאוגרפית ברוחב המסך ומנוטרל גלילה אופקית) */}
+      {/* מודל סביבי מתוקן לחלוטין (עם גודל פונט 16px למניעת Zoom במוביל, רוחב נעול ומוגן) */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2249,21 +2249,21 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            {/* שורת חיפוש מוגנת רוחב עם RTL מושלם */}
+            {/* שורת חיפוש מוגנת רוחב עם גודל פונט 16px למניעת קפיצת זום בדפדפן */}
             <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: filteredSuggestions.length > 0 ? '4px' : '16px', width: '100%', boxSizing: 'border-box' }}>
               <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
                 <input
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_locked"
+                  name="around_custom_search_input_safe"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
                   style={{
                     width: '100%', padding: '12px 42px 12px 12px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
-                    outline: 'none', fontSize: '13px', boxSizing: 'border-box', textAlign: 'right'
+                    outline: 'none', fontSize: '16px', boxSizing: 'border-box', textAlign: 'right'
                   }}
                 />
                 <button
