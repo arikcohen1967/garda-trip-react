@@ -1856,12 +1856,12 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        {/* ☰ שלושת הקווים של התפריט המהיר - הודגשו במיוחד */}
+        {/* ☰ שלושת הקווים של התפריט המהיר - שונו לצבע לבן נקי עם מסגרת ועובדו בהתאם לבקשה */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
-            background: metallicGreyBg, 
-            border: 'none', 
+            background: '#ffffff', 
+            border: `1px solid ${borderColor}`, 
             width: '42px', 
             height: '42px',
             borderRadius: '12px', 
@@ -1871,8 +1871,8 @@ export default function App() {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            color: metallicGreyText,
-            boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
+            color: textColor,
+            boxShadow: cardShadow
           }}
           title="תפריט מהיר"
         >
@@ -2129,7 +2129,7 @@ export default function App() {
                   {formatTimerClock(timerRemainingSec)}
                 </div>
                 <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '16px' }}>
-                  מווגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
+                  מוגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
                 </small>
 
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
