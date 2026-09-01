@@ -27,7 +27,6 @@ const MAPS_SVG = (
   </svg>
 );
 
-// אייקון טיימר מקצועי וחדש (SVG מדויק)
 const TIMER_SVG = (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="13" r="9"/>
@@ -1661,7 +1660,7 @@ export default function App() {
     ? '0 6px 20px rgba(0, 0, 0, 0.5)'
     : '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03)';
 
-  // 🔘 צבע אפור נירוסטה עבור הכפתורים (לפי התמונה שלך: #4b5563)
+  // 🔘 צבע אפור נירוסטה כהה עבור כפתורי הלחיצה (כולל Apple Maps ו-Waze באותו גודל בדיוק ובאותו צבע אפור)
   const metallicGreyBg = isDark ? '#3a3a3c' : '#4b5563';
   const metallicGreyText = '#ffffff';
 
@@ -2071,7 +2070,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Apple Maps ו-Waze באותו צבע אפור נירוסטה ובאותו גודל בדיוק */}
+                {/* Apple Maps ו-Waze באותו גודל בדיוק ובאותו צבע אפור נירוסטה */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: `1px solid ${borderColor}` }}>
                   <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: metallicGreyBg, color: metallicGreyText, border: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                     {MAPS_SVG} Apple Maps
@@ -2383,7 +2382,7 @@ export default function App() {
                   </a>
                   <a
                     href={`https://www.waze.com/ul?ll=${savedParking.lat},${savedParking.lng}&navigate=yes`}
-                    style={{ ...navBtnStyle, background: metallicGreyBg, color: metallicGreyText, border: 'none', textDecoration: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
+                    style={{ ...navBtnStyle, background: '#33ccff', color: '#000', border: 'none', textDecoration: 'none', boxShadow: '0 2px 5px rgba(51,204,255,0.2)' }}
                   >
                     {WAZE_SVG} Waze
                   </a>
