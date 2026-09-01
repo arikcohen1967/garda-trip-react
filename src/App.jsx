@@ -357,7 +357,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
           <p><b>מספר הזמנה:</b> 4623652</p>
-          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ ורונה (VRN)</p>
+          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ وרונה (VRN)</p>
           <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
         </>
       )}
@@ -374,7 +374,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
           <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה وרונה (VRN)</p>
         </>
       )}
 
@@ -847,7 +847,7 @@ export default function App() {
           clearInterval(rampIntervalRef.current);
           return;
         }
-        currentVol = Math.min(1.0, currentVol + 0.12); // עולה במהירות לעוצמה מלאה ומקסימלית
+        currentVol = Math.min(1.0, currentVol + 0.12);
         try {
           gain.gain.setValueAtTime(currentVol, ctx.currentTime);
         } catch (e) {}
@@ -946,7 +946,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime
+  // סנכרון Realtime מתוקן (מאזין לכל ההתראות בלי מגבלת שמות נוקשה)
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -972,13 +972,14 @@ export default function App() {
         localStorage.removeItem('garda-active-sos');
       })
       .on('broadcast', { event: 'sound_alert_with_msg' }, ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
+        if (payload) {
+          // מציג את ההתראה לכולם או למי שמוגדר כיעד
           setIncomingSoundAlert(payload);
           startEscalatingAlarm();
         }
       })
       .on('broadcast', { event: 'mic_listen_request' }, async ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
+        if (payload) {
           try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             setListeningStream(stream);
@@ -1018,7 +1019,7 @@ export default function App() {
     return () => {
       supabase.removeChannel(radarChannel);
     };
-  }, [challengeAuthor]);
+  }, []);
 
   const saveSmartParkingLocation = () => {
     if (!navigator.geolocation) {
@@ -1390,7 +1391,7 @@ export default function App() {
     try {
       const db = await openDb();
       const tx = db.transaction('files', 'readonly');
-      const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
+      const req = tx.objectStore('files').index('folder').getAll(folder);
       req.onsuccess = () => {
         const dbFiles = req.result || [];
         const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
@@ -1921,7 +1922,7 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* 🚨 פס התראה קופץ עבור הודעה וצליל מתחזק נכנס (מחייב אישור משתמש להפסקה) */}
+      {/* 🚨 פס התראה קופץ עבור הודעה וצליל מתחזק נכנס */}
       {incomingSoundAlert && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.9)',
@@ -1930,7 +1931,7 @@ export default function App() {
           <div style={{
             background: cardBg, color: textColor, padding: '28px', borderRadius: '24px',
             width: '100%', maxWidth: '420px', border: '4px solid #dc2626', textAlign: 'center',
-            boxShadow: '0 25px 60px rgba(220,38,38,0.7)', animation: 'pulse 1s infinite'
+            boxShadow: '0 25px 60px rgba(220,38,38,0.7)'
           }}>
             <span style={{ fontSize: '56px', display: 'block', marginBottom: '12px' }}>🚨</span>
             <h2 style={{ color: '#dc2626', margin: '0 0 10px', fontSize: '24px', fontWeight: '900' }}>התרעת חירום ממשפחה!</h2>
