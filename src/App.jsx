@@ -162,7 +162,7 @@ const QUICK_PHRASES = [
   { cat: '👋 בסיסי ונימוס', he: 'שלום / להתראות', it: 'Ciao / Arrivederci', pro: 'צ׳או / אָרִיבֶדֶרְצִ׳י' },
   { cat: '👋 בסיסי ונימוס', he: 'בוקר טוב / ערב טוב', it: 'Buongiorno / Buonasera', pro: 'בּוּאוֹן ג׳וֹרְנוֹ / בּוּאוֹנָה סֶרָה' },
   { cat: '👋 בסיסי ונימוס', he: 'תודה רבה', it: 'Grazie mille!', pro: 'גְרָאצְיֶה מִילֶה' },
-  { cat: '👋 בסיסי ונימוס', he: 'סליחה / מחילה', it: 'Scusi / Permesso', pro: 'סְקוּזִי / פֶּרְמֶסוֹ' },
+  { cat: '👋 בסיסי ונימוס', he: 'סליחה / מחילה', it: 'Scusi / Permesso', pro: 'סְקוּזִי / פֶּרמֶסוֹ' },
   { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
 ];
 
@@ -426,13 +426,11 @@ export default function App() {
   useEffect(() => {
     async function fetchLiveWeather() {
       try {
-        // קואורדינטות אגם גארדה / דזנזאנו או מיקום נוכחי
         let lat = 45.4654;
         let lon = 10.5356;
 
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition((pos) => {
-            // אם המשתמש נמצא באיטליה או קרוב, נשתמש במיקומו, אחרת נישאר באגם גארדה
             if (pos.coords.latitude > 35 && pos.coords.latitude < 50) {
               lat = pos.coords.latitude;
               lon = pos.coords.longitude;
@@ -455,9 +453,7 @@ export default function App() {
             updated: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
           });
         }
-      } catch (e) {
-        // נשאר עם ערכי ברירת המחדל המעולים אם אין רשת
-      }
+      } catch (e) {}
     }
     fetchLiveWeather();
   }, []);
@@ -502,7 +498,7 @@ export default function App() {
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
-  // טריוויה
+  // טריוויה (המשכית מלאה עם שמירה אוטומטית ל-localStorage)
   const [travelerIndex, setTravelerIndex] = useState(() => {
     try {
       const saved = localStorage.getItem('garda-trivia-traveler-idx');
@@ -525,11 +521,29 @@ export default function App() {
     return { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
   });
 
-  const [triviaQuestions, setTriviaQuestions] = useState(() => generateMassiveTrivia());
+  const [triviaQuestions, setTriviaQuestions] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('garda-trivia-questions'));
+      if (Array.isArray(saved) && saved.length > 0) return saved;
+    } catch (e) {}
+    const generated = generateMassiveTrivia();
+    localStorage.setItem('garda-trivia-questions', JSON.stringify(generated));
+    return generated;
+  });
+
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const triviaTimerRef = useRef(null);
+
+  // שמירת מצב הטריוויה באופן רציף והמשכי
+  useEffect(() => {
+    try {
+      localStorage.setItem('garda-trivia-index', triviaIndex);
+      localStorage.setItem('garda-trivia-traveler-idx', travelerIndex);
+      localStorage.setItem('garda-trivia-scores', JSON.stringify(travelerScores));
+    } catch (e) {}
+  }, [triviaIndex, travelerIndex, travelerScores]);
 
   // בינגו
   const [bingoPlayer, setBingoPlayer] = useState('');
@@ -1303,7 +1317,7 @@ export default function App() {
     try {
       const db = await openDb();
       const tx = db.transaction('files', 'readonly');
-      const req = tx.objectStore('files').index('folder').getAll(folder);
+      const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
       req.onsuccess = () => {
         const dbFiles = req.result || [];
         const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
@@ -1626,7 +1640,10 @@ export default function App() {
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     setSelectedAnswer(null);
     setIsAnswerCorrect(null);
-    setTriviaIndex(prev => (prev + 1) % triviaQuestions.length);
+    setTriviaIndex(prev => {
+      const nextIdx = (prev + 1) % triviaQuestions.length;
+      return nextIdx;
+    });
     setTravelerIndex(prev => (prev + 1) % travelers.length);
   };
 
@@ -1638,10 +1655,13 @@ export default function App() {
 
     if (optionIdx === currentQ.correct) {
       setIsAnswerCorrect(true);
-      setTravelerScores(prev => ({
-        ...prev,
-        [currentTraveler]: (prev[currentTraveler] || 0) + 10
-      }));
+      setTravelerScores(prev => {
+        const updated = {
+          ...prev,
+          [currentTraveler]: (prev[currentTraveler] || 0) + 10
+        };
+        return updated;
+      });
     } else {
       setIsAnswerCorrect(false);
     }
@@ -1653,13 +1673,14 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאפוס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
     }
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
-    setTriviaQuestions(generateMassiveTrivia());
+    const newQuestions = generateMassiveTrivia();
+    setTriviaQuestions(newQuestions);
     setTriviaIndex(0);
     setTravelerIndex(0);
     setSelectedAnswer(null);
@@ -1669,6 +1690,7 @@ export default function App() {
     localStorage.setItem('garda-trivia-scores', JSON.stringify(initialScores));
     localStorage.setItem('garda-trivia-index', '0');
     localStorage.setItem('garda-trivia-traveler-idx', '0');
+    localStorage.setItem('garda-trivia-questions', JSON.stringify(newQuestions));
     alert('המשחק והניקוד אופסו בהצלחה!');
   };
 
