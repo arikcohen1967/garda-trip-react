@@ -1635,19 +1635,19 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // רקע לבן שלג לחלוטין (Snow White)
+  // ❄️ רקע לבן שלג נקי לחלוטין ברמת ה-Root
   const bgMain = isDark ? '#000000' : '#ffffff';
   const cardBg = isDark ? '#1c1c1e' : '#ffffff';
   const textColor = isDark ? '#f5f5f7' : '#1d1d1f';
   const textSub = isDark ? '#86868b' : '#6b7280';
   const borderColor = isDark ? '#38383a' : '#e5e7eb';
 
-  // צללית עדינה ומקצועית מסביב למלבנים, ריבועים וכפתורים
+  // 🌑 צללית מקצועית ועדינה כדי שכל הריבועים והמלבנים יבלטו על רקע לבן שלג
   const cardShadow = isDark 
     ? '0 6px 20px rgba(0, 0, 0, 0.5)'
-    : '0 8px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04)';
+    : '0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.03)';
 
-  // צבע אפור מטאלי כהה (כמו בתמונה ששלחת) עבור כפתורים, בלוקים ואלמנטים
+  // 🔘 צבע אפור מטאלי כהה (כמו בתמונה) עבור כפתורים ואלמנטים
   const metallicGreyBg = isDark ? '#3a3a3c' : '#57585a';
   const metallicGreyText = '#ffffff';
 
@@ -1930,7 +1930,7 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
-        {/* כפתורי ימי הטיול בצבע אפור מטאלי כהה */}
+        {/* כפתורי ימי הטיול */}
         <div style={{ 
           display: 'flex', 
           gap: '8px', 
