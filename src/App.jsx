@@ -709,10 +709,19 @@ export default function App() {
             payload: sosData
           });
         } catch (e) {}
-
-        setModalType('radar');
       },
-      () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון.'),
+      () => {
+        // גם אם ה-GPS נכשל, נפעיל מיד את התראת ה-SOS המקומית והמרוחקת
+        const sosData = {
+          name: currentName,
+          lat: 45.4384,
+          lng: 10.6816,
+          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+        };
+        setActiveSosAlert(sosData);
+        localStorage.setItem('garda-active-sos', JSON.stringify(sosData));
+        startEscalatingAlarm();
+      },
       { enableHighAccuracy: true }
     );
   };
@@ -1940,6 +1949,40 @@ export default function App() {
         </div>
       )}
 
+      {/* 🚨 פס התראת SOS צף שמוצג מיד בכל מסך ברגע הלחיצה */}
+      {activeSosAlert && (
+        <div
+          onClick={() => handleGlobalClick(() => setModalType('radar'))}
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 1500,
+            background: '#dc2626',
+            color: '#ffffff',
+            padding: '14px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '14px',
+            boxShadow: '0 6px 16px rgba(220,38,38,0.5)',
+            borderBottom: '2px solid #b91c1c'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '20px' }}>🚨</span>
+            <span><b>{activeSosAlert.name} הלך/ה לאיבוד!</b> לחץ כאן לפתיחת מפת החירום</span>
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); clearSosAlert(); }}
+            style={{ background: 'rgba(0,0,0,0.3)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            אישור ✓
+          </button>
+        </div>
+      )}
+
       {listeningStream && (
         <div style={{
           position: 'fixed', bottom: '20px', left: '20px', right: '20px', zIndex: 3500,
@@ -1970,7 +2013,7 @@ export default function App() {
         fontSize: '13px',
         fontWeight: 'bold',
         position: 'sticky',
-        top: 0,
+        top: activeSosAlert ? '50px' : 0,
         zIndex: 1100,
         width: '100%',
         boxSizing: 'border-box',
@@ -1978,7 +2021,8 @@ export default function App() {
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottom: `1.5px solid ${borderColor}`,
-        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+        transition: 'top 0.2s ease'
       }}>
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
@@ -2007,35 +2051,6 @@ export default function App() {
           <span style={{ color: textColor, fontWeight: 'bold' }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
         </div>
       </div>
-
-      {activeSosAlert && (
-        <div
-          onClick={() => handleGlobalClick(() => setModalType('radar'))}
-          style={{
-            background: '#dc2626',
-            color: '#ffffff',
-            padding: '12px 18px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            boxShadow: '0 6px 12px rgba(220,38,38,0.3)'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '18px' }}>🚨</span>
-            <span><b>{activeSosAlert.name} הלך/ה לאיבוד!</b> לחץ כאן לפתיחת מפת החירום</span>
-          </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); clearSosAlert(); }}
-            style={{ background: 'rgba(0,0,0,0.2)', color: '#fff', border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', cursor: 'pointer' }}
-          >
-            אישור ✓
-          </button>
-        </div>
-      )}
 
       {activeTimer && (
         <div
@@ -2082,9 +2097,10 @@ export default function App() {
           boxSizing: 'border-box',
           width: 'calc(100% - 32px)',
           position: 'sticky',
-          top: '63px',
+          top: activeSosAlert ? '113px' : '63px',
           zIndex: 890,
-          cursor: 'pointer'
+          cursor: 'pointer',
+          transition: 'top 0.2s ease'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
@@ -2130,10 +2146,11 @@ export default function App() {
         borderBottom: `1.5px solid ${borderColor}`,
         textAlign: 'center',
         position: 'sticky',
-        top: '125px',
+        top: activeSosAlert ? '175px' : '125px',
         zIndex: 880,
         width: '100%',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        transition: 'top 0.2s ease'
       }}>
         <h1 style={{ fontSize: '15px', fontWeight: 'bold', margin: '0 0 2px', color: textColor }}>אגם Garda וונציה</h1>
         <p style={{ fontSize: '10px', color: textSub, margin: 0 }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
@@ -2792,7 +2809,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל שמירה וניווט לחנית רכב */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
