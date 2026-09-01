@@ -69,7 +69,7 @@ const INITIAL_TRIP_DAYS = [
     date: "2026-10-02",
     label: "שישי · 02/10",
     fullLabel: "יום שישי · 02 באוקטובר 2026",
-    title: "סובב אגם גארדה + ראפטינג",
+    title: "סובב אגם Garda + ראפטינג",
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
     challengeDesc: "משימת אקשן ומים! צלמו את הסירה לפני הירידה למים, וכתבו בדיחה או משפט קורע שקרה במהלך השיט.",
@@ -1856,7 +1856,7 @@ export default function App() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        {/* ☰ שלושת הקווים של התפריט המהיר - שונו לצבע לבן נקי עם מסגרת ועובדו בהתאם לבקשה */}
+        {/* ☰ שלושת הקווים של התפריט המהיר - צבע לבן נקי עם מסגרת */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
@@ -1880,7 +1880,7 @@ export default function App() {
         </button>
 
         <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 2px', color: textColor }}>אגם גארדה וונציה</h1>
+          <h1 style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 2px', color: textColor }}>אגם Garda וונציה</h1>
           <p style={{ fontSize: '11px', color: textSub, margin: 0 }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
         </div>
 
@@ -1932,8 +1932,8 @@ export default function App() {
             >
               {isEditingMenu ? '✓ סיום' : '⚙️ עריכה'}
             </button>
-            {/* ✕ כפתור סגירה מודגש בתפריט */}
-            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+            {/* ✕ כפתור סגירה מודגש בתפריט - לבן נקי עם מסגרת */}
+            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
           </div>
         </div>
 
@@ -2116,8 +2116,8 @@ export default function App() {
                 <small style={{ color: '#d97706', fontWeight: 'bold', fontSize: '11px' }}>FAMILY SYNC TIMER</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>⏱️ טיימר משפחתי</h2>
               </div>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
 
             {activeTimer ? (
@@ -2217,8 +2217,8 @@ export default function App() {
                 <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📡 רדאר משפחתי חי</h2>
               </div>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
 
             <div style={{ width: '100%', height: '300px', position: 'relative', background: '#0f172a', flexShrink: 0 }}>
@@ -2354,8 +2354,8 @@ export default function App() {
                 <small style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '11px' }}>CAR FINDER</small>
                 <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🚗 שמירת מיקום רכב חכם</h3>
               </div>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
 
             {savedParking ? (
@@ -2432,8 +2432,8 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎯 בינגו דרכים לאוטו</h2>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
 
             {!bingoPlayer ? (
@@ -2524,8 +2524,8 @@ export default function App() {
                     נקה
                   </button>
                 )}
-                {/* ✕ כפתור סגירה מודגש במודל */}
-                <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+                {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
               </div>
             </div>
 
@@ -2611,8 +2611,8 @@ export default function App() {
                 >
                   🔒 איפוס
                 </button>
-                {/* ✕ כפתור סגירה מודגש במודל */}
-                <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+                {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+                <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
               </div>
             </div>
 
@@ -2697,8 +2697,8 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>הפתעת הבוקר והאתגר!</h2>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
 
             <div style={{ background: '#ffffff', borderRadius: '16px', padding: '16px', marginBottom: '16px', textAlign: 'center', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>
@@ -2754,8 +2754,8 @@ export default function App() {
                   {isAdminUnlocked ? '🔓 מנהל (הכל פתוח)' : '🔒 פתח נעילת מנהל (1967)'}
                 </button>
               </div>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {tripDays.map((d, idx) => {
@@ -2795,8 +2795,8 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
 
             <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: metallicGreyBg, color: metallicGreyText, border: 'none', marginBottom: '16px', boxShadow: '0 4px 10px rgba(0,0,0,0.15)' }}>📷 הוסף תמונה / סרטון</button>
@@ -2853,8 +2853,8 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: textColor }}>{viewerItem.title || viewerItem.name}</h3>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
             
             <DocumentViewer 
@@ -2873,8 +2873,8 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px' }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📍 סביבי (Around Me)</h3>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
             <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך:</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -2898,8 +2898,8 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${borderColor}`, paddingBottom: '14px' }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#dc2626' }}>🆘 מספרי חירום באיטליה</h3>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1px solid ${borderColor}`, boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
@@ -2918,8 +2918,8 @@ export default function App() {
                 <small style={{ color: textSub, fontWeight: 'bold', textTransform: 'uppercase', display: 'block', fontSize: '10px' }}>ארנק דיגיטלי</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎟️ כרטיסים ומסמכים</h2>
               </div>
-              {/* ✕ כפתור סגירה מודגש במודל */}
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>✕</button>
+              {/* ✕ כפתור סגירה מודגש במודל - לבן נקי עם מסגרת */}
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>✕</button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
