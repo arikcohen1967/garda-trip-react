@@ -1635,21 +1635,21 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // ❄️ רקע לבן שלג נקי לחלוטין (#ffffff)
+  // ❄️ רקע המסך הכללי - לבן שלג אמיתי לחלוטין (#ffffff)
   const bgMain = isDark ? '#000000' : '#ffffff';
   const textColor = isDark ? '#f5f5f7' : '#1d1d1f';
   const textSub = isDark ? '#86868b' : '#6b7280';
   const borderColor = isDark ? '#38383a' : '#e5e7eb';
 
-  // 🔲 הפנים של המלבנים, הריבועים והכרטיסים הוגדרו באפור בהיר נקי וסטרילי
-  const cardBg = isDark ? '#1c1c1e' : '#f3f4f6';
-  const blockBg = isDark ? '#2c2c2e' : '#f3f4f6';
+  // 🔲 פנים המלבנים, הריבועים והכרטיסים - אפור בהיר נקי ועדין (#f8f9fa)
+  const cardBg = isDark ? '#1c1c1e' : '#f8f9fa';
+  const blockBg = isDark ? '#2c2c2e' : '#f8f9fa';
   const blockText = textColor; 
 
   // 🌑 צללית נקייה ומקצועית להדגשת המסגרות על גבי רקע לבן
   const cardShadow = isDark 
     ? '0 6px 20px rgba(0, 0, 0, 0.5)'
-    : '0 4px 14px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03)';
+    : '0 6px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03)';
 
   // 🔘 צבע אפור מטאלי כהה עבור כפתורי הלחיצה
   const metallicGreyBg = isDark ? '#3a3a3c' : '#57585a';
@@ -1679,7 +1679,7 @@ export default function App() {
         <button 
           onClick={() => handleGlobalClick(cfg.action)} 
           style={{ 
-            background: isDark ? 'rgba(255, 255, 255, 0.05)' : '#f3f4f6',
+            background: isDark ? 'rgba(255, 255, 255, 0.05)' : '#f8f9fa',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: `1px solid ${borderColor}`,
@@ -1699,7 +1699,7 @@ export default function App() {
             transition: 'transform 0.15s ease, background 0.15s ease'
           }}
         >
-          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb', borderRadius: '8px' }}>
+          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(255,255,255,0.1)' : '#ffffff', borderRadius: '8px', border: `1px solid ${borderColor}` }}>
             {cfg.icon}
           </span>
           <span style={{ flex: 1, letterSpacing: '-0.01em' }}>{cfg.label}</span>
@@ -1760,8 +1760,8 @@ export default function App() {
         <button
           onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'darkSilver'))}
           style={{
-            background: isDark ? '#333' : '#f3f4f6',
-            border: 'none',
+            background: isDark ? '#333' : '#f8f9fa',
+            border: `1px solid ${borderColor}`,
             color: textColor,
             padding: '4px 10px',
             borderRadius: '12px',
@@ -1850,7 +1850,7 @@ export default function App() {
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
-            background: isDark ? '#333' : '#f3f4f6', 
+            background: isDark ? '#333' : '#f8f9fa', 
             border: `1px solid ${borderColor}`, 
             width: '38px', 
             height: '38px',
@@ -1879,7 +1879,7 @@ export default function App() {
             setModalType('viewer');
           })}
           style={{
-            background: isDark ? '#333' : '#f3f4f6', 
+            background: isDark ? '#333' : '#f8f9fa', 
             border: `1px solid ${borderColor}`, 
             padding: '6px 12px',
             borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', 
@@ -1916,11 +1916,11 @@ export default function App() {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button 
               onClick={() => handleGlobalClick(() => setIsEditingMenu(!isEditingMenu))}
-              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6'), color: isEditingMenu ? '#fff' : textColor, border: 'none', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+              style={{ background: isEditingMenu ? '#22c55e' : (isDark ? 'rgba(255,255,255,0.1)' : '#f8f9fa'), color: isEditingMenu ? '#fff' : textColor, border: `1px solid ${borderColor}`, padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
             >
               {isEditingMenu ? '✓ סיום' : '⚙️ עריכה'}
             </button>
-            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : '#f3f4f6', color: textColor, border: 'none' }}>✕</button>
+            <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ ...modalCloseBtn, background: isDark ? 'rgba(255,255,255,0.1)' : '#f8f9fa', border: `1px solid ${borderColor}`, color: textColor }}>✕</button>
           </div>
         </div>
 
@@ -1969,7 +1969,7 @@ export default function App() {
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* כפתורי גישה מהירים עם פנים אפור בהיר וצללית מודגשת */}
+          {/* כפתורי גישה מהירים עם פנים אפור בהיר */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
             <button
               onClick={triggerSosLostAlert}
