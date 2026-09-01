@@ -453,6 +453,10 @@ export default function App() {
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
 
+  // סביבי (Around Me) - סטייט מוגדר בצורה מסודרת
+  const [aroundSearchQuery, setAroundSearchQuery] = useState('');
+  const [isAroundListening, setIsAroundListening] = useState(false);
+
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
   // טריוויה
@@ -540,6 +544,44 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
   const alarmIntervalRef = useRef(null);
+
+  // פונקציות עבור מודל "סביבי"
+  const handleAroundCustomSearch = (e) => {
+    e.preventDefault();
+    if (!aroundSearchQuery.trim()) return;
+    window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery)}`;
+  };
+
+  const startAroundVoiceSearch = () => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert('זיהוי קולי אינו נתמך בדפדפן זה.');
+      return;
+    }
+    try {
+      const recognition = new SpeechRec();
+      recognition.lang = 'he-IL';
+      recognition.interimResults = false;
+      recognition.onstart = () => setIsAroundListening(true);
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setAroundSearchQuery(transcript);
+          window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(transcript)}`;
+        }
+      };
+      recognition.onerror = () => setIsAroundListening(false);
+      recognition.onend = () => setIsAroundListening(false);
+      recognition.start();
+    } catch (e) {
+      setIsAroundListening(false);
+    }
+  };
+
+  const sendSoundAlertToMember = (memberName) => {
+    playBeepSound();
+    alert(`🔔 נשלח צליל איתור אל ${memberName}!`);
+  };
 
   const playClickSound = () => {
     try {
@@ -1772,8 +1814,6 @@ export default function App() {
     );
   };
 
-  const arikLocation = familyLocations['אריק'];
-
   return (
     <div style={{ 
       background: bgMain, 
@@ -2116,7 +2156,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי */}
+      {/* מודל סביבי מעודכן ומתוקן במלואו */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
