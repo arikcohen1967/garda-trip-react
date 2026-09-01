@@ -46,7 +46,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -357,7 +357,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
           <p><b>מספר הזמנה:</b> 4623652</p>
-          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ ורונה (VRN)</p>
+          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ وרונה (VRN)</p>
           <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
         </>
       )}
@@ -374,7 +374,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
           <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה وרונה (VRN)</p>
         </>
       )}
 
@@ -1589,7 +1589,7 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל לאפוס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
@@ -1942,7 +1942,7 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
-        {/* כפתורי ימי הטיול */}
+        {/* כפתורי ימי הטיול - אפור כהה פעיל, לבן בלתי פעיל */}
         <div style={{ 
           display: 'flex', 
           gap: '8px', 
@@ -1982,7 +1982,7 @@ export default function App() {
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
-          {/* כפתורי גישה מהירים */}
+          {/* כפתורי גישה מהירים - עיצוב לבן נקי כמו ימי השבוע הלא לחוצים */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
             <button
               onClick={triggerSosLostAlert}
@@ -2035,13 +2035,14 @@ export default function App() {
               </div>
             </div>
 
+            {/* כפתור פתח מעוצב כמו ימי השבוע (לבן עם גבול ומסגרת נקייה) */}
             <span style={{
-              background: metallicGreyBg,
-              color: metallicGreyText,
+              background: '#ffffff',
+              color: textColor,
               padding: '8px 14px', borderRadius: '10px',
               fontSize: '12px', fontWeight: 'bold', flexShrink: 0,
-              border: 'none',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              border: `1px solid ${borderColor}`,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח 🚀'}
             </span>
@@ -2063,19 +2064,19 @@ export default function App() {
                     <a 
                       href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.food.dest)}&navigate=yes`}
                       onClick={() => playClickSound()}
-                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: metallicGreyBg, color: metallicGreyText, fontWeight: 'bold', fontSize: '12px', padding: '8px 12px', borderRadius: '10px', textDecoration: 'none', border: 'none', alignSelf: 'flex-start', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#ffffff', color: textColor, fontWeight: 'bold', fontSize: '12px', padding: '8px 12px', borderRadius: '10px', textDecoration: 'none', border: `1px solid ${borderColor}`, alignSelf: 'flex-start', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}
                     >
                       {WAZE_SVG} נווט למסעדה ב-Waze
                     </a>
                   </div>
                 )}
 
-                {/* Apple Maps ו-Waze באותו גודל בדיוק ובאותו צבע אפור נירוסטה */}
+                {/* Apple Maps ו-Waze מעוצבים כמו ימי השבוע (לבן עם מסגרת נקייה) */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: `1px solid ${borderColor}` }}>
-                  <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: metallicGreyBg, color: metallicGreyText, border: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                  <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" onClick={() => playClickSound()} style={{ ...navBtnStyle, background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
                     {MAPS_SVG} Apple Maps
                   </a>
-                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: metallicGreyBg, color: metallicGreyText, border: 'none', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                  <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} onClick={() => playClickSound()} style={{ ...navBtnStyle, background: '#ffffff', color: textColor, border: `1px solid ${borderColor}`, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
                     {WAZE_SVG} Waze
                   </a>
                 </div>
@@ -2128,7 +2129,7 @@ export default function App() {
                   {formatTimerClock(timerRemainingSec)}
                 </div>
                 <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '16px' }}>
-                  מוגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
+                  מווגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
                 </small>
 
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
