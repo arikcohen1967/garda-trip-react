@@ -458,7 +458,7 @@ export default function App() {
     fetchLiveWeather();
   }, []);
 
-  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete) מתוקן ויציב
+  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete) מתוקן
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
   const aroundSpeechRecRef = useRef(null);
@@ -2240,7 +2240,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מתוקן לחלוטין (עם גודל פונט 16px למניעת Zoom במוביל, רוחב נעול ומוגן) */}
+      {/* מודל סביבי עם פונט 16px למניעת Zoom במוביל */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2249,14 +2249,13 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            {/* שורת חיפוש מוגנת רוחב עם גודל פונט 16px למניעת קפיצת זום בדפדפן */}
             <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: filteredSuggestions.length > 0 ? '4px' : '16px', width: '100%', boxSizing: 'border-box' }}>
               <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
                 <input
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_safe"
+                  name="around_custom_search_input_safe_v2"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
@@ -2290,7 +2289,6 @@ export default function App() {
               </button>
             </form>
 
-            {/* תיבת הצעות השלמה אוטומטית מוגנת רוחב */}
             {filteredSuggestions.length > 0 && (
               <div style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', boxShadow: cardShadow, width: '100%', boxSizing: 'border-box' }}>
                 {filteredSuggestions.map((item, idx) => (
@@ -2958,7 +2956,7 @@ export default function App() {
                   style={{
                     width: '100%', padding: '12px 40px 12px 12px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
-                    outline: 'none', fontSize: '14px', boxSizing: 'border-box'
+                    outline: 'none', fontSize: '16px', boxSizing: 'border-box'
                   }} 
                 />
                 <button
@@ -3134,7 +3132,7 @@ export default function App() {
 
               <div>
                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>💬 כתוב בדיחה, משפט או סיכום:</label>
-                <textarea rows="3" placeholder="לדוגמה: עמית צעקה הכי חזק..." value={challengeNote} onChange={(e) => setChallengeNote(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontSize: '13px', boxSizing: 'border-box', outline: 'none' }} />
+                <textarea rows="3" placeholder="לדוגמה: עמית צעקה הכי חזק..." value={challengeNote} onChange={(e) => setChallengeNote(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontSize: '16px', boxSizing: 'border-box', outline: 'none' }} />
               </div>
 
               <input type="file" id="questPhotoInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) saveDailyChallenge(e.target.files[0]); }} />
@@ -3218,7 +3216,7 @@ export default function App() {
                   placeholder="תיאור התמונה..." 
                   value={galleryCaption} 
                   onChange={(e) => setGalleryCaption(e.target.value)} 
-                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
+                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none', fontSize: '16px' }} 
                 />
                 <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
                 <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
@@ -3323,7 +3321,7 @@ export default function App() {
                 </div>
                 <div>
                   <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>שם המסמך:</label>
-                  <input type="text" placeholder="לדוגמה: כרטיס כניסה" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} />
+                  <input type="text" placeholder="לדוגמה: כרטיס כניסה" value={newTicketTitle} onChange={(e) => setNewTicketTitle(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none', fontSize: '16px' }} />
                 </div>
                 <input type="file" id="cameraInput" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFileUpload} />
                 <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
