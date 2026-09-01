@@ -1635,19 +1635,19 @@ export default function App() {
 
   const isDark = themeMode === 'darkSilver';
 
-  // רקע לבן נקי לחלוטין (במצב כהה שחור עמוק)
-  const bgMain = isDark ? '#121212' : '#ffffff';
-  const cardBg = isDark ? '#1e1e1e' : '#ffffff';
-  const textColor = isDark ? '#e0e0e0' : '#222222';
-  const textSub = isDark ? '#aaaaaa' : '#666666';
-  const borderColor = isDark ? '#333333' : '#e5e7eb';
+  // החזרה מוחלטת לרקע לבן חלק באור, ושחור כהה בחושך
+  const bgMain = isDark ? '#000000' : '#ffffff';
+  const cardBg = isDark ? '#1c1c1e' : '#ffffff';
+  const textColor = isDark ? '#f5f5f7' : '#1d1d1f';
+  const textSub = isDark ? '#86868b' : '#6b7280';
+  const borderColor = isDark ? '#38383a' : '#e5e7eb';
 
-  // צללית מודגשת ועמוקה יותר כדי שהמלבנים והריבועים יבלטו היטב על רקע לבן
+  // צללית מודגשת למסגרות הכרטיסים והמלבנים על רקע הלבן הנקי
   const cardShadow = isDark 
-    ? '0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4)'
-    : '0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.07)';
+    ? '0 6px 20px rgba(0, 0, 0, 0.5)'
+    : '0 8px 24px rgba(0, 0, 0, 0.08)';
 
-  const blockBg = isDark ? '#262626' : '#ffffff';
+  const blockBg = isDark ? '#2c2c2e' : '#ffffff';
   const blockText = textColor; 
   const blockBorder = borderColor;
 
@@ -1926,7 +1926,7 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
-        {/* כפתורי ימי הטיול */}
+        {/* כפתורי ימי הטיול (אפור מטאלי בוהק ויפה) */}
         <div style={{ 
           display: 'flex', 
           gap: '8px', 
