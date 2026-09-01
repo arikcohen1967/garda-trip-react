@@ -7,7 +7,7 @@ const SUPABASE_KEY = 'sb_publishable_Ov14SZJ4k0-4UeqQNEQ6CQ_N4da5ABY';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const WAZE_SVG = (
-  <svg viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
     <rect width="512" height="512" rx="110" fill="#71717a"/>
     <path d="M375.4 233.5c-3.7-31.8-29.3-56.7-61.6-59.5-35.3-3.1-66.5 19.3-73.8 53.6-1.5 7-1.4 14.3.4 21.2-22.1 4.7-38.6 24.1-38.6 47.3 0 17.5 9.7 32.7 24.1 40.5l-10.7 33.3c-2.4 7.4 2.8 15 10.6 15 3.3 0 6.4-1.4 8.6-3.8l21.9-23.7c13.7 4.9 28.7 7.5 44.1 7.5 70.7 0 128-50.5 128-112.7 0-11.8-1.8-23.3-5.2-34.4zm-146 5.3c0-11 9-20 20-20s20 9 20 20-9 20-20 20-20-9-20-20zm112 40c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20zm-56 22c-29.8 0-54-15.6-54-35 0-3.3 2.7-6 6-6h96c3.3 0 6 2.7 6 6 0 19.4-24.2 35-54 35z" fill="#fff"/>
     <path d="M220.5 240c-1.2 5.5-6.2 9.5-12 9.5s-10.8-4-12-9.5-2.8-12.7-14.2-22-27.5-22-15.5 0-28 12.5-28 28s12.5 28 28 28c4.4 0 8 3.6 8 8s-3.6 8-8 8c-24.3 0-44-19.7-44-44s19.7-44 44-44c21.2 0 39.1 14.7 43.5 34.5z" fill="#18181b"/>
@@ -412,8 +412,8 @@ export default function App() {
   // מצב תצוגה: 'light' או 'dark' (Contrast)
   const [themeMode, setThemeMode] = useState('light');
 
-  // מזג אוויר מקומי באגם גארדה (Peschiera del Garda / Sirmione אזור אגם גארדה)
-  const [weatherData, setWeatherData] = useState({ temp: '26°C', condition: '☀️ שמש נעימה באגם', location: 'אגם Garda' });
+  // מזג אוויר מקומי באגם גארדה
+  const [weatherData, setWeatherData] = useState({ temp: '25°C - 24°C', condition: '☀️ שמש נעימה באגם (ספטמבר-אוקטובר)', location: 'אגם Garda' });
 
   // כלי עריכת צבעים מותאמים אישית (Theme Customizer)
   const [customTheme, setCustomTheme] = useState(() => {
@@ -1892,25 +1892,29 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌤️ הווידג'ט המאוחד והמשודרג מוקם בחלק העליון (מתחת לפס הניווט) */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '10px',
-        background: cardBg,
-        border: `1.5px solid ${borderColor}`,
-        borderRadius: '16px',
-        padding: '10px 14px',
-        margin: '12px 16px 4px 16px',
-        boxShadow: cardShadow,
-        boxSizing: 'border-box',
-        width: 'calc(100% - 32px)',
-        position: 'sticky',
-        top: '43px',
-        zIndex: 890
-      }}>
-        {/* חלק ימני: מזג אוויר ומידע על היעד */}
+      {/* 🌤️ הווידג'ט המאוחד והמשודרג מוקם בחלק העליון (בלחיצה פותח פרטי מזג אוויר מעודכנים) */}
+      <div 
+        onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '10px',
+          background: cardBg,
+          border: `1.5px solid ${borderColor}`,
+          borderRadius: '16px',
+          padding: '10px 14px',
+          margin: '12px 16px 4px 16px',
+          boxShadow: cardShadow,
+          boxSizing: 'border-box',
+          width: 'calc(100% - 32px)',
+          position: 'sticky',
+          top: '43px',
+          zIndex: 890,
+          cursor: 'pointer'
+        }}
+      >
+        {/* חלק ימני: מזג אוויר ברור וקריא */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
           <span style={{ fontSize: '24px', flexShrink: 0 }}>☀️</span>
           <div style={{ minWidth: 0 }}>
@@ -1923,45 +1927,25 @@ export default function App() {
           </div>
         </div>
 
-        {/* חלק אמצעי: כפתור החלפת ערכת נושא (בהיר / כהה) */}
-        <button
-          onClick={() => handleGlobalClick(() => setThemeMode(isDark ? 'light' : 'dark'))}
+        {/* חלק שמאלי: כפתור ניווט למלון (קטן יותר, בעיצוב אחיד ותואם לכרטיסים) */}
+        <a
+          href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
+          onClick={(e) => { e.stopPropagation(); playClickSound(); }}
           style={{
-            background: isDark ? '#2c2c2e' : '#f1f5f9',
-            border: `1px solid ${borderColor}`,
+            background: cardBg,
             color: textColor,
+            border: `1.5px solid ${borderColor}`,
             padding: '6px 10px',
             borderRadius: '10px',
             fontSize: '11px',
             fontWeight: 'bold',
             cursor: 'pointer',
-            flexShrink: 0,
-            boxShadow: cardShadow
-          }}
-          title="החלף ערכת נושא"
-        >
-          {isDark ? '☀️ בהיר' : '🌙 כהה'}
-        </button>
-
-        {/* חלק שמאלי ביותר: כפתור ניווט מהיר למלון Bio Vojon ב-Waze */}
-        <a
-          href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
-          onClick={() => playClickSound()}
-          style={{
-            background: '#33ccff',
-            color: '#000000',
-            border: 'none',
-            padding: '8px 12px',
-            borderRadius: '12px',
-            fontSize: '12px',
-            fontWeight: '900',
-            cursor: 'pointer',
             textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
+            gap: '5px',
             flexShrink: 0,
-            boxShadow: '0 4px 12px rgba(51, 204, 255, 0.3)'
+            boxShadow: cardShadow
           }}
           title="נווט למלון Bio Vojon ב-Waze"
         >
@@ -2025,6 +2009,39 @@ export default function App() {
 
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
+
+      {/* מודל פרטי מזג האוויר (נפתח בלחיצה על הווידג'ט) */}
+      {modalType === 'weatherModal' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>METEO LAGO DI GARDA</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>☀️ תחזית ואקלים בספטמבר-אוקטובר</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
+            </div>
+
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6' }}>
+              <p style={{ margin: '0 0 10px', fontSize: '14px', color: textColor }}>
+                <b>מצב מזג האוויר באזור אגם גארדה בתקופה זו (סוף ספטמבר עד תחילת אוקטובר):</b>
+              </p>
+              <ul style={{ margin: 0, paddingRight: '20px', fontSize: '13px', color: textSub }}>
+                <li><b>טמפרטורת יום ממוצעת:</b> סביב 24°C - 25°C, נעים מאוד לטיולים ופארקים.</li>
+                <li><b>טמפרטורת לילה:</b> יורדת לאזור 14°C - 15°C (מומלץ לקחת עליונית קלה לשעות הערב).</li>
+                <li><b>אופי האקלים:</b> שמש נעימה לצד בריזה קלה באגם, סיכוי נמוך למשקעים אך מומלץ להיות מוכנים למעט ממטרים קלים.</li>
+              </ul>
+            </div>
+
+            <button
+              onClick={() => handleGlobalClick(closeModal)}
+              style={{ width: '100%', padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}
+            >
+              הבנתי, חזור למסלול
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* מודל יצירת גרסת עיצוב אישית */}
       {showThemeBuilder && (
@@ -2500,7 +2517,7 @@ export default function App() {
                   </a>
                   <a
                     href={`https://www.waze.com/ul?ll=${savedParking.lat},${savedParking.lng}&navigate=yes`}
-                    style={{ ...navBtnStyle, background: '#33ccff', color: '#000', border: 'none', textDecoration: 'none', boxShadow: '0 2px 5px rgba(51,204,255,0.2)' }}
+                    style={{ ...navBtnStyle, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, textDecoration: 'none', boxShadow: cardShadow }}
                   >
                     {WAZE_SVG} Waze
                   </a>
