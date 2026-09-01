@@ -422,6 +422,42 @@ export default function App() {
     updated: 'מעודכן כעת'
   });
 
+  // שליפת מזג אוויר חי לפי מיקום או ברירת מחדל לאגם גארדה
+  useEffect(() => {
+    async function fetchLiveWeather() {
+      try {
+        let lat = 45.4654;
+        let lon = 10.5356;
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((pos) => {
+            if (pos.coords.latitude > 35 && pos.coords.latitude < 50) {
+              lat = pos.coords.latitude;
+              lon = pos.coords.longitude;
+            }
+          }, () => {}, { timeout: 5000 });
+        }
+
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
+        const data = await res.json();
+        if (data && data.current) {
+          const tempVal = Math.round(data.current.temperature_2m);
+          const humVal = data.current.relative_humidity_2m;
+          const windVal = data.current.wind_speed_10m;
+          setWeatherData({
+            temp: `${tempVal}°C`,
+            condition: tempVal > 22 ? '☀️ שמש נעימה ובהירה' : '⛅ מעונן חלקית ונעים',
+            location: 'אגם Garda (לייב)',
+            humidity: `${humVal}%`,
+            wind: `${windVal} קמ"ש`,
+            updated: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+          });
+        }
+      } catch (e) {}
+    }
+    fetchLiveWeather();
+  }, []);
+
   // חיפוש חופשי ב"סביבי" (Around Me)
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
@@ -460,42 +496,6 @@ export default function App() {
     if (!aroundSearchQuery.trim()) return;
     window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery.trim())}`;
   };
-
-  // שליפת מזג אוויר חי לפי מיקום או ברירת מחדל לאגם גארדה
-  useEffect(() => {
-    async function fetchLiveWeather() {
-      try {
-        let lat = 45.4654;
-        let lon = 10.5356;
-
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition((pos) => {
-            if (pos.coords.latitude > 35 && pos.coords.latitude < 50) {
-              lat = pos.coords.latitude;
-              lon = pos.coords.longitude;
-            }
-          }, () => {}, { timeout: 5000 });
-        }
-
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
-        const data = await res.json();
-        if (data && data.current) {
-          const tempVal = Math.round(data.current.temperature_2m);
-          const humVal = data.current.relative_humidity_2m;
-          const windVal = data.current.wind_speed_10m;
-          setWeatherData({
-            temp: `${tempVal}°C`,
-            condition: tempVal > 22 ? '☀️ שמש נעימה ובהירה' : '⛅ מעונן חלקית ונעים',
-            location: 'אגם Garda (לייב)',
-            humidity: `${humVal}%`,
-            wind: `${windVal} קמ"ש`,
-            updated: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-          });
-        }
-      } catch (e) {}
-    }
-    fetchLiveWeather();
-  }, []);
 
   // כלי עריכת צבעים מותאמים אישית (Theme Customizer)
   const [customTheme, setCustomTheme] = useState(() => {
@@ -2218,7 +2218,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מעודכן עם חיפוש חופשי ומיקרופון */}
+      {/* מודל סביבי מעודכן עם חיפוש חופשי, כיווניות תקינה ונטול השלמה אוטומטית מציקה */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2227,25 +2227,28 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            {/* שורת חיפוש חופשי חדשה עם מיקרופון */}
+            {/* שורת חיפוש חופשי מתוקנת (כיווניות RTL מלאה + ביטול autofill מציק) */}
             <form onSubmit={handleAroundCustomSearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
                 <input
                   type="text"
+                  dir="rtl"
+                  autoComplete="off"
+                  name="around_custom_search_input"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק, בית מרקחת)..."
                   value={aroundSearchQuery}
                   onChange={(e) => setAroundSearchQuery(e.target.value)}
                   style={{
-                    width: '100%', padding: '12px 40px 12px 12px', borderRadius: '12px',
+                    width: '100%', padding: '12px 12px 12px 42px', borderRadius: '12px',
                     border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
-                    outline: 'none', fontSize: '13px', boxSizing: 'border-box'
+                    outline: 'none', fontSize: '13px', boxSizing: 'border-box', textAlign: 'right'
                   }}
                 />
                 <button
                   type="button"
                   onClick={startAroundVoiceSearch}
                   style={{
-                    position: 'absolute', right: '8px', background: 'none', border: 'none',
+                    position: 'absolute', left: '10px', background: 'none', border: 'none',
                     fontSize: '18px', cursor: 'pointer', opacity: isAroundListening ? 1 : 0.7
                   }}
                   title="חיפוש קולי"
