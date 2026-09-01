@@ -422,6 +422,45 @@ export default function App() {
     updated: 'מעודכן כעת'
   });
 
+  // חיפוש חופשי ב"סביבי" (Around Me)
+  const [aroundSearchQuery, setAroundSearchQuery] = useState('');
+  const [isAroundListening, setIsAroundListening] = useState(false);
+  const aroundSpeechRecRef = useRef(null);
+
+  const startAroundVoiceSearch = () => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert('זיהוי קולי אינו נתמך בדפדפן זה.');
+      return;
+    }
+    try {
+      if (aroundSpeechRecRef.current) aroundSpeechRecRef.current.stop();
+      const rec = new SpeechRec();
+      aroundSpeechRecRef.current = rec;
+      rec.lang = 'he-IL';
+      rec.interimResults = false;
+      rec.onstart = () => setIsAroundListening(true);
+      rec.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        if (text) {
+          setAroundSearchQuery(text);
+          window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(text)}`;
+        }
+      };
+      rec.onerror = () => setIsAroundListening(false);
+      rec.onend = () => setIsAroundListening(false);
+      rec.start();
+    } catch (err) {
+      setIsAroundListening(false);
+    }
+  };
+
+  const handleAroundCustomSearch = (e) => {
+    e.preventDefault();
+    if (!aroundSearchQuery.trim()) return;
+    window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery.trim())}`;
+  };
+
   // שליפת מזג אוויר חי לפי מיקום או ברירת מחדל לאגם גארדה
   useEffect(() => {
     async function fetchLiveWeather() {
@@ -2179,6 +2218,69 @@ export default function App() {
         </div>
       )}
 
+      {/* מודל סביבי מעודכן עם חיפוש חופשי ומיקרופון */}
+      {modalType === 'around' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📍 סביבי (Around Me)</h3>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
+            </div>
+
+            {/* שורת חיפוש חופשי חדשה עם מיקרופון */}
+            <form onSubmit={handleAroundCustomSearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  placeholder="הקלד או חפש כל דבר (לדוגמה: פארק, בית מרקחת)..."
+                  value={aroundSearchQuery}
+                  onChange={(e) => setAroundSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%', padding: '12px 40px 12px 12px', borderRadius: '12px',
+                    border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
+                    outline: 'none', fontSize: '13px', boxSizing: 'border-box'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={startAroundVoiceSearch}
+                  style={{
+                    position: 'absolute', right: '8px', background: 'none', border: 'none',
+                    fontSize: '18px', cursor: 'pointer', opacity: isAroundListening ? 1 : 0.7
+                  }}
+                  title="חיפוש קולי"
+                >
+                  {isAroundListening ? '🔴' : '🎙️'}
+                </button>
+              </div>
+              <button
+                type="submit"
+                style={{
+                  padding: '0 16px', background: cardBg, color: textColor,
+                  border: `1.5px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold',
+                  fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow
+                }}
+              >
+                חפש
+              </button>
+            </form>
+
+            <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>או בחר קטגוריה מהירה לחיפוש במפה:</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: cardBg, color: '#f59e0b', gridColumn: 'span 2', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                ☕ <span>עצירת דרך / Autogrill & שירותים</span>
+              </button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>⛽ <span>תחנת דלק</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>💊 <span>פארם</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍕 <span>פיצה</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍦 <span>גלידה</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🛒 <span>סופרמרקט</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍝 <span>מסעדות</span></button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* מודל יצירת גרסת עיצוב אישית */}
       {showThemeBuilder && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', direction: 'rtl' }}>
@@ -3126,30 +3228,6 @@ export default function App() {
               blockText={blockText} 
               cardShadow={cardShadow} 
             />
-          </div>
-        </div>
-      )}
-
-      {/* מודל סביבי */}
-      {modalType === 'around' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📍 סביבי (Around Me)</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
-            </div>
-            <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>בחר קטגוריה לחיפוש מהיר במפה סביבך:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: cardBg, color: '#f59e0b', gridColumn: 'span 2', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                ☕ <span>עצירת דרך / Autogrill & שירותים</span>
-              </button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>⛽ <span>תחנת דלק</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>💊 <span>פארם</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍕 <span>פיצה</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍦 <span>גלידה</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🛒 <span>סופרמרקט</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍝 <span>מסעדות</span></button>
-            </div>
           </div>
         </div>
       )}
