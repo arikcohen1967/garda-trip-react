@@ -505,7 +505,11 @@ export default function App() {
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
-  const [isTriviaPaused, setIsTriviaPaused] = useState(false);
+  const [isTriviaPaused, setIsTriviaPaused] = useState(() => {
+    try {
+      return localStorage.getItem('garda-trivia-paused') === 'true';
+    } catch (e) { return false; }
+  });
   const triviaTimerRef = useRef(null);
 
   const [bingoPlayer, setBingoPlayer] = useState('');
@@ -1660,7 +1664,6 @@ export default function App() {
       setTranslationHistory(prev => [{ he: query, it: italianText, id: Date.now() }, ...prev.slice(0, 5)]);
       setIsTranslating(false);
       speakItalian(italianText);
-      // ניקוי תיבת הקלט מיד עם סיום התרגום והשמעת השאלה
       setHebrewInput('');
     };
 
@@ -1739,8 +1742,20 @@ export default function App() {
     }, 1500);
   };
 
+  const handleToggleTriviaPause = () => {
+    const pass = window.prompt('הזן קוד מנהל (1967) להשהות או להמשיך את משחק הטריוויה:');
+    if (pass !== '1967') {
+      alert('קוד שגוי!');
+      return;
+    }
+    const nextState = !isTriviaPaused;
+    setIsTriviaPaused(nextState);
+    localStorage.setItem('garda-trivia-paused', String(nextState));
+    alert(nextState ? '⏸️ המשחק הושהה בהצלחה. הניקוד והתור נשמרו להיום.' : '▶️ המשחק הופעל מחדש!');
+  };
+
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל (1967) לאיפוס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
@@ -1752,12 +1767,14 @@ export default function App() {
     setTravelerIndex(0);
     setSelectedAnswer(null);
     setIsAnswerCorrect(null);
+    setIsTriviaPaused(false);
     const initialScores = { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
     setTravelerScores(initialScores);
     localStorage.setItem('garda-trivia-scores', JSON.stringify(initialScores));
     localStorage.setItem('garda-trivia-index', '0');
     localStorage.setItem('garda-trivia-traveler-idx', '0');
     localStorage.setItem('garda-trivia-questions', JSON.stringify(newQuestions));
+    localStorage.setItem('garda-trivia-paused', 'false');
     alert('המשחק והניקוד אופסו בהצלחה!');
   };
 
@@ -1950,7 +1967,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🚨 פס התראת SOS צף שמוצג מיד בכל מסך ברגע הלחיצה */}
       {activeSosAlert && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('radar'))}
@@ -3058,14 +3074,16 @@ export default function App() {
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>🚗 טריויה חכמה לדרך</h2>
               <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <button 
-                  onClick={() => handleGlobalClick(() => setIsTriviaPaused(!isTriviaPaused))}
-                  style={{ background: isTriviaPaused ? '#f59e0b' : cardBg, border: `1.5px solid ${borderColor}`, color: isTriviaPaused ? '#fff' : textColor, padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                  onClick={() => handleGlobalClick(handleToggleTriviaPause)}
+                  style={{ background: isTriviaPaused ? '#22c55e' : '#f59e0b', border: `1.5px solid ${borderColor}`, color: '#fff', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                  title="השהה או המשך משחק (קוד מנהל 1967)"
                 >
-                  {isTriviaPaused ? '▶️ המשך' : '⏸️ השהה'}
+                  {isTriviaPaused ? '▶️ המשך משחק' : '⏸️ השהה להיום'}
                 </button>
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
                   style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                  title="איפוס (קוד מנהל 1967)"
                 >
                   🔒 איפוס
                 </button>
@@ -3076,8 +3094,14 @@ export default function App() {
             {isTriviaPaused ? (
               <div style={{ textAlign: 'center', padding: '30px 16px', background: cardBg, borderRadius: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <span style={{ fontSize: '36px', display: 'block', marginBottom: '8px' }}>⏸️</span>
-                <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: textColor, margin: '0 0 6px' }}>המשחק מושהה</h3>
-                <p style={{ fontSize: '12px', color: textSub, margin: 0 }}>הניקוד והשאלה שמורים בבטחה.</p>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: textColor, margin: '0 0 6px' }}>המשחק הושהה להיום</h3>
+                <p style={{ fontSize: '12px', color: textSub, margin: '0 0 16px' }}>הניקוד, התור הנוכחי והשאלה שמורים בבטחה במערכת.</p>
+                <button
+                  onClick={handleToggleTriviaPause}
+                  style={{ padding: '10px 20px', borderRadius: '10px', background: '#22c55e', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}
+                >
+                  המשך לשחק (קוד מנהל 1967) ▶️
+                </button>
               </div>
             ) : (
               <>
@@ -3250,7 +3274,7 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: metallicGreyBg, color: metallicGreyText, border: 'none', marginBottom: '16px', boxShadow: cardShadow }}>📷 הוסף תמונה / סרטון</button>
+            <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: metallicGreyBg, color: metallicGreyText, border: 'none', marginBottom: '16px', boxShadow: cardShadow }}>📷 הוסף תמונה / סרטון לאלבום המרכזי</button>
             
             {showGalleryUpload && (
               <div style={{ background: cardBg, padding: '14px', borderRadius: '14px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
