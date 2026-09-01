@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase Cloud Configuration
 const SUPABASE_URL = 'https://qrdgructcnphiyosakgb.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Ov14SZJ4k0-4UeqQNEQ6CQ_N4da5ABY';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -463,7 +462,6 @@ export default function App() {
   const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
   const [listeningStream, setListeningStream] = useState(null);
   
-  // 🔊 מערכת Web Audio API פנימית שמונעת חסימות אודיו בדפדפני מובייל
   const audioCtxRef = useRef(null);
   const alarmOscillatorRef = useRef(null);
   const alarmGainRef = useRef(null);
@@ -652,7 +650,6 @@ export default function App() {
     }
   };
 
-  // 🔊 פתיחת הקשר האודיו עם אינטראקציה ראשונה של המשתמש כדי למנוע חסימות דפדפן
   const unlockAudioContext = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -858,7 +855,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTimer]);
 
-  // 🚨 מערכת אזעקת Web Audio API חזקה שאינה ניתנת לחסימה במובייל
   const startEscalatingAlarm = () => {
     try {
       unlockAudioContext();
@@ -883,7 +879,6 @@ export default function App() {
       alarmOscillatorRef.current = osc;
       alarmGainRef.current = gain;
 
-      // אפקט צפצוף מתחזק ועולה ויורד
       let toggle = false;
       if (alarmIntervalRef.current) clearInterval(alarmIntervalRef.current);
       alarmIntervalRef.current = setInterval(() => {
@@ -1973,7 +1968,7 @@ export default function App() {
       paddingBottom: '40px', 
       boxSizing: 'border-box', 
       position: 'relative' 
-    }>
+    }}>
       
       {incomingSoundAlert && (
         <div style={{
