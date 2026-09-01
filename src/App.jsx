@@ -46,7 +46,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -357,7 +357,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
           <p><b>מספר הזמנה:</b> 4623652</p>
-          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ وרונה (VRN)</p>
+          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ ורונה (VRN)</p>
           <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
         </>
       )}
@@ -453,9 +453,18 @@ export default function App() {
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
 
-  // סביבי (Around Me) - סטייט מוגדר בצורה מסודרת
+  // סביבי (Around Me)
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
+
+  // 🔔 התראת צליל מתחזק והודעה דחופה נכנסת ברדאר
+  const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
+
+  // 🎙️ מצב האזנה מרחוק (מיקרופון)
+  const [listeningStream, setListeningStream] = useState(null);
+  const audioCtxRef = useRef(null);
+  const oscillatorRef = useRef(null);
+  const alarmGainRef = useRef(null);
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
@@ -543,7 +552,6 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
-  const alarmIntervalRef = useRef(null);
 
   // פונקציות עבור מודל "סביבי"
   const handleAroundCustomSearch = (e) => {
@@ -578,9 +586,44 @@ export default function App() {
     }
   };
 
-  const sendSoundAlertToMember = (memberName) => {
-    playBeepSound();
-    alert(`🔔 נשלח צליל איתור אל ${memberName}!`);
+  // 🔔 שליחת צליל והודעה דחופה מתחזקת למשתמש ברדאר
+  const sendSoundAlertToMember = async (memberName) => {
+    const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
+    if (!msg) return;
+
+    try {
+      await supabase.channel('realtime-radar').send({
+        type: 'broadcast',
+        event: 'sound_alert_with_msg',
+        payload: {
+          senderName: challengeAuthor || 'אריק',
+          targetName: memberName,
+          message: msg,
+          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+        }
+      });
+      alert(`🔔 נשלחה התראה קולית מתחזקת והודעה דחופה אל ${memberName}!`);
+    } catch (e) {
+      alert('שגיאה בשליחת ההתראה');
+    }
+  };
+
+  // 🎙️ בקשת האזנה למרחוק (מיקרופון)
+  const requestRemoteListening = async (memberName) => {
+    if (!window.confirm(`האם לבקש להאזין למיקרופון של ${memberName}?`)) return;
+    try {
+      await supabase.channel('realtime-radar').send({
+        type: 'broadcast',
+        event: 'mic_listen_request',
+        payload: {
+          requester: challengeAuthor || 'אריק',
+          targetName: memberName
+        }
+      });
+      alert(`📡 נשלחה בקשת האזנה למיקרופון אל ${memberName}. אם המכשיר יאשר, תוכל להקשיב.`);
+    } catch (e) {
+      alert('שגיאה בשליחת בקשת ההאזנה');
+    }
   };
 
   const playClickSound = () => {
@@ -647,7 +690,7 @@ export default function App() {
         };
         setActiveSosAlert(sosData);
         localStorage.setItem('garda-active-sos', JSON.stringify(sosData));
-        startAlarmLoop();
+        startEscalatingAlarm();
 
         try {
           await supabase.channel('realtime-radar').send({
@@ -666,7 +709,7 @@ export default function App() {
 
   const clearSosAlert = async () => {
     setActiveSosAlert(null);
-    stopAlarmLoop();
+    stopEscalatingAlarm();
     localStorage.removeItem('garda-active-sos');
     try {
       await supabase.channel('realtime-radar').send({
@@ -759,7 +802,7 @@ export default function App() {
       setTimerRemainingSec(diff);
 
       if (diff === 0 && !activeTimer.notified) {
-        startAlarmLoop();
+        startEscalatingAlarm();
         speakItalian('Attenzione! Il tempo è scaduto!');
         setActiveTimer(prev => ({ ...prev, notified: true }));
       }
@@ -770,39 +813,56 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTimer]);
 
-  const playBeepSound = () => {
+  // מערכת צליל הולך ומתחזק (Escalating Alarm Oscillator)
+  const startEscalatingAlarm = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
+      audioCtxRef.current = ctx;
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.type = 'sawtooth'; // צליל חד וצורם יותר שאי אפשר להתעלם ממנו
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+
+      // מתחיל חלש מאוד ומתחזק בהדרגה
+      gain.gain.setValueAtTime(0.02, ctx.currentTime);
+      
+      // הגברה רציפה לאורך זמן
+      let currentVol = 0.02;
+      const rampInterval = setInterval(() => {
+        if (!audioCtxRef.current) {
+          clearInterval(rampInterval);
+          return;
+        }
+        currentVol = Math.min(1.0, currentVol + 0.08); // מתחזק עד למקסימום עוצמה
+        try {
+          gain.gain.setValueAtTime(currentVol, ctx.currentTime);
+        } catch (e) {}
+      }, 800);
+
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.4);
+
+      oscillatorRef.current = osc;
+      alarmGainRef.current = gain;
     } catch (e) {}
   };
 
-  const startAlarmLoop = () => {
-    setIsAlarmMuted(false);
-    if (alarmIntervalRef.current) clearInterval(alarmIntervalRef.current);
-    playBeepSound();
-    alarmIntervalRef.current = setInterval(() => {
-      playBeepSound();
-    }, 1500);
-  };
-
-  const stopAlarmLoop = () => {
-    setIsAlarmMuted(true);
-    if (alarmIntervalRef.current) {
-      clearInterval(alarmIntervalRef.current);
-      alarmIntervalRef.current = null;
-    }
+  const stopEscalatingAlarm = () => {
+    try {
+      if (oscillatorRef.current) {
+        oscillatorRef.current.stop();
+        oscillatorRef.current.disconnect();
+        oscillatorRef.current = null;
+      }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+        audioCtxRef.current = null;
+      }
+    } catch (e) {}
   };
 
   const verifyAdminAccess = () => {
@@ -838,7 +898,6 @@ export default function App() {
     };
 
     setActiveTimer(timerData);
-    setIsAlarmMuted(false);
     localStorage.setItem('garda-active-timer', JSON.stringify(timerData));
 
     try {
@@ -856,7 +915,7 @@ export default function App() {
   const cancelGlobalTimer = async () => {
     if (!verifyAdminAccess()) return;
 
-    stopAlarmLoop();
+    stopEscalatingAlarm();
     setActiveTimer(null);
     setTimerRemainingSec(0);
     localStorage.removeItem('garda-active-timer');
@@ -887,13 +946,31 @@ export default function App() {
         if (payload) {
           setActiveSosAlert(payload);
           localStorage.setItem('garda-active-sos', JSON.stringify(payload));
-          startAlarmLoop();
+          startEscalatingAlarm();
         }
       })
       .on('broadcast', { event: 'sos_clear' }, () => {
         setActiveSosAlert(null);
-        stopAlarmLoop();
+        stopEscalatingAlarm();
         localStorage.removeItem('garda-active-sos');
+      })
+      .on('broadcast', { event: 'sound_alert_with_msg' }, ({ payload }) => {
+        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
+          setIncomingSoundAlert(payload);
+          startEscalatingAlarm();
+        }
+      })
+      .on('broadcast', { event: 'mic_listen_request' }, async ({ payload }) => {
+        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
+          // בקשת מיקרופון מהדפדפן של המשתמש
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            setListeningStream(stream);
+            alert(`🎙️ ${payload.requester} מתחבר כעת להאזנה למיקרופון שלך.`);
+          } catch (err) {
+            alert('הגישה למיקרופון נדחתה בהגדרות הדפדפן.');
+          }
+        }
       })
       .on('broadcast', { event: 'admin_request_location' }, () => {
         if (navigator.geolocation) {
@@ -910,13 +987,12 @@ export default function App() {
       .on('broadcast', { event: 'family_timer_start' }, ({ payload }) => {
         if (payload && payload.endTime) {
           setActiveTimer(payload);
-          setIsAlarmMuted(false);
           localStorage.setItem('garda-active-timer', JSON.stringify(payload));
           playClickSound();
         }
       })
       .on('broadcast', { event: 'family_timer_cancel' }, () => {
-        stopAlarmLoop();
+        stopEscalatingAlarm();
         setActiveTimer(null);
         setTimerRemainingSec(0);
         localStorage.removeItem('garda-active-timer');
@@ -926,7 +1002,7 @@ export default function App() {
     return () => {
       supabase.removeChannel(radarChannel);
     };
-  }, []);
+  }, [challengeAuthor]);
 
   const saveSmartParkingLocation = () => {
     if (!navigator.geolocation) {
@@ -1829,6 +1905,65 @@ export default function App() {
       position: 'relative' 
     }}>
       
+      {/* 🚨 פס התראה קופץ עבור הודעה וצליל מתחזק נכנס */}
+      {incomingSoundAlert && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.85)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', direction: 'rtl'
+        }}>
+          <div style={{
+            background: cardBg, color: textColor, padding: '24px', borderRadius: '20px',
+            width: '100%', maxWidth: '400px', border: '3px solid #dc2626', textAlign: 'center',
+            boxShadow: '0 25px 50px rgba(220,38,38,0.5)'
+          }}>
+            <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>🚨</span>
+            <h2 style={{ color: '#dc2626', margin: '0 0 8px', fontSize: '22px' }}>התראה דחופה!</h2>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 6px' }}>
+              {incomingSoundAlert.senderName} דורש/ת תשומת לב מיידית:
+            </p>
+            <div style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', padding: '12px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', marginBottom: '20px', border: '1px solid #fecaca' }}>
+              "{incomingSoundAlert.message}"
+            </div>
+            <button
+              onClick={() => {
+                stopEscalatingAlarm();
+                setIncomingSoundAlert(null);
+              }}
+              style={{
+                width: '100%', padding: '14px', background: '#22c55e', color: '#fff',
+                border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(34,197,94,0.3)'
+              }}
+            >
+              הפסק צפצוף וצור קשר ✓
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 🎙️ נגן שמע אם מאזינים למיקרופון שלך */}
+      {listeningStream && (
+        <div style={{
+          position: 'fixed', bottom: '20px', left: '20px', right: '20px', zIndex: 3500,
+          background: '#dc2626', color: '#fff', padding: '12px 16px', borderRadius: '12px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 10px 25px rgba(220,38,38,0.4)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '20px' }}>🎙️</span>
+            <span style={{ fontSize: '13px', fontWeight: 'bold' }}>מישהו מאזין כעת למיקרופון שלך (שידור חי)</span>
+          </div>
+          <button
+            onClick={() => {
+              listeningStream.getTracks().forEach(track => track.stop());
+              setListeningStream(null);
+            }}
+            style={{ background: '#fff', color: '#dc2626', border: 'none', padding: '6px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}
+          >
+            נתק מיקרופון ✕
+          </button>
+        </div>
+      )}
+
       {/* פס עליון מעודכן, מקובע ומאוזן */}
       <div style={{
         background: cardBg,
@@ -2156,7 +2291,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מעודכן ומתוקן במלואו */}
+      {/* מודל סביבי */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2447,12 +2582,12 @@ export default function App() {
                 </small>
 
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  {timerRemainingSec === 0 && !isAlarmMuted && (
+                  {timerRemainingSec === 0 && (
                     <button
-                      onClick={stopAlarmLoop}
+                      onClick={stopEscalatingAlarm}
                       style={{ padding: '8px 14px', borderRadius: '10px', background: '#22c55e', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}
                     >
-                      🛑 עצור צפצוף
+                      🛑 עצור אזעקה
                     </button>
                   )}
                   <button
@@ -2631,7 +2766,7 @@ export default function App() {
                           </b>
                           <small style={{ color: textSub, fontSize: '11px' }}>עודכן: {member.updated_at}</small>
                         </div>
-                        <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                           {distStr && (
                             <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#16a34a' }}>
                               📏 {distStr}
@@ -2649,9 +2784,16 @@ export default function App() {
                           <button
                             onClick={() => sendSoundAlertToMember(member.name)}
                             style={{ padding: '6px 8px', borderRadius: '8px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
-                            title="שלח צליל איתור"
+                            title="שלח צליל איתור דחוף"
                           >
                             🔔 צליל
+                          </button>
+                          <button
+                            onClick={() => requestRemoteListening(member.name)}
+                            style={{ padding: '6px 8px', borderRadius: '8px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                            title="האזן למיקרופון"
+                          >
+                            🎙️ האזן
                           </button>
                         </div>
                       </div>
