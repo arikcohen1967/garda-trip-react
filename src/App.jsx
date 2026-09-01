@@ -465,10 +465,11 @@ export default function App() {
   
   // רפרנס לאודיו HTML5 לצליל אזעקה חזק ומתחזק
   const alarmAudioRef = useRef(null);
+  const rampIntervalRef = useRef(null);
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
-  // טריוויה
+  // 🧠 טריוויה עם המשכיות מלאה ושמירה ב-LocalStorage
   const [travelerIndex, setTravelerIndex] = useState(() => {
     try {
       const saved = localStorage.getItem('garda-trivia-traveler-idx');
@@ -491,7 +492,27 @@ export default function App() {
     return { 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 };
   });
 
-  const [triviaQuestions, setTriviaQuestions] = useState(() => generateMassiveTrivia());
+  // שמירת מצב הטריוויה באופן אוטומטי בכל שינוי
+  useEffect(() => {
+    try {
+      localStorage.setItem('garda-trivia-index', triviaIndex);
+      localStorage.setItem('garda-trivia-traveler-idx', travelerIndex);
+      localStorage.setItem('garda-trivia-scores', JSON.stringify(travelerScores));
+    } catch (e) {}
+  }, [triviaIndex, travelerIndex, travelerScores]);
+
+  const [triviaQuestions, setTriviaQuestions] = useState(() => {
+    try {
+      const savedQ = JSON.parse(localStorage.getItem('garda-trivia-questions'));
+      if (Array.isArray(savedQ) && savedQ.length > 0) return savedQ;
+    } catch (e) {}
+    const generated = generateMassiveTrivia();
+    try {
+      localStorage.setItem('garda-trivia-questions', JSON.stringify(generated));
+    } catch (e) {}
+    return generated;
+  });
+
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
@@ -586,7 +607,7 @@ export default function App() {
     }
   };
 
-  // 🔔 שליחת צליל חזק והודעה דחופה לכלל המכשירים במשפחה
+  // 🔔 שליחת צליל חזק והודעה דחופה לכלל המכשירים במשפחה דרך Supabase
   const sendSoundAlertToMember = async (memberName) => {
     const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
     if (!msg) return;
@@ -813,21 +834,19 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTimer]);
 
-  // 🚨 מערכת אזעקת שמע חזקה מבוססת אלמנט Audio אמיתי (עוקפת מגבלות נייד) עם עוצמה עולה
+  // 🚨 מערכת אזעקת שמע חזקה מבוססת HTML5 Audio (עוקפת מגבלות נייד לחלוטין) עם עוצמה עולה
   const startEscalatingAlarm = () => {
     try {
       if (!alarmAudioRef.current) {
-        // צליל ביפ מהיר באיכות גבוהה בפורמט Data URI שמנגן אזעקה רציפה
-        const beepDataUri = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJ_u3N2UjV6ZlYyNjYeHdXB0bmlraW12Z2dkZXR1cHBsaWhoaWlrYWpkZWRlZmZnbG5tcHV2d3h5enp7fH19f35_gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA=';
+        const beepDataUri = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJ_u3N2UjV6ZlYyNjYeHdXB0bmlraW12Z2dkZXR1cHBsaWhoaWlrYWpkZWRlZmZnbG5tcHV2d3h5enp7fH19f35_gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA==';
         const audio = new Audio(beepDataUri);
         audio.loop = true;
-        audio.volume = 0.1; // מתחיל חלש
+        audio.volume = 0.2;
         alarmAudioRef.current = audio;
       }
       
       alarmAudioRef.current.play().catch(e => console.log('Audio play blocked:', e));
 
-      // הגברה הדרגתית עד 100% עוצמה
       if (rampIntervalRef.current) clearInterval(rampIntervalRef.current);
       rampIntervalRef.current = setInterval(() => {
         if (alarmAudioRef.current) {
@@ -915,7 +934,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime
+  // סנכרון Realtime אמין למסירת ההתראות לכל המכשירים ברשת
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -1715,7 +1734,7 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאפוס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל לאפס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
@@ -1893,7 +1912,7 @@ export default function App() {
       {/* 🚨 פס התראה קופץ עבור הודעה וצליל מתחזק נכנס */}
       {incomingSoundAlert && (
         <div style={{
-          position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.9)',
+          position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.92)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', direction: 'rtl'
         }}>
           <div style={{
