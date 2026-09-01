@@ -458,7 +458,7 @@ export default function App() {
     fetchLiveWeather();
   }, []);
 
-  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete)
+  // חיפוש חופשי ב"סביבי" (Around Me) עם השלמה אוטומטית (Autocomplete) מתוקן
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
   const aroundSpeechRecRef = useRef(null);
@@ -1904,7 +1904,7 @@ export default function App() {
       minHeight: '100vh', 
       width: '100%', 
       maxWidth: '100vw', 
-      overflowX: 'clip', 
+      overflowX: 'hidden', 
       fontFamily: 'system-ui, -apple-system, sans-serif', 
       color: textColor, 
       direction: 'rtl', 
@@ -1913,7 +1913,7 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* פס עליון מתוקן ומאוד מסודר (תפריט מימין, חיווי משמאל) */}
+      {/* פס עליון מעודכן, מקובע ומאוזן */}
       <div style={{
         background: cardBg,
         color: textColor,
@@ -1932,7 +1932,7 @@ export default function App() {
         borderBottom: `1.5px solid ${borderColor}`,
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
       }}>
-        {/* כפתור תפריט ☰ מוגדל ובולט בצד ימין */}
+        {/* כפתור תפריט ☰ מימין */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
@@ -1955,7 +1955,7 @@ export default function App() {
           ☰
         </button>
 
-        {/* חיווי חיבור מקוון / לא מקוון בצד שמאל */}
+        {/* חיווי חיבור משמאל */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#f59e0b' }}></span>
           <span style={{ color: textColor, fontWeight: 'bold' }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
@@ -2022,7 +2022,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌤️ הווידג'ט המאוחד והמשודרג מוקם בחלק העליון (בלחיצה פותח פרטי מזג אוויר מעודכנים) */}
+      {/* 🌤️ הווידג'ט המאוחד והמשודרג מוקם בחלק העליון */}
       <div 
         onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
         style={{
@@ -2044,7 +2044,6 @@ export default function App() {
           cursor: 'pointer'
         }}
       >
-        {/* חלק ימני: מזג אוויר ברור וקריא */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
           <span style={{ fontSize: '24px', flexShrink: 0 }}>☀️</span>
           <div style={{ minWidth: 0 }}>
@@ -2057,7 +2056,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* חלק שמאלי: כפתור ניווט למלון (קטן יותר, בעיצוב אחיד ותואם לכרטיסים) */}
         <a
           href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
           onClick={(e) => { e.stopPropagation(); playClickSound(); }}
@@ -2086,7 +2084,7 @@ export default function App() {
       <header style={{
         padding: '10px 20px',
         background: bgMain,
-        borderBottom: `1px solid ${borderColor}`,
+        borderBottom: `1.5px solid ${borderColor}`,
         textAlign: 'center',
         position: 'sticky',
         top: '125px',
@@ -2105,7 +2103,7 @@ export default function App() {
         />
       )}
       
-      {/* תפריט צד (כפתור החלפת ערכת נושא בהיר/כהה נמצא כאן בלבד) */}
+      {/* תפריט צד */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -2115,10 +2113,10 @@ export default function App() {
           background: cardBg, zIndex: 2600, boxShadow: '-20px 0 50px rgba(0,0,0,0.25)',
           transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)', padding: '24px 16px',
-          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
+          display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1.5px solid ${borderColor}`, boxSizing: 'border-box', overflowY: 'auto'
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '10px' }}>
           <h3 style={{ fontSize: '20px', fontWeight: '600', margin: 0, color: textColor, letterSpacing: '-0.02em' }}>תפריט מהיר</h3>
           <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
             <button 
@@ -2193,7 +2191,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל פרטי מזג האוויר המעודכנים (נפתח בלחיצה על הווידג'ט) */}
+      {/* מודל פרטי מזג האוויר המעודכנים */}
       {modalType === 'weatherModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2242,7 +2240,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי מתוקן לחלוטין (כיווניות RTL מושלמת, ללא חיתוך טקסט וללא השלמה אוטומטית מציקה) */}
+      {/* מודל סביבי מתוקן לחלוטין (נעול גיאוגרפית ברוחב המסך ומנוטרל גלילה אופקית) */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2251,14 +2249,14 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            {/* שורת חיפוש חופשי עם כיווניות RTL אמיתית */}
-            <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: filteredSuggestions.length > 0 ? '4px' : '16px' }}>
-              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+            {/* שורת חיפוש מוגנת רוחב עם RTL מושלם */}
+            <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: filteredSuggestions.length > 0 ? '4px' : '16px', width: '100%', boxSizing: 'border-box' }}>
+              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
                 <input
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_fixed_final"
+                  name="around_custom_search_input_locked"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
@@ -2285,16 +2283,16 @@ export default function App() {
                 style={{
                   padding: '0 16px', background: cardBg, color: textColor,
                   border: `1.5px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold',
-                  fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow
+                  fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, flexShrink: 0
                 }}
               >
                 חפש
               </button>
             </form>
 
-            {/* תיבת הצעות השלמה אוטומטית */}
+            {/* תיבת הצעות השלמה אוטומטית מוגנת רוחב */}
             {filteredSuggestions.length > 0 && (
-              <div style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', boxShadow: cardShadow, zIndex: 50 }}>
+              <div style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', boxShadow: cardShadow, width: '100%', boxSizing: 'border-box' }}>
                 {filteredSuggestions.map((item, idx) => (
                   <div
                     key={idx}
@@ -2302,7 +2300,7 @@ export default function App() {
                     style={{
                       padding: '10px 14px', fontSize: '13px', cursor: 'pointer', textAlign: 'right',
                       borderBottom: idx < filteredSuggestions.length - 1 ? `1px solid ${borderColor}` : 'none',
-                      color: textColor
+                      color: textColor, boxSizing: 'border-box'
                     }}
                   >
                     🔍 {item}
@@ -2312,7 +2310,7 @@ export default function App() {
             )}
 
             <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>או בחר קטגוריה מהירה לחיפוש במפה:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
               <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: cardBg, color: '#f59e0b', gridColumn: 'span 2', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
                 ☕ <span>עצירת דרך / Autogrill & שירותים</span>
               </button>
