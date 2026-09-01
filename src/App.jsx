@@ -1768,7 +1768,7 @@ export default function App() {
   };
 
   const resetTriviaGame = () => {
-    const pass = window.prompt('הזן קוד מנהל לאיפוס משחק הטריוויה:');
+    const pass = window.prompt('הזן קוד מנהל לאפוס משחק הטריוויה:');
     if (pass !== '1967') {
       alert('קוד שגוי! לא ניתן לאפס את המשחק.');
       return;
@@ -2272,7 +2272,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי */}
+      {/* מודל סביבי עם פונט 16px מוגן מפני זום */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2287,7 +2287,7 @@ export default function App() {
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_safe_v3"
+                  name="around_custom_search_input_safe_v4"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
@@ -2655,7 +2655,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר (עם כפתור Directions וכפתור Sound איתור משופר) */}
+      {/* 📡 מודל רדאר */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
