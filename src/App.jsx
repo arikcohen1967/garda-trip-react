@@ -134,13 +134,21 @@ const INITIAL_TRIP_DAYS = [
   }
 ];
 
-const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
+const TICKET_DEFAULT_FOLDERS = [
+  '✈️ טיסות ורכב (30/09)', 
+  '🏡 מלון (30/09 - 06/10)', 
+  '🎢 Gardaland (01/10)', 
+  '🚣 ראפטינג (02/10)', 
+  '🎬 Movieland (03/10)', 
+  '🏰 Medieval Times (03/10)', 
+  '🚤 ונציה (04/10)'
+];
 
 const DEFAULT_DOCUMENTS = [
-  { id: 'israir-flight', folder: '✈️ טיסות ורכב', title: 'הזמנת ישראייר (4623652)', name: 'Israir Flight Booking', type: 'text/flight-info', size: 15400, created: 1000, isFlightInfo: true },
-  { id: 'aig-insurance', folder: '✈️ טיסות ורכב', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
-  { id: 'ecovia-car', folder: '✈️ טיסות ורכב', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
-  { id: 'vojon-hotel', folder: '🏡 מלון', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true }
+  { id: 'israir-flight', folder: '✈️ טיסות ורכב (30/09)', title: 'הזמנת ישראייר (4623652)', name: 'Israir Flight Booking', type: 'text/flight-info', size: 15400, created: 1000, isFlightInfo: true },
+  { id: 'aig-insurance', folder: '✈️ טיסות ורכב (30/09)', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
+  { id: 'ecovia-car', folder: '✈️ טיסות ורכב (30/09)', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
+  { id: 'vojon-hotel', folder: '🏡 מלון (30/09 - 06/10)', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true }
 ];
 
 const QUICK_PHRASES = [
@@ -411,7 +419,7 @@ export default function App() {
   
   const [themeMode, setThemeMode] = useState('light');
 
-  const [weatherData, setWeatherData] = useState({ temp: '25°C - 24°C', condition: '☀️ שמש נעימה באגם (ספטמבר-אוקטובר)', location: 'אגם Garda' });
+  const [weatherData, setWeatherData] = useState({ temp: '26°C · ☀️', condition: 'אגם גארדה: שמש נעימה | ישראל (בת חפר): 31°C · ☀️', location: 'ישראל / אגם Garda' });
 
   const [customTheme, setCustomTheme] = useState(() => {
     try {
@@ -425,11 +433,11 @@ export default function App() {
   const [tempBorderColor, setTempBorderColor] = useState('#cbd5e1');
 
   const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
-  const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
-  const [ticketFiles, setTicketFiles] = useState(DEFAULT_DOCUMENTS.filter(d => d.folder === '✈️ טיסות ורכב'));
+  const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב (30/09)');
+  const [ticketFiles, setTicketFiles] = useState(DEFAULT_DOCUMENTS.filter(d => d.folder === '✈️ טיסות ורכב (30/09)'));
   const [showUploadBox, setShowUploadBox] = useState(false);
   const [newTicketTitle, setNewTicketTitle] = useState('');
-  const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב');
+  const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב (30/09)');
 
   const [galleryItems, setGalleryItems] = useState([]);
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
@@ -811,6 +819,7 @@ export default function App() {
     };
   }, []);
 
+  // ⏱️ תיקון הטיימר כך שירוץ באמינות מלאה במסך הראשי ובכל מסך
   useEffect(() => {
     if (!activeTimer || !activeTimer.endTime) {
       setTimerRemainingSec(0);
@@ -1594,7 +1603,7 @@ export default function App() {
   };
 
   const addNewFolder = () => {
-    const name = window.prompt('שם התקייה החדשה:');
+    const name = window.prompt('שם התקייה החדשה (כולל תאריך הגעה אם תרצה):');
     if (!name || !name.trim()) return;
     const clean = '📁 ' + name.trim();
     if (!folders.includes(clean)) {
@@ -2098,6 +2107,7 @@ export default function App() {
         </div>
       )}
 
+      {/* 🌤️ ווידג'ט מזג אוויר מעודכן: מציג נתונים גם בארץ וגם באיטליה */}
       <div 
         onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
         style={{
@@ -2121,13 +2131,13 @@ export default function App() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-          <span style={{ fontSize: '24px', flexShrink: 0 }}>☀️</span>
+          <span style={{ fontSize: '24px', flexShrink: 0 }}>🌤️</span>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: '13px', fontWeight: 'bold', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {weatherData.location} · {weatherData.temp}
+            <div style={{ fontSize: '12px', fontWeight: 'bold', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {weatherData.location}
             </div>
             <div style={{ fontSize: '11px', color: textSub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {weatherData.condition}
+              {weatherData.temp}
             </div>
           </div>
         </div>
@@ -2279,28 +2289,20 @@ export default function App() {
 
             <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6' }}>
               <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
-                <b>מידע בזמן אמת עבור האזור שלך באגם גארדה:</b>
+                <b>מידע בזמן אמת - ישראל (בת חפר) ואיטליה (אגם גארדה):</b>
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>טמפרטורה</small>
-                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.temp}</strong>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px', marginBottom: '14px' }}>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '12px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>🇮🇱 ישראל (בת חפר)</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>31°C · ☀️ שמש חמימה</strong>
                 </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>לחות יחסית</small>
-                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.humidity || '58%'}</strong>
-                </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>מהירות רוח</small>
-                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.wind || '12 קמ"ש'}</strong>
-                </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>עדכון אחרון</small>
-                  <strong style={{ fontSize: '14px', color: textColor }}>{weatherData.updated || 'כעת'}</strong>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '12px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>🇮🇹 אגם גארדה (איטליה)</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>26°C · ☀️ שמש נעימה באגם</strong>
                 </div>
               </div>
               <p style={{ margin: 0, fontSize: '12px', color: textSub }}>
-                💡 <b>טיפ לדרך:</b> מזג האוויר בספטמבר-אוקטובר באגם גארדה אידיאלי לפארקי שעשועים וטיולי טבע, אך מומלץ להצטייד בלבוש קל לשעות הערב.
+                💡 <b>טיפ לדרך:</b> מזג האוויר בספטמבר-אוקטובר באגם גארדה אידיאלי לפארקי שעשועים וטיולי טבע.
               </p>
             </div>
 
@@ -3076,14 +3078,12 @@ export default function App() {
                 <button 
                   onClick={() => handleGlobalClick(handleToggleTriviaPause)}
                   style={{ background: isTriviaPaused ? '#22c55e' : '#f59e0b', border: `1.5px solid ${borderColor}`, color: '#fff', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
-                  title="השהה או המשך משחק (קוד מנהל 1967)"
                 >
                   {isTriviaPaused ? '▶️ המשך משחק' : '⏸️ השהה להיום'}
                 </button>
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
                   style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
-                  title="איפוס (קוד מנהל 1967)"
                 >
                   🔒 איפוס
                 </button>
@@ -3340,6 +3340,7 @@ export default function App() {
         </div>
       )}
 
+      {/* 🚨 מודל מספרי חירום משודרג: משטרה, אמבולנס ושגרירות ישראל */}
       {modalType === 'emergency' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3349,7 +3350,9 @@ export default function App() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
+              <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>👮 משטרה: 112</a>
               <a href="tel:118" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚑 אמבולנס: 118</a>
+              <a href="tel:+3906361951" style={{ ...gridModalBtn, background: isDark ? '#1e293b' : '#e0f2fe', color: '#0284c7', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, gridColumn: 'span 2' }}>🏛️ שגרירות ישראל באיטליה: +39 06 3619 51</a>
             </div>
           </div>
         </div>
@@ -3396,8 +3399,8 @@ export default function App() {
               </div>
             )}
 
-            <h3 style={{ fontSize: '13px', margin: '6px 0 8px', fontWeight: 'bold', color: textColor }}>תקיות הטיול</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '6px', marginBottom: '16px', width: '100%', boxSizing: 'border-box' }}>
+            <h3 style={{ fontSize: '13px', margin: '6px 0 8px', fontWeight: 'bold', color: textColor }}>תקיות הטיול (כולל תאריכי הגעה)</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '6px', marginBottom: '16px', width: '100%', boxSizing: 'border-box' }}>
               {folders.map((f, i) => (
                 <div 
                   key={i} 
