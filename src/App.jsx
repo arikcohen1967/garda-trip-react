@@ -589,7 +589,7 @@ export default function App() {
     }
   };
 
-  // 🔔 שליחת צליל מתחזק והודעה דחופה למשתמש ברדאר
+  // 🔔 שליחת צליל מתחזק והודעה דחופה לכלל המכשירים במשפחה
   const sendSoundAlertToMember = async (memberName) => {
     const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
     if (!msg) return;
@@ -946,7 +946,7 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime מתוקן (מאזין לכל ההתראות בלי מגבלת שמות נוקשה)
+  // סנכרון Realtime מתוקן לחלוטין (מקבל את כל הודעות הצליל והטקסט ללא סינון שמות מגביל)
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -973,7 +973,7 @@ export default function App() {
       })
       .on('broadcast', { event: 'sound_alert_with_msg' }, ({ payload }) => {
         if (payload) {
-          // מציג את ההתראה לכולם או למי שמוגדר כיעד
+          // מציג את ההודעה והצליל לכל מי שפתוחה לו האפליקציה ברדאר או במסך
           setIncomingSoundAlert(payload);
           startEscalatingAlarm();
         }
@@ -3084,7 +3084,7 @@ export default function App() {
                 </button>
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
-                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
                 >
                   🔒 איפוס
                 </button>
