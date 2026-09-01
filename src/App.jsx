@@ -162,7 +162,7 @@ const QUICK_PHRASES = [
   { cat: '👋 בסיסי ונימוס', he: 'שלום / להתראות', it: 'Ciao / Arrivederci', pro: 'צ׳או / אָרִיבֶדֶרְצִ׳י' },
   { cat: '👋 בסיסי ונימוס', he: 'בוקר טוב / ערב טוב', it: 'Buongiorno / Buonasera', pro: 'בּוּאוֹן ג׳וֹרְנוֹ / בּוּאוֹנָה סֶרָה' },
   { cat: '👋 בסיסי ונימוס', he: 'תודה רבה', it: 'Grazie mille!', pro: 'גְרָאצְיֶה מִילֶה' },
-  { cat: '👋 בסיסי ונימוס', he: 'סליחה / מחילה', it: 'Scusi / Permesso', pro: 'סְקוּזִי / פֶּרמֶסוֹ' },
+  { cat: '👋 בסיסי ונימוס', he: 'סליחה / מחילה', it: 'Scusi / Permesso', pro: 'סְקוּזִי / פֶּרְמֶסוֹ' },
   { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
 ];
 
@@ -1317,7 +1317,7 @@ export default function App() {
     try {
       const db = await openDb();
       const tx = db.transaction('files', 'readonly');
-      const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
+      const req = tx.objectStore('files').index('folder').getAll(folder);
       req.onsuccess = () => {
         const dbFiles = req.result || [];
         const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
@@ -1849,13 +1849,13 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* פס עליון מעודכן */}
+      {/* פס עליון מעודכן (ללא סטטוס גרסה מיותר, כפתור תפריט מוגדל ובולט) */}
       <div style={{
         background: cardBg,
         color: textColor,
         textAlign: 'center',
-        padding: '8px 16px',
-        fontSize: '12px',
+        padding: '10px 16px',
+        fontSize: '13px',
         fontWeight: 'bold',
         position: 'sticky',
         top: 0,
@@ -1868,37 +1868,34 @@ export default function App() {
         borderBottom: `1.5px solid ${borderColor}`,
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button 
-            onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
-            style={{
-              background: cardBg, 
-              border: `1.5px solid ${borderColor}`, 
-              width: '32px', 
-              height: '32px',
-              borderRadius: '8px', 
-              fontSize: '16px', 
-              fontWeight: '900', 
-              cursor: 'pointer',
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              color: textColor,
-              boxShadow: cardShadow
-            }}
-            title="תפריט מהיר"
-          >
-            ☰
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#f59e0b' }}></span>
-            <span style={{ color: textSub }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
-          </div>
-        </div>
+        {/* כפתור תפריט ☰ מוגדל ובולט */}
+        <button 
+          onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
+          style={{
+            background: cardBg, 
+            border: `2px solid ${borderColor}`, 
+            width: '40px', 
+            height: '40px',
+            borderRadius: '10px', 
+            fontSize: '22px', 
+            fontWeight: '900', 
+            cursor: 'pointer',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            color: textColor,
+            boxShadow: cardShadow
+          }}
+          title="תפריט מהיר"
+        >
+          ☰
+        </button>
 
-        <span style={{ fontSize: '11px', color: textSub, fontWeight: 'bold' }}>
-          {isDark ? 'מצב כהה (Contrast)' : 'מצב בהיר (מודגש)'}
-        </span>
+        {/* חיווי חיבור מקוון / לא מקוון */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#f59e0b' }}></span>
+          <span style={{ color: textColor, fontWeight: 'bold' }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
+        </div>
       </div>
 
       {/* 🚨 פס התראת SOS צף */}
@@ -1978,7 +1975,7 @@ export default function App() {
           boxSizing: 'border-box',
           width: 'calc(100% - 32px)',
           position: 'sticky',
-          top: '43px',
+          top: '53px',
           zIndex: 890,
           cursor: 'pointer'
         }}
@@ -2028,7 +2025,7 @@ export default function App() {
         borderBottom: `1px solid ${borderColor}`,
         textAlign: 'center',
         position: 'sticky',
-        top: '105px',
+        top: '115px',
         zIndex: 880,
         width: '100%',
         boxSizing: 'border-box'
@@ -2044,7 +2041,7 @@ export default function App() {
         />
       )}
       
-      {/* תפריט צד */}
+      {/* תפריט צד (כפתור החלפת ערכת נושא בהיר/כהה נמצא כאן בלבד) */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
