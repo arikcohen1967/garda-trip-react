@@ -2272,7 +2272,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי עם פונט 16px מוגן מפני זום */}
+      {/* מודל סביבי */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2287,7 +2287,7 @@ export default function App() {
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_safe_v4"
+                  name="around_custom_search_input_safe_v5"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
