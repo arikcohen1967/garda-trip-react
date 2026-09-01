@@ -629,6 +629,38 @@ export default function App() {
   });
   const watchPositionIdRef = useRef(null);
 
+  // פונקציית שליחת צליל תשומת לב (Sound Alert) לבן משפחה ספציפי
+  const sendSoundAlertToMember = async (memberName) => {
+    if (!window.confirm(`לשלוח צליל התראה ואזעקה אל ${memberName}?`)) return;
+    try {
+      await supabase.channel('realtime-radar').send({
+        type: 'broadcast',
+        event: 'family_sound_alert',
+        payload: { targetMember: memberName, sender: challengeAuthor || 'אריק' }
+      });
+      alert(`🔔 נשלחה בהצלחה אזעקת תשומת לב אל ${memberName}!`);
+    } catch (e) {
+      alert('שגיאה בשליחת הצליל');
+    }
+  };
+
+  // האזנה לאירועי צליל תשומת לב מהרדאר
+  useEffect(() => {
+    const soundChannel = supabase
+      .channel('realtime-radar')
+      .on('broadcast', { event: 'family_sound_alert' }, ({ payload }) => {
+        if (payload && payload.targetMember === (challengeAuthor || 'אריק')) {
+          startAlarmLoop();
+          alert(`🚨 התראה דחופה מ-${payload.sender}: נא ליצור קשר עם אריק עכשיו!`);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(soundChannel);
+    };
+  }, [challengeAuthor]);
+
   // חניה חכמה
   const [savedParking, setSavedParking] = useState(() => {
     try {
@@ -2240,7 +2272,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי עם פונט 16px קבוע שמונע לחלוטין את בעיית הזום במובייל */}
+      {/* מודל סביבי */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2255,7 +2287,7 @@ export default function App() {
                   type="text"
                   dir="rtl"
                   autoComplete="off"
-                  name="around_custom_search_input_fixed_v3"
+                  name="around_custom_search_input_safe_v3"
                   placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
                   value={aroundSearchQuery}
                   onChange={(e) => handleAroundInputChange(e.target.value)}
@@ -2623,7 +2655,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר */}
+      {/* 📡 מודל רדאר (עם כפתור Directions וכפתור Sound איתור משופר) */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
@@ -2733,9 +2765,9 @@ export default function App() {
                           </b>
                           <small style={{ color: textSub, fontSize: '11px' }}>עודכן: {member.updated_at}</small>
                         </div>
-                        <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}>
                           {distStr && (
-                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#16a34a' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#16a34a' }}>
                               📏 {distStr}
                             </span>
                           )}
@@ -2743,10 +2775,18 @@ export default function App() {
                             href={`https://maps.apple.com/?daddr=${member.lat},${member.lng}&dirflg=w`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ padding: '6px 10px', borderRadius: '8px', background: cardBg, color: textColor, textDecoration: 'none', fontSize: '11px', fontWeight: 'bold', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}
+                            style={{ padding: '6px 8px', borderRadius: '8px', background: cardBg, color: textColor, textDecoration: 'none', fontSize: '11px', fontWeight: 'bold', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}
+                            title="נווט אל המשתמש"
                           >
-                            🚶 נווט
+                            🧭 Directions
                           </a>
+                          <button
+                            onClick={() => sendSoundAlertToMember(member.name)}
+                            style={{ padding: '6px 8px', borderRadius: '8px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                            title="שלח צליל איתור"
+                          >
+                            🔔 צליל
+                          </button>
                         </div>
                       </div>
                     );
