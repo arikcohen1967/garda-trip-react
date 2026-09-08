@@ -27,6 +27,15 @@ const MAPS_SVG = (
   </svg>
 );
 
+const TIMER_SVG = (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="13" r="9"/>
+    <polyline points="12 9 12 13 15 16"/>
+    <path d="M12 2v2"/>
+    <path d="M5 5l1.5 1.5"/>
+  </svg>
+);
+
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -133,14 +142,14 @@ const DEFAULT_DOCUMENTS = [
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
   { id: 'vojon-hotel', folder: '🏡 מלון', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true },
 
-  // 🎢 5 כרטיסי Gardaland המלאים מתוך קובצי ה-PDF[cite: 1, 2, 3, 4, 5]:
+  // 🎢 5 כרטיסי Gardaland הרשמיים[cite: 1, 2, 3, 4, 5]:
   { id: 'gardaland-1', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #1 (Serial 600)', name: 'Gardaland Ticket 600', type: 'text/gardaland-ticket', size: 11000, created: 650, isGardalandTicket: true, serial: '600', code: 'BKN1P01Y901MART', ticketId: '33385742', sigillo: '542965AEE291FEA3' },
   { id: 'gardaland-2', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #2 (Serial 601)', name: 'Gardaland Ticket 601', type: 'text/gardaland-ticket', size: 11000, created: 640, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
   { id: 'gardaland-3', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #3 (Serial 606)', name: 'Gardaland Ticket 606', type: 'text/gardaland-ticket', size: 11000, created: 630, isGardalandTicket: true, serial: '606', code: 'TKN1P01Y901MUTT', ticketId: '33385748', sigillo: 'DD1F221668493023' },
   { id: 'gardaland-4', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #4 (Serial 608)', name: 'Gardaland Ticket 608', type: 'text/gardaland-ticket', size: 11000, created: 620, isGardalandTicket: true, serial: '608', code: 'CKN1P01Y901N2IT', ticketId: '33385750', sigillo: '7379E49AA9784605' },
   { id: 'gardaland-5', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #5 (Serial 601 נוסף)', name: 'Gardaland Ticket Harel', type: 'text/gardaland-ticket', size: 11000, created: 610, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
 
-  // 🎬 5 כרטיסי Movieland המלאים מתוך קובצי ה-PDF[cite: 6, 7, 8, 9, 10]:
+  // 🎬 5 כרטיסי Movieland הרשמיים[cite: 6, 7, 8, 9, 10]:
   { id: 'movieland-1', folder: '🎬 Movieland', title: 'כרטיס Movieland #1 (069)', name: 'Movieland Ticket 069', type: 'text/movieland-ticket', size: 11000, created: 550, isMovielandTicket: true, codeNum: '017JUNAR0069', barcode: '256612CCD43B8E08' },
   { id: 'movieland-2', folder: '🎬 Movieland', title: 'כרטיס Movieland #2 (070)', name: 'Movieland Ticket 070', type: 'text/movieland-ticket', size: 11000, created: 540, isMovielandTicket: true, codeNum: '017JUNAR0070', barcode: 'EA35DB7A2EA540D5' },
   { id: 'movieland-3', folder: '🎬 Movieland', title: 'כרטיס Movieland #3 (071)', name: 'Movieland Ticket 071', type: 'text/movieland-ticket', size: 11000, created: 530, isMovielandTicket: true, codeNum: '017JUNAR0071', barcode: '934FEA2F66750267' },
