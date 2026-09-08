@@ -137,7 +137,7 @@ const INITIAL_TRIP_DAYS = [
 const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
 const DEFAULT_DOCUMENTS = [
-  // ✈️ 5 כרטיסי טיסה ישראייר (הזמנה 4623652)[cite: 3, 4, 5, 6, 7]
+  // ✈️ 5 כרטיסי טיסה ישראייר (הזמנה 4623652)[cite: 3, 4, 5, 6]
   { id: 'flight-arik', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - אריק כהן (8180011314102)', name: 'Israir_Arik_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1005, isFlightInfo: true, passenger: 'COHEN/ARIK MR', ticketNo: '8180011314102' },
   { id: 'flight-amit', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - עמית כהן (8180011314103)', name: 'Israir_Amit_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1004, isFlightInfo: true, passenger: 'COHEN/AMIT MS', ticketNo: '8180011314103' },
   { id: 'flight-yuly', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - יולי כהן (8180011314104)', name: 'Israir_Yuly_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1003, isFlightInfo: true, passenger: 'COHEN/YULY MS', ticketNo: '8180011314104' },
@@ -156,7 +156,7 @@ const DEFAULT_DOCUMENTS = [
   { id: 'gardaland-4', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #4 (Serial 608)', name: 'Gardaland Ticket 608', type: 'text/gardaland-ticket', size: 11000, created: 620, isGardalandTicket: true, serial: '608', code: 'CKN1P01Y901N2IT', ticketId: '33385750', sigillo: '7379E49AA9784605' },
   { id: 'gardaland-5', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #5 (Serial 601 נוסף)', name: 'Gardaland Ticket Harel', type: 'text/gardaland-ticket', size: 11000, created: 610, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
 
-  // 🎬 5 כרטיסי Movieland הרשמיים[cite: 6, 7]
+  // 🎬 5 כרטיסי Movieland הרשמיים[cite: 6]
   { id: 'movieland-1', folder: '🎬 Movieland', title: 'כרטיס Movieland #1 (069)', name: 'Movieland Ticket 069', type: 'text/movieland-ticket', size: 11000, created: 550, isMovielandTicket: true, codeNum: '017JUNAR0069', barcode: '256612CCD43B8E08' },
   { id: 'movieland-2', folder: '🎬 Movieland', title: 'כרטיס Movieland #2 (070)', name: 'Movieland Ticket 070', type: 'text/movieland-ticket', size: 11000, created: 540, isMovielandTicket: true, codeNum: '017JUNAR0070', barcode: 'EA35DB7A2EA540D5' },
   { id: 'movieland-3', folder: '🎬 Movieland', title: 'כרטיס Movieland #3 (071)', name: 'Movieland Ticket 071', type: 'text/movieland-ticket', size: 11000, created: 530, isMovielandTicket: true, codeNum: '017JUNAR0071', barcode: '934FEA2F66750267' },
@@ -1200,6 +1200,13 @@ export default function App() {
     setModalType(null);
     setShowGalleryUpload(false);
     setGalleryCaption('');
+  };
+
+  // 🛠️ תיקון: סגירת צפייה במסמך מחזירה חזרה לתיקיית הכרטיסים במקום לסגור את הכל
+  const closeDocumentViewer = () => {
+    playClickSound();
+    setViewerItem(null);
+    setModalType('tickets');
   };
 
   const moveMenuItem = (index, direction) => {
@@ -3355,13 +3362,13 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל צפייה במסמכים */}
+      {/* מודל צפייה במסמכים עם תיקון כפתור סגירה חזרה לארנק */}
       {modalType === 'viewer' && viewerItem && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeDocumentViewer)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: textColor }}>{viewerItem.title || viewerItem.name}</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
+              <button onClick={closeDocumentViewer} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
             
             <DocumentViewer 
