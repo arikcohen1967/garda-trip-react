@@ -27,15 +27,6 @@ const MAPS_SVG = (
   </svg>
 );
 
-const TIMER_SVG = (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="13" r="9"/>
-    <polyline points="12 9 12 13 15 16"/>
-    <path d="M12 2v2"/>
-    <path d="M5 5l1.5 1.5"/>
-  </svg>
-);
-
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -273,11 +264,10 @@ export default function App() {
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   
-  const [themeMode] = useState('light');
+  const [themeMode, setThemeMode] = useState('light');
   const [folders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
   
-  // הגדרה יחידה ונכונה של ticketFiles ללא כפילויות
   const [ticketFiles, setTicketFiles] = useState([]);
 
   const [hebrewInput, setHebrewInput] = useState('');
@@ -301,8 +291,6 @@ export default function App() {
   const [triviaQuestions] = useState(() => generateMassiveTrivia());
   const [triviaIndex] = useState(0);
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
-  const [travelerIndex] = useState(0);
-  const [travelerScores] = useState({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [, setIsAnswerCorrect] = useState(null);
 
@@ -358,13 +346,8 @@ export default function App() {
     } catch (e) { setTicketFiles(DEFAULT_DOCUMENTS.filter(d => d.folder === folder)); }
   };
 
-  useEffect(() => {
-    initTickets();
-  }, []);
-
-  useEffect(() => {
-    loadFiles(activeFolder);
-  }, [activeFolder]);
+  useEffect(() => { initTickets(); }, []);
+  useEffect(() => { loadFiles(activeFolder); }, [activeFolder]);
 
   const saveSmartParkingLocation = () => {
     if (!navigator.geolocation) { alert('שירותי מיקום אינם נתמכים'); return; }
@@ -432,50 +415,61 @@ export default function App() {
   return (
     <div style={{ background: bgMain, minHeight: '100vh', width: '100%', maxWidth: '100vw', color: textColor, direction: 'rtl', paddingBottom: '40px', boxSizing: 'border-box' }}>
       
-      {/* כותרת עליונה */}
-      <div style={{ background: cardBg, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, position: 'sticky', top: 0, zIndex: 1100 }}>
-        <button onClick={() => setSidebarOpen(true)} style={{ background: cardBg, border: `2px solid ${borderColor}`, width: '40px', height: '40px', borderRadius: '10px', fontSize: '22px', fontWeight: '900', cursor: 'pointer', color: textColor }}>☰</button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      {/* פאנל עליון ומעוצב */}
+      <div style={{ background: cardBg, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, position: 'sticky', top: 0, zIndex: 1100, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <button onClick={() => setSidebarOpen(true)} style={{ background: cardBg, border: `2px solid ${borderColor}`, width: '42px', height: '42px', borderRadius: '12px', fontSize: '20px', fontWeight: '900', cursor: 'pointer', color: textColor, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>☰</button>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ margin: 0, fontSize: '15px', fontWeight: 'bold' }}>אגם Garda וונציה</h1>
+          <span style={{ fontSize: '11px', color: textSub }}>טיול בת מצווה · ספטמבר-אוקטובר 2026</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#f59e0b' }}></span>
-          <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
+          <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
         </div>
       </div>
 
-      {/* תפריט צד */}
+      {/* תפריט צד מעוצב ומקורי */}
       {sidebarOpen && (
-        <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 2500 }} />
+        <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2500, backdropFilter: 'blur(4px)' }} />
       )}
       <aside style={{
-        position: 'fixed', top: 0, bottom: 0, right: 0, width: '300px', maxWidth: '85vw',
+        position: 'fixed', top: 0, bottom: 0, right: 0, width: '320px', maxWidth: '85vw',
         background: cardBg, zIndex: 2600, transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.3s ease', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: `1.5px solid ${borderColor}`, overflowY: 'auto'
+        transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)', padding: '24px 18px', display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: `1.5px solid ${borderColor}`, overflowY: 'auto', boxSizing: 'border-box', boxShadow: '-10px 0 30px rgba(0,0,0,0.2)'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '12px' }}>
-          <h3 style={{ margin: 0, fontSize: '18px' }}>תפריט מהיר</h3>
-          <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: textColor }}>✕</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
+          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>תפריט מהיר</h3>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={() => setThemeMode(isDark ? 'light' : 'dark')} style={{ background: '#4b5563', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
+              {isDark ? '☀️ בהיר' : '🌙 כהה'}
+            </button>
+            <button onClick={() => setSidebarOpen(false)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+          </div>
         </div>
-        <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={menuBtnStyle}>📅 מסלול הטיול (כל 7 הימים)</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={menuBtnStyle}>🎟️ ארנק כרטיסים ומסמכים (Gardaland & Movieland)</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('radar'); }} style={menuBtnStyle}>🧭 רדאר משפחתי חי</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={menuBtnStyle}>🚗 שמירת מיקום רכב</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('phrasebook'); }} style={menuBtnStyle}>🇮🇹 שיחון איטלקי</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('trivia'); }} style={menuBtnStyle}>🧠 טריויה לדרך</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('bingo'); }} style={menuBtnStyle}>🎯 בינגו דרכים</button>
-        <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={menuBtnStyle}>🆘 מספרי חירום</button>
+
+        <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={sidebarBtnStyle}>📅 מסלול ימי הטיול</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}>🎟️ ארנק כרטיסים ומסמכים (Gardaland & Movieland)</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('radar'); }} style={sidebarBtnStyle}>🧭 רדאר משפחתי חי</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}>🚗 שמירת מיקום רכב חכם</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('phrasebook'); }} style={sidebarBtnStyle}>🇮🇹 שיחון איטלקי + דיבור</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('trivia'); }} style={sidebarBtnStyle}>🧠 טריויה חכמה לדרך</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('bingo'); }} style={sidebarBtnStyle}>🎯 בינגו דרכים לאוטו</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={sidebarBtnStyle}>🆘 מספרי חירום באיטליה</button>
       </aside>
 
-      {/* בחירת ימי הטיול */}
+      {/* כפתורי בחירת ימי הטיול */}
       <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '16px 16px 8px 16px', scrollbarWidth: 'none' }}>
         {tripDays.map((d, i) => (
           <button
             key={i}
             onClick={() => setActiveDay(i)}
             style={{
-              padding: '8px 14px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap',
+              padding: '10px 16px', borderRadius: '14px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap',
               background: activeDay === i ? '#4b5563' : cardBg,
               color: activeDay === i ? '#ffffff' : textColor,
-              border: `1.5px solid ${borderColor}`,
-              boxShadow: cardShadow
+              border: `1.5px solid ${activeDay === i ? '#4b5563' : borderColor}`,
+              boxShadow: cardShadow,
+              transition: 'all 0.2s ease'
             }}
           >
             {d.label}
@@ -483,22 +477,28 @@ export default function App() {
         ))}
       </div>
 
-      {/* תוכן ראשי */}
-      <main style={{ padding: '10px 16px', maxWidth: '600px', margin: 'auto' }}>
-        <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>{day.icon} {day.title} ({day.fullLabel})</h2>
+      {/* תוכן המסלול הראשי */}
+      <main style={{ padding: '10px 16px', maxWidth: '600px', margin: 'auto', boxSizing: 'border-box' }}>
+        <div style={{ marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 4px' }}>{day.icon} {day.title}</h2>
+          <span style={{ fontSize: '12px', color: textSub }}>{day.fullLabel}</span>
+        </div>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {day.stops.map((stop, idx) => (
-            <div key={idx} style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '16px', padding: '16px', boxShadow: cardShadow }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <div key={idx} style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '16px', padding: '16px', boxShadow: cardShadow, boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>{stop.name}</h3>
-                <span style={{ fontSize: '12px', fontWeight: 'bold', color: textSub }}>{stop.time}</span>
+                <span style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, background: isDark ? '#2c2c2e' : '#f1f5f9', padding: '4px 8px', borderRadius: '8px' }}>{stop.time}</span>
               </div>
-              <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 12px' }}>{stop.note}</p>
+              <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 12px', lineHeight: '1.4' }}>{stop.note}</p>
+              
               {stop.food && (
-                <div style={{ fontSize: '12px', background: isDark ? '#2c2c2e' : '#f8fafc', padding: '8px', borderRadius: '8px', marginBottom: '10px', border: `1px solid ${borderColor}` }}>
+                <div style={{ fontSize: '12px', background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px 12px', borderRadius: '12px', marginBottom: '12px', border: `1px solid ${borderColor}` }}>
                   <b>🍴 המלצה קולינרית:</b> {stop.food.name}
                 </div>
               )}
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" style={navBtnStyle}>{MAPS_SVG} Apple Maps</a>
                 <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} style={navBtnStyle}>{WAZE_SVG} Waze</a>
@@ -546,7 +546,7 @@ export default function App() {
                     onClick={() => { setViewerItem(x); setModalType('viewer'); }}
                     style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: '12px', borderRadius: '12px', background: cardBg, border: `1.5px solid ${borderColor}`, cursor: 'pointer'
+                      padding: '12px', borderRadius: '12px', background: cardBg, border: `1.5px solid ${borderColor}`, cursor: 'pointer', boxShadow: cardShadow
                     }}
                   >
                     <div>
@@ -570,7 +570,7 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold' }}>{viewerItem.title || viewerItem.name}</h3>
-              <button onClick={() => setModalType('tickets')} style={{ background: 'none', border: 'none', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', color: textColor }}>✕ חזרה</button>
+              <button onClick={() => setModalType('tickets')} style={{ background: 'none', border: 'none', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', color: textColor }}>✕ חזרה</button>
             </div>
             <DocumentViewer item={viewerItem} isDark={isDark} cardShadow={cardShadow} />
           </div>
@@ -603,12 +603,12 @@ export default function App() {
             {savedParking ? (
               <div>
                 <p><b>מיקום חונה:</b> {savedParking.note}</p>
-                <button onClick={clearSavedParking} style={{ background: '#dc2626', color: '#fff', padding: '8px', border: 'none', borderRadius: '8px' }}>מחק חניה</button>
+                <button onClick={clearSavedParking} style={{ background: '#dc2626', color: '#fff', padding: '8px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>מחק חניה</button>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <input type="text" placeholder="תיאור מקום חניה..." value={parkingNote} onChange={(e) => setParkingNote(e.target.value)} style={{ padding: '10px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor }} />
-                <button onClick={saveSmartParkingLocation} style={{ padding: '12px', borderRadius: '8px', background: '#22c55e', color: '#fff', fontWeight: 'bold' }}>שמור מיקום GPS</button>
+                <button onClick={saveSmartParkingLocation} style={{ padding: '12px', borderRadius: '8px', background: '#22c55e', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}>שמור מיקום GPS</button>
               </div>
             )}
           </div>
@@ -625,7 +625,7 @@ export default function App() {
             </div>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
               <input type="text" placeholder="הקלד בעברית..." value={hebrewInput} onChange={(e) => setHebrewInput(e.target.value)} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor }} />
-              <button onClick={() => translateText(hebrewInput)} style={{ padding: '0 14px', background: '#2563eb', color: '#fff', borderRadius: '8px', border: 'none' }}>{isTranslating ? '...' : 'תרגם'}</button>
+              <button onClick={() => translateText(hebrewInput)} style={{ padding: '0 14px', background: '#2563eb', color: '#fff', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>{isTranslating ? '...' : 'תרגם'}</button>
             </div>
             {italianOutput && <div style={{ background: cardBg, padding: '10px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, direction: 'ltr', fontWeight: 'bold' }}>{italianOutput}</div>}
           </div>
@@ -701,8 +701,8 @@ export default function App() {
   );
 }
 
-const menuBtnStyle = {
-  background: 'none', border: 'none', textAlign: 'right', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', padding: '8px 0'
+const sidebarBtnStyle = {
+  background: 'none', border: 'none', textAlign: 'right', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)', color: 'inherit'
 };
 
 const navBtnStyle = {
