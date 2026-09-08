@@ -60,7 +60,7 @@ const INITIAL_TRIP_DAYS = [
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
-      { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
+      { time: "09:00", name: "כניסה לפארק Gardaland (כרטיסים רכורים - קוד WZZCJ20260908092004)", dest: "Gardaland Parking, Castelnuovo del Garda", note: "הוזמנו 5 כרטיסי Super Promo ב-199.50€[cite: 7]. לשמור מיקום רכב בחניה." },
       { time: "13:00", name: "ארוחת צהריים בפארק", dest: "Gardaland Resort", note: "אוכל מהיר, פיצות והמבורגרים בתוך הפארק.", food: { name: "🍔 Aladino Pizza & Burger (בתוך הפארק)", dest: "Gardaland Resort" } },
       { time: "19:00", name: "ארוחת ערב", dest: "Osteria Sottoportego, Peschiera del Garda", note: "פסטות מעולות ואווירה על המים בפסקיירה דל גארדה.", food: { name: "🍝 Osteria Sottoportego", dest: "Osteria Sottoportego, Peschiera del Garda" } }
     ]
@@ -129,7 +129,7 @@ const INITIAL_TRIP_DAYS = [
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה ורונה", dest: "Verona Villafranca Airport", note: "התארגנות לטיסת החזרה." },
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה وרונה", dest: "Verona Villafranca Airport", note: "התארגנות לטיסת החזרה." },
       { time: "21:35", name: "טיסת ישראייר 6H:352 מוורונה לנתב\"ג", dest: "Verona Villafranca Airport", note: "טיסה 6H:352 (הזמנה 4623652) מורונה (VRN) לתל אביב (TLV), הגעה בשעה 02:05 ביום שלמחרת[cite: 1]." }
     ]
   }
@@ -158,7 +158,8 @@ const DEFAULT_DOCUMENTS = [
   },
   { id: 'aig-insurance', folder: '✈️ טיסות ורכב (30/09)', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב (30/09)', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
-  { id: 'vojon-hotel', folder: '🏡 מלון (30/09 - 06/10)', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true }
+  { id: 'vojon-hotel', folder: '🏡 מלון (30/09 - 06/10)', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true },
+  { id: 'gardaland-tickets', folder: '🎢 Gardaland (01/10)', title: 'כרטוס גארדה לנד (199.50€)', name: 'Gardaland Tickets', type: 'text/gardaland-info', size: 11000, created: 600, isGardalandInfo: true }
 ];
 
 const QUICK_PHRASES = [
@@ -379,6 +380,22 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
           <hr style={{ border: '0', borderTop: `1px solid ${isDark ? '#38383a' : '#cbd5e1'}`, margin: '12px 0' }} />
           <p><b>✈️ טיסת הלוך (6H:357):</b> מתל אביב (TLV) לוורונה (VRN)<br/>📅 30.09.2026 בשעה 13:15 (נחיתה 16:05)[cite: 1]<br/>⚠️ <i>שימו לב:</i> שינוי טרמינל מטרמינל 3 לטרמינל 1.</p>
           <p><b>✈️ טיסת חזור (6H:352):</b> מורונה (VRN) לתל אביב (TLV)<br/>📅 06.10.2026 בשעה 21:35 (נחיתה 02:05 למחרת)[cite: 1]</p>
+        </>
+      )}
+
+      {item.isGardalandInfo && (
+        <>
+          <p><b>אטרקציה:</b> Gardaland Park (Super Promo)</p>
+          <p><b>מספר הזמנה / קוד:</b> WZZCJ20260908092004[cite: 7]</p>
+          <p><b>כמות כרטיסים:</b> 5 כרטיסים (סה"כ 199.50€)[cite: 7]</p>
+          <p><b>תאריך רכישה:</b> 08-09-2026[cite: 7]</p>
+          <p><b>רוכש:</b> Arik Cohen (arikcohen1967@gmail.com)[cite: 7]</p>
+          <a 
+            href={`https://www.waze.com/ul?q=${encodeURIComponent('Gardaland Resort, Via Derna 4, Castelnuovo del Garda')}&navigate=yes`} 
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
+          >
+            {WAZE_SVG} נווט לפארק Gardaland ב-Waze
+          </a>
         </>
       )}
 
@@ -1423,7 +1440,7 @@ export default function App() {
         const store = writeTx.objectStore('files');
         
         DEFAULT_DOCUMENTS.forEach(doc => {
-          if (!all.some(f => f.title === doc.title || (doc.isFlightInfo && f.isFlightInfo) || (doc.isInsuranceInfo && f.isInsuranceInfo) || (doc.isCarVoucher && f.isCarVoucher) || (doc.isHotelInfo && f.isHotelInfo))) {
+          if (!all.some(f => f.title === doc.title || (doc.isFlightInfo && f.isFlightInfo) || (doc.isInsuranceInfo && f.isInsuranceInfo) || (doc.isCarVoucher && f.isCarVoucher) || (doc.isHotelInfo && f.isHotelInfo) || (doc.isGardalandInfo && f.isGardalandInfo))) {
             store.add(doc);
           }
         });
@@ -3523,19 +3540,19 @@ export default function App() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: isDark ? '#2c2c2e' : '#f8fafc', border: `1.5px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
-                        {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
+                        {x.isFlightInfo ? '✈️' : (x.isGardalandInfo ? '🎢' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄'))))}
                       </div>
                       <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
                         <b style={{ display: 'block', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: textColor }}>{x.title || x.name}</b>
                         <small style={{ color: textSub, fontSize: '10px', display: 'block' }}>
-                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round((x.size || 1024) / 1024)} KB`)))}
+                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isGardalandInfo ? 'Gardaland Super Promo' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round((x.size || 1024) / 1024)} KB`))))}
                         </small>
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <span style={{ fontSize: '11px', color: textColor, fontWeight: 'bold' }}>צפה 👁️</span>
-                      {!x.isFlightInfo && !x.isInsuranceInfo && !x.isCarVoucher && !x.isHotelInfo && (
+                      {!x.isFlightInfo && !x.isGardalandInfo && !x.isInsuranceInfo && !x.isCarVoucher && !x.isHotelInfo && (
                         <button onClick={(e) => deleteFile(x.id, e)} style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: 'none', padding: '3px 6px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>מחק</button>
                       )}
                     </div>
@@ -3587,4 +3604,4 @@ const uploadBtnStyle = {
   width: '100%', padding: '10px', borderRadius: '10px',
   fontWeight: 'bold', cursor: 'pointer', fontSize: '12px', boxSizing: 'border-box'
 };
-```[cite: 1, 6]
+```[cite: 1, 6, 7]
