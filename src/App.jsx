@@ -124,7 +124,7 @@ const INITIAL_TRIP_DAYS = [
     fullLabel: "יום שלישי · 06 באוקטובר 2026",
     title: "ורונה + הטיסה הביתה",
     icon: "❤️",
-    challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
+    challenge: "לבחור יחד את רגע השיא (הטופ 1) של كل הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
@@ -137,7 +137,14 @@ const INITIAL_TRIP_DAYS = [
 const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
 const DEFAULT_DOCUMENTS = [
-  { id: 'israir-flight', folder: '✈️ טיסות ורכב', title: 'הזמנת ישראייר (4623652)', name: 'Israir Flight Booking', type: 'text/flight-info', size: 15400, created: 1000, isFlightInfo: true },
+  // ✈️ 5 כרטיסי הטיסה האישיים של ישראייר (הזמנה 4623652)
+  { id: 'flight-arik', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - אריק כהן (8180011314102)', name: 'Israir_Arik_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1005, isFlightInfo: true, passenger: 'COHEN/ARIK MR', ticketNo: '8180011314102' },
+  { id: 'flight-amit', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - עמית כהן (8180011314103)', name: 'Israir_Amit_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1004, isFlightInfo: true, passenger: 'COHEN/AMIT MS', ticketNo: '8180011314103' },
+  { id: 'flight-yuly', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - יולי כהן (8180011314104)', name: 'Israir_Yuly_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1003, isFlightInfo: true, passenger: 'COHEN/YULY MS', ticketNo: '8180011314104' },
+  { id: 'flight-lian', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - ליאן כהן (8180011314105)', name: 'Israir_Lian_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1002, isFlightInfo: true, passenger: 'COHEN/LIAN CHD', ticketNo: '8180011314105' },
+  { id: 'flight-harel', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - הראל וילנאי כהן (8180011314106)', name: 'Israir_Harel_Vilnai.pdf', type: 'text/flight-info', size: 15400, created: 1001, isFlightInfo: true, passenger: 'VILNAI COHEN/HAREL MR', ticketNo: '8180011314106' },
+
+  { id: 'israir-general', folder: '✈️ טיסות ורכב', title: 'הזמנת ישראייר ראשית (4623652)', name: 'Israir Booking General', type: 'text/flight-info', size: 15400, created: 1000, isFlightInfo: true },
   { id: 'aig-insurance', folder: '✈️ טיסות ורכב', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
   { id: 'vojon-hotel', folder: '🏡 מלון', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true }
@@ -355,10 +362,17 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
 
       {item.isFlightInfo && (
         <>
+          <div style={{ background: '#e0f2fe', padding: '12px', borderRadius: '12px', color: '#0369a1', marginBottom: '12px', textAlign: 'center' }}>
+            ✈️ <b>Israir E-Ticket Flight</b>
+          </div>
+          {item.passenger && <p><b>נוסע/ת:</b> <span style={{ fontWeight: '900', fontSize: '15px' }}>{item.passenger}</span></p>}
+          {item.ticketNo && <p><b>מספר כרטיס טיסה:</b> <span dir="ltr">{item.ticketNo}</span></p>}
           <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
-          <p><b>מספר הזמנה:</b> 4623652</p>
-          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ ורונה (VRN)</p>
-          <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
+          <p><b>מספר הזמנה (PNR):</b> <span style={{ fontWeight: '900' }}>4623652</span></p>
+          <div style={{ background: isDark ? '#2c2c2e' : '#f1f5f9', padding: '10px', borderRadius: '10px', marginTop: '10px' }}>
+            <p style={{ margin: '0 0 6px' }}>🛫 <b>הלוך (30-Sep-2026):</b> TLV ➔ VRN | טיסה 6H:357 | 13:15 - 16:05</p>
+            <p style={{ margin: 0 }}>🛬 <b>חזור (06-Oct-2026):</b> VRN ➔ TLV | טיסה 6H:352 | 21:35 - 02:05</p>
+          </div>
         </>
       )}
 
