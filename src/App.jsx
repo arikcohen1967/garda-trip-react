@@ -158,7 +158,7 @@ const DEFAULT_DOCUMENTS = [
 ];
 
 const QUICK_PHRASES = [
-  { cat: '🍕 מסעדות וקפה', he: 'חשבון בבקשה', it: 'Il conto, per favore', pro: 'אִיל קוֹנְטוֹ, פֶּר פָבוֹรֶה' },
+  { cat: '🍕 מסעדות וקפה', he: 'חשבון בבקשה', it: 'Il conto, per favore', pro: 'אִיל קוֹנְטוֹ, פֶּר פָבוֹרֶה' },
   { cat: '🍕 מסעדות וקפה', he: 'שולחן ל-5 אנשים בבקשה', it: 'Un tavolo per cinque persone, per favore', pro: 'אוּן טָאבוֹלוֹ פֶּר צִ׳ינְקְוֶוה פֶּרְסוֹנֶה' },
   { cat: '🍕 מסעדות וקפה', he: 'בקבוק מים רגילים / מוגזים', it: 'Acqua naturale / gassata per favore', pro: 'אָקְוָוה נָטוּרָלֶה / גָאסָאטָה' },
   { cat: '🍕 מסעדות וקפה', he: 'איפה השירותים?', it: "Dov'è il bagno?", pro: 'דוֹבֶה אִיל בָּאנְיוֹ?' },
@@ -454,7 +454,7 @@ export default function App() {
           <h3 style={{ margin: 0, fontSize: '18px' }}>תפריט מהיר</h3>
           <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: textColor }}>✕</button>
         </div>
-        <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={menuBtnStyle}>📅 מסלול הטיול</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType(null); }} style={menuBtnStyle}>📅 מסלול הטיול (כל 7 הימים)</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={menuBtnStyle}>🎟️ ארנק כרטיסים ומסמכים (Gardaland & Movieland)</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('radar'); }} style={menuBtnStyle}>🧭 רדאר משפחתי חי</button>
         <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={menuBtnStyle}>🚗 שמירת מיקום רכב</button>
@@ -464,9 +464,28 @@ export default function App() {
         <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={menuBtnStyle}>🆘 מספרי חירום</button>
       </aside>
 
+      {/* בחירת ימי הטיול */}
+      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '16px 16px 8px 16px', scrollbarWidth: 'none' }}>
+        {tripDays.map((d, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveDay(i)}
+            style={{
+              padding: '8px 14px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap',
+              background: activeDay === i ? '#4b5563' : cardBg,
+              color: activeDay === i ? '#ffffff' : textColor,
+              border: `1.5px solid ${borderColor}`,
+              boxShadow: cardShadow
+            }}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+
       {/* תוכן ראשי */}
-      <main style={{ padding: '20px 16px', maxWidth: '600px', margin: 'auto' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '16px' }}>{day.icon} {day.title}</h2>
+      <main style={{ padding: '10px 16px', maxWidth: '600px', margin: 'auto' }}>
+        <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>{day.icon} {day.title} ({day.fullLabel})</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {day.stops.map((stop, idx) => (
             <div key={idx} style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '16px', padding: '16px', boxShadow: cardShadow }}>
@@ -475,8 +494,13 @@ export default function App() {
                 <span style={{ fontSize: '12px', fontWeight: 'bold', color: textSub }}>{stop.time}</span>
               </div>
               <p style={{ fontSize: '13px', color: textSub, margin: '4px 0 12px' }}>{stop.note}</p>
+              {stop.food && (
+                <div style={{ fontSize: '12px', background: isDark ? '#2c2c2e' : '#f8fafc', padding: '8px', borderRadius: '8px', marginBottom: '10px', border: `1px solid ${borderColor}` }}>
+                  <b>🍴 המלצה קולינרית:</b> {stop.food.name}
+                </div>
+              )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" style={navBtnStyle}>Apple Maps</a>
+                <a href={`https://maps.apple.com/?q=${encodeURIComponent(stop.dest)}`} target="_blank" rel="noreferrer" style={navBtnStyle}>{MAPS_SVG} Apple Maps</a>
                 <a href={`https://www.waze.com/ul?q=${encodeURIComponent(stop.dest)}&navigate=yes`} style={navBtnStyle}>{WAZE_SVG} Waze</a>
               </div>
             </div>
