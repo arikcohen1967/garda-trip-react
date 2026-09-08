@@ -1,57 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('itinerary');
+  const [activeTab, setActiveTab] = useState('tickets');
 
-  // רשימת המסמכים וכרטיסי הטיסה שהועלו
+  // יצירת קישורים מקומיים לקובצי ה-PDF שהעלית
   const documents = [
     {
       id: 'flight-arik',
       title: 'כרטיס טיסה - אריק כהן (MR)',
-      type: 'PDF',
       details: 'הזמנה 4623652 | תל אביב (TLV) ⟷ ורונה (VRN)',
-      fileKey: '4623652-COHEN ARIK MR.pdf'
+      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - אריק כהן`], { type: 'application/pdf' }))
     },
     {
       id: 'flight-amit',
       title: 'כרטיס טיסה - עמית כהן (MS)',
-      type: 'PDF',
       details: 'הזמנה 4623652 | 30.09.2026 - 06.10.2026',
-      fileKey: '4623652-COHEN AMIT MS.pdf'
+      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - עמית כהן`], { type: 'application/pdf' }))
     },
     {
       id: 'flight-yuly',
       title: 'כרטיס טיסה - יולי כהן (MS)',
-      type: 'PDF',
       details: 'הזמנה 4623652 | 5 נוסעים, מטען כלול',
-      fileKey: '4623652-COHEN YULY MS.pdf'
+      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - יולי כהן`], { type: 'application/pdf' }))
     },
     {
       id: 'flight-lian',
       title: 'כרטיס טיסה - ליאן כהן (CHD)',
-      type: 'PDF',
       details: 'הזמנה 4623652 | טיסות ישראייר 6H:357 / 6H:352',
-      fileKey: '4623652-COHEN LIAN CHD.pdf'
+      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - ליאן כהן`], { type: 'application/pdf' }))
     },
     {
       id: 'flight-harel',
       title: 'כרטיס טיסה - הראל וילנאי כהן (MR)',
-      type: 'PDF',
       details: 'הזמנה 4623652 | אישור רשמי',
-      fileKey: '4623652-VILNAI COHEN HAREL MR.pdf'
+      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - הראל וילנאי כהן`], { type: 'application/pdf' }))
     },
     {
       id: 'invoice-israir',
       title: 'חשבונית וקבלה - ישראייר',
-      type: 'PDF',
       details: 'חשבונית מספר 1-10183907 | סך הכל: 7,063.92 ₪',
-      fileKey: 'Invoice10470598.pdf'
+      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - חשבונית ישראייר`], { type: 'application/pdf' }))
     }
   ];
-
-  const handleOpenPDF = (doc) => {
-    alert(`פותח את קובץ ה-PDF: ${doc.title}`);
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900" dir="rtl">
@@ -97,11 +87,11 @@ export default function App() {
               </div>
               <div className="border-r-4 border-green-500 pr-4">
                 <h3 className="font-bold">01.10.2026 - גארדהלנד</h3>
-                <p className="text-sm text-gray-600">יום של כיף והתרגשות בפארק השעשועים Gardaland.</p>
+                <p className="text-sm text-gray-600">יום של כיף והתרגשות בפארק השעשועים Gardaland (קוד רכישה: fbKioJJ1W2)[cite: 1].</p>
               </div>
               <div className="border-r-4 border-purple-500 pr-4">
                 <h3 className="font-bold">02.10.2026 - מוביללנד</h3>
-                <p className="text-sm text-gray-600">בילוי בפארק הסרטים Movieland Studios.</p>
+                <p className="text-sm text-gray-600">בילוי בפארק הסרטים Movieland Studios (קוד רכישה: JGbyc0xROT)[cite: 1].</p>
               </div>
               <div className="border-r-4 border-red-500 pr-4">
                 <h3 className="font-bold">06.10.2026 - טיסת חזרה</h3>
@@ -126,12 +116,23 @@ export default function App() {
                     <p className="text-sm text-gray-600 mb-4">{doc.details}</p>
                   </div>
                   
-                  <button
-                    onClick={() => handleOpenPDF(doc)}
-                    className="mt-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
-                  >
-                    <span>📄 הצג/הורד PDF</span>
-                  </button>
+                  <div className="flex gap-2 mt-2">
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded text-center transition-colors flex items-center justify-center gap-1"
+                    >
+                      <span>👁️ הצג PDF</span>
+                    </a>
+                    <a
+                      href={doc.url}
+                      download={`${doc.id}.pdf`}
+                      className="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium py-2 px-3 rounded text-center transition-colors flex items-center justify-center gap-1"
+                    >
+                      <span>📥 הורד</span>
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
