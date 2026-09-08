@@ -590,6 +590,11 @@ export default function App() {
   const [customTimerTitle, setCustomTimerTitle] = useState('זמן חופשי ומפגש');
   const [isAlarmMuted, setIsAlarmMuted] = useState(false);
 
+  // מצב AR למציאת הרכב
+  const [isArActive, setIsArActive] = useState(false);
+  const [arHeading, setArHeading] = useState(0);
+  const [arBearing, setArBearing] = useState(0);
+
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
@@ -604,6 +609,52 @@ export default function App() {
   const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
+  const videoRef = useRef(null);
+
+  // הפעלת מצבי AR ומצפן
+  useEffect(() => {
+    if (!isArActive) return;
+
+    // הפעלת מצלמת חזית/אחור ל-AR
+    navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(stream => {
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      })
+      .catch(err => console.log('Camera error', err));
+
+    // מאזין למצפן המכשיר
+    const handleOrientation = (e) => {
+      let alpha = e.alpha || e.webkitCompassHeading;
+      if (alpha !== undefined && alpha !== null) {
+        setArHeading(alpha);
+      }
+    };
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
+
+    // חישוב זווית (Bearing) אל הרכב השמור
+    if (savedParking && myLocation) {
+      const lat1 = myLocation.lat * Math.PI / 180;
+      const lat2 = savedParking.lat * Math.PI / 180;
+      const dLon = (savedParking.lng - myLocation.lng) * Math.PI / 180;
+      const y = Math.sin(dLon) * Math.cos(lat2);
+      const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+      let brng = Math.atan2(y, x) * 180 / Math.PI;
+      brng = (brng + 360) % 360;
+      setArBearing(brng);
+    }
+
+    return () => {
+      if (window.DeviceOrientationEvent) {
+        window.removeEventListener('deviceorientation', handleOrientation, true);
+      }
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach(t => t.stop());
+      }
+    };
+  }, [isArActive, savedParking, myLocation]);
 
   // פונקציות עבור מודל "סביבי"
   const handleAroundCustomSearch = (e) => {
@@ -1164,23 +1215,24 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (modalType || sidebarOpen) {
+    if (modalType || sidebarOpen || isArActive) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [modalType, sidebarOpen]);
+  }, [modalType, sidebarOpen, isArActive]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         if (sidebarOpen) setSidebarOpen(false);
         if (modalType) closeModal();
+        if (isArActive) setIsArActive(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [sidebarOpen, modalType]);
+  }, [sidebarOpen, modalType, isArActive]);
 
   const handleGlobalClick = (callback) => {
     try {
@@ -1202,7 +1254,7 @@ export default function App() {
     setGalleryCaption('');
   };
 
-  // 🛠️ תיקון: סגירת צפייה במסמך מחזירה חזרה לתיקיית הכרטיסים במקום לסגור את הכל
+  // סגירת צפייה במסמך מחזירה חזרה לתיקיית הכרטיסים
   const closeDocumentViewer = () => {
     playClickSound();
     setViewerItem(null);
@@ -2248,6 +2300,31 @@ export default function App() {
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
 
+      {/* 🌟 מצב AR מציאות רבודה למציאת הרכב */}
+      {isArActive && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 5000, background: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <video ref={videoRef} autoPlay playsInline muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          
+          <div style={{ position: 'absolute', top: 20, right: 20, left: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 5001 }}>
+            <div style={{ background: 'rgba(0,0,0,0.7)', color: '#fff', padding: '8px 14px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold' }}>
+              🚗 מכוון אל: {savedParking?.note || 'הרכב'}
+            </div>
+            <button onClick={() => setIsArActive(false)} style={{ background: '#dc2626', color: '#fff', border: 'none', width: '40px', height: '40px', borderRadius: '50%', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
+          </div>
+
+          <div style={{ position: 'absolute', zIndex: 5001, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `rotate(${arBearing - arHeading}deg)`, transition: 'transform 0.1s linear' }}>
+            <div style={{ fontSize: '64px', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.8))' }}>📍👇</div>
+            <div style={{ background: 'rgba(34,197,94,0.9)', color: '#fff', padding: '6px 14px', borderRadius: '10px', fontWeight: 'bold', fontSize: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
+              {savedParking && myLocation ? calculateDistanceKm(myLocation.lat, myLocation.lng, savedParking.lat, savedParking.lng) : 'התאם GPS'}
+            </div>
+          </div>
+
+          <div style={{ position: 'absolute', bottom: 30, background: 'rgba(0,0,0,0.75)', color: '#fff', padding: '12px 20px', borderRadius: '14px', fontSize: '13px', textAlign: 'center', zIndex: 5001 }}>
+            הסתכל דרך המצלמה וסובב את המכשיר עד שהחץ יכוון אותך ישירות לרכב! 🧭
+          </div>
+        </div>
+      )}
+
       {/* מודל פלייליסט Apple Music */}
       {modalType === 'appleMusicModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
@@ -2867,13 +2944,13 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל חניה חכם */}
+      {/* מודל חניה חכם + כפתור AR מתקדם */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
               <div>
-                <small style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '11px' }}>CAR FINDER</small>
+                <small style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '11px' }}>CAR FINDER & AR</small>
                 <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🚗 שמירת מיקום רכב חכם</h3>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
@@ -2892,6 +2969,18 @@ export default function App() {
                 {savedParking.photo && (
                   <img src={savedParking.photo} alt="Parking place" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px', border: `1.5px solid ${borderColor}` }} />
                 )}
+
+                {/* 🌟 כפתור פתיחת מצפן מציאות רבודה AR */}
+                <button
+                  onClick={() => setIsArActive(true)}
+                  style={{
+                    width: '100%', padding: '14px', borderRadius: '12px', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', marginBottom: '10px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px rgba(37,99,235,0.4)'
+                  }}
+                >
+                  📍 פתח מצפן AR במצלמה למציאת הרכב
+                </button>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
                   <a
@@ -3362,7 +3451,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל צפייה במסמכים עם תיקון כפתור סגירה חזרה לארנק */}
+      {/* מודל צפייה במסמכים עם חזרה חלקה לארנק הכרטיסים */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeDocumentViewer)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
