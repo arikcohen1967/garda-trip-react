@@ -45,7 +45,8 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "13:15", name: "טיסת ישראייר 6H:357 מנתב\"ג לוורונה", dest: "Verona Villafranca Airport", note: "טיסה 6H:357 (הזמנה 4623652) מתל אביב (TLV) לוורונה (VRN)[cite: 1]. שימו לב לשינוי טרמינל מטרמינל 3 לטרמינל 1." },
+      { time: "16:05", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור[cite: 1]." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -128,7 +129,8 @@ const INITIAL_TRIP_DAYS = [
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה", dest: "Verona Villafranca Airport", note: "התארגנות וטיסה חזרה הביתה." }
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה ורונה", dest: "Verona Villafranca Airport", note: "התארגנות לטיסת החזרה." },
+      { time: "21:35", name: "טיסת ישראייר 6H:352 מוורונה לנתב\"ג", dest: "Verona Villafranca Airport", note: "טיסה 6H:352 (הזמנה 4623652) מורונה (VRN) לתל אביב (TLV), הגעה בשעה 02:05 ביום שלמחרת[cite: 1]." }
     ]
   }
 ];
@@ -144,7 +146,16 @@ const TICKET_DEFAULT_FOLDERS = [
 ];
 
 const DEFAULT_DOCUMENTS = [
-  { id: 'israir-flight', folder: '✈️ טיסות ורכב (30/09)', title: 'הזמנת ישראייר (4623652)', name: 'Israir Flight Booking', type: 'text/flight-info', size: 15400, created: 1000, isFlightInfo: true },
+  { 
+    id: 'israir-flight', 
+    folder: '✈️ טיסות ורכב (30/09)', 
+    title: 'הזמנת ישראייר (4623652)', 
+    name: 'Israir Flight Booking', 
+    type: 'text/flight-info', 
+    size: 15400, 
+    created: 1000, 
+    isFlightInfo: true 
+  },
   { id: 'aig-insurance', folder: '✈️ טיסות ורכב (30/09)', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב (30/09)', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
   { id: 'vojon-hotel', folder: '🏡 מלון (30/09 - 06/10)', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true }
@@ -364,8 +375,10 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
           <p><b>מספר הזמנה:</b> 4623652</p>
-          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ وרונה (VRN)</p>
-          <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
+          <p><b>רשימת נוסעים (6):</b> אריק כהן, עמית כהן, יולי כהן, ליאן כהן, הראל וילנאי כהן, סיגל ריקנטי[cite: 6]</p>
+          <hr style={{ border: '0', borderTop: `1px solid ${isDark ? '#38383a' : '#cbd5e1'}`, margin: '12px 0' }} />
+          <p><b>✈️ טיסת הלוך (6H:357):</b> מתל אביב (TLV) לוורונה (VRN)<br/>📅 30.09.2026 בשעה 13:15 (נחיתה 16:05)[cite: 1]<br/>⚠️ <i>שימו לב:</i> שינוי טרמינל מטרמינל 3 לטרמינל 1.</p>
+          <p><b>✈️ טיסת חזור (6H:352):</b> מורונה (VRN) לתל אביב (TLV)<br/>📅 06.10.2026 בשעה 21:35 (נחיתה 02:05 למחרת)[cite: 1]</p>
         </>
       )}
 
@@ -3552,7 +3565,7 @@ const navBtnStyle = {
 };
 
 const modalStyle = {
-  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+  position: 'fixed', top: 0, left: 0, right: 0, bottom: '0',
   width: '100vw', maxWidth: '100vw', height: '100vh',
   zIndex: 2000, overflowY: 'auto', overflowX: 'hidden',
   WebkitOverflowScrolling: 'touch', direction: 'rtl', boxSizing: 'border-box'
@@ -3574,3 +3587,4 @@ const uploadBtnStyle = {
   width: '100%', padding: '10px', borderRadius: '10px',
   fontWeight: 'bold', cursor: 'pointer', fontSize: '12px', boxSizing: 'border-box'
 };
+```[cite: 1, 6]
