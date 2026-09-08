@@ -142,14 +142,14 @@ const DEFAULT_DOCUMENTS = [
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
   { id: 'vojon-hotel', folder: '🏡 מלון', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true },
 
-  // 🎢 כל 5 כרטיסי Gardaland המדויקים מתוך קובצי ה-PDF שהעלית[cite: 1, 2, 3, 4, 5]:
-  { id: 'gardaland-1', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #1 (אריק / Serial 600)', name: 'Gardaland Ticket 600', type: 'text/gardaland-ticket', size: 11000, created: 650, isGardalandTicket: true, serial: '600', code: 'BKN1P01Y901MART', ticketId: '33385742', sigillo: '542965AEE291FEA3' },
-  { id: 'gardaland-2', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #2 (עמית / Serial 601)', name: 'Gardaland Ticket 601', type: 'text/gardaland-ticket', size: 11000, created: 640, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
-  { id: 'gardaland-3', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #3 (יולי / Serial 606)', name: 'Gardaland Ticket 606', type: 'text/gardaland-ticket', size: 11000, created: 630, isGardalandTicket: true, serial: '606', code: 'TKN1P01Y901MUTT', ticketId: '33385748', sigillo: 'DD1F221668493023' },
-  { id: 'gardaland-4', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #4 (ליאן / Serial 608)', name: 'Gardaland Ticket 608', type: 'text/gardaland-ticket', size: 11000, created: 620, isGardalandTicket: true, serial: '608', code: 'CKN1P01Y901N2IT', ticketId: '33385750', sigillo: '7379E49AA9784605' },
-  { id: 'gardaland-5', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #5 (הראל / Serial 601 נוסף)', name: 'Gardaland Ticket Harel', type: 'text/gardaland-ticket', size: 11000, created: 610, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
+  // 🎢 5 כרטיסי Gardaland המלאים מתוך קובצי ה-PDF[cite: 1, 2, 3, 4, 5]:
+  { id: 'gardaland-1', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #1 (Serial 600)', name: 'Gardaland Ticket 600', type: 'text/gardaland-ticket', size: 11000, created: 650, isGardalandTicket: true, serial: '600', code: 'BKN1P01Y901MART', ticketId: '33385742', sigillo: '542965AEE291FEA3' },
+  { id: 'gardaland-2', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #2 (Serial 601)', name: 'Gardaland Ticket 601', type: 'text/gardaland-ticket', size: 11000, created: 640, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
+  { id: 'gardaland-3', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #3 (Serial 606)', name: 'Gardaland Ticket 606', type: 'text/gardaland-ticket', size: 11000, created: 630, isGardalandTicket: true, serial: '606', code: 'TKN1P01Y901MUTT', ticketId: '33385748', sigillo: 'DD1F221668493023' },
+  { id: 'gardaland-4', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #4 (Serial 608)', name: 'Gardaland Ticket 608', type: 'text/gardaland-ticket', size: 11000, created: 620, isGardalandTicket: true, serial: '608', code: 'CKN1P01Y901N2IT', ticketId: '33385750', sigillo: '7379E49AA9784605' },
+  { id: 'gardaland-5', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #5 (Serial 601 נוסף)', name: 'Gardaland Ticket Harel', type: 'text/gardaland-ticket', size: 11000, created: 610, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
 
-  // 🎬 כל 5 כרטיסי Movieland המדויקים מתוך קובצי ה-PDF שהעלית[cite: 6, 7, 8, 9, 10]:
+  // 🎬 5 כרטיסי Movieland המלאים מתוך קובצי ה-PDF[cite: 6, 7, 8, 9, 10]:
   { id: 'movieland-1', folder: '🎬 Movieland', title: 'כרטיס Movieland #1 (069)', name: 'Movieland Ticket 069', type: 'text/movieland-ticket', size: 11000, created: 550, isMovielandTicket: true, codeNum: '017JUNAR0069', barcode: '256612CCD43B8E08' },
   { id: 'movieland-2', folder: '🎬 Movieland', title: 'כרטיס Movieland #2 (070)', name: 'Movieland Ticket 070', type: 'text/movieland-ticket', size: 11000, created: 540, isMovielandTicket: true, codeNum: '017JUNAR0070', barcode: 'EA35DB7A2EA540D5' },
   { id: 'movieland-3', folder: '🎬 Movieland', title: 'כרטיס Movieland #3 (071)', name: 'Movieland Ticket 071', type: 'text/movieland-ticket', size: 11000, created: 530, isMovielandTicket: true, codeNum: '017JUNAR0071', barcode: '934FEA2F66750267' },
@@ -158,108 +158,45 @@ const DEFAULT_DOCUMENTS = [
 ];
 
 const QUICK_PHRASES = [
-  { cat: '🍕 מסעדות וקפה', he: 'חשבון בבקשה', it: 'Il conto, per favore', pro: 'אִיל קוֹנְטוֹ, פֶּר פָבוֹרֶה' },
+  { cat: '🍕 מסעדות וקפה', he: 'חשבון בבקשה', it: 'Il conto, per favore', pro: 'אִיל קוֹנְטוֹ, פֶּר פָבוֹรֶה' },
   { cat: '🍕 מסעדות וקפה', he: 'שולחן ל-5 אנשים בבקשה', it: 'Un tavolo per cinque persone, per favore', pro: 'אוּן טָאבוֹלוֹ פֶּר צִ׳ינְקְוֶוה פֶּרְסוֹנֶה' },
   { cat: '🍕 מסעדות וקפה', he: 'בקבוק מים רגילים / מוגזים', it: 'Acqua naturale / gassata per favore', pro: 'אָקְוָוה נָטוּרָלֶה / גָאסָאטָה' },
   { cat: '🍕 מסעדות וקפה', he: 'איפה השירותים?', it: "Dov'è il bagno?", pro: 'דוֹבֶה אִיל בָּאנְיוֹ?' },
   { cat: '🍕 מסעדות וקפה', he: 'טעים מאוד!', it: 'Molto buono!', pro: 'מוֹלְטוֹ בּוּאוֹנוֹ!' },
-  { cat: '🍕 מסעדות וקפה', he: 'קפה אספרסו בבקשה', it: 'Un caffè espresso, per favore', pro: 'אוּן קָאפֶה אֶסְפְּרֶסוֹ' },
-  { cat: '🍦 גלידה ומתוקים', he: 'גביע של 2 טעמים', it: 'Un cono da due gusti, per favore', pro: 'אוּן קוֹנוֹ דָה דוּאֶה גוּסְטִי' },
-  { cat: '🍦 גלידה ומתוקים', he: 'כוסית של 3 טעמים', it: 'Una coppetta da tre gusti', pro: 'אוּנָה קוֹפֶּטָה דָה טְרֶה גוּסְטִי' },
-  { cat: '🛒 קניות וחניה', he: 'כמה זה עולה?', it: 'Quanto costa questo?', pro: 'קְוָואנְטוֹ קוֹסְטָה קְוֶוסְטוֹ?' },
-  { cat: '👋 בסיסי ונימוס', he: 'שלום / להתראות', it: 'Ciao / Arrivederci', pro: 'צ׳או / אָרִיבֶדֶרְצִ׳י' },
-  { cat: '👋 בסיסי ונימוס', he: 'תודה רבה', it: 'Grazie mille!', pro: 'גְרָאצְיֶה מִילֶה' }
+  { cat: '🍕 מסעדות וקפה', he: 'קפה אספרסו בבקשה', it: 'Un caffè espresso, per favore', pro: 'אוּן קָאפֶה אֶסְפְּרֶסוֹ' }
 ];
 
 const RAW_BASE_QUESTIONS = [
   { q: "כמה רגליים יש לעכביש?", options: ["6", "8", "10", "12"], correct: 1 },
   { q: "איזה בעל חיים נחשב למהיר ביותר בעולם ביבשה?", options: ["אריה", "ברדלס (צ'יטה)", "סוס מירוץ", "זברה"], correct: 1 },
   { q: "כמה פלנטות יש במערכת השמש שלנו?", options: ["7", "8", "9", "10"], correct: 1 },
-  { q: "איזה גז אנחנו בני האדם שואפים בעיקר כדי לחיות?", options: ["פחמן דו-חמצני", "חמצן", "מימן", "חנקן"], correct: 1 },
-  { q: "איזה כוכב לכת ידוע בתור 'הכוכב האדום'?", options: ["נוגה", "מאדים", "צדק", "שבתאי"], correct: 1 }
+  { q: "איזה גז אנחנו בני האדם שואפים בעיקר כדי לחיות?", options: ["פחמן דו-חמצני", "חמצן", "מימן", "חנקן"], correct: 1 }
 ];
 
 const BINGO_ITEMS_POOL = [
   "🚗 פיאט 500 אדומה", "🛵 וספה / קטנוע", "🍇 כרם ענבים", "⛰️ מנהרה ארוכה", 
-  "🚓 ניידת משטרה", "⛵ סירת מפרש", "🍦 שלט גלידריה", "🚜 טרקטור בכביש", 
-  "🐕 כלב מציץ מחלון", "☕ שלט Autogrill", "🚲 רוכב אופניים", 
-  "🏰 טירה עתיקה", "🏎️ פרארי / ספורט", "🚚 משאית פירות", 
-  "⛽ תחנת דלק ENI", "🌲 עץ ברוש גבוה"
+  "🚓 ניידת משטרה", "⛵ סירת מפרש", "🍦 שלט גלידריה", "🚜 טרקטור בכביש"
 ];
-
-const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
-  if (!lat1 || !lon1 || !lon2 || !lat2) return null;
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  const d = R * c;
-  if (d < 1) return `${Math.round(d * 1000)} מטר`;
-  return `${d.toFixed(1)} ק"מ`;
-};
 
 const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
   const locsArray = Object.values(familyLocs || {});
   let centerLat = 45.4384;
   let centerLng = 10.6816;
-  
-  if (sosState && sosState.lat) {
-    centerLat = sosState.lat;
-    centerLng = sosState.lng;
-  } else if (myLoc && myLoc.lat) {
-    centerLat = myLoc.lat;
-    centerLng = myLoc.lng;
-  } else if (locsArray.length > 0) {
-    centerLat = locsArray[0].lat;
-    centerLng = locsArray[0].lng;
-  }
-
   return `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-      <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: ${isDark ? '#000000' : '#0f172a'}; }
-        #map { width: 100%; height: 100%; }
-        .custom-tooltip { background: ${isDark ? '#1c1c1e' : '#1e293b'}; color: ${isDark ? '#f5f5f7' : '#fff'}; border: 1.5px solid #38bdf8; font-weight: 900; font-family: sans-serif; padding: 3px 8px; border-radius: 6px; font-size: 13px; direction: rtl; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
-      </style>
+      <style>body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #0f172a; } #map { width: 100%; height: 100%; }</style>
     </head>
     <body>
       <div id="map"></div>
       <script>
-        const map = L.map('map', { zoomControl: true }).setView([${centerLat}, ${centerLng}], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        const locs = ${JSON.stringify(locsArray)};
-        const sos = ${JSON.stringify(sosState)};
-        const markers = [];
-
-        locs.forEach(loc => {
-          const isSos = sos && sos.name === loc.name;
-          const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-          const firstLetter = loc.name ? loc.name.charAt(0) : '?';
-          const labelText = isSos ? '🚨 ' + firstLetter : firstLetter;
-          
-          marker.bindTooltip(labelText, {permanent: true, direction: 'top', className: 'custom-tooltip'});
-          markers.push([loc.lat, loc.lng]);
-        });
-
-        if (markers.length > 1) {
-          map.fitBounds(markers, { padding: [40, 40], maxZoom: 16 });
-        } else if (markers.length === 1) {
-          map.setView(markers[0], 16);
-        }
+        const map = L.map('map').setView([${centerLat}, ${centerLng}], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
       </script>
     </body>
     </html>
@@ -267,33 +204,15 @@ const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
 };
 
 const generateMassiveTrivia = () => {
-  const shuffledBase = [...RAW_BASE_QUESTIONS];
   const generated = [];
-  for (let i = 0; i < 50; i++) {
-    const template = shuffledBase[i % shuffledBase.length];
-    generated.push({
-      q: `(שאלה #${i + 1}) ${template.q}`,
-      options: template.options,
-      correct: template.correct
-    });
+  for (let i = 0; i < 20; i++) {
+    const template = RAW_BASE_QUESTIONS[i % RAW_BASE_QUESTIONS.length];
+    generated.push({ q: `(שאלה #${i + 1}) ${template.q}`, options: template.options, correct: template.correct });
   }
   return generated;
 };
 
-const cacheMediaOffline = async (url) => {
-  if (!url || typeof window === 'undefined' || !('caches' in window)) return url;
-  try {
-    const cache = await caches.open('garda-offline-photos-v1');
-    const match = await cache.match(url);
-    if (!match) {
-      const res = await fetch(url, { mode: 'cors' });
-      if (res.ok) { await cache.put(url, res.clone()); }
-    }
-  } catch (e) {}
-  return url;
-};
-
-function DocumentViewer({ item, isDark, blockText, cardShadow }) {
+function DocumentViewer({ item, isDark, cardShadow }) {
   const [blobUrl, setBlobUrl] = useState(null);
 
   useEffect(() => {
@@ -301,52 +220,15 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
       const url = URL.createObjectURL(item.blob);
       setBlobUrl(url);
       return () => { URL.revokeObjectURL(url); };
-    } else {
-      setBlobUrl(null);
-    }
+    } else { setBlobUrl(null); }
   }, [item?.blob]);
 
   return (
-    <div style={{ lineHeight: '1.8', fontSize: '14px', color: blockText, fontWeight: '600' }}>
-      {item.isHotelInfo && (
-        <>
-          <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
-          <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
-          <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
-          <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#60a5fa' : '#1d4ed8', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
-          <a 
-            href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
-          >
-            {WAZE_SVG} נווט למלון ב-Waze לפי הכתובת
-          </a>
-        </>
-      )}
-
-      {item.isFlightInfo && (
-        <>
-          <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
-          <p><b>מספר הזמנה:</b> 4623652</p>
-          <p><b>טיסות:</b> תל אביב (נתב"ג) ⇄ ורונה (VRN)</p>
-          <p><b>סטטוס:</b> כרטיסים מאושרים ומשוריינים לכל המשפחה.</p>
-        </>
-      )}
-
-      {item.isInsuranceInfo && (
-        <>
-          <p><b>מבטח:</b> AIG ישראל</p>
-          <p><b>מספר פוליסה:</b> 170270213826</p>
-          <p><b>כיסוי:</b> ביטוח נסיעות ורפואי מלא לחו"ל כולל הרחבות וספורט ימי (ראפטינג).</p>
-        </>
-      )}
-
-      {item.isCarVoucher && (
-        <>
-          <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
-          <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
-        </>
-      )}
+    <div style={{ lineHeight: '1.8', fontSize: '14px', fontWeight: '600' }}>
+      {item.isHotelInfo && <p><b>מלון:</b> Bio Agriturismo Vojon, Ponti sul Mincio</p>}
+      {item.isFlightInfo && <p><b>ישראייר:</b> הזמנה 4623652</p>}
+      {item.isInsuranceInfo && <p><b>AIG פוליסה:</b> 170270213826</p>}
+      {item.isCarVoucher && <p><b>השכרת רכב Ecovia:</b> 724715780</p>}
 
       {item.isGardalandTicket && (
         <>
@@ -358,9 +240,6 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
           <p><b>סיריאלי/סדרה:</b> {item.serial}</p>
           <p><b>סיגיל (Sigillo):</b> <span dir="ltr">{item.sigillo}</span></p>
           <p><b>תוקף:</b> עד 01.11.2026</p>
-          <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px' }}>
-            ℹ️ הציגו את קוד הכרטיס או סרקו את הברקוד הישירות בכניסה לפארק ללא צורך בעמידה בתורים בקופות[cite: 1, 2, 3, 4, 5].
-          </p>
         </>
       )}
 
@@ -372,21 +251,14 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
           <p><b>מספר כרטיס:</b> <span style={{ fontWeight: '900', fontSize: '15px' }}>{item.codeNum}</span></p>
           <p><b>ברקוד דיגיטלי:</b> <span dir="ltr" style={{ fontWeight: '900' }}>{item.barcode}</span></p>
           <p><b>תוקף:</b> עד 29.11.2026 (כרטיס פתוח לעונת 2026)</p>
-          <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px' }}>
-            ℹ️ כרטיס דיגיטלי תקף לעונת 2026. ניתן להציג ישירות מהנייד בכניסה למתחם Canevaworld[cite: 6, 7, 8, 9, 10].
-          </p>
         </>
       )}
 
       {blobUrl && (
         <div style={{ marginTop: '16px', textAlign: 'center' }}>
-          {item.type?.startsWith('image/') ? (
-            <img src={blobUrl} alt={item.title || item.name} style={{ maxWidth: '100%', borderRadius: '12px', boxShadow: cardShadow }} />
-          ) : (
-            <a href={blobUrl} download={item.name} style={{ display: 'inline-block', padding: '12px 20px', background: isDark ? '#1c1c1e' : 'linear-gradient(180deg, #334155 0%, #1e293b 100%)', color: isDark ? '#f5f5f7' : '#fff', borderRadius: '10px', textDecoration: 'none', fontWeight: '800', border: isDark ? '1px solid #38383a' : 'none', boxShadow: cardShadow }}>
-              📥 פתח / הורד קובץ ({item.name})
-            </a>
-          )}
+          <a href={blobUrl} download={item.name} style={{ display: 'inline-block', padding: '12px 20px', background: '#334155', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontWeight: '800' }}>
+            📥 פתח / הורד קובץ ({item.name})
+          </a>
         </div>
       )}
     </div>
@@ -394,334 +266,56 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
 }
 
 export default function App() {
-  const [tripDays, setTripDays] = useState(INITIAL_TRIP_DAYS);
+  const [tripDays] = useState(INITIAL_TRIP_DAYS);
   const [activeDay, setActiveDay] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [viewerItem, setViewerItem] = useState(null);
-  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [isOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   
-  const [themeMode, setThemeMode] = useState('light');
-  const [weatherData, setWeatherData] = useState({ temp: '25°C - 24°C', condition: '☀️ שמש נעימה באגם (ספטמבר-אוקטובר)', location: 'אגם Garda' });
-
-  const [customTheme, setCustomTheme] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('garda-custom-theme')) || null; } catch (e) { return null; }
-  });
-  const [showThemeBuilder, setShowThemeBuilder] = useState(false);
-  const [tempBgMain, setTempBgMain] = useState('#ffffff');
-  const [tempCardBg, setTempCardBg] = useState('#ffffff');
-  const [tempTextColor, setTempTextColor] = useState('#1d1d1f');
-  const [tempBorderColor, setTempBorderColor] = useState('#cbd5e1');
-
-  const [folders, setFolders] = useState(TICKET_DEFAULT_FOLDERS);
+  const [themeMode] = useState('light');
+  const [folders] = useState(TICKET_DEFAULT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState('✈️ טיסות ורכב');
-  const [ticketFiles, setTicketFiles] = useState(DEFAULT_DOCUMENTS.filter(d => d.folder === '✈️ טיסות ורכב'));
-  const [showUploadBox, setShowUploadBox] = useState(false);
-  const [newTicketTitle, setNewTicketTitle] = useState('');
-  const [selectedUploadFolder, setSelectedUploadFolder] = useState('✈️ טיסות ורכב');
-
-  const [galleryItems, setGalleryItems] = useState([]);
-  const [showGalleryUpload, setShowGalleryUpload] = useState(false);
-  const [galleryCaption, setGalleryCaption] = useState('');
-
-  const [completedChallenges, setCompletedChallenges] = useState({});
-  const [challengeNote, setChallengeNote] = useState('');
-  const [challengeAuthor, setChallengeAuthor] = useState('אריק');
-  const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
+  
+  // הגדרה יחידה ונכונה של ticketFiles ללא כפילויות
+  const [ticketFiles, setTicketFiles] = useState([]);
 
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [isListeningVoice, setIsListeningVoice] = useState(false);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('הכל');
-  const [phraseSearch, setPhraseSearch] = useState('');
-
-  const [aroundSearchQuery, setAroundSearchQuery] = useState('');
-  const [isAroundListening, setIsAroundListening] = useState(false);
-
-  const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
-  const [listeningStream, setListeningStream] = useState(null);
-  
-  const audioCtxRef = useRef(null);
-  const oscillatorRef = useRef(null);
-  const alarmGainRef = useRef(null);
-
-  const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
-  
-  const [travelerIndex, setTravelerIndex] = useState(0);
-  const [triviaIndex, setTriviaIndex] = useState(0);
-  const [travelerScores, setTravelerScores] = useState({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
-  const [triviaQuestions, setTriviaQuestions] = useState(() => generateMassiveTrivia());
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
-  const [isTriviaPaused, setIsTriviaPaused] = useState(false);
-  const triviaTimerRef = useRef(null);
+  const [isTranslating] = useState(false);
 
   const [bingoPlayer, setBingoPlayer] = useState('');
   const [bingoCard, setBingoCard] = useState([]);
   const [bingoChecked, setBingoChecked] = useState({});
   const [hasBingoWin, setHasBingoWin] = useState(false);
 
-  const [myLocation, setMyLocation] = useState(null);
-  const [radarTrackingMode, setRadarTrackingMode] = useState('manual');
-  const [familyLocations, setFamilyLocations] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('garda-family-radar-cache')) || {}; } catch (e) { return {}; }
-  });
-  const [activeSosAlert, setActiveSosAlert] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('garda-active-sos')) || null; } catch (e) { return null; }
-  });
-  const watchPositionIdRef = useRef(null);
+  const [familyLocations] = useState({});
+  const [activeSosAlert] = useState(null);
+  const [myLocation] = useState(null);
 
   const [savedParking, setSavedParking] = useState(() => {
     try { return JSON.parse(localStorage.getItem('garda-saved-parking')) || null; } catch (e) { return null; }
   });
   const [parkingNote, setParkingNote] = useState('');
-  const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
 
-  const [activeTimer, setActiveTimer] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('garda-active-timer')) || null; } catch (e) { return null; }
-  });
-  const [timerRemainingSec, setTimerRemainingSec] = useState(0);
-  const [customTimerMinutes, setCustomTimerMinutes] = useState('15');
-  const [customTimerTitle, setCustomTimerTitle] = useState('זמן חופשי ומפגש');
+  const [triviaQuestions] = useState(() => generateMassiveTrivia());
+  const [triviaIndex] = useState(0);
+  const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
+  const [travelerIndex] = useState(0);
+  const [travelerScores] = useState({ 'אריק': 0, 'עמית': 0, 'יולי': 0, 'ליאן': 0, 'הראל': 0 });
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [, setIsAnswerCorrect] = useState(null);
 
-  const [menuOrder, setMenuOrder] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
-    } catch (e) {}
-    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
-  });
-
-  const [isEditingMenu, setIsEditingMenu] = useState(false);
-  const currentUtteranceRef = useRef(null);
-  const translationAbortRef = useRef(null);
   const dbInstanceRef = useRef(null);
-  const recognitionRef = useRef(null);
 
-  const handleAroundCustomSearch = (e) => {
-    e.preventDefault();
-    if (!aroundSearchQuery.trim()) return;
-    window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery)}`;
-  };
-
-  const startAroundVoiceSearch = () => {
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) { alert('זיהוי קולי אינו נתמך בדפדפן זה.'); return; }
-    try {
-      const recognition = new SpeechRec();
-      recognition.lang = 'he-IL';
-      recognition.interimResults = false;
-      recognition.onstart = () => setIsAroundListening(true);
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setAroundSearchQuery(transcript);
-          window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(transcript)}`;
-        }
-      };
-      recognition.onerror = () => setIsAroundListening(false);
-      recognition.onend = () => setIsAroundListening(false);
-      recognition.start();
-    } catch (e) { setIsAroundListening(false); }
-  };
-
-  const playClickSound = () => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      gain.gain.setValueAtTime(0.05, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.05);
-    } catch (e) {}
-  };
-
-  const broadcastMyLocation = async (coords) => {
-    const currentName = challengeAuthor || 'אריק';
-    const locObj = {
-      name: currentName,
-      lat: coords.latitude,
-      lng: coords.longitude,
-      updated_at: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-    };
-    setMyLocation({ lat: coords.latitude, lng: coords.longitude });
-    setFamilyLocations(prev => {
-      const updated = { ...prev, [currentName]: locObj };
-      localStorage.setItem('garda-family-radar-cache', JSON.stringify(updated));
-      return updated;
-    });
-    try { await supabase.from('family_radar').upsert([locObj], { onConflict: 'name' }); } catch (e) {}
-    return locObj;
-  };
-
-  const triggerSosLostAlert = () => {
-    const currentName = challengeAuthor || 'אריק';
-    if (!navigator.geolocation) { alert('שירותי מיקום אינם נתמכים'); return; }
-    if (!window.confirm(`להפעיל התראת מצוקה עבור ${currentName}? כל הטלפונים של המשפחה יקבלו התראה ומיקומך יופיע במפה.`)) return;
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        await broadcastMyLocation(pos.coords);
-        const sosData = {
-          name: currentName,
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-        };
-        setActiveSosAlert(sosData);
-        localStorage.setItem('garda-active-sos', JSON.stringify(sosData));
-        setModalType('radar');
-      },
-      () => alert('שגיאה בדגימת מיקום ה-GPS.'),
-      { enableHighAccuracy: true }
-    );
-  };
-
-  const clearSosAlert = async () => {
-    setActiveSosAlert(null);
-    localStorage.removeItem('garda-active-sos');
-    try { await supabase.channel('realtime-radar').send({ type: 'broadcast', event: 'sos_clear', payload: {} }); } catch (e) {}
-  };
-
-  const saveSmartParkingLocation = () => {
-    if (!navigator.geolocation) { alert('שירותי מיקום אינם נתמכים'); return; }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const parkObj = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          note: parkingNote || 'רכב חונה',
-          photo: parkingPhotoUrl || null,
-          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-          date: new Date().toLocaleDateString('he-IL')
-        };
-        setSavedParking(parkObj);
-        localStorage.setItem('garda-saved-parking', JSON.stringify(parkObj));
-        alert('🚗 מיקום הרכב נשמר בהצלחה!');
-      },
-      () => alert('שגיאה בדגימת מיקום GPS'),
-      { enableHighAccuracy: true }
-    );
-  };
-
-  const clearSavedParking = () => {
-    if (!window.confirm('למחוק חניה שמורה?')) return;
-    setSavedParking(null);
-    setParkingPhotoUrl('');
-    setParkingNote('');
-    localStorage.removeItem('garda-saved-parking');
-  };
-
-  const initBingoGame = (playerName) => {
-    setBingoPlayer(playerName);
-    const shuffled = [...BINGO_ITEMS_POOL].sort(() => 0.5 - Math.random()).slice(0, 9);
-    setBingoCard(shuffled);
-    setBingoChecked({});
-    setHasBingoWin(false);
-  };
-
-  const toggleBingoItem = (idx) => {
-    playClickSound();
-    if (hasBingoWin) return;
-    setBingoChecked(prev => {
-      const updated = { ...prev, [idx]: !prev[idx] };
-      const lines = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
-      const isWin = lines.some(line => line.every(pos => updated[pos]));
-      if (isWin) { setHasBingoWin(true); }
-      return updated;
-    });
-  };
-
-  useEffect(() => {
-    if (modalType || sidebarOpen) { document.body.style.overflow = 'hidden'; } 
-    else { document.body.style.overflow = 'unset'; }
-  }, [modalType, sidebarOpen]);
-
-  const handleGlobalClick = (callback) => {
-    try { playClickSound(); } catch (e) {}
-    if (typeof callback === 'function') { try { callback(); } catch (err) {} }
-  };
-
-  const speakItalian = (text) => {
-    if (!text || !text.trim()) return;
-    playClickSound();
-    setIsPlayingAudio(true);
-    try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text.trim());
-        utterance.lang = 'it-IT';
-        utterance.rate = 0.85;
-        utterance.onend = () => setIsPlayingAudio(false);
-        utterance.onerror = () => setIsPlayingAudio(false);
-        window.speechSynthesis.speak(utterance);
-      } else { setIsPlayingAudio(false); }
-    } catch (e) { setIsPlayingAudio(false); }
-  };
-
-  const translateText = async (textToTranslate) => {
-    const query = (textToTranslate || hebrewInput || '').trim();
-    if (!query) return;
-    setIsTranslating(true);
-    setItalianOutput('');
-    const matched = QUICK_PHRASES.find(p => query.includes(p.he) || p.he.includes(query));
-    if (matched) {
-      setItalianOutput(matched.it);
-      setIsTranslating(false);
-      speakItalian(matched.it);
-      return;
-    }
-    try {
-      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=iw&tl=it&dt=t&q=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      if (data && data[0] && data[0][0] && data[0][0][0]) {
-        const trans = data[0][0][0];
-        setItalianOutput(trans);
-        setIsTranslating(false);
-        speakItalian(trans);
-      } else { setItalianOutput('שגיאה בתרגום'); setIsTranslating(false); }
-    } catch (e) { setItalianOutput('שגיאה בתרגום'); setIsTranslating(false); }
-  };
-
-  const nextTriviaQuestion = () => {
-    setSelectedAnswer(null);
-    setIsAnswerCorrect(null);
-    setTriviaIndex(prev => (prev + 1) % triviaQuestions.length);
-    setTravelerIndex(prev => (prev + 1) % travelers.length);
-  };
-
-  const handleTriviaAnswer = (optionIdx) => {
-    if (selectedAnswer !== null) return;
-    setSelectedAnswer(optionIdx);
-    const currentQ = triviaQuestions[triviaIndex];
-    const currentTraveler = travelers[travelerIndex];
-    if (optionIdx === currentQ.correct) {
-      setIsAnswerCorrect(true);
-      setTravelerScores(prev => ({ ...prev, [currentTraveler]: (prev[currentTraveler] || 0) + 10 }));
-    } else {
-      setIsAnswerCorrect(false);
-    }
-    setTimeout(() => { nextTriviaQuestion(); }, 1500);
-  };
-
-  // IndexedDB טיפול בקבצים
   const openDb = () => {
     if (dbInstanceRef.current) return Promise.resolve(dbInstanceRef.current);
     return new Promise((resolve, reject) => {
-      const req = indexedDB.open('gardaTripMasterDB', 3);
+      const req = indexedDB.open('gardaTripMasterDB', 4);
       req.onupgradeneeded = () => {
         const db = req.result;
         if (!db.objectStoreNames.contains('files')) {
-          const st = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
-          st.createIndex('folder', 'folder', { unique: false });
+          db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
         }
       };
       req.onsuccess = () => { dbInstanceRef.current = req.result; resolve(req.result); };
@@ -750,15 +344,15 @@ export default function App() {
     try {
       const db = await openDb();
       const tx = db.transaction('files', 'readonly');
-      const req = tx.objectStore('files').index('folder').getAll(folder);
+      const req = tx.objectStore('files').getAll();
       req.onsuccess = () => {
         const dbFiles = req.result || [];
-        const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
-        const merged = [...dbFiles];
-        defaultsForFolder.forEach(def => {
-          if (!merged.some(m => m.title === def.title)) { merged.push(def); }
+        const allMerged = [...dbFiles];
+        DEFAULT_DOCUMENTS.forEach(def => {
+          if (!allMerged.some(m => m.title === def.title)) { allMerged.push(def); }
         });
-        setTicketFiles(merged);
+        const filtered = allMerged.filter(d => d.folder === folder);
+        setTicketFiles(filtered);
       };
       req.onerror = () => { setTicketFiles(DEFAULT_DOCUMENTS.filter(d => d.folder === folder)); };
     } catch (e) { setTicketFiles(DEFAULT_DOCUMENTS.filter(d => d.folder === folder)); }
@@ -772,7 +366,59 @@ export default function App() {
     loadFiles(activeFolder);
   }, [activeFolder]);
 
-  const [ticketFiles, setTicketFiles] = useState([]);
+  const saveSmartParkingLocation = () => {
+    if (!navigator.geolocation) { alert('שירותי מיקום אינם נתמכים'); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const parkObj = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          note: parkingNote || 'רכב חונה',
+          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('he-IL')
+        };
+        setSavedParking(parkObj);
+        localStorage.setItem('garda-saved-parking', JSON.stringify(parkObj));
+        alert('🚗 מיקום הרכב נשמר בהצלחה!');
+      },
+      () => alert('שגיאה בדגימת מיקום GPS'),
+      { enableHighAccuracy: true }
+    );
+  };
+
+  const clearSavedParking = () => {
+    if (!window.confirm('למחוק חניה שמורה?')) return;
+    setSavedParking(null);
+    setParkingNote('');
+    localStorage.removeItem('garda-saved-parking');
+  };
+
+  const initBingoGame = (playerName) => {
+    setBingoPlayer(playerName);
+    const shuffled = [...BINGO_ITEMS_POOL].sort(() => 0.5 - Math.random()).slice(0, 9);
+    setBingoCard(shuffled);
+    setBingoChecked({});
+    setHasBingoWin(false);
+  };
+
+  const toggleBingoItem = (idx) => {
+    if (hasBingoWin) return;
+    setBingoChecked(prev => {
+      const updated = { ...prev, [idx]: !prev[idx] };
+      const lines = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
+      if (lines.some(line => line.every(pos => updated[pos]))) { setHasBingoWin(true); }
+      return updated;
+    });
+  };
+
+  const handleTriviaAnswer = (optionIdx) => {
+    if (selectedAnswer !== null) return;
+    setSelectedAnswer(optionIdx);
+    const currentQ = triviaQuestions[triviaIndex];
+    if (optionIdx === currentQ.correct) { setIsAnswerCorrect(true); } 
+    else { setIsAnswerCorrect(false); }
+    setTimeout(() => { setSelectedAnswer(null); setIsAnswerCorrect(null); }, 1500);
+  };
 
   const day = tripDays[activeDay] || tripDays[0];
   const isDark = themeMode === 'dark';
@@ -847,7 +493,6 @@ export default function App() {
               <button onClick={() => setModalType(null)} style={{ background: 'none', border: 'none', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', color: textColor }}>✕</button>
             </div>
 
-            {/* כפתורי תיקיות */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '6px', marginBottom: '16px' }}>
               {folders.map((f, i) => (
                 <button
@@ -867,7 +512,6 @@ export default function App() {
 
             <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '10px' }}>תכולת תיקייה: {activeFolder}</div>
 
-            {/* רשימת קבצים בתיקייה */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {ticketFiles.length === 0 ? (
                 <div style={{ textAlign: 'center', color: textSub, padding: '20px' }}>אין כרטיסים בתיקייה זו.</div>
@@ -904,7 +548,7 @@ export default function App() {
               <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold' }}>{viewerItem.title || viewerItem.name}</h3>
               <button onClick={() => setModalType('tickets')} style={{ background: 'none', border: 'none', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', color: textColor }}>✕ חזרה</button>
             </div>
-            <DocumentViewer item={viewerItem} isDark={isDark} blockText={textColor} cardShadow={cardShadow} />
+            <DocumentViewer item={viewerItem} isDark={isDark} cardShadow={cardShadow} />
           </div>
         </div>
       )}
@@ -920,7 +564,6 @@ export default function App() {
             <div style={{ height: '300px', background: '#0f172a', borderRadius: '12px', overflow: 'hidden' }}>
               <iframe title="Radar" srcDoc={generateMapHTML(familyLocations, myLocation, activeSosAlert, isDark)} style={{ width: '100%', height: '100%', border: 'none' }} />
             </div>
-            <button onClick={triggerSosLostAlert} style={{ width: '100%', marginTop: '14px', padding: '12px', borderRadius: '10px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', fontWeight: 'bold' }}>🚨 הלכתי לאיבוד! (SOS)</button>
           </div>
         </div>
       )}
@@ -958,7 +601,7 @@ export default function App() {
             </div>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
               <input type="text" placeholder="הקלד בעברית..." value={hebrewInput} onChange={(e) => setHebrewInput(e.target.value)} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor }} />
-              <button onClick={() => translateText(hebrewInput)} style={{ padding: '0 14px', background: '#2563eb', color: '#fff', borderRadius: '8px', border: 'none' }}>תרגם</button>
+              <button onClick={() => translateText(hebrewInput)} style={{ padding: '0 14px', background: '#2563eb', color: '#fff', borderRadius: '8px', border: 'none' }}>{isTranslating ? '...' : 'תרגם'}</button>
             </div>
             {italianOutput && <div style={{ background: cardBg, padding: '10px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, direction: 'ltr', fontWeight: 'bold' }}>{italianOutput}</div>}
           </div>
