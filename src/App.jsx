@@ -45,8 +45,8 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "13:15", name: "טיסת ישראייר 6H:357 מנתב\"ג לוורונה", dest: "Verona Villafranca Airport", note: "טיסה 6H:357 (הזמנה 4623652) מתל אביב (TLV) לוורונה (VRN)[cite: 1]. שימו לב לשינוי טרמינל מטרמינל 3 לטרמינל 1." },
-      { time: "16:05", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור[cite: 1]." },
+      { time: "13:15", name: "טיסת ישראייר 6H:357 מנתב\"ג לוורונה", dest: "Verona Villafranca Airport", note: "טיסה 6H:357 (הזמנה 4623652) מתל אביב (TLV) לוורונה (VRN). שימו לב לשינוי טרמינל מטרמינל 3 לטרמינל 1." },
+      { time: "16:05", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -60,7 +60,7 @@ const INITIAL_TRIP_DAYS = [
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
-      { time: "09:00", name: "כניסה לפארק Gardaland (כרטיסים רכורים - קוד WZZCJ20260908092004)", dest: "Gardaland Parking, Castelnuovo del Garda", note: "הוזמנו 5 כרטיסי Super Promo ב-199.50€[cite: 7]. לשמור מיקום רכב בחניה." },
+      { time: "09:00", name: "כניסה לפארק Gardaland (כרטיסים רכורים - קוד WZZCJ20260908092004)", dest: "Gardaland Parking, Castelnuovo del Garda", note: "הוזמנו 5 כרטיסי Super Promo ב-199.50€. לשמור מיקום רכב בחניה." },
       { time: "13:00", name: "ארוחת צהריים בפארק", dest: "Gardaland Resort", note: "אוכל מהיר, פיצות והמבורגרים בתוך הפארק.", food: { name: "🍔 Aladino Pizza & Burger (בתוך הפארק)", dest: "Gardaland Resort" } },
       { time: "19:00", name: "ארוחת ערב", dest: "Osteria Sottoportego, Peschiera del Garda", note: "פסטות מעולות ואווירה על המים בפסקיירה דל גארדה.", food: { name: "🍝 Osteria Sottoportego", dest: "Osteria Sottoportego, Peschiera del Garda" } }
     ]
@@ -88,7 +88,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
     stops: [
-      { time: "09:00", name: "יציאה ל-Movieland (כרטיסים רכורים - קוד YKY8P20260908093800)", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "5 כרטיסי מבוגר ב-180.00€[cite: 8]. יום של אקשן וחוויות קולנועיות." },
+      { time: "09:00", name: "יציאה ל-Movieland (כרטיסים רכורים - קוד YKY8P20260908093800)", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "5 כרטיסי מבוגר ב-180.00€. יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
     ]
   },
@@ -129,8 +129,8 @@ const INITIAL_TRIP_DAYS = [
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה ורונה", dest: "Verona Villafranca Airport", note: "התארגנות לטיסת החזרה." },
-      { time: "21:35", name: "טיסת ישראייר 6H:352 מוורונה לנתב\"ג", dest: "Verona Villafranca Airport", note: "טיסה 6H:352 (הזמנה 4623652) מורונה (VRN) לתל אביב (TLV), הגעה בשעה 02:05 ביום שלמחרת[cite: 1]." }
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה وרונה", dest: "Verona Villafranca Airport", note: "התארגנות לטיסת החזרה." },
+      { time: "21:35", name: "טיסת ישראייר 6H:352 מוורונה לנתב\"ג", dest: "Verona Villafranca Airport", note: "טיסה 6H:352 (הזמנה 4623652) מורונה (VRN) לתל אביב (TLV), הגעה בשעה 02:05 ביום שלמחרת." }
     ]
   }
 ];
@@ -377,20 +377,20 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת תעופה:</b> ישראייר (Israir Airlines)</p>
           <p><b>מספר הזמנה:</b> 4623652</p>
-          <p><b>רשימת נוסעים (6):</b> אריק כהן, עמית כהן, יולי כהן, ליאן כהן, הראל וילנאי כהן, סיגל ריקנטי[cite: 6]</p>
+          <p><b>רשימת נוסעים (6):</b> אריק כהן, עמית כהן, יולי כהן, ליאן כהן, הראל וילנאי כהן, סיגל ריקנטי</p>
           <hr style={{ border: '0', borderTop: `1px solid ${isDark ? '#38383a' : '#cbd5e1'}`, margin: '12px 0' }} />
-          <p><b>✈️ טיסת הלוך (6H:357):</b> מתל אביב (TLV) לוורונה (VRN)<br/>📅 30.09.2026 בשעה 13:15 (נחיתה 16:05)[cite: 1]<br/>⚠️ <i>שימו לב:</i> שינוי טרמינל מטרמינל 3 לטרמינל 1.</p>
-          <p><b>✈️ טיסת חזור (6H:352):</b> מורונה (VRN) לתל אביב (TLV)<br/>📅 06.10.2026 בשעה 21:35 (נחיתה 02:05 למחרת)[cite: 1]</p>
+          <p><b>✈️ טיסת הלוך (6H:357):</b> מתל אביב (TLV) לוורונה (VRN)<br/>📅 30.09.2026 בשעה 13:15 (נחיתה 16:05)<br/>⚠️ <i>שימו לב:</i> שינוי טרמינל מטרמינל 3 לטרמינל 1.</p>
+          <p><b>✈️ טיסת חזור (6H:352):</b> מורונה (VRN) לתל אביב (TLV)<br/>📅 06.10.2026 בשעה 21:35 (נחיתה 02:05 למחרת)</p>
         </>
       )}
 
       {item.isGardalandInfo && (
         <>
           <p><b>אטרקציה:</b> Gardaland Park (Super Promo)</p>
-          <p><b>מספר הזמנה / קוד:</b> WZZCJ20260908092004[cite: 7]</p>
-          <p><b>כמות כרטיסים:</b> 5 כרטיסים (סה"כ 199.50€)[cite: 7]</p>
-          <p><b>תאריך רכישה:</b> 08-09-2026[cite: 7]</p>
-          <p><b>רוכש:</b> Arik Cohen (arikcohen1967@gmail.com)[cite: 7]</p>
+          <p><b>מספר הזמנה / קוד:</b> WZZCJ20260908092004</p>
+          <p><b>כמות כרטיסים:</b> 5 כרטיסים (סה"כ 199.50€)</p>
+          <p><b>תאריך רכישה:</b> 08-09-2026</p>
+          <p><b>רוכש:</b> Arik Cohen (arikcohen1967@gmail.com)</p>
           <a 
             href={`https://www.waze.com/ul?q=${encodeURIComponent('Gardaland Resort, Via Derna 4, Castelnuovo del Garda')}&navigate=yes`} 
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
@@ -403,10 +403,10 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
       {item.isMovielandInfo && (
         <>
           <p><b>אטרקציה:</b> Movieland The Hollywood Park</p>
-          <p><b>מספר הזמנה / קוד:</b> YKY8P20260908093800[cite: 8]</p>
-          <p><b>כמות כרטיסים:</b> 5 כרטיסי מבוגר (סה"כ 180.00€)[cite: 8]</p>
-          <p><b>תאריך רכישה:</b> 08-09-2026[cite: 8]</p>
-          <p><b>רוכש:</b> Arik Cohen (arikcohen1967@gmail.com)[cite: 8]</p>
+          <p><b>מספר הזמנה / קוד:</b> YKY8P20260908093800</p>
+          <p><b>כמות כרטיסים:</b> 5 כרטיסי מבוגר (סה"כ 180.00€)</p>
+          <p><b>תאריך רכישה:</b> 08-09-2026</p>
+          <p><b>רוכש:</b> Arik Cohen (arikcohen1967@gmail.com)</p>
           <a 
             href={`https://www.waze.com/ul?q=${encodeURIComponent('Movieland The Hollywood Park, Via Fossalta 58, Lazise')}&navigate=yes`} 
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
