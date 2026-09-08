@@ -88,7 +88,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
     stops: [
-      { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
+      { time: "09:00", name: "יציאה ל-Movieland (כרטיסים רכורים - קוד YKY8P20260908093800)", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "5 כרטיסי מבוגר ב-180.00€[cite: 8]. יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
     ]
   },
@@ -159,7 +159,8 @@ const DEFAULT_DOCUMENTS = [
   { id: 'aig-insurance', folder: '✈️ טיסות ורכב (30/09)', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב (30/09)', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
   { id: 'vojon-hotel', folder: '🏡 מלון (30/09 - 06/10)', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true },
-  { id: 'gardaland-tickets', folder: '🎢 Gardaland (01/10)', title: 'כרטוס גארדה לנד (199.50€)', name: 'Gardaland Tickets', type: 'text/gardaland-info', size: 11000, created: 600, isGardalandInfo: true }
+  { id: 'gardaland-tickets', folder: '🎢 Gardaland (01/10)', title: 'כרטוס גארדה לנד (199.50€)', name: 'Gardaland Tickets', type: 'text/gardaland-info', size: 11000, created: 600, isGardalandInfo: true },
+  { id: 'movieland-tickets', folder: '🎬 Movieland (03/10)', title: 'כרטוס מוביללנד (180.00€)', name: 'Movieland Tickets', type: 'text/movieland-info', size: 11000, created: 500, isMovielandInfo: true }
 ];
 
 const QUICK_PHRASES = [
@@ -395,6 +396,22 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
           >
             {WAZE_SVG} נווט לפארק Gardaland ב-Waze
+          </a>
+        </>
+      )}
+
+      {item.isMovielandInfo && (
+        <>
+          <p><b>אטרקציה:</b> Movieland The Hollywood Park</p>
+          <p><b>מספר הזמנה / קוד:</b> YKY8P20260908093800[cite: 8]</p>
+          <p><b>כמות כרטיסים:</b> 5 כרטיסי מבוגר (סה"כ 180.00€)[cite: 8]</p>
+          <p><b>תאריך רכישה:</b> 08-09-2026[cite: 8]</p>
+          <p><b>רוכש:</b> Arik Cohen (arikcohen1967@gmail.com)[cite: 8]</p>
+          <a 
+            href={`https://www.waze.com/ul?q=${encodeURIComponent('Movieland The Hollywood Park, Via Fossalta 58, Lazise')}&navigate=yes`} 
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
+          >
+            {WAZE_SVG} נווט לפארק Movieland ב-Waze
           </a>
         </>
       )}
@@ -1440,7 +1457,7 @@ export default function App() {
         const store = writeTx.objectStore('files');
         
         DEFAULT_DOCUMENTS.forEach(doc => {
-          if (!all.some(f => f.title === doc.title || (doc.isFlightInfo && f.isFlightInfo) || (doc.isInsuranceInfo && f.isInsuranceInfo) || (doc.isCarVoucher && f.isCarVoucher) || (doc.isHotelInfo && f.isHotelInfo) || (doc.isGardalandInfo && f.isGardalandInfo))) {
+          if (!all.some(f => f.title === doc.title || (doc.isFlightInfo && f.isFlightInfo) || (doc.isInsuranceInfo && f.isInsuranceInfo) || (doc.isCarVoucher && f.isCarVoucher) || (doc.isHotelInfo && f.isHotelInfo) || (doc.isGardalandInfo && f.isGardalandInfo) || (doc.isMovielandInfo && f.isMovielandInfo))) {
             store.add(doc);
           }
         });
@@ -3540,19 +3557,19 @@ export default function App() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: isDark ? '#2c2c2e' : '#f8fafc', border: `1.5px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
-                        {x.isFlightInfo ? '✈️' : (x.isGardalandInfo ? '🎢' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄'))))}
+                        {x.isFlightInfo ? '✈️' : (x.isGardalandInfo ? '🎢' : (x.isMovielandInfo ? '🎬' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄'))))}
                       </div>
                       <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
                         <b style={{ display: 'block', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: textColor }}>{x.title || x.name}</b>
                         <small style={{ color: textSub, fontSize: '10px', display: 'block' }}>
-                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isGardalandInfo ? 'Gardaland Super Promo' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round((x.size || 1024) / 1024)} KB`))))}
+                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isGardalandInfo ? 'Gardaland Super Promo' : (x.isMovielandInfo ? 'Movieland Park' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round((x.size || 1024) / 1024)} KB`)))))}
                         </small>
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <span style={{ fontSize: '11px', color: textColor, fontWeight: 'bold' }}>צפה 👁️</span>
-                      {!x.isFlightInfo && !x.isGardalandInfo && !x.isInsuranceInfo && !x.isCarVoucher && !x.isHotelInfo && (
+                      {!x.isFlightInfo && !x.isGardalandInfo && !x.isMovielandInfo && !x.isInsuranceInfo && !x.isCarVoucher && !x.isHotelInfo && (
                         <button onClick={(e) => deleteFile(x.id, e)} style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: 'none', padding: '3px 6px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>מחק</button>
                       )}
                     </div>
