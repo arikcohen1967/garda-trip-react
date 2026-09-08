@@ -3604,4 +3604,3 @@ const uploadBtnStyle = {
   width: '100%', padding: '10px', borderRadius: '10px',
   fontWeight: 'bold', cursor: 'pointer', fontSize: '12px', boxSizing: 'border-box'
 };
-```[cite: 1, 6, 7]
