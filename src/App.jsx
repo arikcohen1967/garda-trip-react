@@ -129,7 +129,7 @@ const INITIAL_TRIP_DAYS = [
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
-      { time: "18:30", name: "החזרת הרכב בשדה התעופה وרונה", dest: "Verona Villafranca Airport", note: "התארגנות לטיסת החזרה." },
+      { time: "18:30", name: "החזרת הרכב בשדה התעופה ורונה", dest: "Verona Villafranca Airport", note: "התארגנות לטיסת החזרה." },
       { time: "21:35", name: "טיסת ישראייר 6H:352 מוורונה לנתב\"ג", dest: "Verona Villafranca Airport", note: "טיסה 6H:352 (הזמנה 4623652) מורונה (VRN) לתל אביב (TLV), הגעה בשעה 02:05 ביום שלמחרת[cite: 1]." }
     ]
   }
