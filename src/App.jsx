@@ -3,43 +3,63 @@ import React, { useState } from 'react';
 export default function App() {
   const [activeTab, setActiveTab] = useState('tickets');
 
-  // יצירת קישורים מקומיים לקובצי ה-PDF שהעלית
+  // רשימת המסמכים וכרטיסי הטיסה עם כל הפרטים המלאים מתוך הקבצים
   const documents = [
     {
       id: 'flight-arik',
       title: 'כרטיס טיסה - אריק כהן (MR)',
-      details: 'הזמנה 4623652 | תל אביב (TLV) ⟷ ורונה (VRN)',
-      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - אריק כהן`], { type: 'application/pdf' }))
+      details: 'הזמנה 4623652 | כרטיס: 8180011314102',
+      flightInfo: 'TLV ⟷ VRN | 30.09.2026 - 06.10.2026',
+      baggage: '1 כבודה (30 ק"ג)'
     },
     {
       id: 'flight-amit',
       title: 'כרטיס טיסה - עמית כהן (MS)',
-      details: 'הזמנה 4623652 | 30.09.2026 - 06.10.2026',
-      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - עמית כהן`], { type: 'application/pdf' }))
+      details: 'הזמנה 4623652 | כרטיס: 8180011314103',
+      flightInfo: 'TLV ⟷ VRN | 30.09.2026 - 06.10.2026',
+      baggage: 'כלול במסגרת ההזמנה המשפחתית'
     },
     {
       id: 'flight-yuly',
       title: 'כרטיס טיסה - יולי כהן (MS)',
-      details: 'הזמנה 4623652 | 5 נוסעים, מטען כלול',
-      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - יולי כהן`], { type: 'application/pdf' }))
+      details: 'הזמנה 4623652 | כרטיס: 8180011314104',
+      flightInfo: 'TLV ⟷ VRN | 30.09.2026 - 06.10.2026',
+      baggage: 'כלול במסגרת ההזמנה המשפחתית'
     },
     {
       id: 'flight-lian',
       title: 'כרטיס טיסה - ליאן כהן (CHD)',
-      details: 'הזמנה 4623652 | טיסות ישראייר 6H:357 / 6H:352',
-      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - ליאן כהן`], { type: 'application/pdf' }))
+      details: 'הזמנה 4623652 | כרטיס: 8180011314105',
+      flightInfo: 'TLV ⟷ VRN | 30.09.2026 - 06.10.2026',
+      baggage: 'נוסע צעיר (CHD)'
     },
     {
       id: 'flight-harel',
       title: 'כרטיס טיסה - הראל וילנאי כהן (MR)',
-      details: 'הזמנה 4623652 | אישור רשמי',
-      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - הראל וילנאי כהן`], { type: 'application/pdf' }))
+      details: 'הזמנה 4623652 | כרטיס: 8180011314106',
+      flightInfo: 'TLV ⟷ VRN | 30.09.2026 - 06.10.2026',
+      baggage: '1 כבודה (23 ק"ג)'
+    },
+    {
+      id: 'parks-gardaland',
+      title: 'כרטיסי פארק - גארדהלנד (Gardaland)',
+      details: 'קוד רכישה: fbKioJJ1W2 | 5 כרטיסי מבוגר',
+      flightInfo: 'תאריך מתוכנן: 01.10.2026',
+      baggage: 'Super Promo Open Ticket (199.50 €)'
+    },
+    {
+      id: 'parks-movieland',
+      title: 'כרטיסי פארק - מוביללנד (Movieland)',
+      details: 'קוד רכישה: JGbyc0xROT | 5 כרטיסי מבוגר',
+      flightInfo: 'תאריך מתוכנן: 02.10.2026',
+      baggage: 'Adult Open Ticket (180.00 €)'
     },
     {
       id: 'invoice-israir',
-      title: 'חשבונית וקבלה - ישראייר',
+      title: 'חשבונית וקבלה רשמית - ישראייר',
       details: 'חשבונית מספר 1-10183907 | סך הכל: 7,063.92 ₪',
-      url: URL.createObjectURL(new Blob([`%PDF-1.4 קובץ PDF - חשבונית ישראייר`], { type: 'application/pdf' }))
+      flightInfo: 'תשלום בכרטיס אשראי סופי (מסוף 10)',
+      baggage: 'כולל תוספות כבודה והושבה'
     }
   ];
 
@@ -70,7 +90,7 @@ export default function App() {
               activeTab === 'tickets' ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
-            🎫 כרטיסים ומסמכים (PDF)
+            🎫 כרטיסים ומסמכים רשמיים
           </button>
         </div>
       </nav>
@@ -87,7 +107,7 @@ export default function App() {
               </div>
               <div className="border-r-4 border-green-500 pr-4">
                 <h3 className="font-bold">01.10.2026 - גארדהלנד</h3>
-                <p className="text-sm text-gray-600">יום של כיף והתרגשות בפארק השעשועים Gardaland (קוד רכישה: fbKioJJ1W2)[cite: 1].</p>
+                <p className="text-sm text-gray-600">יום כיף בפארק השעשועים Gardaland (קוד רכישה: fbKioJJ1W2)[cite: 1].</p>
               </div>
               <div className="border-r-4 border-purple-500 pr-4">
                 <h3 className="font-bold">02.10.2026 - מוביללנד</h3>
@@ -103,35 +123,23 @@ export default function App() {
 
         {activeTab === 'tickets' && (
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">🎫 כרטיסי טיסה ומסמכי נסיעה רשמיים</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">🎫 כרטיסי טיסה, פארקים ומסמכים רשמיים</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {documents.map((doc) => (
-                <div key={doc.id} className="border border-gray-200 rounded-lg p-4 flex flex-col justify-between hover:shadow-lg transition-shadow bg-gray-50">
+                <div key={doc.id} className="border border-gray-200 rounded-lg p-4 flex flex-col justify-between shadow-sm bg-gray-50">
                   <div>
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="font-semibold text-lg text-blue-700">{doc.title}</h3>
-                      <span className="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">PDF</span>
+                      <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">מאושר</span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-4">{doc.details}</p>
+                    <p className="text-sm font-medium text-gray-700 mb-1">{doc.details}</p>
+                    <p className="text-sm text-gray-600 mb-1">{doc.flightInfo}</p>
+                    <p className="text-xs text-gray-500 mb-4">{doc.baggage}</p>
                   </div>
                   
-                  <div className="flex gap-2 mt-2">
-                    <a
-                      href={doc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded text-center transition-colors flex items-center justify-center gap-1"
-                    >
-                      <span>👁️ הצג PDF</span>
-                    </a>
-                    <a
-                      href={doc.url}
-                      download={`${doc.id}.pdf`}
-                      className="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium py-2 px-3 rounded text-center transition-colors flex items-center justify-center gap-1"
-                    >
-                      <span>📥 הורד</span>
-                    </a>
+                  <div className="bg-blue-50 border border-blue-100 text-blue-800 text-xs p-2 rounded text-center font-medium">
+                    ✔ כל הפרטים זמינים ומוכנים לנסיעה
                   </div>
                 </div>
               ))}
