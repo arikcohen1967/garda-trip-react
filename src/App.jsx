@@ -124,7 +124,7 @@ const INITIAL_TRIP_DAYS = [
     fullLabel: "יום שלישי · 06 באוקטובר 2026",
     title: "ורונה + הטיסה הביתה",
     icon: "❤️",
-    challenge: "לבחור יחד את רגע השיא (הטופ 1) של كل הטיול!",
+    challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
@@ -137,7 +137,7 @@ const INITIAL_TRIP_DAYS = [
 const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
 const DEFAULT_DOCUMENTS = [
-  // ✈️ 5 כרטיסי הטיסה האישיים של ישראייר (הזמנה 4623652)
+  // ✈️ 5 כרטיסי טיסה ישראייר (הזמנה 4623652)[cite: 3, 4, 5, 6, 7]
   { id: 'flight-arik', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - אריק כהן (8180011314102)', name: 'Israir_Arik_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1005, isFlightInfo: true, passenger: 'COHEN/ARIK MR', ticketNo: '8180011314102' },
   { id: 'flight-amit', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - עמית כהן (8180011314103)', name: 'Israir_Amit_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1004, isFlightInfo: true, passenger: 'COHEN/AMIT MS', ticketNo: '8180011314103' },
   { id: 'flight-yuly', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - יולי כהן (8180011314104)', name: 'Israir_Yuly_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1003, isFlightInfo: true, passenger: 'COHEN/YULY MS', ticketNo: '8180011314104' },
@@ -147,7 +147,21 @@ const DEFAULT_DOCUMENTS = [
   { id: 'israir-general', folder: '✈️ טיסות ורכב', title: 'הזמנת ישראייר ראשית (4623652)', name: 'Israir Booking General', type: 'text/flight-info', size: 15400, created: 1000, isFlightInfo: true },
   { id: 'aig-insurance', folder: '✈️ טיסות ורכב', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
-  { id: 'vojon-hotel', folder: '🏡 מלון', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true }
+  { id: 'vojon-hotel', folder: '🏡 מלון', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true },
+
+  // 🎢 5 כרטיסי Gardaland הרשמיים[cite: 1, 2, 3, 4, 5]
+  { id: 'gardaland-1', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #1 (Serial 600)', name: 'Gardaland Ticket 600', type: 'text/gardaland-ticket', size: 11000, created: 650, isGardalandTicket: true, serial: '600', code: 'BKN1P01Y901MART', ticketId: '33385742', sigillo: '542965AEE291FEA3' },
+  { id: 'gardaland-2', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #2 (Serial 601)', name: 'Gardaland Ticket 601', type: 'text/gardaland-ticket', size: 11000, created: 640, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
+  { id: 'gardaland-3', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #3 (Serial 606)', name: 'Gardaland Ticket 606', type: 'text/gardaland-ticket', size: 11000, created: 630, isGardalandTicket: true, serial: '606', code: 'TKN1P01Y901MUTT', ticketId: '33385748', sigillo: 'DD1F221668493023' },
+  { id: 'gardaland-4', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #4 (Serial 608)', name: 'Gardaland Ticket 608', type: 'text/gardaland-ticket', size: 11000, created: 620, isGardalandTicket: true, serial: '608', code: 'CKN1P01Y901N2IT', ticketId: '33385750', sigillo: '7379E49AA9784605' },
+  { id: 'gardaland-5', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #5 (Serial 601 נוסף)', name: 'Gardaland Ticket Harel', type: 'text/gardaland-ticket', size: 11000, created: 610, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
+
+  // 🎬 5 כרטיסי Movieland הרשמיים[cite: 6, 7]
+  { id: 'movieland-1', folder: '🎬 Movieland', title: 'כרטיס Movieland #1 (069)', name: 'Movieland Ticket 069', type: 'text/movieland-ticket', size: 11000, created: 550, isMovielandTicket: true, codeNum: '017JUNAR0069', barcode: '256612CCD43B8E08' },
+  { id: 'movieland-2', folder: '🎬 Movieland', title: 'כרטיס Movieland #2 (070)', name: 'Movieland Ticket 070', type: 'text/movieland-ticket', size: 11000, created: 540, isMovielandTicket: true, codeNum: '017JUNAR0070', barcode: 'EA35DB7A2EA540D5' },
+  { id: 'movieland-3', folder: '🎬 Movieland', title: 'כרטיס Movieland #3 (071)', name: 'Movieland Ticket 071', type: 'text/movieland-ticket', size: 11000, created: 530, isMovielandTicket: true, codeNum: '017JUNAR0071', barcode: '934FEA2F66750267' },
+  { id: 'movieland-4', folder: '🎬 Movieland', title: 'כרטיס Movieland #4 (072)', name: 'Movieland Ticket 072', type: 'text/movieland-ticket', size: 11000, created: 520, isMovielandTicket: true, codeNum: '017JUNAR0072', barcode: '52CACC0D5CAE334B' },
+  { id: 'movieland-5', folder: '🎬 Movieland', title: 'כרטיס Movieland #5 (073)', name: 'Movieland Ticket 073', type: 'text/movieland-ticket', size: 11000, created: 510, isMovielandTicket: true, codeNum: '017JUNAR0073', barcode: '32D6C578DF258ACF' }
 ];
 
 const QUICK_PHRASES = [
@@ -373,6 +387,30 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
             <p style={{ margin: '0 0 6px' }}>🛫 <b>הלוך (30-Sep-2026):</b> TLV ➔ VRN | טיסה 6H:357 | 13:15 - 16:05</p>
             <p style={{ margin: 0 }}>🛬 <b>חזור (06-Oct-2026):</b> VRN ➔ TLV | טיסה 6H:352 | 21:35 - 02:05</p>
           </div>
+        </>
+      )}
+
+      {item.isGardalandTicket && (
+        <>
+          <div style={{ background: '#e0f2fe', padding: '12px', borderRadius: '12px', color: '#0369a1', marginBottom: '12px', textAlign: 'center' }}>
+            🎢 <b>Gardaland Park Official Ticket</b>
+          </div>
+          <p><b>קוד כרטיס (Code):</b> <span dir="ltr" style={{ fontWeight: '900', fontSize: '15px' }}>{item.code}</span></p>
+          <p><b>מספר כרטיס (Ticket ID):</b> {item.ticketId}</p>
+          <p><b>סיריאלי/סדרה:</b> {item.serial}</p>
+          <p><b>סיגיל (Sigillo):</b> <span dir="ltr">{item.sigillo}</span></p>
+          <p><b>תוקף:</b> עד 01.11.2026</p>
+        </>
+      )}
+
+      {item.isMovielandTicket && (
+        <>
+          <div style={{ background: '#fae8ff', padding: '12px', borderRadius: '12px', color: '#86198f', marginBottom: '12px', textAlign: 'center' }}>
+            🎬 <b>Movieland The Hollywood Park Ticket</b>
+          </div>
+          <p><b>מספר כרטיס:</b> <span style={{ fontWeight: '900', fontSize: '15px' }}>{item.codeNum}</span></p>
+          <p><b>ברקוד דיגיטלי:</b> <span dir="ltr" style={{ fontWeight: '900' }}>{item.barcode}</span></p>
+          <p><b>תוקף:</b> עד 29.11.2026 (כרטיס פתוח לעונת 2026)</p>
         </>
       )}
 
@@ -1375,7 +1413,7 @@ export default function App() {
         const store = writeTx.objectStore('files');
         
         DEFAULT_DOCUMENTS.forEach(doc => {
-          if (!all.some(f => f.title === doc.title || (doc.isFlightInfo && f.isFlightInfo) || (doc.isInsuranceInfo && f.isInsuranceInfo) || (doc.isCarVoucher && f.isCarVoucher) || (doc.isHotelInfo && f.isHotelInfo))) {
+          if (!all.some(f => f.title === doc.title || (doc.isFlightInfo && f.isFlightInfo) || (doc.isInsuranceInfo && f.isInsuranceInfo) || (doc.isCarVoucher && f.isCarVoucher) || (doc.isHotelInfo && f.isHotelInfo) || (doc.isGardalandTicket && f.isGardalandTicket) || (doc.isMovielandTicket && f.isMovielandTicket))) {
             store.add(doc);
           }
         });
@@ -3436,19 +3474,19 @@ export default function App() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: isDark ? '#2c2c2e' : '#f8fafc', border: `1.5px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
-                        {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : '📄')))}
+                        {x.isFlightInfo ? '✈️' : (x.isInsuranceInfo ? '🛡️' : (x.isCarVoucher ? '🚗' : (x.isHotelInfo ? '🏡' : (x.isGardalandTicket ? '🎢' : (x.isMovielandTicket ? '🎬' : '📄')))))}
                       </div>
                       <div style={{ minWidth: 0, textAlign: 'right', flex: 1 }}>
                         <b style={{ display: 'block', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: textColor }}>{x.title || x.name}</b>
                         <small style={{ color: textSub, fontSize: '10px', display: 'block' }}>
-                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : (x.isHotelInfo ? 'Booking' : `${Math.round((x.size || 1024) / 1024)} KB`)))}
+                          {x.isFlightInfo ? 'ישראייר 4623652' : (x.isGardalandTicket ? `Gardaland (ID: ${x.ticketId})` : (x.isMovielandTicket ? `Movieland (${x.codeNum})` : (x.isInsuranceInfo ? 'AIG פוליסה' : (x.isCarVoucher ? 'Ecovia השכרה' : 'הזמנה'))))}
                         </small>
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <span style={{ fontSize: '11px', color: textColor, fontWeight: 'bold' }}>צפה 👁️</span>
-                      {!x.isFlightInfo && !x.isInsuranceInfo && !x.isCarVoucher && !x.isHotelInfo && (
+                      {!x.isFlightInfo && !x.isInsuranceInfo && !x.isCarVoucher && !x.isHotelInfo && !x.isGardalandTicket && !x.isMovielandTicket && (
                         <button onClick={(e) => deleteFile(x.id, e)} style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: 'none', padding: '3px 6px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>מחק</button>
                       )}
                     </div>
