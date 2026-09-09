@@ -1912,7 +1912,7 @@ export default function App() {
   const blockText = textColor; 
   const cardShadow = customTheme ? '0 6px 20px rgba(0,0,0,0.3)' : currentShadow;
 
-  const brandBlueBg = '#2563eb';
+  const brandBlueBg = '#1d4ed8'; // תואם לצבע הבאנר הראשי
   const brandBlueText = '#ffffff';
 
   const saveCustomTheme = () => {
@@ -2168,47 +2168,45 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר פרימיום מעוצב במיוחד למובייל עם אחידות מלאה */}
+      {/* 🌟 באנר פרימיום מעוצב ונקי לחלוטין */}
       <div style={{
         margin: '14px 16px 8px 16px',
-        borderRadius: '22px',
-        background: isDark ? 'linear-gradient(135deg, #1e1e24 0%, #111115 100%)' : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+        borderRadius: '24px',
+        background: isDark ? 'linear-gradient(135deg, #1e1e24 0%, #111115 100%)' : 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)',
         color: '#ffffff',
-        padding: '18px 16px',
-        boxShadow: '0 12px 30px rgba(37, 99, 235, 0.3)',
+        padding: '22px 20px',
+        boxShadow: '0 12px 30px rgba(29, 78, 216, 0.35)',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
         width: 'calc(100% - 32px)',
         border: '1px solid rgba(255, 255, 255, 0.15)'
       }}>
-        {/* חלק עליון: כותרת ומזג אוויר/AI Guide באותו גובה וצבע */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+        {/* חלק עליון: כותרת ומזג אוויר/AI Guide באותו גובה וסגנון אחיד */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div>
-            <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', marginBottom: '4px' }}>
-              🇮🇹 טיול בת מצווה
-            </span>
-            <h1 style={{ fontSize: '19px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff' }}>אגם Garda וונציה</h1>
+            <h1 style={{ fontSize: '21px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff' }}>אגם Garda וונציה</h1>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {/* מזג אוויר */}
             <div 
               onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
               style={{
-                background: 'rgba(255, 255, 255, 0.2)',
+                background: 'rgba(255, 255, 255, 0.18)',
                 padding: '0 12px',
-                borderRadius: '10px',
+                borderRadius: '12px',
                 textAlign: 'center',
                 cursor: 'pointer',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '36px',
+                height: '38px',
                 fontSize: '12px',
                 fontWeight: 'bold',
-                color: '#ffffff'
+                color: '#ffffff',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
               }}
               title="תחזית מזג אוויר"
             >
@@ -2221,8 +2219,9 @@ export default function App() {
                 onClick={stopAiTourGuide}
                 style={{
                   background: '#dc2626', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
-                  padding: '0 12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
-                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  padding: '0 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
                 }}
               >
                 ⏹️ עצור
@@ -2231,9 +2230,10 @@ export default function App() {
               <button
                 onClick={playAiTourGuide}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.2)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
-                  padding: '0 12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
-                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  background: 'rgba(255, 255, 255, 0.18)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
+                  padding: '0 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
                 }}
                 title="הפעל מורה דרך קולי AI מבוסס מיקום"
               >
@@ -2248,9 +2248,10 @@ export default function App() {
           <button
             onClick={triggerSosLostAlert}
             style={{
-              padding: '9px', borderRadius: '10px', background: '#ffffff', color: '#dc2626',
-              border: '1px solid #fecaca', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+              padding: '10px', borderRadius: '12px', background: '#ffffff', color: '#dc2626',
+              border: '1px solid #fecaca', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
             }}
           >
             🚨 הלכתי לאיבוד! (SOS)
@@ -2258,9 +2259,10 @@ export default function App() {
           <button
             onClick={() => handleGlobalClick(() => setModalType('radar'))}
             style={{
-              padding: '9px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.2)', color: '#fff',
-              border: '1px solid rgba(255, 255, 255, 0.3)', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+              padding: '10px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.15)', color: '#fff',
+              border: '1px solid rgba(255, 255, 255, 0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
             }}
           >
             🧭 מפת המשפחה
@@ -2409,7 +2411,7 @@ export default function App() {
                   <small style={{ color: textSub, display: 'block' }}>לחות יחסית</small>
                   <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.humidity || '58%'}</strong>
                 </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}` }}>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
                   <small style={{ color: textSub, display: 'block' }}>מהירות רוח</small>
                   <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.wind || '12 קמ"ש'}</strong>
                 </div>
@@ -2553,9 +2555,9 @@ export default function App() {
                 flex: '1 0 auto',
                 padding: '10px 14px',
                 borderRadius: '14px',
-                background: activeDay === i ? '#1e3a8a' : cardBg,
+                background: activeDay === i ? '#1d4ed8' : cardBg,
                 color: activeDay === i ? '#ffffff' : textColor,
-                border: `1.5px solid ${activeDay === i ? '#1e3a8a' : borderColor}`,
+                border: `1.5px solid ${activeDay === i ? '#1d4ed8' : borderColor}`,
                 fontSize: '13px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
@@ -3456,7 +3458,7 @@ export default function App() {
 
 
       {modalType === 'viewer' && viewerItem && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeDocumentViewer)} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: textColor }}>{viewerItem.title || viewerItem.name}</h3>
