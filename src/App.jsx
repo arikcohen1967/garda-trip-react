@@ -508,6 +508,7 @@ export default function App() {
 
   // 🎙️ תרגום דיבור קולי דו-כיווני (Live Conversation Mode)
   const [isLiveTranslatingVoice, setIsLiveTranslatingVoice] = useState(false);
+  const [localAiTagFilter, setLocalAiTagFilter] = useState('הכל');
   const [liveSpokenText, setLiveSpokenText] = useState('');
   const [liveTranslatedText, setLiveTranslatedText] = useState('');
 
@@ -1594,10 +1595,19 @@ export default function App() {
     } catch (err) {}
   };
 
+  const runLocalAITagger = (fileName, caption) => {
+    const text = (fileName + ' ' + (caption || '')).toLowerCase();
+    if (text.includes('pizza') || text.includes('food') || text.includes('פיצה') || text.includes('אוכל')) return '🍕 אוכל';
+    if (text.includes('gardaland') || text.includes('park') || text.includes('פארק')) return '🎢 אטרקציה';
+    if (text.includes('gelato') || text.includes('גלידה')) return '🍦 גלידה';
+    return '📸 משפחה';
+  };
+
   const handleDirectGalleryUpload = async (photoFile) => {
     if (!photoFile) return;
     try {
       const filePath = `gallery_${Date.now()}_${photoFile.name}`;
+      const aiTag = runLocalAITagger(photoFile.name, galleryCaption);
       await supabase.storage.from('trip-photos').upload(filePath, photoFile);
       const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
 
@@ -1608,7 +1618,7 @@ export default function App() {
           type: photoFile.type,
           size: photoFile.size,
           day_index: activeDay,
-          caption: galleryCaption || `רגע משפחתי יום ${activeDay + 1}`,
+          caption: `${aiTag} | ${galleryCaption || `יום ${activeDay + 1}`}`,
           author: challengeAuthor || 'משפחה',
           created: Date.now(),
           media_url: publicUrlData.publicUrl
