@@ -479,6 +479,7 @@ export default function App() {
   const [galleryItems, setGalleryItems] = useState([]);
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
   const [galleryCaption, setGalleryCaption] = useState('');
+  const [galleryUploaderName, setGalleryUploaderName] = useState('אריק');
 
   const [completedChallenges, setCompletedChallenges] = useState({});
   const [challengeNote, setChallengeNote] = useState('');
@@ -583,7 +584,7 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
+      if (Array.isArray(saved) && saved.length === 13) return saved;
     } catch (e) {}
     return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
   });
@@ -1486,6 +1487,7 @@ export default function App() {
     }
   };
 
+  // 📸 טעינת תמונות מהענן (Supabase) עם גיבוי אופליין
   const loadGalleryFromCloud = async () => {
     try {
       const { data, error } = await supabase
@@ -1543,32 +1545,42 @@ export default function App() {
     return '📸 משפחה';
   };
 
+  // 📸 העלאת תמונה ישירות לבסיס הנתונים המרכזי של Supabase בזמן אמת לכל בני המשפחה
   const handleDirectGalleryUpload = async (photoFile) => {
     if (!photoFile) return;
     try {
       const filePath = `gallery_${Date.now()}_${photoFile.name}`;
       const aiTag = runLocalAITagger(photoFile.name, galleryCaption);
-      await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+      
+      // העלאה ל-Supabase Storage
+      const { error: uploadErr } = await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+      if (uploadErr) throw uploadErr;
+
       const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
 
       if (publicUrlData?.publicUrl) {
         await cacheMediaOffline(publicUrlData.publicUrl);
-        await supabase.from('gallery').insert([{
+        // שמירת הרשומה בטבלת gallery בבסיס הנתונים המרכזי
+        const { error: dbErr } = await supabase.from('gallery').insert([{
           name: photoFile.name,
           type: photoFile.type,
           size: photoFile.size,
           day_index: activeDay,
           caption: `${aiTag} | ${galleryCaption || `יום ${activeDay + 1}`}`,
-          author: challengeAuthor || 'משפחה',
+          author: galleryUploaderName || 'אריק',
           created: Date.now(),
           media_url: publicUrlData.publicUrl
         }]);
+
+        if (dbErr) throw dbErr;
       }
+
       setGalleryCaption('');
       setShowGalleryUpload(false);
       loadGalleryFromCloud();
+      alert('📸 התמונה הועלתה בהצלחה וסונכרנה לכל בני המשפחה!');
     } catch (e) {
-      alert('העלאה נכשלה - זמין במצב מקוון');
+      alert('שגיאה בהעלאת התמונה לענן. נסה שוב.');
     }
   };
 
@@ -1647,7 +1659,7 @@ export default function App() {
   };
 
   const resetSingleChallenge = async (dayIdx) => {
-    const pass = window.prompt('הזן קוד מנהל לאיפוס המשימה:');
+    const pass = window.prompt('הזן קוד מנהל לאפוס המשימה:');
     if (pass !== '1967') {
       alert('קוד שגוי!');
       return;
@@ -1884,7 +1896,6 @@ export default function App() {
   const blockText = textColor; 
   const cardShadow = customTheme ? '0 6px 20px rgba(0,0,0,0.3)' : currentShadow;
 
-  // שימוש בצבע הכחול האחיד (Brand Blue) גם לכפתורי הימים הפעילים
   const brandBlueBg = '#2563eb';
   const brandBlueText = '#ffffff';
 
@@ -2141,7 +2152,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר מסך פתיחה יוקרתי ומעוצב בצבע כחול מותאם */}
+      {/* 🌟 באנר מסך פתיחה יוקרתי ומעוצב עם כפתור אלבום ישיר */}
       <div style={{
         margin: '14px 16px 6px 16px',
         borderRadius: '24px',
@@ -2201,19 +2212,19 @@ export default function App() {
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
-            {WAZE_SVG} נווט למלון Bio Vojon ב-Waze
+            {WAZE_SVG} נווט למלון Bio Vojon
           </a>
           
           <button
             onClick={() => handleGlobalClick(() => setModalType('gallery'))}
             style={{
-              background: 'rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.25)',
               color: '#ffffff',
               border: '1px solid rgba(255,255,255,0.4)',
-              padding: '12px 16px',
+              padding: '12px 18px',
               borderRadius: '14px',
               fontSize: '13px',
-              fontWeight: 'bold',
+              fontWeight: '900',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -2221,7 +2232,7 @@ export default function App() {
               backdropFilter: 'blur(4px)'
             }}
           >
-            📸 אלבום
+            📸 אלבום משפחתי
           </button>
         </div>
       </div>
@@ -2512,7 +2523,6 @@ export default function App() {
                 flex: '1 0 auto',
                 padding: '10px 14px',
                 borderRadius: '14px',
-                // שימוש בצבע הכחול האחיד עבור היום הפעיל
                 background: activeDay === i ? brandBlueBg : cardBg,
                 color: activeDay === i ? brandBlueText : textColor,
                 border: `1.5px solid ${activeDay === i ? brandBlueBg : borderColor}`,
@@ -3371,58 +3381,93 @@ export default function App() {
         </div>
       )}
 
+      {/* 📸 מודל אלבום משפחתי מעוצב, מחובר ל-Supabase ומתעדכן בזמן אמת */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>REALTIME CLOUD ALBUM</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
+              </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', marginBottom: '16px', boxShadow: cardShadow }}>📷 הוסף תמונה / סרטון</button>
+            <button 
+              onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} 
+              style={{ width: '100%', padding: '14px', borderRadius: '14px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', marginBottom: '18px', boxShadow: '0 4px 15px rgba(37,99,235,0.3)' }}
+            >
+              📷 צלם או העלה תמונה חדשה למשפחה
+            </button>
             
             {showGalleryUpload && (
-              <div style={{ background: cardBg, padding: '14px', borderRadius: '14px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                <input 
-                  type="text" 
-                  placeholder="תיאור התמונה..." 
-                  value={galleryCaption} 
-                  onChange={(e) => setGalleryCaption(e.target.value)} 
-                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
-                />
+              <div style={{ background: cardBg, padding: '16px', borderRadius: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>מי מעלה את התמונה?</label>
+                  <select value={galleryUploaderName} onChange={(e) => setGalleryUploaderName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontWeight: 'bold', outline: 'none' }}>
+                    {travelers.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>תיאור או סיפור על הרגע:</label>
+                  <input 
+                    type="text" 
+                    placeholder="לדוגמה: גלידה ראשונה בפסקיירה 🍦" 
+                    value={galleryCaption} 
+                    onChange={(e) => setGalleryCaption(e.target.value)} 
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
+                  />
+                </div>
+
                 <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
                 <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '10px', borderRadius: '10px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}>📸 צלם עכשיו</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '10px', borderRadius: '10px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}>📁 בחר מהמכשיר</button>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '4px' }}>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📸 צלם במצלמה</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📁 בחר מהגלריה</button>
                 </div>
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '8px' }}>
-              {galleryItems.map((item, i) => (
-                <div key={item.id || i} style={{ background: cardBg, borderRadius: '12px', padding: '6px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                  {item.media_url && (
-                    <img 
-                      src={item.media_url} 
-                      alt={item.caption || item.name} 
-                      style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '8px', display: 'block' }} 
-                    />
-                  )}
-                  <small style={{ fontSize: '11px', color: textColor, display: 'block', marginTop: '4px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {item.author || 'משפחה'}: {item.caption || item.name}
-                  </small>
-                  {item.id && (
-                    <button 
-                      onClick={(e) => deleteGalleryItem(item.id, e)} 
-                      style={{ position: 'absolute', top: '10px', left: '10px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '22px', height: '22px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+            {galleryItems.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px', background: cardBg, borderRadius: '16px', border: `1.5px solid ${borderColor}`, color: textSub, boxShadow: cardShadow }}>
+                <span style={{ fontSize: '42px', display: 'block', marginBottom: '10px' }}>🖼️</span>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px', color: textColor }}>האלבום עדיין ריק</p>
+                <p style={{ fontSize: '12px', margin: 0 }}>השתמש בכפתור למעלה כדי לצלם את התמונה הראשונה בטיול שתופיע אצל כולם!</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                {galleryItems.map((item, i) => (
+                  <div key={item.id || i} style={{ background: cardBg, borderRadius: '16px', padding: '8px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                    {item.media_url && (
+                      <img 
+                        src={item.media_url} 
+                        alt={item.caption || item.name} 
+                        style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '12px', display: 'block' }} 
+                      />
+                    )}
+                    <div style={{ padding: '8px 4px 4px 4px' }}>
+                      <b style={{ fontSize: '12px', color: textColor, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        👤 {item.author || 'משפחה'}
+                      </b>
+                      <small style={{ fontSize: '11px', color: textSub, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {item.caption || item.name}
+                      </small>
+                    </div>
+                    {item.id && (
+                      <button 
+                        onClick={(e) => deleteGalleryItem(item.id, e)} 
+                        style={{ position: 'absolute', top: '14px', left: '14px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '26px', height: '26px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}
+                        title="מחק תמונה"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
