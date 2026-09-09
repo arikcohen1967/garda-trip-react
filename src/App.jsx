@@ -667,7 +667,6 @@ export default function App() {
     setIsTranslating(true);
     setItalianOutput('');
 
-    // בדיקה מהירה אם זה ביטוי מוכן בשיחון
     const cleanQuery = query.toLowerCase();
     const matched = QUICK_PHRASES.find(p => p.he.toLowerCase() === cleanQuery || cleanQuery.includes(p.he.toLowerCase()) || p.he.toLowerCase().includes(cleanQuery));
     if (matched) {
@@ -2822,19 +2821,18 @@ export default function App() {
         </div>
       )}
 
-      {/* 🇮🇹 שיחון איטלקי יציב, מעוצב ומותאם ל-iOS עם תרגום פעיל */}
+      {/* 🇮🇹 שיחון איטלקי יציב במיוחד מותאם ל-iOS */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '10px' }}>IOS NATIVE PHRASEBOOK & TRANSLATOR</small>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '10px' }}>iOS NATIVE PHRASEBOOK & TRANSLATOR</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🇮🇹 שיחון ותרגום איטלקי</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
             </div>
 
-            {/* תיבת חופש הקלדה / הכתבה קולית ותרגום */}
             <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
               <label style={{ fontSize: '12px', fontWeight: 'bold', color: textColor, display: 'block', marginBottom: '6px' }}>
                 ✍️ הקלד או דבר בעברית (השתמש במיקרופון במקלדת ה-iOS):
@@ -2876,7 +2874,6 @@ export default function App() {
               )}
             </div>
 
-            {/* חיפוש בביטויים המוכנים */}
             <div style={{ marginBottom: '14px', width: '100%', boxSizing: 'border-box' }}>
               <input 
                 type="text" 
@@ -3409,14 +3406,15 @@ const navBtnStyle = {
 const modalStyle = {
   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
   width: '100vw', maxWidth: '100vw', height: '100vh',
-  zIndex: 2000, overflowY: 'auto', overflowX: 'hidden',
-  WebkitOverflowScrolling: 'touch', direction: 'rtl', boxSizing: 'border-box'
+  zIndex: 2000, overflow: 'hidden',
+  direction: 'rtl', boxSizing: 'border-box'
 };
 
 const modalContentStyle = {
+  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
   width: '100%', maxWidth: '600px', margin: '0 auto',
-  padding: '16px 16px 40px', boxSizing: 'border-box',
-  minHeight: '100vh', overflowX: 'hidden'
+  padding: '16px 16px 60px', boxSizing: 'border-box',
+  overflowY: 'auto', WebkitOverflowScrolling: 'touch'
 };
 
 const gridModalBtn = {
