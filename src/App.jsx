@@ -455,7 +455,7 @@ export default function App() {
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   
   const [themeMode, setThemeMode] = useState('light');
-  const [weatherData, setWeatherData] = useState({ temp: '25°C - 24°C', condition: '☀️ שמש נעימה באגם (ספטמבר-אוקטובר)', location: 'אגם Garda' });
+  const [weatherData, setWeatherData] = useState({ temp: '25°C', condition: '☀️ שמש נעימה באגם', location: 'אגם Garda' });
 
   const [customTheme, setCustomTheme] = useState(() => {
     try {
@@ -580,7 +580,7 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
+      if (Array.isArray(saved) && saved.length === 13) return saved;
     } catch (e) {}
     return ['schedule', 'aiGuide', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
@@ -2135,13 +2135,13 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר מסך פתיחה יוקרתי ומקצועי הכולל את כפתורי SOS ומפת המשפחה בתוכו */}
+      {/* 🌟 באנר מסך פתיחה יוקרתי הכולל את מזג האוויר המוקטן, AI Guide ומפת המשפחה */}
       <div style={{
         margin: '14px 16px 6px 16px',
         borderRadius: '24px',
         background: isDark ? 'linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%)' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
         color: '#ffffff',
-        padding: '24px 20px',
+        padding: '20px 18px',
         boxShadow: '0 12px 30px rgba(37,99,235,0.3)',
         position: 'relative',
         overflow: 'hidden',
@@ -2150,36 +2150,64 @@ export default function App() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
           <div>
-            <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px', backdropFilter: 'blur(4px)' }}>
+            <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: 'bold', marginBottom: '6px', backdropFilter: 'blur(4px)' }}>
               🇮🇹 טיול בת מצווה · ספטמבר 2026
             </span>
-            <h1 style={{ fontSize: '22px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.02em' }}>אגם Garda וונציה</h1>
-            <p style={{ fontSize: '12px', opacity: 0.9, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026</p>
+            <h1 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 2px', letterSpacing: '-0.02em' }}>אגם Garda וונציה</h1>
+            <p style={{ fontSize: '11px', opacity: 0.9, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026</p>
           </div>
           
-          <div 
-            onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
-            style={{
-              background: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(10px)',
-              padding: '10px 14px',
-              borderRadius: '16px',
-              textAlign: 'center',
-              cursor: 'pointer',
-              border: '1px solid rgba(255,255,255,0.25)'
-            }}
-          >
-            <div style={{ fontSize: '18px' }}>☀️</div>
-            <div style={{ fontSize: '13px', fontWeight: 'bold', marginTop: '2px' }}>25°C</div>
-            <div style={{ fontSize: '10px', opacity: 0.8 }}>אגם Garda</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {/* מזג אוויר מוקטן */}
+            <div 
+              onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                backdropFilter: 'blur(10px)',
+                padding: '6px 10px',
+                borderRadius: '12px',
+                textAlign: 'center',
+                cursor: 'pointer',
+                border: '1px solid rgba(255,255,255,0.25)'
+              }}
+            >
+              <div style={{ fontSize: '14px' }}>☀️</div>
+              <div style={{ fontSize: '11px', fontWeight: 'bold' }}>25°C</div>
+            </div>
+
+            {/* כפתור AI Guide בבאנר */}
+            {isAiGuiding ? (
+              <button
+                onClick={stopAiTourGuide}
+                style={{
+                  background: '#dc2626', color: '#fff', border: 'none', padding: '8px 12px',
+                  borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                }}
+              >
+                ⏹️ עצור
+              </button>
+            ) : (
+              <button
+                onClick={() => playAiTourGuide()}
+                style={{
+                  background: '#ffffff', color: '#2563eb', border: 'none', padding: '8px 12px',
+                  borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                }}
+                title="הפעל מורה דרך קולי AI"
+              >
+                🤖 AI Guide 🎙️
+              </button>
+            )}
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
           <button
             onClick={triggerSosLostAlert}
             style={{
-              padding: '11px', borderRadius: '12px', background: '#ffffff', color: '#dc2626',
+              padding: '10px', borderRadius: '12px', background: '#ffffff', color: '#dc2626',
               border: '1.5px solid #dc2626', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
@@ -2190,7 +2218,7 @@ export default function App() {
           <button
             onClick={() => handleGlobalClick(() => setModalType('radar'))}
             style={{
-              padding: '11px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', color: '#fff',
+              padding: '10px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', color: '#fff',
               border: '1px solid rgba(255,255,255,0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', backdropFilter: 'blur(4px)'
             }}
@@ -2502,35 +2530,8 @@ export default function App() {
         </div>
 
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ marginBottom: '16px' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              {isAiGuiding ? (
-                <button
-                  onClick={stopAiTourGuide}
-                  style={{
-                    background: '#dc2626', color: '#fff', border: 'none', padding: '8px 12px',
-                    borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '6px', boxShadow: cardShadow
-                  }}
-                  title="עצור הקראה"
-                >
-                  ⏹️ עצור הקראה
-                </button>
-              ) : (
-                <button
-                  onClick={() => playAiTourGuide()}
-                  style={{
-                    background: '#2563eb', color: '#fff', border: 'none', padding: '8px 12px',
-                    borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '6px', boxShadow: cardShadow
-                  }}
-                  title="הפעל מורה דרך קולי AI"
-                >
-                  🤖 AI Guide 🎙️
-                </button>
-              )}
-            </div>
           </div>
 
           <div 
