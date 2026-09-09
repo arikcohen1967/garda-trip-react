@@ -2119,8 +2119,8 @@ export default function App() {
             style={{ cursor: 'pointer', flex: 1, minWidth: 0 }}
             title="פתח מפת אגם גארדה והסביבה עם סיכת מיקומך"
           >
-            <h1 style={{ fontSize: '22px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              אגם Garda וונציה 🗺️
+            <h1 style={{ fontSize: '22px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff' }}>
+              אגם Garda וונציה
             </h1>
           </div>
           
