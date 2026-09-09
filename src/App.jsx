@@ -273,15 +273,15 @@ const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
         const myLocData = ${JSON.stringify(myLoc)};
         const markers = [];
 
-        // הוספת סיכה אדומה למיקום שלי (אם קיים)
+        // סיכה אדומה למיקום שלי על גבי המפה
         if (myLocData && myLocData.lat && myLocData.lng) {
           const redIcon = L.divIcon({
             className: 'custom-red-pin',
-            html: '<div style="background-color:#dc2626; width:18px; height:18px; border-radius:50%; border:3px solid #ffffff; box-shadow:0 0 10px rgba(0,0,0,0.5);"></div>',
-            iconSize: [18, 18],
-            iconAnchor: [9, 9]
+            html: '<div style="background-color:#dc2626; width:20px; height:20px; border-radius:50%; border:3px solid #ffffff; box-shadow:0 0 12px rgba(220,38,38,0.8);"></div>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
           });
-          L.marker([myLocData.lat, myLocData.lng], { icon: redIcon }).addTo(map).bindPopup('📍 המיקום שלי');
+          L.marker([myLocData.lat, myLocData.lng], { icon: redIcon }).addTo(map).bindPopup('📍 המיקום שלי באגם');
           markers.push([myLocData.lat, myLocData.lng]);
         }
 
@@ -1698,6 +1698,7 @@ export default function App() {
     setItalianOutput('');
   };
 
+  // תרגום מתוקן ויציב מבוסס ביטויים מוכנים או MyMemory API
   const translateText = async (textToTranslate) => {
     const query = (textToTranslate || hebrewInput || '').trim();
     if (!query) return;
@@ -1716,41 +1717,27 @@ export default function App() {
       speakItalian(italianText);
     };
 
-    const matched = QUICK_PHRASES.find(p => query.includes(p.he) || p.he.includes(query));
+    const cleanQuery = query.toLowerCase();
+    const matched = QUICK_PHRASES.find(p => p.he.toLowerCase() === cleanQuery || cleanQuery.includes(p.he.toLowerCase()) || p.he.toLowerCase().includes(cleanQuery));
     if (matched) {
       finishTranslation(matched.it);
       return;
     }
 
     try {
-      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=iw&tl=it&dt=t&q=${encodeURIComponent(query)}`, {
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=he|it`, {
         signal: abortController.signal
       });
       const data = await res.json();
-      if (data && data[0] && data[0][0] && data[0][0][0]) {
-        finishTranslation(data[0][0][0]);
+      if (data && data.responseData && data.responseData.translatedText) {
+        finishTranslation(data.responseData.translatedText);
       } else {
-        fallbackTranslate(query, finishTranslation, abortController.signal);
+        finishTranslation('Mi dispiace, riprova');
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
-        fallbackTranslate(query, finishTranslation, abortController.signal);
-      }
-    }
-  };
-
-  const fallbackTranslate = async (query, callback, signal) => {
-    try {
-      const res2 = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=he|it`, { signal });
-      const data2 = await res2.json();
-      if (data2 && data2.responseData && data2.responseData.translatedText) {
-        callback(data2.responseData.translatedText);
-      } else {
-        callback('שגיאה בתרגום');
-      }
-    } catch (e) {
-      if (e.name !== 'AbortError') {
-        callback(isOnline ? 'שגיאה בתרגום' : 'זמין במצב מקוון');
+        setIsTranslating(false);
+        setItalianOutput('שגיאה בחיבור לרשת');
       }
     }
   };
@@ -1855,7 +1842,6 @@ export default function App() {
   const blockText = textColor; 
   const cardShadow = customTheme ? '0 6px 20px rgba(0,0,0,0.3)' : currentShadow;
 
-  // 🌟 כחול כהה יוקרתי אחיד לבאנר ולכפתורי הימים
   const luxuryBlueBg = '#1e3a8a'; 
   const luxuryBlueText = '#ffffff';
 
@@ -2114,7 +2100,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר פרימיום כחול כהה יוקרתי - לחיצה עליו פותחת את המפה */}
+      {/* 🌟 באנר פרימיום כחול כהה יוקרתי - לחיצה עליו פותחת את המפה עם המיקום שלך */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
@@ -2131,12 +2117,12 @@ export default function App() {
           <div 
             onClick={() => handleGlobalClick(() => setModalType('radar'))}
             style={{ cursor: 'pointer', flex: 1, minWidth: 0 }}
-            title="פתח מפת אגם גארדה והסביבה עם מיקומך"
+            title="פתח מפת אגם גארדה והסביבה עם סיכת מיקומך"
           >
             <h1 style={{ fontSize: '21px', fontWeight: '900', margin: '0 0 2px', letterSpacing: '-0.02em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
               אגם Garda וונציה 🗺️
             </h1>
-            <p style={{ fontSize: '11px', opacity: 0.85, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026 (לחץ לפתיחת מפה)</p>
+            <p style={{ fontSize: '11px', opacity: 0.85, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026 (לחץ לפתיחת מפה ומיקום)</p>
           </div>
           
           <div 
