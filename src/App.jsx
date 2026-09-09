@@ -349,7 +349,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
           <p><b>סטטוס הזמנה:</b> <span style={{ color: '#059669', fontWeight: '900' }}>Confirmed (מאושר)</span></p>
           <p><b>כתובת המלון:</b><br/><span dir="ltr">Via Del Forte 6, 46040 Ponti Sul Mincio, Italy</span></p>
           <p><b>תאריכי שהות:</b> 30.09.2026 – 06.10.2026 (6 לילות)</p>
-          <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#60a5fa' : '#1d4ed8', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
+          <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#60a5fa' : '#1e3a8a', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
           
           <a 
             href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
@@ -549,7 +549,7 @@ export default function App() {
   const [savedParking, setSavedParking] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
-    } catch (e) { return null; }
+    } catch (e) { return {}; }
   });
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
@@ -1842,8 +1842,9 @@ export default function App() {
   const blockText = textColor; 
   const cardShadow = customTheme ? '0 6px 20px rgba(0,0,0,0.3)' : currentShadow;
 
-  const brandBlueBg = '#1d4ed8'; 
-  const brandBlueText = '#ffffff';
+  // 🌟 כחול כהה יוקרתי אחיד לבאנר ולכפתורי הימים
+  const luxuryBlueBg = '#1e3a8a'; 
+  const luxuryBlueText = '#ffffff';
 
   const saveCustomTheme = () => {
     const newTheme = { bgMain: tempBgMain, cardBg: tempCardBg, textColor: tempTextColor, borderColor: tempBorderColor };
@@ -1904,7 +1905,7 @@ export default function App() {
             transition: 'transform 0.15s ease, background 0.15s ease'
           }}
         >
-          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', borderRadius: '8px', border: `1px solid ${borderColor}` }}>
+          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', borderRadius: '8px', border: `1px solid ${borderColor}`, flexShrink: 0 }}>
             {cfg.icon}
           </span>
           <span style={{ flex: 1, letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cfg.label}</span>
@@ -2100,14 +2101,14 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר פרימיום כחול כהה */}
+      {/* 🌟 באנר פרימיום כחול כהה יוקרתי */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
-        background: '#1d4ed8',
-        color: '#ffffff',
+        background: luxuryBlueBg,
+        color: luxuryBlueText,
         padding: '20px 18px',
-        boxShadow: '0 12px 30px rgba(29, 78, 216, 0.35)',
+        boxShadow: '0 12px 30px rgba(30, 58, 138, 0.4)',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
@@ -2434,6 +2435,7 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
+        {/* כפתורי בחירת ימים - מעוצבים באותו כחול כהה יוקרתי */}
         <div style={{ 
           display: 'flex', 
           gap: '8px', 
@@ -2452,13 +2454,13 @@ export default function App() {
                 flex: '1 0 auto',
                 padding: '10px 14px',
                 borderRadius: '14px',
-                background: activeDay === i ? '#1d4ed8' : cardBg,
-                color: activeDay === i ? '#ffffff' : textColor,
-                border: `1.5px solid ${activeDay === i ? '#1d4ed8' : borderColor}`,
+                background: activeDay === i ? luxuryBlueBg : cardBg,
+                color: activeDay === i ? luxuryBlueText : textColor,
+                border: `1.5px solid ${activeDay === i ? luxuryBlueBg : borderColor}`,
                 fontSize: '13px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                boxShadow: cardShadow,
+                boxShadow: activeDay === i ? '0 6px 16px rgba(30, 58, 138, 0.35)' : cardShadow,
                 transition: 'all 0.2s ease',
                 textAlign: 'center',
                 boxSizing: 'border-box'
@@ -2647,8 +2649,8 @@ export default function App() {
                         onClick={() => setCustomTimerMinutes(mins)}
                         style={{
                           padding: '8px 4px', borderRadius: '8px',
-                          background: customTimerMinutes === mins ? brandBlueBg : cardBg,
-                          color: customTimerMinutes === mins ? brandBlueText : textColor,
+                          background: customTimerMinutes === mins ? luxuryBlueBg : cardBg,
+                          color: customTimerMinutes === mins ? luxuryBlueText : textColor,
                           border: `1.5px solid ${borderColor}`,
                           fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow
                         }}
@@ -3055,7 +3057,7 @@ export default function App() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', marginBottom: '14px', width: '100%', boxSizing: 'border-box' }}>
                   {travelers.map((name, idx) => (
-                    <div key={idx} style={{ background: travelerIndex === idx ? brandBlueBg : cardBg, color: travelerIndex === idx ? brandBlueText : textColor, borderRadius: '10px', padding: '6px 2px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
+                    <div key={idx} style={{ background: travelerIndex === idx ? luxuryBlueBg : cardBg, color: travelerIndex === idx ? luxuryBlueText : textColor, borderRadius: '10px', padding: '6px 2px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
                       <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
                       <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#16a34a' }}>{travelerScores[name] || 0} נק'</div>
                     </div>
@@ -3151,7 +3153,7 @@ export default function App() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <button onClick={() => handleGlobalClick(() => document.getElementById('questPhotoInput').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}>📸 צלם לאלבום</button>
-                <button onClick={() => handleGlobalClick(() => saveDailyChallenge(null))} style={{ padding: '12px', borderRadius: '12px', background: brandBlueBg, color: brandBlueText, border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}>✅ סמן כהושלם</button>
+                <button onClick={() => handleGlobalClick(() => saveDailyChallenge(null))} style={{ padding: '12px', borderRadius: '12px', background: luxuryBlueBg, color: luxuryBlueText, border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}>✅ סמן כהושלם</button>
               </div>
 
               {isCurrentDayCompleted && (
@@ -3224,7 +3226,7 @@ export default function App() {
             <div style={{ background: cardBg, borderRadius: '20px', padding: '18px', marginBottom: '20px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
               <button 
                 onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} 
-                style={{ width: '100%', padding: '14px', borderRadius: '14px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', boxShadow: '0 6px 20px rgba(37,99,235,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '14px', borderRadius: '14px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', background: luxuryBlueBg, color: luxuryBlueText, border: 'none', boxShadow: '0 6px 20px rgba(30, 58, 138, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxSizing: 'border-box' }}
               >
                 <span>📷</span> צלם והעלה זיכרון חדש למשפחה
               </button>
@@ -3400,7 +3402,7 @@ export default function App() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px', width: '100%', boxSizing: 'border-box' }}>
-              <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: 'none', background: brandBlueBg, color: brandBlueText, boxShadow: cardShadow, boxSizing: 'border-box' }}>
+              <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: 'none', background: luxuryBlueBg, color: luxuryBlueText, boxShadow: cardShadow, boxSizing: 'border-box' }}>
                 ➕ הוסף כרטיס
               </button>
               <button onClick={() => handleGlobalClick(addNewFolder)} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxShadow: cardShadow, boxSizing: 'border-box' }}>
@@ -3437,9 +3439,9 @@ export default function App() {
                   onClick={() => handleGlobalClick(() => setActiveFolder(f))}
                   style={{
                     padding: '10px', borderRadius: '12px',
-                    background: activeFolder === f ? brandBlueBg : cardBg,
-                    color: activeFolder === f ? brandBlueText : textColor,
-                    border: `1.5px solid ${activeFolder === f ? brandBlueBg : borderColor}`,
+                    background: activeFolder === f ? luxuryBlueBg : cardBg,
+                    color: activeFolder === f ? luxuryBlueText : textColor,
+                    border: `1.5px solid ${activeFolder === f ? luxuryBlueBg : borderColor}`,
                     cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box',
                     boxShadow: cardShadow, overflow: 'hidden'
                   }}
