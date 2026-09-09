@@ -1141,11 +1141,16 @@ export default function App() {
     localStorage.removeItem('garda-saved-parking');
   };
 
+  // נעילת גלילה קשיחה ברקע בזמן שמודאל פתוח למניעת "קפיצות" של iOS
   useEffect(() => {
     if (modalType || sidebarOpen || isArActive) {
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     }
   }, [modalType, sidebarOpen, isArActive]);
 
@@ -3405,7 +3410,7 @@ const navBtnStyle = {
 
 const modalStyle = {
   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-  width: '100vw', maxWidth: '100vw', height: '100vh',
+  width: '100vw', maxWidth: '100vw', height: '100dvh',
   zIndex: 2000, overflow: 'hidden',
   direction: 'rtl', boxSizing: 'border-box'
 };
@@ -3413,7 +3418,7 @@ const modalStyle = {
 const modalContentStyle = {
   position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
   width: '100%', maxWidth: '600px', margin: '0 auto',
-  padding: '16px 16px 60px', boxSizing: 'border-box',
+  padding: '16px 16px 80px', boxSizing: 'border-box',
   overflowY: 'auto', WebkitOverflowScrolling: 'touch'
 };
 
