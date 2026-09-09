@@ -583,7 +583,7 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved)) return saved;
+      if (Array.isArray(saved) && saved.length === 13) return saved;
     } catch (e) {}
     return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
   });
@@ -2139,79 +2139,70 @@ export default function App() {
           </div>
         </div>
       )}
-
-      <div 
-        onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '10px',
-          background: cardBg,
-          border: `1.5px solid ${borderColor}`,
-          borderRadius: '16px',
-          padding: '10px 14px',
-          margin: '12px 16px 4px 16px',
-          boxShadow: cardShadow,
-          boxSizing: 'border-box',
-          width: 'calc(100% - 32px)',
-          position: 'sticky',
-          top: '63px',
-          zIndex: 890,
-          cursor: 'pointer'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-          <span style={{ fontSize: '24px', flexShrink: 0 }}>☀️</span>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: '13px', fontWeight: 'bold', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {weatherData.location} · {weatherData.temp}
-            </div>
-            <div style={{ fontSize: '11px', color: textSub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {weatherData.condition}
-            </div>
+      {/* 🌟 באנר מסך פתיחה יוקרתי ומעוצב */}
+      <div style={{
+        margin: '14px 16px 6px 16px',
+        borderRadius: '24px',
+        background: isDark ? 'linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%)' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+        color: '#ffffff',
+        padding: '24px 20px',
+        boxShadow: '0 12px 30px rgba(37,99,235,0.3)',
+        position: 'relative',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+        width: 'calc(100% - 32px)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+          <div>
+            <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px', backdropFilter: 'blur(4px)' }}>
+              🇮🇹 טיול בת מצווה · ספטמבר 2026
+            </span>
+            <h1 style={{ fontSize: '22px', fontWeight: '900', margin: '0 0 4px', letterSpacing: '-0.02em' }}>אגם Garda וונציה</h1>
+            <p style={{ fontSize: '12px', opacity: 0.9, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026</p>
+          </div>
+          
+          <div 
+            onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
+            style={{
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+              padding: '10px 14px',
+              borderRadius: '16px',
+              textAlign: 'center',
+              cursor: 'pointer',
+              border: '1px solid rgba(255,255,255,0.25)'
+            }}
+          >
+            <div style={{ fontSize: '18px' }}>☀️</div>
+            <div style={{ fontSize: '13px', fontWeight: 'bold', marginTop: '2px' }}>25°C</div>
+            <div style={{ fontSize: '10px', opacity: 0.8 }}>אגם Garda</div>
           </div>
         </div>
 
-        <a
-          href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
-          onClick={(e) => { e.stopPropagation(); playClickSound(); }}
-          style={{
-            background: cardBg,
-            color: textColor,
-            border: `1.5px solid ${borderColor}`,
-            padding: '6px 10px',
-            borderRadius: '10px',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '5px',
-            flexShrink: 0,
-            boxShadow: cardShadow
-          }}
-          title="נווט למלון Bio Vojon ב-Waze"
-        >
-          {WAZE_SVG} למלון Vojon
-        </a>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+          <a
+            href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
+            onClick={(e) => { e.stopPropagation(); playClickSound(); }}
+            style={{
+              flex: 1,
+              background: '#ffffff',
+              color: '#1d4ed8',
+              padding: '12px',
+              borderRadius: '14px',
+              fontSize: '13px',
+              fontWeight: '900',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}
+          >
+            {WAZE_SVG} נווט למלון Bio Vojon ב-Waze
+          </a>
+        </div>
       </div>
-
-      <header style={{
-        padding: '10px 20px',
-        background: bgMain,
-        borderBottom: `1.5px solid ${borderColor}`,
-        textAlign: 'center',
-        position: 'sticky',
-        top: '125px',
-        zIndex: 880,
-        width: '100%',
-        boxSizing: 'border-box'
-      }}>
-        <h1 style={{ fontSize: '15px', fontWeight: 'bold', margin: '0 0 2px', color: textColor }}>אגם Garda וונציה</h1>
-        <p style={{ fontSize: '10px', color: textSub, margin: 0 }}>טיול בת מצווה · 30.09 - 06.10.2026</p>
-      </header>
 
       {sidebarOpen && (
         <div 
@@ -2477,6 +2468,7 @@ export default function App() {
           </div>
         </div>
       )}
+
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
@@ -3179,7 +3171,7 @@ export default function App() {
                 </button>
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
-                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
                 >
                   🔒 איפוס
                 </button>
