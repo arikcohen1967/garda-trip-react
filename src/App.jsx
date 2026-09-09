@@ -2164,53 +2164,51 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר מסך פתיחה יוקרתי ומעוצב ברמת פרימיום */}
+      {/* 🌟 באנר פרימיום מעוצב במיוחד למובייל */}
       <div style={{
-        margin: '16px 16px 8px 16px',
-        borderRadius: '24px',
-        background: isDark ? 'linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%)' : 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%)',
+        margin: '14px 16px 8px 16px',
+        borderRadius: '20px',
+        background: isDark ? 'linear-gradient(135deg, #27272a 0%, #18181b 100%)' : 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
         color: '#ffffff',
-        padding: '22px 20px',
-        boxShadow: '0 15px 35px rgba(37,99,235,0.35)',
+        padding: '18px 16px',
+        boxShadow: '0 10px 25px rgba(15, 23, 42, 0.25)',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
-        width: 'calc(100% - 32px)'
+        width: 'calc(100% - 32px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
-        {/* אלמנט רקע דקורטיבי עדין */}
-        <div style={{ position: 'absolute', top: '-50px', left: '-50px', width: '150px', height: '150px', background: 'rgba(255,255,255,0.08)', borderRadius: '50%', pointerEvents: 'none' }} />
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', position: 'relative', zIndex: 2 }}>
+        {/* חלק עליון: כותרת ומזג אוויר/AI Guide */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.2)', padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <span>🇮🇹</span> טיול בת מצווה · ספטמבר 2026
+            <div style={{ display: 'inline-block', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: '900', marginBottom: '6px', letterSpacing: '0.5px' }}>
+              🇮🇹 ספטמבר 2026
             </div>
-            <h1 style={{ fontSize: '22px', fontWeight: '900', margin: '0 0 2px', letterSpacing: '-0.02em', textShadow: '0 2px 4px rgba(0,0,0,0.15)' }}>אגם Garda וונציה</h1>
-            <p style={{ fontSize: '12px', opacity: 0.9, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026</p>
+            <h1 style={{ fontSize: '19px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff' }}>אגם Garda וונציה</h1>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             {/* מזג אוויר */}
             <div 
               onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
               style={{
-                background: 'rgba(255,255,255,0.18)',
-                backdropFilter: 'blur(10px)',
-                padding: '0 12px',
-                borderRadius: '14px',
+                background: 'rgba(255, 255, 255, 0.08)',
+                padding: '0 10px',
+                borderRadius: '10px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                border: '1px solid rgba(255,255,255,0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '40px',
-                boxSizing: 'border-box',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                height: '36px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color: '#f8fafc'
               }}
               title="תחזית מזג אוויר"
             >
-              <div style={{ fontSize: '13px', fontWeight: 'bold' }}>☀️ 25°C</div>
+              ☀️ 25°C
             </div>
 
             {/* כפתור AI Guide */}
@@ -2218,12 +2216,10 @@ export default function App() {
               <button
                 onClick={stopAiTourGuide}
                 style={{
-                  background: '#dc2626', color: '#fff', border: '1px solid rgba(255,255,255,0.4)',
-                  padding: '0 14px', borderRadius: '14px', fontWeight: 'bold', fontSize: '12px',
-                  cursor: 'pointer', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  boxSizing: 'border-box', backdropFilter: 'blur(10px)', boxShadow: '0 4px 10px rgba(220,38,38,0.3)'
+                  background: '#dc2626', color: '#fff', border: 'none',
+                  padding: '0 10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}
-                title="עצור הקראה"
               >
                 ⏹️ עצור
               </button>
@@ -2231,10 +2227,10 @@ export default function App() {
               <button
                 onClick={playAiTourGuide}
                 style={{
-                  background: 'rgba(255,255,255,0.22)', color: '#fff', border: '1px solid rgba(255,255,255,0.4)',
-                  padding: '0 14px', borderRadius: '14px', fontWeight: 'bold', fontSize: '12px',
-                  cursor: 'pointer', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  boxSizing: 'border-box', backdropFilter: 'blur(10px)', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                  background: '#38bdf8', color: '#0f172a', border: 'none',
+                  padding: '0 10px', borderRadius: '10px', fontWeight: '900', fontSize: '11px',
+                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                  boxShadow: '0 2px 8px rgba(56, 189, 248, 0.4)'
                 }}
                 title="הפעל מורה דרך קולי AI מבוסס מיקום"
               >
@@ -2244,14 +2240,14 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.25)', position: 'relative', zIndex: 2 }}>
+        {/* חלק תחתון: כפתורי פעולה מהירים (SOS ומפה) */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <button
             onClick={triggerSosLostAlert}
             style={{
-              padding: '11px', borderRadius: '14px', background: '#ffffff', color: '#dc2626',
-              border: '1.5px solid #dc2626', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+              padding: '9px', borderRadius: '10px', background: '#ffffff', color: '#dc2626',
+              border: '1px solid #fecaca', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
             }}
           >
             🚨 הלכתי לאיבוד! (SOS)
@@ -2259,10 +2255,9 @@ export default function App() {
           <button
             onClick={() => handleGlobalClick(() => setModalType('radar'))}
             style={{
-              padding: '11px', borderRadius: '14px', background: 'rgba(255,255,255,0.2)', color: '#fff',
-              border: '1px solid rgba(255,255,255,0.35)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', backdropFilter: 'blur(10px)',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+              padding: '9px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.08)', color: '#fff',
+              border: '1px solid rgba(255, 255, 255, 0.12)', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
             }}
           >
             🧭 מפת המשפחה
