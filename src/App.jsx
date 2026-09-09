@@ -45,7 +45,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "✈️",
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
-    aiGuideSnippet: "ברוכים הבאים לאיטליה! שדה התעופה של ורונה נקרא על שם המשורר הרומאי ולריוס קטולוס. מכאן אנחנו מתחילים נסיעה קצרה לאזור אגם גארדה הקסום, המקום שבו האלפים פוגשים את הים התיכון.",
     stops: [
       { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
@@ -59,7 +58,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎢",
     challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
-    aiGuideSnippet: "גארדלנד הוא פארק השעשועים הגדול באיטליה ונחשב לאחד הטובים באירופה! שימו לב לרכבות ההרים האקסטרימיות כמו Raptor ו-Blue Tornado. הכינו את הגרון לצרחות!",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
       { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
@@ -75,7 +73,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
     challengeDesc: "משימת אקשן ומים! צלמו את הסירה לפני הירידה למים, וכתבו בדיחה או משפט קורע שקרה במהלך השיט.",
-    aiGuideSnippet: "מלצ'סינה והעיירות הצפוניות של אגם גארדה בנויות בסגנון ימי-ביניימי מרהיב למרגלות הר בלדו. הלימונים כאן מפורסמים בכל העולם בזכות המיקרו-אקלים הייחודי של האגם.",
     stops: [
       { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
       { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
@@ -90,7 +87,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎬",
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
-    aiGuideSnippet: "מובילנד הוא פארק בהשראת הוליווד שבו הפעלולים אמיתיים והצוות מכניס אתכם ישירות לתוך סרטי פעולה מפורסמים. ובערב מחכה לכם מופע אבירים אותנטי בלי סכו״ם!",
     stops: [
       { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
@@ -104,7 +100,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
     challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
-    aiGuideSnippet: "העיר ונציה בנויה על פני למעלה מ-100 איים קטנים המחוברים ב-400 גשרים ואין בה כלי רכב ממונעים בכלל! סעו בסירת ופורטו ותיהנו מהקסם הבלתי נתפס של עיר התעלות.",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
       { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
@@ -118,7 +113,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🏘️",
     challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים העתיקות!",
     challengeDesc: "תמונה חגיגית על הגשר של בורגטו + טעימה של הטורטליני המפורסם ('קשר האהבה').",
-    aiGuideSnippet: "בורגטו סול מינצ'ו הוא אחד הכפרים היפים ביותר באיטליה, השמור להפליא עם טחנות מים עתיקות שפועלות על הנהר. אל תפספסו את מנת הטורטליני המיתולוגית המכונה 'קשר האהבה'.",
     stops: [
       { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
       { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
@@ -132,7 +126,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "❤️",
     challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
-    aiGuideSnippet: "ורונה היא עירם של רומיאו ויוליה, ובה שוכן הארנה הרומית העתיקה שעדיין מארחת אופרות ענק. זו תחנה מושלמת לסיום מרגש של טיול בת המצווה לפני הטיסה חזרה הביתה.",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
@@ -593,13 +586,49 @@ export default function App() {
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
 
-  // 🤖 AI Tour Guide Speech & Stop Functions
-  const playAiTourGuide = (customText) => {
-    const textToSpeak = customText || tripDays[activeDay]?.aiGuideSnippet || "ברוכים הבאים ליום הטיול המדהים שלנו באיטליה! תיהנו מכל רגע, צלמו הרבה תמונות ושאלו אותי כל מה שתרצו לדעת על המקום.";
-    
+  // 🤖 AI Tour Guide לפי מיקום GPS אמיתי
+  const playAiTourGuide = () => {
+    if (!navigator.geolocation) {
+      fallbackAiSpeech();
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=he`);
+          const data = await res.json();
+          const placeName = data.address?.city || data.address?.town || data.address?.village || data.address?.country || 'המיקום הנוכחי שלך';
+          const country = data.address?.country || '';
+          
+          let narrative = `אתה נמצא כעת ב${placeName}. `;
+          if (country.includes('ישראל') || country.includes('Israel')) {
+            narrative += "נראה שאתה בישראל! זה הזמן להיערך לטיול הקרוב לאיטליה, לבדוק את המסלולים באפליקציה ולהתרגש לקראת ההרפתקה המשפחתית שלנו.";
+          } else {
+            narrative += `אתה מטייל ב${country}! פתח את העיניים סביבך, צלם זיכרונות מדהימים עם המשפחה ותיהנו מכל רגע במסע.`;
+          }
+          speakAiText(narrative);
+        } catch (e) {
+          fallbackAiSpeech();
+        }
+      },
+      () => {
+        fallbackAiSpeech();
+      },
+      { enableHighAccuracy: true, timeout: 5000 }
+    );
+  };
+
+  const fallbackAiSpeech = () => {
+    const textToSpeak = tripDays[activeDay]?.aiGuideSnippet || "ברוכים הבאים ליום הטיול המדהים שלנו! תיהנו מכל רגע, צלמו הרבה תמונות ושאלו אותי כל מה שתרצו לדעת.";
+    speakAiText(textToSpeak);
+  };
+
+  const speakAiText = (text) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'he-IL';
       utterance.rate = 0.95;
       
@@ -609,7 +638,7 @@ export default function App() {
 
       window.speechSynthesis.speak(utterance);
     } else {
-      alert(textToSpeak);
+      alert(text);
     }
   };
 
@@ -2135,7 +2164,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר מסך פתיחה יוקרתי הכולל את מזג האוויר המוקטן, AI Guide ומפת המשפחה */}
+      {/* 🌟 באנר מסך פתיחה יוקרתי ואחיד */}
       <div style={{
         margin: '14px 16px 6px 16px',
         borderRadius: '24px',
@@ -2158,44 +2187,52 @@ export default function App() {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {/* מזג אוויר מוקטן */}
+            {/* מזג אוויר מעוצב באופן אחיד */}
             <div 
               onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
               style={{
-                background: 'rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',
-                padding: '6px 10px',
+                padding: '8px 12px',
                 borderRadius: '12px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                border: '1px solid rgba(255,255,255,0.25)'
+                border: '1px solid rgba(255,255,255,0.3)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '38px',
+                boxSizing: 'border-box'
               }}
             >
-              <div style={{ fontSize: '14px' }}>☀️</div>
-              <div style={{ fontSize: '11px', fontWeight: 'bold' }}>25°C</div>
+              <div style={{ fontSize: '13px', lineHeight: '1' }}>☀️ 25°C</div>
             </div>
 
-            {/* כפתור AI Guide בבאנר */}
+            {/* כפתור AI Guide אחיד לחלוטין */}
             {isAiGuiding ? (
               <button
                 onClick={stopAiTourGuide}
                 style={{
-                  background: '#dc2626', color: '#fff', border: 'none', padding: '8px 12px',
-                  borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                  background: '#dc2626', color: '#fff', border: '1px solid rgba(255,255,255,0.3)',
+                  padding: '0 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                  boxSizing: 'border-box', backdropFilter: 'blur(10px)'
                 }}
+                title="עצור הקראה"
               >
                 ⏹️ עצור
               </button>
             ) : (
               <button
-                onClick={() => playAiTourGuide()}
+                onClick={playAiTourGuide}
                 style={{
-                  background: '#ffffff', color: '#2563eb', border: 'none', padding: '8px 12px',
-                  borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                  background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)',
+                  padding: '0 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                  boxSizing: 'border-box', backdropFilter: 'blur(10px)'
                 }}
-                title="הפעל מורה דרך קולי AI"
+                title="הפעל מורה דרך קולי AI מבוסס מיקום"
               >
                 🤖 AI Guide 🎙️
               </button>
