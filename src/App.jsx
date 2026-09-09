@@ -583,7 +583,7 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
+      if (Array.isArray(saved)) return saved;
     } catch (e) {}
     return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
   });
