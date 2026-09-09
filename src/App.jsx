@@ -583,7 +583,7 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 13) return saved;
+      if (Array.isArray(saved) && saved.length === 12) return saved;
     } catch (e) {}
     return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
   });
@@ -2478,7 +2478,6 @@ export default function App() {
         </div>
       )}
 
-
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
         <div style={{ 
@@ -3180,7 +3179,7 @@ export default function App() {
                 </button>
                 <button 
                   onClick={() => handleGlobalClick(resetTriviaGame)}
-                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+                  style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
                 >
                   🔒 איפוס
                 </button>
