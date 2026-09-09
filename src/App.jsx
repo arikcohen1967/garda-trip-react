@@ -2097,14 +2097,14 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר פרימיום נקי ומעוצב עם מזג אוויר מסודר */}
+      {/* 🌟 באנר פרימיום כחול כהה (אחיד עם כפתורי הימים) */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
-        background: isDark ? 'linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%)' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+        background: '#1d4ed8',
         color: '#ffffff',
         padding: '20px 18px',
-        boxShadow: '0 12px 30px rgba(37,99,235,0.3)',
+        boxShadow: '0 12px 30px rgba(29, 78, 216, 0.35)',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
@@ -2116,7 +2116,7 @@ export default function App() {
             <p style={{ fontSize: '11px', opacity: 0.85, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026</p>
           </div>
           
-          {/* ווידג'ט מזג אוויר מעודכן: טמפרטורה למעלה ושמש למטה */}
+          {/* ווידג'ט מזג אוויר: טמפרטורה למעלה, שמש למטה */}
           <div 
             onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
             style={{
@@ -2155,7 +2155,7 @@ export default function App() {
             onClick={() => handleGlobalClick(() => setModalType('radar'))}
             style={{
               padding: '10px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.2)', color: '#fff',
-              border: '1px solid rgba(255, 255, 255, 0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              border: '1.5px solid rgba(255, 255, 255, 0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', backdropFilter: 'blur(4px)'
             }}
           >
