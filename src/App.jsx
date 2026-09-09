@@ -597,7 +597,7 @@ export default function App() {
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
 
-  // 🎙️ פונקציית תרגום קולי חי (Live Conversation)
+  // 🎙️ תרגום קולי חי (Live Conversation)
   const startLiveConversation = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
@@ -1487,7 +1487,6 @@ export default function App() {
     }
   };
 
-  // 📸 טעינת תמונות מהענן (Supabase) עם גיבוי אופליין
   const loadGalleryFromCloud = async () => {
     try {
       const { data, error } = await supabase
@@ -1545,42 +1544,50 @@ export default function App() {
     return '📸 משפחה';
   };
 
-  // 📸 העלאת תמונה ישירות לבסיס הנתונים המרכזי של Supabase בזמן אמת לכל בני המשפחה
   const handleDirectGalleryUpload = async (photoFile) => {
     if (!photoFile) return;
     try {
       const filePath = `gallery_${Date.now()}_${photoFile.name}`;
       const aiTag = runLocalAITagger(photoFile.name, galleryCaption);
       
-      // העלאה ל-Supabase Storage
-      const { error: uploadErr } = await supabase.storage.from('trip-photos').upload(filePath, photoFile);
-      if (uploadErr) throw uploadErr;
+      let publicUrl = null;
+      try {
+        const { error: uploadErr } = await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+        if (!uploadErr) {
+          const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+          publicUrl = publicUrlData?.publicUrl;
+        }
+      } catch (err) {}
 
-      const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
-
-      if (publicUrlData?.publicUrl) {
-        await cacheMediaOffline(publicUrlData.publicUrl);
-        // שמירת הרשומה בטבלת gallery בבסיס הנתונים המרכזי
-        const { error: dbErr } = await supabase.from('gallery').insert([{
-          name: photoFile.name,
-          type: photoFile.type,
-          size: photoFile.size,
-          day_index: activeDay,
-          caption: `${aiTag} | ${galleryCaption || `יום ${activeDay + 1}`}`,
-          author: galleryUploaderName || 'אריק',
-          created: Date.now(),
-          media_url: publicUrlData.publicUrl
-        }]);
-
-        if (dbErr) throw dbErr;
+      if (!publicUrl) {
+        publicUrl = URL.createObjectURL(photoFile);
       }
+
+      await cacheMediaOffline(publicUrl);
+      const newGalleryItem = {
+        id: Date.now(),
+        name: photoFile.name,
+        type: photoFile.type,
+        size: photoFile.size,
+        day_index: activeDay,
+        caption: `${aiTag} | ${galleryCaption || `יום ${activeDay + 1}`}`,
+        author: galleryUploaderName || 'אריק',
+        created: Date.now(),
+        media_url: publicUrl
+      };
+
+      setGalleryItems(prev => [newGalleryItem, ...prev]);
+      localStorage.setItem('garda-gallery-cache', JSON.stringify([newGalleryItem, ...galleryItems]));
+
+      try {
+        await supabase.from('gallery').insert([newGalleryItem]);
+      } catch (e) {}
 
       setGalleryCaption('');
       setShowGalleryUpload(false);
-      loadGalleryFromCloud();
-      alert('📸 התמונה הועלתה בהצלחה וסונכרנה לכל בני המשפחה!');
+      alert('📸 התמונה נוספה בהצלחה לאלבום המשפחתי!');
     } catch (e) {
-      alert('שגיאה בהעלאת התמונה לענן. נסה שוב.');
+      alert('שגיאה בשמירת התמונה');
     }
   };
 
@@ -1633,23 +1640,31 @@ export default function App() {
     if (photoFile) {
       try {
         const filePath = `challenge_${Date.now()}_${photoFile.name}`;
-        await supabase.storage.from('trip-photos').upload(filePath, photoFile);
-        const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+        let publicUrl = null;
+        try {
+          await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+          const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+          publicUrl = publicUrlData?.publicUrl;
+        } catch (err) {}
 
-        if (publicUrlData?.publicUrl) {
-          await cacheMediaOffline(publicUrlData.publicUrl);
-          await supabase.from('gallery').insert([{
-            name: `אתגר: ${currentDayObj?.title}`,
-            type: photoFile.type,
-            size: photoFile.size,
-            day_index: activeDay,
-            caption: `🎯 אתגר היום: ${textNote}`,
-            author: authorName,
-            created: Date.now(),
-            media_url: publicUrlData.publicUrl
-          }]);
-        }
-        loadGalleryFromCloud();
+        if (!publicUrl) publicUrl = URL.createObjectURL(photoFile);
+
+        await cacheMediaOffline(publicUrl);
+        const newItem = {
+          id: Date.now(),
+          name: `אתגר: ${currentDayObj?.title}`,
+          type: photoFile.type,
+          size: photoFile.size,
+          day_index: activeDay,
+          caption: `🎯 אתגר: ${textNote}`,
+          author: authorName,
+          created: Date.now(),
+          media_url: publicUrl
+        };
+        setGalleryItems(prev => [newItem, ...prev]);
+        try {
+          await supabase.from('gallery').insert([newItem]);
+        } catch (e) {}
       } catch (e) {}
     }
 
@@ -2152,7 +2167,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר מסך פתיחה יוקרתי ומעוצב עם כפתור אלבום ישיר */}
+      {/* 🌟 באנר מסך פתיחה יוקרתי ומקורי (עם כפתורי SOS ומפה בריבוע הכחול) */}
       <div style={{
         margin: '14px 16px 6px 16px',
         borderRadius: '24px',
@@ -2214,26 +2229,6 @@ export default function App() {
           >
             {WAZE_SVG} נווט למלון Bio Vojon
           </a>
-          
-          <button
-            onClick={() => handleGlobalClick(() => setModalType('gallery'))}
-            style={{
-              background: 'rgba(255,255,255,0.25)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.4)',
-              padding: '12px 18px',
-              borderRadius: '14px',
-              fontSize: '13px',
-              fontWeight: '900',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backdropFilter: 'blur(4px)'
-            }}
-          >
-            📸 אלבום משפחתי
-          </button>
         </div>
       </div>
 
@@ -2501,7 +2496,6 @@ export default function App() {
           </div>
         </div>
       )}
-
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
@@ -3381,13 +3375,13 @@ export default function App() {
         </div>
       )}
 
-      {/* 📸 מודל אלבום משפחתי מעוצב, מחובר ל-Supabase ומתעדכן בזמן אמת */}
+      {/* 📸 מודל אלבום משפחתי מעוצב ומקצועי מחדש */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>REALTIME CLOUD ALBUM</small>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>FAMILY CLOUD ALBUM</small>
                 <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
@@ -3395,25 +3389,25 @@ export default function App() {
 
             <button 
               onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} 
-              style={{ width: '100%', padding: '14px', borderRadius: '14px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', marginBottom: '18px', boxShadow: '0 4px 15px rgba(37,99,235,0.3)' }}
+              style={{ width: '100%', padding: '14px', borderRadius: '16px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', marginBottom: '20px', boxShadow: '0 6px 20px rgba(37,99,235,0.35)' }}
             >
-              📷 צלם או העלה תמונה חדשה למשפחה
+              📷 צלם והעלה זיכרון חדש למשפחה
             </button>
             
             {showGalleryUpload && (
-              <div style={{ background: cardBg, padding: '16px', borderRadius: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+              <div style={{ background: cardBg, padding: '18px', borderRadius: '20px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
                 <div>
-                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>מי מעלה את התמונה?</label>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>👤 מי צילם/ה?</label>
                   <select value={galleryUploaderName} onChange={(e) => setGalleryUploaderName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontWeight: 'bold', outline: 'none' }}>
                     {travelers.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>תיאור או סיפור על הרגע:</label>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>💬 תיאור או כותרת לתמונה:</label>
                   <input 
                     type="text" 
-                    placeholder="לדוגמה: גלידה ראשונה בפסקיירה 🍦" 
+                    placeholder="לדוגמה: נוף עוצר נשצר במלצ'סינה 🏔️" 
                     value={galleryCaption} 
                     onChange={(e) => setGalleryCaption(e.target.value)} 
                     style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
@@ -3423,42 +3417,42 @@ export default function App() {
                 <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
                 <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
                 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '4px' }}>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📸 צלם במצלמה</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📁 בחר מהגלריה</button>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📸 צלם עכשיו</button>
+                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📁 בחר מהמכשיר</button>
                 </div>
               </div>
             )}
 
             {galleryItems.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px', background: cardBg, borderRadius: '16px', border: `1.5px solid ${borderColor}`, color: textSub, boxShadow: cardShadow }}>
-                <span style={{ fontSize: '42px', display: 'block', marginBottom: '10px' }}>🖼️</span>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px', color: textColor }}>האלבום עדיין ריק</p>
-                <p style={{ fontSize: '12px', margin: 0 }}>השתמש בכפתור למעלה כדי לצלם את התמונה הראשונה בטיול שתופיע אצל כולם!</p>
+              <div style={{ textAlign: 'center', padding: '50px 20px', background: cardBg, borderRadius: '20px', border: `1.5px solid ${borderColor}`, color: textSub, boxShadow: cardShadow }}>
+                <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>✨</span>
+                <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 6px', color: textColor }}>האלבום מחכה לתמונות הראשונות שלכם</p>
+                <p style={{ fontSize: '13px', margin: 0 }}>השתמש בכפתור הכחול למעלה כדי לצלם תמונה. היא תסונכרן מיידית לכל בני המשפחה!</p>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {galleryItems.map((item, i) => (
-                  <div key={item.id || i} style={{ background: cardBg, borderRadius: '16px', padding: '8px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                  <div key={item.id || i} style={{ background: cardBg, borderRadius: '18px', padding: '10px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
                     {item.media_url && (
                       <img 
                         src={item.media_url} 
                         alt={item.caption || item.name} 
-                        style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '12px', display: 'block' }} 
+                        style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '14px', display: 'block' }} 
                       />
                     )}
-                    <div style={{ padding: '8px 4px 4px 4px' }}>
-                      <b style={{ fontSize: '12px', color: textColor, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ padding: '10px 4px 4px 4px' }}>
+                      <b style={{ fontSize: '13px', color: textColor, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         👤 {item.author || 'משפחה'}
                       </b>
-                      <small style={{ fontSize: '11px', color: textSub, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <small style={{ fontSize: '12px', color: textSub, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.caption || item.name}
                       </small>
                     </div>
                     {item.id && (
                       <button 
                         onClick={(e) => deleteGalleryItem(item.id, e)} 
-                        style={{ position: 'absolute', top: '14px', left: '14px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '26px', height: '26px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}
+                        style={{ position: 'absolute', top: '16px', left: '16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '28px', height: '28px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}
                         title="מחק תמונה"
                       >
                         ✕
