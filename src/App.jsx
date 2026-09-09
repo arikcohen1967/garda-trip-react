@@ -137,26 +137,20 @@ const INITIAL_TRIP_DAYS = [
 const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
 const DEFAULT_DOCUMENTS = [
-  // ✈️ 5 כרטיסי טיסה ישראייר (הזמנה 4623652)[cite: 3, 4, 5, 6]
   { id: 'flight-arik', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - אריק כהן (8180011314102)', name: 'Israir_Arik_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1005, isFlightInfo: true, passenger: 'COHEN/ARIK MR', ticketNo: '8180011314102' },
   { id: 'flight-amit', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - עמית כהן (8180011314103)', name: 'Israir_Amit_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1004, isFlightInfo: true, passenger: 'COHEN/AMIT MS', ticketNo: '8180011314103' },
   { id: 'flight-yuly', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - יולי כהן (8180011314104)', name: 'Israir_Yuly_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1003, isFlightInfo: true, passenger: 'COHEN/YULY MS', ticketNo: '8180011314104' },
   { id: 'flight-lian', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - ליאן כהן (8180011314105)', name: 'Israir_Lian_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1002, isFlightInfo: true, passenger: 'COHEN/LIAN CHD', ticketNo: '8180011314105' },
   { id: 'flight-harel', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - הראל וילנאי כהן (8180011314106)', name: 'Israir_Harel_Vilnai.pdf', type: 'text/flight-info', size: 15400, created: 1001, isFlightInfo: true, passenger: 'VILNAI COHEN/HAREL MR', ticketNo: '8180011314106' },
-
   { id: 'israir-general', folder: '✈️ טיסות ורכב', title: 'הזמנת ישראייר ראשית (4623652)', name: 'Israir Booking General', type: 'text/flight-info', size: 15400, created: 1000, isFlightInfo: true },
   { id: 'aig-insurance', folder: '✈️ טיסות ורכב', title: 'ביטוח נסיעות AIG (170270213826)', name: 'AIG Insurance Policy', type: 'text/insurance-info', size: 12000, created: 900, isInsuranceInfo: true },
   { id: 'ecovia-car', folder: '✈️ טיסות ורכב', title: 'שובר השכרת רכב (724715780)', name: 'Car Rental Voucher', type: 'text/car-voucher', size: 14000, created: 800, isCarVoucher: true },
   { id: 'vojon-hotel', folder: '🏡 מלון', title: 'הזמנת Bio Agriturismo Vojon', name: 'Hotel Booking Confirmation', type: 'text/hotel-info', size: 13000, created: 700, isHotelInfo: true },
-
-  // 🎢 5 כרטיסי Gardaland הרשמיים[cite: 1, 2, 3, 4, 5]
   { id: 'gardaland-1', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #1 (Serial 600)', name: 'Gardaland Ticket 600', type: 'text/gardaland-ticket', size: 11000, created: 650, isGardalandTicket: true, serial: '600', code: 'BKN1P01Y901MART', ticketId: '33385742', sigillo: '542965AEE291FEA3' },
   { id: 'gardaland-2', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #2 (Serial 601)', name: 'Gardaland Ticket 601', type: 'text/gardaland-ticket', size: 11000, created: 640, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
   { id: 'gardaland-3', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #3 (Serial 606)', name: 'Gardaland Ticket 606', type: 'text/gardaland-ticket', size: 11000, created: 630, isGardalandTicket: true, serial: '606', code: 'TKN1P01Y901MUTT', ticketId: '33385748', sigillo: 'DD1F221668493023' },
   { id: 'gardaland-4', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #4 (Serial 608)', name: 'Gardaland Ticket 608', type: 'text/gardaland-ticket', size: 11000, created: 620, isGardalandTicket: true, serial: '608', code: 'CKN1P01Y901N2IT', ticketId: '33385750', sigillo: '7379E49AA9784605' },
   { id: 'gardaland-5', folder: '🎢 Gardaland', title: 'כרטיס Gardaland #5 (Serial 601 נוסף)', name: 'Gardaland Ticket Harel', type: 'text/gardaland-ticket', size: 11000, created: 610, isGardalandTicket: true, serial: '601', code: 'VKN1P01Y901ME4T', ticketId: '33385743', sigillo: '8762764E1A637781' },
-
-  // 🎬 5 כרטיסי Movieland הרשמיים[cite: 6]
   { id: 'movieland-1', folder: '🎬 Movieland', title: 'כרטיס Movieland #1 (069)', name: 'Movieland Ticket 069', type: 'text/movieland-ticket', size: 11000, created: 550, isMovielandTicket: true, codeNum: '017JUNAR0069', barcode: '256612CCD43B8E08' },
   { id: 'movieland-2', folder: '🎬 Movieland', title: 'כרטיס Movieland #2 (070)', name: 'Movieland Ticket 070', type: 'text/movieland-ticket', size: 11000, created: 540, isMovielandTicket: true, codeNum: '017JUNAR0070', barcode: 'EA35DB7A2EA540D5' },
   { id: 'movieland-3', folder: '🎬 Movieland', title: 'כרטיס Movieland #3 (071)', name: 'Movieland Ticket 071', type: 'text/movieland-ticket', size: 11000, created: 530, isMovielandTicket: true, codeNum: '017JUNAR0071', barcode: '934FEA2F66750267' },
@@ -426,7 +420,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
           <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה وרונה (VRN)</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
         </>
       )}
 
@@ -461,13 +455,9 @@ export default function App() {
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   
-  // מצב תצוגה: 'light' או 'dark' (Contrast)
   const [themeMode, setThemeMode] = useState('light');
-
-  // מזג אוויר מקומי באגם גארדה
   const [weatherData, setWeatherData] = useState({ temp: '25°C - 24°C', condition: '☀️ שמש נעימה באגם (ספטמבר-אוקטובר)', location: 'אגם Garda' });
 
-  // כלי עריכת צבעים מותאמים אישית (Theme Customizer)
   const [customTheme, setCustomTheme] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-custom-theme')) || null;
@@ -495,7 +485,6 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // שיחון
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -505,14 +494,10 @@ export default function App() {
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
 
-  // סביבי (Around Me)
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
 
-  // 🔔 התראת צליל מתחזק והודעה דחופה נכנסת ברדאר
   const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
-
-  // 🎙️ מצב האזנה מרחוק (מיקרופון)
   const [listeningStream, setListeningStream] = useState(null);
   const audioCtxRef = useRef(null);
   const oscillatorRef = useRef(null);
@@ -520,7 +505,6 @@ export default function App() {
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
-  // טריוויה
   const [travelerIndex, setTravelerIndex] = useState(() => {
     try {
       const saved = localStorage.getItem('garda-trivia-traveler-idx');
@@ -549,13 +533,11 @@ export default function App() {
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const triviaTimerRef = useRef(null);
 
-  // בינגו
   const [bingoPlayer, setBingoPlayer] = useState('');
   const [bingoCard, setBingoCard] = useState([]);
   const [bingoChecked, setBingoChecked] = useState({});
   const [hasBingoWin, setHasBingoWin] = useState(false);
 
-  // רדאר משפחתי חי + SOS
   const [myLocation, setMyLocation] = useState(null);
   const [radarTrackingMode, setRadarTrackingMode] = useState('manual');
   const [familyLocations, setFamilyLocations] = useState(() => {
@@ -570,7 +552,6 @@ export default function App() {
   });
   const watchPositionIdRef = useRef(null);
 
-  // חניה חכמה
   const [savedParking, setSavedParking] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
@@ -579,7 +560,6 @@ export default function App() {
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
 
-  // ⏱️ טיימר משפחתי מסונכרן בשליטת אריק
   const [activeTimer, setActiveTimer] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-active-timer')) || null;
@@ -588,9 +568,7 @@ export default function App() {
   const [timerRemainingSec, setTimerRemainingSec] = useState(0);
   const [customTimerMinutes, setCustomTimerMinutes] = useState('15');
   const [customTimerTitle, setCustomTimerTitle] = useState('זמן חופשי ומפגש');
-  const [isAlarmMuted, setIsAlarmMuted] = useState(false);
 
-  // מצב AR למציאת הרכב
   const [isArActive, setIsArActive] = useState(false);
   const [arHeading, setArHeading] = useState(0);
   const [arBearing, setArBearing] = useState(0);
@@ -611,18 +589,14 @@ export default function App() {
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
 
-  // הפעלת מצבי AR ומצפן
   useEffect(() => {
     if (!isArActive) return;
-
-    // הפעלת מצלמת חזית/אחור ל-AR
     navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } })
       .then(stream => {
         if (videoRef.current) videoRef.current.srcObject = stream;
       })
       .catch(err => console.log('Camera error', err));
 
-    // מאזין למצפן המכשיר
     const handleOrientation = (e) => {
       let alpha = e.alpha || e.webkitCompassHeading;
       if (alpha !== undefined && alpha !== null) {
@@ -634,7 +608,6 @@ export default function App() {
       window.addEventListener('deviceorientation', handleOrientation, true);
     }
 
-    // חישוב זווית (Bearing) אל הרכב השמור
     if (savedParking && myLocation) {
       const lat1 = myLocation.lat * Math.PI / 180;
       const lat2 = savedParking.lat * Math.PI / 180;
@@ -656,7 +629,6 @@ export default function App() {
     };
   }, [isArActive, savedParking, myLocation]);
 
-  // פונקציות עבור מודל "סביבי"
   const handleAroundCustomSearch = (e) => {
     e.preventDefault();
     if (!aroundSearchQuery.trim()) return;
@@ -689,7 +661,6 @@ export default function App() {
     }
   };
 
-  // 🔔 שליחת צליל והודעה דחופה מתחזקת למשתמש ברדאר
   const sendSoundAlertToMember = async (memberName) => {
     const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
     if (!msg) return;
@@ -711,7 +682,6 @@ export default function App() {
     }
   };
 
-  // 🎙️ בקשת האזנה למרחוק (מיקרופון)
   const requestRemoteListening = async (memberName) => {
     if (!window.confirm(`האם לבקש להאזין למיקרופון של ${memberName}?`)) return;
     try {
@@ -747,7 +717,6 @@ export default function App() {
     } catch (e) {}
   };
 
-  // שידור מיקום ב-GPS
   const broadcastMyLocation = async (coords) => {
     const currentName = challengeAuthor || 'אריק';
     const locObj = {
@@ -770,7 +739,6 @@ export default function App() {
     return locObj;
   };
 
-  // 🚨 הפעלת לחצן מצוקה (הלכתי לאיבוד)
   const triggerSosLostAlert = () => {
     const currentName = challengeAuthor || 'אריק';
     if (!navigator.geolocation) {
@@ -892,7 +860,6 @@ export default function App() {
     };
   }, []);
 
-  // ספירה לאחור של הטיימר המרכזי
   useEffect(() => {
     if (!activeTimer || !activeTimer.endTime) {
       setTimerRemainingSec(0);
@@ -916,7 +883,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTimer]);
 
-  // מערכת צליל הולך ומתחזק (Escalating Alarm Oscillator)
   const startEscalatingAlarm = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -926,20 +892,17 @@ export default function App() {
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'sawtooth'; // צליל חד וצורם יותר שאי אפשר להתעלם ממנו
+      osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(400, ctx.currentTime);
-
-      // מתחיל חלש מאוד ומתחזק בהדרגה
       gain.gain.setValueAtTime(0.02, ctx.currentTime);
       
-      // הגברה רציפה לאורך זמן
       let currentVol = 0.02;
       const rampInterval = setInterval(() => {
         if (!audioCtxRef.current) {
           clearInterval(rampInterval);
           return;
         }
-        currentVol = Math.min(1.0, currentVol + 0.08); // מתחזק עד למקסימום עוצמה
+        currentVol = Math.min(1.0, currentVol + 0.08);
         try {
           gain.gain.setValueAtTime(currentVol, ctx.currentTime);
         } catch (e) {}
@@ -1012,7 +975,7 @@ export default function App() {
     } catch (e) {}
 
     alert(`⏱️ טיימר ל-${mins} דקות ("${timerTitle}") הופעל בהצלחה וסונכרן לכל המשפחה!`);
-    closeModal();
+    setModalType(null);
   };
 
   const cancelGlobalTimer = async () => {
@@ -1032,7 +995,6 @@ export default function App() {
     } catch (e) {}
   };
 
-  // סנכרון Realtime
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -1065,7 +1027,6 @@ export default function App() {
       })
       .on('broadcast', { event: 'mic_listen_request' }, async ({ payload }) => {
         if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
-          // בקשת מיקרופון מהדפדפן של המשתמש
           try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             setListeningStream(stream);
@@ -1235,16 +1196,8 @@ export default function App() {
   }, [sidebarOpen, modalType, isArActive]);
 
   const handleGlobalClick = (callback) => {
-    try {
-      playClickSound();
-    } catch (e) {}
-    if (typeof callback === 'function') {
-      try {
-        callback();
-      } catch (err) {
-        console.error('Action error:', err);
-      }
-    }
+    playClickSound();
+    if (typeof callback === 'function') callback();
   };
 
   const closeModal = () => {
@@ -1254,7 +1207,6 @@ export default function App() {
     setGalleryCaption('');
   };
 
-  // סגירת צפייה במסמך מחזירה חזרה לתיקיית הכרטיסים
   const closeDocumentViewer = () => {
     playClickSound();
     setViewerItem(null);
@@ -1286,16 +1238,12 @@ export default function App() {
 
   const handleTouchEnd = (onCloseCallback) => {
     const diff = touchCurrentXRef.current - touchStartXRef.current;
-    if (diff > 120) {
-      onCloseCallback();
-    }
+    if (diff > 120) onCloseCallback();
   };
 
   useEffect(() => {
     if ('speechSynthesis' in window) {
-      const loadVoices = () => {
-        window.speechSynthesis.getVoices();
-      };
+      const loadVoices = () => { window.speechSynthesis.getVoices(); };
       loadVoices();
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
@@ -1318,14 +1266,8 @@ export default function App() {
       }
     };
 
-    const handleOnline = () => {
-      setIsOnline(true);
-      checkSupabaseConnection();
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-    };
+    const handleOnline = () => { setIsOnline(true); checkSupabaseConnection(); };
+    const handleOffline = () => { setIsOnline(false); };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -1357,9 +1299,7 @@ export default function App() {
     const loadFromLocalCache = () => {
       try {
         const cached = JSON.parse(localStorage.getItem('garda-trip-days-cache'));
-        if (Array.isArray(cached) && cached.length) {
-          setTripDays(cached);
-        }
+        if (Array.isArray(cached) && cached.length) setTripDays(cached);
       } catch (e) {}
     };
 
@@ -1489,12 +1429,9 @@ export default function App() {
       req.onsuccess = () => {
         const dbFiles = req.result || [];
         const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
-        
         const merged = [...dbFiles];
         defaultsForFolder.forEach(def => {
-          if (!merged.some(m => m.title === def.title)) {
-            merged.push(def);
-          }
+          if (!merged.some(m => m.title === def.title)) merged.push(def);
         });
         setTicketFiles(merged.sort((a, b) => (b.created || 0) - (a.created || 0)));
       };
@@ -1712,7 +1649,6 @@ export default function App() {
     try {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        
         const utterance = new SpeechSynthesisUtterance(text.trim());
         currentUtteranceRef.current = utterance; 
         utterance.lang = 'it-IT';
@@ -1722,14 +1658,8 @@ export default function App() {
         const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
         if (itVoice) utterance.voice = itVoice;
 
-        utterance.onend = () => {
-          setIsPlayingAudio(false);
-          currentUtteranceRef.current = null;
-        };
-        utterance.onerror = () => {
-          setIsPlayingAudio(false);
-          currentUtteranceRef.current = null;
-        };
+        utterance.onend = () => { setIsPlayingAudio(false); currentUtteranceRef.current = null; };
+        utterance.onerror = () => { setIsPlayingAudio(false); currentUtteranceRef.current = null; };
 
         window.speechSynthesis.speak(utterance);
       } else {
@@ -1749,9 +1679,7 @@ export default function App() {
     const query = (textToTranslate || hebrewInput || '').trim();
     if (!query) return;
 
-    if (translationAbortRef.current) {
-      translationAbortRef.current.abort();
-    }
+    if (translationAbortRef.current) translationAbortRef.current.abort();
     const abortController = new AbortController();
     translationAbortRef.current = abortController;
 
@@ -1808,10 +1736,7 @@ export default function App() {
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     setSelectedAnswer(null);
     setIsAnswerCorrect(null);
-    setTriviaIndex(prev => {
-      const nextIdx = (prev + 1) % triviaQuestions.length;
-      return nextIdx;
-    });
+    setTriviaIndex(prev => (prev + 1) % triviaQuestions.length);
     setTravelerIndex(prev => (prev + 1) % travelers.length);
   };
 
@@ -1823,13 +1748,10 @@ export default function App() {
 
     if (optionIdx === currentQ.correct) {
       setIsAnswerCorrect(true);
-      setTravelerScores(prev => {
-        const updated = {
-          ...prev,
-          [currentTraveler]: (prev[currentTraveler] || 0) + 10
-        };
-        return updated;
-      });
+      setTravelerScores(prev => ({
+        ...prev,
+        [currentTraveler]: (prev[currentTraveler] || 0) + 10
+      }));
     } else {
       setIsAnswerCorrect(false);
     }
@@ -1843,7 +1765,7 @@ export default function App() {
   const resetTriviaGame = () => {
     const pass = window.prompt('הזן קוד מנהל לאפוס משחק הטריוויה:');
     if (pass !== '1967') {
-      alert('קוד שגוי! לא ניתן לאפס את המשחק.');
+      alert('קוד שגוי!');
       return;
     }
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
@@ -1858,7 +1780,6 @@ export default function App() {
     localStorage.setItem('garda-trivia-scores', JSON.stringify(initialScores));
     localStorage.setItem('garda-trivia-index', '0');
     localStorage.setItem('garda-trivia-traveler-idx', '0');
-    localStorage.setItem('garda-trivia-questions', JSON.stringify(newQuestions));
     alert('המשחק והניקוד אופסו בהצלחה!');
   };
 
@@ -1889,15 +1810,10 @@ export default function App() {
     const matchesCategory = selectedCategory === 'הכל' || p.cat === selectedCategory;
     const cleanSearch = phraseSearch.trim().toLowerCase();
     if (!cleanSearch) return matchesCategory;
-    
-    const matchesText = p.he.toLowerCase().includes(cleanSearch) || 
-                        p.it.toLowerCase().includes(cleanSearch) || 
-                        p.pro.toLowerCase().includes(cleanSearch);
-    return matchesCategory && matchesText;
+    return matchesCategory && (p.he.toLowerCase().includes(cleanSearch) || p.it.toLowerCase().includes(cleanSearch) || p.pro.toLowerCase().includes(cleanSearch));
   });
 
   const isDark = themeMode === 'dark';
-
   const lightCardBorder = '#cbd5e1'; 
   const lightCardShadow = '0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04)'; 
 
@@ -1920,12 +1836,7 @@ export default function App() {
   const metallicGreyText = '#ffffff';
 
   const saveCustomTheme = () => {
-    const newTheme = {
-      bgMain: tempBgMain,
-      cardBg: tempCardBg,
-      textColor: tempTextColor,
-      borderColor: tempBorderColor
-    };
+    const newTheme = { bgMain: tempBgMain, cardBg: tempCardBg, textColor: tempTextColor, borderColor: tempBorderColor };
     setCustomTheme(newTheme);
     localStorage.setItem('garda-custom-theme', JSON.stringify(newTheme));
     setShowThemeBuilder(false);
@@ -2016,7 +1927,6 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* 🚨 פס התראה קופץ עבור הודעה וצליל מתחזק נכנס */}
       {incomingSoundAlert && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.85)',
@@ -2052,7 +1962,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🎙️ נגן שמע אם מאזינים למיקרופון שלך */}
       {listeningStream && (
         <div style={{
           position: 'fixed', bottom: '20px', left: '20px', right: '20px', zIndex: 3500,
@@ -2075,7 +1984,6 @@ export default function App() {
         </div>
       )}
 
-      {/* פס עליון מעודכן, מקובע ומאוזן */}
       <div style={{
         background: cardBg,
         color: textColor,
@@ -2094,7 +2002,6 @@ export default function App() {
         borderBottom: `1.5px solid ${borderColor}`,
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
       }}>
-        {/* כפתור תפריט ☰ מימין */}
         <button 
           onClick={() => handleGlobalClick(() => setSidebarOpen(true))}
           style={{
@@ -2117,14 +2024,12 @@ export default function App() {
           ☰
         </button>
 
-        {/* חיווי חיבור משמאל */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#f59e0b' }}></span>
           <span style={{ color: textColor, fontWeight: 'bold' }}>{isOnline ? 'מקוון' : 'לא מקוון'}</span>
         </div>
       </div>
 
-      {/* 🚨 פס התראת SOS צף */}
       {activeSosAlert && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('radar'))}
@@ -2154,7 +2059,6 @@ export default function App() {
         </div>
       )}
 
-      {/* פס התראת טיימר פעיל */}
       {activeTimer && (
         <div
           onClick={() => handleGlobalClick(() => setModalType('timer'))}
@@ -2184,7 +2088,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌤️ הווידג'ט המאוחד והמשודרג מוקם בחלק העליון */}
       <div 
         onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
         style={{
@@ -2265,7 +2168,6 @@ export default function App() {
         />
       )}
       
-      {/* תפריט צד */}
       <aside 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -2300,7 +2202,6 @@ export default function App() {
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
 
-      {/* 🌟 מצב AR מציאות רבודה למציאת הרכב */}
       {isArActive && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 5000, background: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
           <video ref={videoRef} autoPlay playsInline muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -2325,7 +2226,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל פלייליסט Apple Music */}
       {modalType === 'appleMusicModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2378,7 +2278,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל פרטי מזג האוויר */}
       {modalType === 'weatherModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2427,7 +2326,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל סביבי */}
       {modalType === 'around' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2492,7 +2390,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל יצירת גרסת עיצוב אישית */}
       {showThemeBuilder && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', direction: 'rtl' }}>
           <div style={{ background: cardBg, color: textColor, padding: '24px', borderRadius: '20px', width: '100%', maxWidth: '400px', border: `1.5px solid ${borderColor}`, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
@@ -2531,7 +2428,6 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
-        {/* כפתורי ימי הטיול */}
         <div style={{ 
           display: 'flex', 
           gap: '8px', 
@@ -2633,7 +2529,6 @@ export default function App() {
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח 🚀'}
             </span>
-
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -2693,7 +2588,6 @@ export default function App() {
         </section>
       </main>
 
-      {/* ⏱️ מודל טיימר */}
       {modalType === 'timer' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2792,7 +2686,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 📡 מודל רדאר */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
@@ -2944,7 +2837,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל חניה חכם + כפתור AR מתקדם */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2970,7 +2862,6 @@ export default function App() {
                   <img src={savedParking.photo} alt="Parking place" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px', border: `1.5px solid ${borderColor}` }} />
                 )}
 
-                {/* 🌟 כפתור פתיחת מצפן מציאות רבודה AR */}
                 <button
                   onClick={() => setIsArActive(true)}
                   style={{
@@ -3036,7 +2927,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל בינגו */}
       {modalType === 'bingo' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3118,7 +3008,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל שיחון */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3200,7 +3089,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל טריוויה */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3298,7 +3186,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל אתגר יומי */}
       {modalType === 'questModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3346,7 +3233,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל יומן אתגרים */}
       {modalType === 'challengesLog' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3394,7 +3280,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל גלריה */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3451,7 +3336,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל צפייה במסמכים עם חזרה חלקה לארנק הכרטיסים */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeDocumentViewer)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3470,7 +3354,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל חירום */}
       {modalType === 'emergency' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3486,7 +3369,6 @@ export default function App() {
         </div>
       )}
 
-      {/* מודל כרטיסים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3622,12 +3504,6 @@ const modalContentStyle = {
   width: '100%', maxWidth: '600px', margin: '0 auto',
   padding: '16px 16px 40px', boxSizing: 'border-box',
   minHeight: '100vh', overflowX: 'hidden'
-};
-
-const modalCloseBtn = {
-  width: '34px', height: '34px',
-  borderRadius: '50%', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, flexShrink: 0
 };
 
 const gridModalBtn = {
