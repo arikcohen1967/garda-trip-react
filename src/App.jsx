@@ -45,6 +45,7 @@ const INITIAL_TRIP_DAYS = [
     icon: "✈️",
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
+    aiGuideSnippet: "ברוכים הבאים לאיטליה! שדה התעופה של ורונה נקרא על שם המשורר הרומאי ולריוס קטולוס. מכאן אנחנו מתחילים נסיעה קצרה לאזור אגם גארדה הקסום, המקום שבו האלפים פוגשים את הים התיכון.",
     stops: [
       { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
@@ -58,6 +59,7 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎢",
     challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
+    aiGuideSnippet: "גארדלנד הוא פארק השעשועים הגדול באיטליה ונחשב לאחד הטובים באירופה! שימו לב לרכבות ההרים האקסטרימיות כמו Raptor ו-Blue Tornado. הכינו את הגרון לצרחות!",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
       { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
@@ -73,6 +75,7 @@ const INITIAL_TRIP_DAYS = [
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
     challengeDesc: "משימת אקשן ומים! צלמו את הסירה לפני הירידה למים, וכתבו בדיחה או משפט קורע שקרה במהלך השיט.",
+    aiGuideSnippet: "מלצ'סינה והעיירות הצפוניות של אגם גארדה בנויות בסגנון ימי-ביניימי מרהיב למרגלות הר בלדו. הלימונים כאן מפורסמים בכל העולם בזכות המיקרו-אקלים הייחודי של האגם.",
     stops: [
       { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
       { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
@@ -87,6 +90,7 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎬",
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
+    aiGuideSnippet: "מובילנד הוא פארק בהשראת הוליווד שבו הפעלולים אמיתיים והצוות מכניס אתכם ישירות לתוך סרטי פעולה מפורסמים. ובערב מחכה לכם מופע אבירים אותנטי בלי סכו״ם!",
     stops: [
       { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
@@ -100,6 +104,7 @@ const INITIAL_TRIP_DAYS = [
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
     challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
+    aiGuideSnippet: "העיר ונציה בנויה על פני למעלה מ-100 איים קטנים המחוברים ב-400 גשרים ואין בה כלי רכב ממונעים בכלל! סעו בסירת ופורטו ותיהנו מהקסם הבלתי נתפס של עיר התעלות.",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
       { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
@@ -113,6 +118,7 @@ const INITIAL_TRIP_DAYS = [
     icon: "🏘️",
     challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים העתיקות!",
     challengeDesc: "תמונה חגיגית על הגשר של בורגטו + טעימה של הטורטליני המפורסם ('קשר האהבה').",
+    aiGuideSnippet: "בורגטו סול מינצ'ו הוא אחד הכפרים היפים ביותר באיטליה, השמור להפליא עם טחנות מים עתיקות שפועלות על הנהר. אל תפספסו את מנת הטורטליני המיתולוגית המכונה 'קשר האהבה'.",
     stops: [
       { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
       { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
@@ -126,6 +132,7 @@ const INITIAL_TRIP_DAYS = [
     icon: "❤️",
     challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
+    aiGuideSnippet: "ורונה היא עירם של רומיאו ויוליה, ובה שוכן הארנה הרומית העתיקה שעדיין מארחת אופרות ענק. זו תחנה מושלמת לסיום מרגש של טיול בת המצווה לפני הטיסה חזרה הביתה.",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
@@ -1912,7 +1919,7 @@ export default function App() {
   const blockText = textColor; 
   const cardShadow = customTheme ? '0 6px 20px rgba(0,0,0,0.3)' : currentShadow;
 
-  const brandBlueBg = '#1d4ed8'; // תואם לצבע הבאנר הראשי
+  const brandBlueBg = '#1d4ed8'; 
   const brandBlueText = '#ffffff';
 
   const saveCustomTheme = () => {
@@ -2172,41 +2179,39 @@ export default function App() {
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
-        background: isDark ? 'linear-gradient(135deg, #1e1e24 0%, #111115 100%)' : 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)',
+        background: isDark ? 'linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%)' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
         color: '#ffffff',
-        padding: '22px 20px',
-        boxShadow: '0 12px 30px rgba(29, 78, 216, 0.35)',
+        padding: '20px 18px',
+        boxShadow: '0 12px 30px rgba(37,99,235,0.3)',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
-        width: 'calc(100% - 32px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)'
+        width: 'calc(100% - 32px)'
       }}>
-        {/* חלק עליון: כותרת ומזג אוויר/AI Guide באותו גובה וסגנון אחיד */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <div>
-            <h1 style={{ fontSize: '21px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff' }}>אגם Garda וונציה</h1>
+            <h1 style={{ fontSize: '21px', fontWeight: '900', margin: '0 0 2px', letterSpacing: '-0.02em', color: '#fff' }}>אגם Garda וונציה</h1>
+            <p style={{ fontSize: '11px', opacity: 0.85, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026</p>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             {/* מזג אוויר */}
             <div 
               onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
               style={{
-                background: 'rgba(255, 255, 255, 0.18)',
-                padding: '0 12px',
-                borderRadius: '12px',
+                background: 'rgba(255, 255, 255, 0.2)',
+                padding: '0 10px',
+                borderRadius: '10px',
                 textAlign: 'center',
                 cursor: 'pointer',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '38px',
+                height: '36px',
                 fontSize: '12px',
                 fontWeight: 'bold',
-                color: '#ffffff',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                color: '#ffffff'
               }}
               title="תחזית מזג אוויר"
             >
@@ -2219,9 +2224,8 @@ export default function App() {
                 onClick={stopAiTourGuide}
                 style={{
                   background: '#dc2626', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
-                  padding: '0 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px',
-                  cursor: 'pointer', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                  padding: '0 10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}
               >
                 ⏹️ עצור
@@ -2230,10 +2234,9 @@ export default function App() {
               <button
                 onClick={playAiTourGuide}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.18)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
-                  padding: '0 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px',
-                  cursor: 'pointer', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                  background: 'rgba(255, 255, 255, 0.2)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
+                  padding: '0 10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}
                 title="הפעל מורה דרך קולי AI מבוסס מיקום"
               >
@@ -2243,15 +2246,14 @@ export default function App() {
           </div>
         </div>
 
-        {/* חלק תחתון: כפתורי פעולה מהירים (SOS ומפה) */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
           <button
             onClick={triggerSosLostAlert}
             style={{
               padding: '10px', borderRadius: '12px', background: '#ffffff', color: '#dc2626',
-              border: '1px solid #fecaca', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              border: '1.5px solid #dc2626', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
             🚨 הלכתי לאיבוד! (SOS)
@@ -2259,10 +2261,9 @@ export default function App() {
           <button
             onClick={() => handleGlobalClick(() => setModalType('radar'))}
             style={{
-              padding: '10px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.15)', color: '#fff',
+              padding: '10px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.2)', color: '#fff',
               border: '1px solid rgba(255, 255, 255, 0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', backdropFilter: 'blur(4px)'
             }}
           >
             🧭 מפת המשפחה
