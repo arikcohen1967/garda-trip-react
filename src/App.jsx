@@ -46,7 +46,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -2194,9 +2194,10 @@ export default function App() {
           <button
             onClick={triggerSosLostAlert}
             style={{
-              padding: '11px', borderRadius: '12px', background: 'rgba(220,38,38,0.95)', color: '#fff',
-              border: '1px solid rgba(255,255,255,0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+              padding: '11px', borderRadius: '12px', background: '#ffffff', color: '#dc2626',
+              border: '1.5px solid #dc2626', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
             🚨 הלכתי לאיבוד! (SOS)
@@ -2559,6 +2560,7 @@ export default function App() {
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח 🚀'}
             </span>
+
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -2638,7 +2640,7 @@ export default function App() {
                   {formatTimerClock(timerRemainingSec)}
                 </div>
                 <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '16px' }}>
-                  מוגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
+                  מווגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
                 </small>
 
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -2752,8 +2754,8 @@ export default function App() {
                   <button
                     onClick={triggerSosLostAlert}
                     style={{
-                      padding: '6px 10px', borderRadius: '10px', background: '#dc2626', color: '#fff',
-                      border: 'none', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: cardShadow
+                      padding: '6px 10px', borderRadius: '10px', background: '#ffffff', color: '#dc2626',
+                      border: '1.5px solid #dc2626', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: cardShadow
                     }}
                   >
                     🚨 הלכתי לאיבוד!
@@ -3422,7 +3424,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔍 תצוגת מסך מלא יוקרתית לתמונות באלבום */}
+      {/* 🔍 תצוגת מסך מלא יוקרתית לתמונות באלבום הכוללת אפשרות מחיקה */}
       {selectedGalleryPhoto && (
         <div 
           onClick={() => setSelectedGalleryPhoto(null)}
@@ -3446,13 +3448,37 @@ export default function App() {
           <img 
             src={selectedGalleryPhoto.media_url} 
             alt={selectedGalleryPhoto.caption} 
-            style={{ maxWidth: '100%', maxHeight: '75vh', objectFit: 'contain', borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)', marginBottom: '16px' }} 
+            style={{ maxWidth: '100%', maxHeight: '65vh', objectFit: 'contain', borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)', marginBottom: '16px' }} 
           />
           
-          <div style={{ textAlign: 'center', color: '#fff', maxWidth: '500px' }}>
+          <div style={{ textAlign: 'center', color: '#fff', maxWidth: '500px', marginBottom: '16px' }}>
             <h3 style={{ margin: '0 0 6px', fontSize: '18px', fontWeight: 'bold' }}>👤 {selectedGalleryPhoto.author || 'משפחה'}</h3>
             <p style={{ margin: 0, fontSize: '14px', opacity: 0.9 }}>{selectedGalleryPhoto.caption}</p>
           </div>
+
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (!window.confirm('האם למחוק תמונה זו מהאלבום המשפחתי?')) return;
+              try {
+                await supabase.from('gallery').delete().eq('id', selectedGalleryPhoto.id);
+                const updated = galleryItems.filter(item => item.id !== selectedGalleryPhoto.id);
+                setGalleryItems(updated);
+                localStorage.setItem('garda-gallery-cache', JSON.stringify(updated));
+                setSelectedGalleryPhoto(null);
+                alert('🗑️ התמונה נמחקה בהצלחה מהאלבום!');
+              } catch (err) {
+                alert('שגיאה במחיקת התמונה');
+              }
+            }}
+            style={{
+              padding: '10px 20px', background: '#dc2626', color: '#fff', border: 'none',
+              borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(220,38,38,0.4)'
+            }}
+          >
+            🗑️ מחק תמונה זו מהאלבום
+          </button>
         </div>
       )}
 
