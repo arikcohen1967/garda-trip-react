@@ -45,7 +45,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "✈️",
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
-    aiGuideSnippet: "ברוכים הבאים לאיטליה! שדה התעופה של ורונה נקרא על שם המשורר הרומאי ולריוס קטולוס. מכאן אנחנו מתחילים נסיעה קצרה לאזור אגם גארדה הקסום, המקום שבו האלפים פוגשים את הים התיכון.",
     stops: [
       { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
@@ -59,7 +58,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎢",
     challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
-    aiGuideSnippet: "גארדלנד הוא פארק השעשועים הגדול באיטליה ונחשב לאחד הטובים באירופה! שימו לב לרכבות ההרים האקסטרימיות כמו Raptor ו-Blue Tornado. הכינו את הגרון לצרחות!",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
       { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
@@ -75,7 +73,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
     challengeDesc: "משימת אקשן ומים! צלמו את הסירה לפני הירידה למים, וכתבו בדיחה או משפט קורע שקרה במהלך השיט.",
-    aiGuideSnippet: "מלצ'סינה והעיירות הצפוניות של אגם גארדה בנויות בסגנון ימי-ביניימי מרהיב למרגלות הר בלדו. הלימונים כאן מפורסמים בכל העולם בזכות המיקרו-אקלים הייחודי של האגם.",
     stops: [
       { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
       { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
@@ -90,7 +87,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎬",
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
-    aiGuideSnippet: "מובילנד הוא פארק בהשראת הוליווד שבו הפעלולים אמיתיים והצוות מכניס אתכם ישירות לתוך סרטי פעולה מפורסמים. ובערב מחכה לכם מופע אבירים אותנטי בלי סכו״ם!",
     stops: [
       { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
@@ -104,7 +100,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
     challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
-    aiGuideSnippet: "העיר ונציה בנויה על פני למעלה מ-100 איים קטנים המחוברים ב-400 גשרים ואין בה כלי רכב ממונעים בכלל! סעו בסירת ופורטו ותיהנו מהקסם הבלתי נתפס של עיר התעלות.",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
       { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
@@ -118,7 +113,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "🏘️",
     challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים העתיקות!",
     challengeDesc: "תמונה חגיגית על הגשר של בורגטו + טעימה של הטורטליני המפורסם ('קשר האהבה').",
-    aiGuideSnippet: "בורגטו סול מינצ'ו הוא אחד הכפרים היפים ביותר באיטליה, השמור להפליא עם טחנות מים עתיקות שפועלות על הנהר. אל תפספסו את מנת הטורטליני המיתולוגית המכונה 'קשר האהבה'.",
     stops: [
       { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
       { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
@@ -132,7 +126,6 @@ const INITIAL_TRIP_DAYS = [
     icon: "❤️",
     challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
-    aiGuideSnippet: "ורונה היא עירם של רומיאו ויוליה, ובה שוכן הארנה הרומית העתיקה שעדיין מארחת אופרות ענק. זו תחנה מושלמת לסיום מרגש של טיול בת המצווה לפני הטיסה חזרה הביתה.",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
@@ -593,7 +586,7 @@ export default function App() {
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
 
-  // 🤖 AI Tour Guide לפי מיקום GPS אמיתי עם מנגנון גיבוי ושליטה מלאה
+  // 🤖 AI Tour Guide לפי מיקום GPS אמיתי
   const playAiTourGuide = () => {
     if (!('speechSynthesis' in window)) {
       alert('דפדפן זה אינו תומך בהקראה קולית.');
@@ -2175,26 +2168,26 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר פרימיום מעוצב במיוחד למובייל */}
+      {/* 🌟 באנר פרימיום מעוצב במיוחד למובייל עם אחידות מלאה */}
       <div style={{
         margin: '14px 16px 8px 16px',
-        borderRadius: '20px',
-        background: isDark ? 'linear-gradient(135deg, #27272a 0%, #18181b 100%)' : 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        borderRadius: '22px',
+        background: isDark ? 'linear-gradient(135deg, #1e1e24 0%, #111115 100%)' : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
         color: '#ffffff',
         padding: '18px 16px',
-        boxShadow: '0 10px 25px rgba(15, 23, 42, 0.25)',
+        boxShadow: '0 12px 30px rgba(37, 99, 235, 0.3)',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
         width: 'calc(100% - 32px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
+        border: '1px solid rgba(255, 255, 255, 0.15)'
       }}>
-        {/* חלק עליון: כותרת ומזג אוויר/AI Guide */}
+        {/* חלק עליון: כותרת ומזג אוויר/AI Guide באותו גובה וצבע */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <div>
-            <div style={{ display: 'inline-block', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: '900', marginBottom: '6px', letterSpacing: '0.5px' }}>
-              🇮🇹 ספטמבר 2026
-            </div>
+            <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', marginBottom: '4px' }}>
+              🇮🇹 טיול בת מצווה
+            </span>
             <h1 style={{ fontSize: '19px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff' }}>אגם Garda וונציה</h1>
           </div>
           
@@ -2203,19 +2196,19 @@ export default function App() {
             <div 
               onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                padding: '0 10px',
+                background: 'rgba(255, 255, 255, 0.2)',
+                padding: '0 12px',
                 borderRadius: '10px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '36px',
                 fontSize: '12px',
                 fontWeight: 'bold',
-                color: '#f8fafc'
+                color: '#ffffff'
               }}
               title="תחזית מזג אוויר"
             >
@@ -2227,8 +2220,8 @@ export default function App() {
               <button
                 onClick={stopAiTourGuide}
                 style={{
-                  background: '#dc2626', color: '#fff', border: 'none',
-                  padding: '0 10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
+                  background: '#dc2626', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
+                  padding: '0 12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
                   cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}
               >
@@ -2238,10 +2231,9 @@ export default function App() {
               <button
                 onClick={playAiTourGuide}
                 style={{
-                  background: '#38bdf8', color: '#0f172a', border: 'none',
-                  padding: '0 10px', borderRadius: '10px', fontWeight: '900', fontSize: '11px',
-                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                  boxShadow: '0 2px 8px rgba(56, 189, 248, 0.4)'
+                  background: 'rgba(255, 255, 255, 0.2)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)',
+                  padding: '0 12px', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px',
+                  cursor: 'pointer', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}
                 title="הפעל מורה דרך קולי AI מבוסס מיקום"
               >
@@ -2252,7 +2244,7 @@ export default function App() {
         </div>
 
         {/* חלק תחתון: כפתורי פעולה מהירים (SOS ומפה) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
           <button
             onClick={triggerSosLostAlert}
             style={{
@@ -2266,8 +2258,8 @@ export default function App() {
           <button
             onClick={() => handleGlobalClick(() => setModalType('radar'))}
             style={{
-              padding: '9px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.08)', color: '#fff',
-              border: '1px solid rgba(255, 255, 255, 0.12)', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
+              padding: '9px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.2)', color: '#fff',
+              border: '1px solid rgba(255, 255, 255, 0.3)', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
             }}
           >
@@ -2417,7 +2409,7 @@ export default function App() {
                   <small style={{ color: textSub, display: 'block' }}>לחות יחסית</small>
                   <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.humidity || '58%'}</strong>
                 </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}` }}>
                   <small style={{ color: textSub, display: 'block' }}>מהירות רוח</small>
                   <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.wind || '12 קמ"ש'}</strong>
                 </div>
@@ -2561,9 +2553,9 @@ export default function App() {
                 flex: '1 0 auto',
                 padding: '10px 14px',
                 borderRadius: '14px',
-                background: activeDay === i ? brandBlueBg : cardBg,
-                color: activeDay === i ? brandBlueText : textColor,
-                border: `1.5px solid ${activeDay === i ? brandBlueBg : borderColor}`,
+                background: activeDay === i ? '#1e3a8a' : cardBg,
+                color: activeDay === i ? '#ffffff' : textColor,
+                border: `1.5px solid ${activeDay === i ? '#1e3a8a' : borderColor}`,
                 fontSize: '13px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
