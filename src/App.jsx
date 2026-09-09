@@ -158,29 +158,6 @@ const DEFAULT_DOCUMENTS = [
   { id: 'movieland-5', folder: '🎬 Movieland', title: 'כרטיס Movieland #5 (073)', name: 'Movieland Ticket 073', type: 'text/movieland-ticket', size: 11000, created: 510, isMovielandTicket: true, codeNum: '017JUNAR0073', barcode: '32D6C578DF258ACF' }
 ];
 
-const QUICK_PHRASES = [
-  { cat: '🍕 מסעדות וקפה', he: 'חשבון בבקשה', it: 'Il conto, per favore', pro: 'אִיל קוֹנְטוֹ, פֶּר פָבוֹרֶה' },
-  { cat: '🍕 מסעדות וקפה', he: 'שולחן ל-5 אנשים בבקשה', it: 'Un tavolo per cinque persone, per favore', pro: 'אוּן טָאבוֹלוֹ פֶּר צִ׳ינְקְוֶוה פֶּרְסוֹנֶה' },
-  { cat: '🍕 מסעדות וקפה', he: 'בקבוק מים רגילים / מוגזים', it: 'Acqua naturale / gassata per favore', pro: 'אָקְוָוה נָטוּרָלֶה / גָאסָאטָה' },
-  { cat: '🍕 מסעדות וקפה', he: 'איפה השירותים?', it: "Dov'è il bagno?", pro: 'דוֹבֶה אִיל בָּאנְיוֹ?' },
-  { cat: '🍕 מסעדות וקפה', he: 'טעים מאוד!', it: 'Molto buono!', pro: 'מוֹלְטוֹ בּוּאוֹנוֹ!' },
-  { cat: '🍕 מסעדות וקפה', he: 'קפה אספרסו בבקשה', it: 'Un caffè espresso, per favore', pro: 'אוּן קָאפֶה אֶסְפְּרֶסוֹ' },
-  { cat: '🍦 גלידה ומתוקים', he: 'גביע של 2 טעמים', it: 'Un cono da due gusti, per favore', pro: 'אוּן קוֹנוֹ דָה דוּאֶה גוּסְטִי' },
-  { cat: '🍦 גלידה ומתוקים', he: 'כוסית של 3 טעמים', it: 'Una coppetta da tre gusti', pro: 'אוּנָה קוֹפֶּטָה דָה טְרֶה גוּסְטִי' },
-  { cat: '🍦 גלידה ומתוקים', he: 'אפשר לטעום?', it: 'Posso assaggiare?', pro: 'פּוֹסוֹ אַסַאגָ׳ארֶה?' },
-  { cat: '🍦 גלידה ומתוקים', he: 'פיסטוק ושוקולד בבקשה', it: 'Pistacchio e cioccolato per favore', pro: 'פִּיסְטָאקְיוֹ אֶה צ׳וֹקוֹלָאטוֹ' },
-  { cat: '🍦 גלידה ומתוקים', he: 'עם קצפת מעל?', it: 'Con panna sopra?', pro: 'קוֹן פָּאנָה סוֹפְּרָה?' },
-  { cat: '🛒 קניות וחניה', he: 'כמה זה עולה?', it: 'Quanto costa questo?', pro: 'קְוָואנְטוֹ קוֹסְטָה קְוֶוסְטוֹ?' },
-  { cat: '🛒 קניות וחניה', he: 'אפשר לשלם באשראי?', it: 'Posso pagare con la carta?', pro: 'פּוֹסוֹ פָּאגָארֶה קוֹן לָה קָארְטָה?' },
-  { cat: '🛒 קניות וחניה', he: 'איפה המדחן?', it: 'Dov’è il parcometro?', pro: 'דוֹבֶה אִיל פָּארְקוֹמֶטְרוֹ?' },
-  { cat: '🛒 קניות וחניה', he: 'איפה תחנת הדלק הקרובה?', it: 'Dov’è il distributore di benzina più vicino?', pro: 'דוֹבֶה אִיל דִיסְטְרִיבּוּטוֹרֶה...' },
-  { cat: '👋 בסיסי ונימוס', he: 'שלום / להתראות', it: 'Ciao / Arrivederci', pro: 'צ׳או / אָרִיבֶדֶרְצִ׳י' },
-  { cat: '👋 בסיסי ונימוס', he: 'בוקר טוב / ערב טוב', it: 'Buongiorno / Buonasera', pro: 'בּוּאוֹן ג׳וֹרְנוֹ / בּוּאוֹנָה סֶרָה' },
-  { cat: '👋 בסיסי ונימוס', he: 'תודה רבה', it: 'Grazie mille!', pro: 'גְרָאצְיֶה מִילֶה' },
-  { cat: '👋 בסיסי ונימוס', he: 'סליחה / מחילה', it: 'Scusi / Permesso', pro: 'סְקוּזִי / פֶּרְמֶסוֹ' },
-  { cat: '👋 בסיסי ונימוס', he: 'אתה מדבר אנגלית?', it: 'Parla inglese?', pro: 'פַּארְלָה אִינְגְלֶזֶה?' }
-];
-
 const RAW_BASE_QUESTIONS = [
   { q: "כמה רגליים יש לעכביש?", options: ["6", "8", "10", "12"], correct: 1 },
   { q: "איזה בעל חיים נחשב למהיר ביותר בעולם ביבשה?", options: ["אריה", "ברדלס (צ'יטה)", "סוס מירוץ", "זברה"], correct: 1 },
@@ -492,13 +469,6 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
-  // מצבי השיחון
-  const [hebrewInput, setHebrewInput] = useState('');
-  const [italianOutput, setItalianOutput] = useState('');
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [phraseSearch, setPhraseSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('הכל');
-
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
 
@@ -533,7 +503,7 @@ export default function App() {
   });
 
   const [triviaQuestions, setTriviaQuestions] = useState(() => generateMassiveTrivia());
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [selectedAnswer, setSelectedAnswer]  = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const triviaTimerRef = useRef(null);
@@ -576,9 +546,9 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
+      if (Array.isArray(saved) && saved.length === 11) return saved;
     } catch (e) {}
-    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
+    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -656,40 +626,6 @@ export default function App() {
       recognition.start();
     } catch (e) {
       setIsAroundListening(false);
-    }
-  };
-
-  // פונקציית תרגום עברית -> איטלקית בשיחון
-  const translateFreeText = async (textToTranslate) => {
-    const query = (textToTranslate || hebrewInput || '').trim();
-    if (!query) return;
-
-    setIsTranslating(true);
-    setItalianOutput('');
-
-    const cleanQuery = query.toLowerCase();
-    const matched = QUICK_PHRASES.find(p => p.he.toLowerCase() === cleanQuery || cleanQuery.includes(p.he.toLowerCase()) || p.he.toLowerCase().includes(cleanQuery));
-    if (matched) {
-      setItalianOutput(matched.it);
-      setIsTranslating(false);
-      speakItalian(matched.it);
-      return;
-    }
-
-    try {
-      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=he|it`);
-      const data = await res.json();
-      if (data && data.responseData && data.responseData.translatedText) {
-        const translated = data.responseData.translatedText;
-        setItalianOutput(translated);
-        speakItalian(translated);
-      } else {
-        setItalianOutput('Mi dispiace, riprova');
-      }
-    } catch (err) {
-      setItalianOutput('שגיאה בחיבור לרשת');
-    } finally {
-      setIsTranslating(false);
     }
   };
 
@@ -1141,16 +1077,11 @@ export default function App() {
     localStorage.removeItem('garda-saved-parking');
   };
 
-  // נעילת גלילה קשיחה ברקע בזמן שמודאל פתוח למניעת "קפיצות" של iOS
   useEffect(() => {
     if (modalType || sidebarOpen || isArActive) {
       document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
     } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
+      document.body.style.overflow = 'unset';
     }
   }, [modalType, sidebarOpen, isArActive]);
 
@@ -1723,13 +1654,6 @@ export default function App() {
   const day = tripDays[activeDay] || tripDays[0];
   const isCurrentDayCompleted = completedChallenges[day?.date]?.completed || completedChallenges[String(activeDay)]?.completed;
 
-  const filteredPhrases = QUICK_PHRASES.filter(p => {
-    const matchesCategory = selectedCategory === 'הכל' || p.cat === selectedCategory;
-    const cleanSearch = phraseSearch.trim().toLowerCase();
-    if (!cleanSearch) return matchesCategory;
-    return matchesCategory && (p.he.toLowerCase().includes(cleanSearch) || p.it.toLowerCase().includes(cleanSearch) || p.pro.toLowerCase().includes(cleanSearch));
-  });
-
   const isDark = themeMode === 'dark';
   const lightCardBorder = '#cbd5e1'; 
   const lightCardShadow = '0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04)'; 
@@ -1775,7 +1699,6 @@ export default function App() {
       parking: { label: 'שמירת מיקום רכב חכם', icon: '🚗', action: () => { setSidebarOpen(false); setModalType('parking'); } },
       challenges: { label: 'יומן אתגרים ובדיחות', icon: '🏆', action: () => { setSidebarOpen(false); setModalType('challengesLog'); } },
       trivia: { label: 'טריויה חכמה לדרך', icon: '🧠', action: () => { setSidebarOpen(false); setModalType('trivia'); } },
-      phrasebook: { label: 'שיחון איטלקי חכם', icon: '🇮🇹', action: () => { setSidebarOpen(false); setModalType('phrasebook'); } },
       gallery: { label: 'יומן ואלבום תמונות משפחתי', icon: '📸', action: () => { setSidebarOpen(false); setModalType('gallery'); } },
       around: { label: 'סביבי (Around Me)', icon: '📍', action: () => { setSidebarOpen(false); setModalType('around'); } },
       tickets: { label: 'ארנק כרטיסים ומסמכים', icon: '🎟️', action: () => { setSidebarOpen(false); setModalType('tickets'); } },
@@ -2822,93 +2745,6 @@ export default function App() {
                 </button>
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* 🇮🇹 שיחון איטלקי יציב במיוחד מותאם ל-iOS */}
-      {modalType === 'phrasebook' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
-              <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '10px' }}>iOS NATIVE PHRASEBOOK & TRANSLATOR</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🇮🇹 שיחון ותרגום איטלקי</h2>
-              </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
-            </div>
-
-            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', color: textColor, display: 'block', marginBottom: '6px' }}>
-                ✍️ הקלד או דבר בעברית (השתמש במיקרופון במקלדת ה-iOS):
-              </label>
-              
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', width: '100%', boxSizing: 'border-box' }}>
-                <input
-                  type="text"
-                  dir="rtl"
-                  placeholder="לדוגמה: כמה זה עולה?"
-                  value={hebrewInput}
-                  onChange={(e) => setHebrewInput(e.target.value)}
-                  style={{
-                    flex: 1, padding: '12px', borderRadius: '12px',
-                    border: `1.5px solid ${borderColor}`, background: bgMain, color: textColor,
-                    outline: 'none', fontSize: '15px', boxSizing: 'border-box'
-                  }}
-                />
-                <button
-                  onClick={() => translateFreeText(hebrewInput)}
-                  style={{
-                    padding: '0 18px', background: luxuryBlueBg, color: luxuryBlueText,
-                    border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '14px',
-                    cursor: 'pointer', boxShadow: cardShadow, flexShrink: 0
-                  }}
-                >
-                  {isTranslating ? '...' : 'תרגם'}
-                </button>
-              </div>
-
-              {italianOutput && (
-                <div style={{ background: isDark ? '#2c2c2e' : '#f0fdf4', border: `1.5px solid ${isDark ? '#38383a' : '#bbf7d0'}`, borderRadius: '12px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxSizing: 'border-box' }}>
-                  <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
-                    <small style={{ color: textSub, display: 'block', fontSize: '10px', textAlign: 'right' }}>תוצאה באיטלקית:</small>
-                    <strong style={{ fontSize: '16px', color: '#16a34a', direction: 'ltr', display: 'block', fontWeight: '900' }}>{italianOutput}</strong>
-                  </div>
-                  <button onClick={() => speakItalian(italianOutput)} style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '10px', width: '38px', height: '38px', fontSize: '16px', cursor: 'pointer', color: textColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>🔊</button>
-                </div>
-              )}
-            </div>
-
-            <div style={{ marginBottom: '14px', width: '100%', boxSizing: 'border-box' }}>
-              <input 
-                type="text" 
-                placeholder="🔍 סינון מהיר בביטויים מוכנים..." 
-                value={phraseSearch} 
-                onChange={(e) => setPhraseSearch(e.target.value)} 
-                style={{
-                  width: '100%', padding: '12px 16px', borderRadius: '12px',
-                  border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
-                  outline: 'none', fontSize: '14px', boxSizing: 'border-box', boxShadow: cardShadow
-                }} 
-              />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', boxSizing: 'border-box' }}>
-              {filteredPhrases.length === 0 ? (
-                <div style={{ textAlign: 'center', color: textSub, padding: '30px', fontSize: '13px' }}>לא נמצאו ביטויים תואמים.</div>
-              ) : (
-                filteredPhrases.map((phrase, idx) => (
-                  <div key={idx} style={{ background: cardBg, borderRadius: '14px', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box', gap: '12px' }}>
-                    <div style={{ flex: 1, textAlign: 'right', minWidth: 0 }}>
-                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: textColor, display: 'block', marginBottom: '2px' }}>{phrase.he}</span>
-                      <strong style={{ fontSize: '13px', color: '#2563eb', display: 'block', direction: 'ltr', textAlign: 'right', marginBottom: '2px' }}>{phrase.it}</strong>
-                      <small style={{ fontSize: '11px', color: textSub, display: 'block' }}>הגייה: {phrase.pro}</small>
-                    </div>
-                    <button onClick={() => speakItalian(phrase.it)} style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '10px', width: '40px', height: '40px', fontSize: '16px', cursor: 'pointer', color: textColor, boxShadow: cardShadow, flexShrink: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="השמע הגייה">🔊</button>
-                  </div>
-                ))
-              )}
-            </div>
           </div>
         </div>
       )}
