@@ -580,7 +580,7 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 13) return saved;
+      if (Array.isArray(saved) && saved.length === 12) return saved;
     } catch (e) {}
     return ['schedule', 'aiGuide', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
@@ -593,7 +593,7 @@ export default function App() {
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
 
-  // 🤖 AI Tour Guide Speech Function
+  // 🤖 AI Tour Guide Speech & Stop Functions
   const playAiTourGuide = (customText) => {
     const textToSpeak = customText || tripDays[activeDay]?.aiGuideSnippet || "ברוכים הבאים ליום הטיול המדהים שלנו באיטליה! תיהנו מכל רגע, צלמו הרבה תמונות ושאלו אותי כל מה שתרצו לדעת על המקום.";
     
@@ -611,6 +611,13 @@ export default function App() {
     } else {
       alert(textToSpeak);
     }
+  };
+
+  const stopAiTourGuide = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsAiGuiding(false);
   };
 
   // 🎙️ תרגום קולי חי (Live Conversation)
@@ -2495,19 +2502,35 @@ export default function App() {
         </div>
 
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
-            <button
-              onClick={() => playAiTourGuide()}
-              style={{
-                background: '#2563eb', color: '#fff', border: 'none', padding: '8px 12px',
-                borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: '6px', boxShadow: cardShadow
-              }}
-              title="הפעל מורה דרך קולי AI"
-            >
-              {isAiGuiding ? '🎙️ מדבר...' : '🤖 AI Guide'}
-            </button>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {isAiGuiding ? (
+                <button
+                  onClick={stopAiTourGuide}
+                  style={{
+                    background: '#dc2626', color: '#fff', border: 'none', padding: '8px 12px',
+                    borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '6px', boxShadow: cardShadow
+                  }}
+                  title="עצור הקראה"
+                >
+                  ⏹️ עצור הקראה
+                </button>
+              ) : (
+                <button
+                  onClick={() => playAiTourGuide()}
+                  style={{
+                    background: '#2563eb', color: '#fff', border: 'none', padding: '8px 12px',
+                    borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '6px', boxShadow: cardShadow
+                  }}
+                  title="הפעל מורה דרך קולי AI"
+                >
+                  🤖 AI Guide 🎙️
+                </button>
+              )}
+            </div>
           </div>
 
           <div 
