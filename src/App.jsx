@@ -262,7 +262,7 @@ const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
     <body>
       <div id="map"></div>
       <script>
-        const map = L.map('map', { zoomControl: true }).setView([${centerLat}, ${centerLng}], 15);
+        const map = L.map('map', { zoomControl: true }).setView([${centerLat}, ${centerLng}], 11);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
           attribution: '© OpenStreetMap'
@@ -270,7 +270,20 @@ const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
 
         const locs = ${JSON.stringify(locsArray)};
         const sos = ${JSON.stringify(sosState)};
+        const myLocData = ${JSON.stringify(myLoc)};
         const markers = [];
+
+        // הוספת סיכה אדומה למיקום שלי (אם קיים)
+        if (myLocData && myLocData.lat && myLocData.lng) {
+          const redIcon = L.divIcon({
+            className: 'custom-red-pin',
+            html: '<div style="background-color:#dc2626; width:18px; height:18px; border-radius:50%; border:3px solid #ffffff; box-shadow:0 0 10px rgba(0,0,0,0.5);"></div>',
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+          });
+          L.marker([myLocData.lat, myLocData.lng], { icon: redIcon }).addTo(map).bindPopup('📍 המיקום שלי');
+          markers.push([myLocData.lat, myLocData.lng]);
+        }
 
         locs.forEach(loc => {
           const isSos = sos && sos.name === loc.name;
@@ -283,9 +296,9 @@ const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
         });
 
         if (markers.length > 1) {
-          map.fitBounds(markers, { padding: [40, 40], maxZoom: 16 });
+          map.fitBounds(markers, { padding: [40, 40], maxZoom: 13 });
         } else if (markers.length === 1) {
-          map.setView(markers[0], 16);
+          map.setView(markers[0], 12);
         }
       </script>
     </body>
@@ -549,7 +562,7 @@ export default function App() {
   const [savedParking, setSavedParking] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
-    } catch (e) { return {}; }
+    } catch (e) { return null; }
   });
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
@@ -2101,7 +2114,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר פרימיום כחול כהה יוקרתי */}
+      {/* 🌟 באנר פרימיום כחול כהה יוקרתי - לחיצה עליו פותחת את המפה */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
@@ -2115,9 +2128,15 @@ export default function App() {
         width: 'calc(100% - 32px)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <div>
-            <h1 style={{ fontSize: '21px', fontWeight: '900', margin: '0 0 2px', letterSpacing: '-0.02em', color: '#fff' }}>אגם Garda וונציה</h1>
-            <p style={{ fontSize: '11px', opacity: 0.85, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026</p>
+          <div 
+            onClick={() => handleGlobalClick(() => setModalType('radar'))}
+            style={{ cursor: 'pointer', flex: 1, minWidth: 0 }}
+            title="פתח מפת אגם גארדה והסביבה עם מיקומך"
+          >
+            <h1 style={{ fontSize: '21px', fontWeight: '900', margin: '0 0 2px', letterSpacing: '-0.02em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              אגם Garda וונציה 🗺️
+            </h1>
+            <p style={{ fontSize: '11px', opacity: 0.85, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026 (לחץ לפתיחת מפה)</p>
           </div>
           
           <div 
@@ -2680,12 +2699,12 @@ export default function App() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, padding: '16px', background: cardBg, position: 'sticky', top: 0, zIndex: 100, boxShadow: cardShadow, boxSizing: 'border-box' }}>
               <div>
                 <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px', textTransform: 'uppercase' }}>GPS LIVE RADAR</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📡 רדאר משפחתי חי</h2>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📡 רדאר משפחתי חי ומפת האגם</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
             </div>
 
-            <div style={{ width: '100%', height: '300px', position: 'relative', background: '#0f172a', flexShrink: 0 }}>
+            <div style={{ width: '100%', height: '320px', position: 'relative', background: '#0f172a', flexShrink: 0 }}>
               <iframe
                 title="Family Radar Map"
                 srcDoc={generateMapHTML(familyLocations, myLocation, activeSosAlert, isDark)}
