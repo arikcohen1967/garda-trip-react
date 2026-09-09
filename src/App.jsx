@@ -2119,32 +2119,32 @@ export default function App() {
             style={{ cursor: 'pointer', flex: 1, minWidth: 0 }}
             title="פתח מפת אגם גארדה והסביבה עם סיכת מיקומך"
           >
-            <h1 style={{ fontSize: '21px', fontWeight: '900', margin: '0 0 2px', letterSpacing: '-0.02em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h1 style={{ fontSize: '22px', fontWeight: '900', margin: 0, letterSpacing: '-0.02em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
               אגם Garda וונציה 🗺️
             </h1>
-            <p style={{ fontSize: '11px', opacity: 0.85, margin: 0, fontWeight: '500' }}>30.09.2026 – 06.10.2026 (לחץ לפתיחת מפה ומיקום)</p>
           </div>
           
           <div 
             onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
             style={{
               background: 'rgba(255, 255, 255, 0.2)',
-              padding: '6px 14px',
-              borderRadius: '12px',
+              padding: '8px 16px',
+              borderRadius: '14px',
               textAlign: 'center',
               cursor: 'pointer',
               border: '1.5px solid rgba(255, 255, 255, 0.3)',
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
+              gap: '6px',
               boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
               flexShrink: 0
             }}
             title="תחזית מזג אוויר"
           >
-            <div style={{ fontSize: '13px', fontWeight: '900', lineHeight: '1.2', color: '#ffffff' }}>25°C</div>
-            <div style={{ fontSize: '12px', lineHeight: '1.2' }}>☀️</div>
+            <div style={{ fontSize: '17px', fontWeight: '900', lineHeight: '1.2', color: '#ffffff' }}>25°C</div>
+            <div style={{ fontSize: '15px', lineHeight: '1.2' }}>☀️</div>
           </div>
         </div>
 
