@@ -420,7 +420,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
           <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה وרונה (VRN)</p>
         </>
       )}
 
@@ -485,6 +485,18 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
+  // 💶 פיצ'ר ניהול הוצאות משפחתיות (Expense Splitter)
+  const [expenses, setExpenses] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('garda-expenses-list')) || [];
+    } catch (e) { return []; }
+  });
+  const [expPayer, setExpPayer] = useState('אריק');
+  const [expAmount, setExpAmount] = useState('');
+  const [expCategory, setExpCategory] = useState('🍔 אוכל ומסעדות');
+  const [expDescription, setExpDescription] = useState('');
+  const [expReceiptUrl, setExpReceiptUrl] = useState('');
+
   const [hebrewInput, setHebrewInput] = useState('');
   const [italianOutput, setItalianOutput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -493,6 +505,11 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('הכל');
   const [phraseSearch, setPhraseSearch] = useState('');
   const [translationHistory, setTranslationHistory] = useState([]);
+
+  // 🎙️ תרגום דיבור קולי דו-כיווני (Live Conversation Mode)
+  const [isLiveTranslatingVoice, setIsLiveTranslatingVoice] = useState(false);
+  const [liveSpokenText, setLiveSpokenText] = useState('');
+  const [liveTranslatedText, setLiveTranslatedText] = useState('');
 
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
@@ -576,9 +593,9 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
+      if (Array.isArray(saved) && saved.length === 13) return saved;
     } catch (e) {}
-    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency'];
+    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'expenses', 'gallery', 'around', 'tickets', 'emergency'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -588,6 +605,91 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
+
+  // 🎙️ פונקציית תרגום קולי חי (Live Conversation)
+  const startLiveConversation = () => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert('זיהוי קולי אינו נתמך בדפדפן זה.');
+      return;
+    }
+    try {
+      const rec = new SpeechRec();
+      rec.lang = 'it-IT'; // מאזין לאיטלקית של המוכר/מקומי
+      rec.interimResults = false;
+      rec.onstart = () => {
+        setIsLiveTranslatingVoice(true);
+        setLiveSpokenText('מאזין לדובר האיטלקי...');
+      };
+      rec.onresult = async (event) => {
+        const spoken = event.results[0][0].transcript;
+        setLiveSpokenText(`איטלקית: "${spoken}"`);
+        try {
+          const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=it&tl=iw&dt=t&q=${encodeURIComponent(spoken)}`);
+          const data = await res.json();
+          const translated = data?.[0]?.[0]?.[0] || 'שגיאה בתרגום';
+          setLiveTranslatedText(`עברית: "${translated}"`);
+        } catch (e) {
+          setLiveTranslatedText('שגיאה בתרגום ברשת');
+        }
+      };
+      rec.onerror = () => setIsLiveTranslatingVoice(false);
+      rec.onend = () => setIsLiveTranslatingVoice(false);
+      rec.start();
+    } catch (e) {
+      setIsLiveTranslatingVoice(false);
+    }
+  };
+
+  // 💶 הוספת הוצאה חדשה ושמירה ב-IndexedDB / localStorage
+  const handleAddExpense = async (e) => {
+    e.preventDefault();
+    if (!expAmount || isNaN(expAmount)) {
+      alert('נא להזין סכום תקין בהוצאה.');
+      return;
+    }
+    const newExp = {
+      id: Date.now(),
+      payer: expPayer,
+      amount: parseFloat(expAmount),
+      category: expCategory,
+      description: expDescription || 'הוצאה כללית',
+      receipt: expReceiptUrl || null,
+      time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleDateString('he-IL')
+    };
+
+    const updated = [newExp, ...expenses];
+    setExpenses(updated);
+    localStorage.setItem('garda-expenses-list', JSON.stringify(updated));
+
+    setExpAmount('');
+    setExpDescription('');
+    setExpReceiptUrl('');
+    alert('💶 ההוצאה נוספה בהצלחה למאזן המשפחתי!');
+  };
+
+  const handleReceiptPhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setExpReceiptUrl(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // 📊 חישוב התחשמלות קבוצתית (Split Calculation)
+  const totalExpensesSum = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const sharePerPerson = travelers.length > 0 ? totalExpensesSum / travelers.length : 0;
+  
+  const travelerPaidMap = {};
+  travelers.forEach(t => { travelerPaidMap[t] = 0; });
+  expenses.forEach(item => {
+    if (travelerPaidMap[item.payer] !== undefined) {
+      travelerPaidMap[item.payer] += item.amount;
+    }
+  });
 
   useEffect(() => {
     if (!isArActive) return;
@@ -1425,7 +1527,7 @@ export default function App() {
     try {
       const db = await openDb();
       const tx = db.transaction('files', 'readonly');
-      const req = tx.objectStore('files').index('folder').getAll(folder);
+      const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
       req.onsuccess = () => {
         const dbFiles = req.result || [];
         const defaultsForFolder = DEFAULT_DOCUMENTS.filter(d => d.folder === folder);
@@ -1859,7 +1961,8 @@ export default function App() {
       challenges: { label: 'יומן אתגרים ובדיחות', icon: '🏆', action: () => { setSidebarOpen(false); setModalType('challengesLog'); } },
       bingo: { label: 'בינגו דרכים לאוטו', icon: '🎯', action: () => { setSidebarOpen(false); setModalType('bingo'); } },
       trivia: { label: 'טריויה חכמה לדרך', icon: '🧠', action: () => { setSidebarOpen(false); setModalType('trivia'); } },
-      phrasebook: { label: 'שיחון איטלקי + דיבור קולי', icon: '🇮🇹', action: () => { setSidebarOpen(false); setModalType('phrasebook'); } },
+      phrasebook: { label: 'שיחון איטלקי + תרגום קולי חי', icon: '🇮🇹', action: () => { setSidebarOpen(false); setModalType('phrasebook'); } },
+      expenses: { label: 'ניהול הוצאות משפחתי (Split)', icon: '💶', action: () => { setSidebarOpen(false); setModalType('expenses'); } },
       gallery: { label: 'יומן ואלבום תמונות משפחתי', icon: '📸', action: () => { setSidebarOpen(false); setModalType('gallery'); } },
       around: { label: 'סביבי (Around Me)', icon: '📍', action: () => { setSidebarOpen(false); setModalType('around'); } },
       tickets: { label: 'ארנק כרטיסים ומסמכים', icon: '🎟️', action: () => { setSidebarOpen(false); setModalType('tickets'); } },
@@ -2422,6 +2525,118 @@ export default function App() {
               )}
               <button onClick={() => setShowThemeBuilder(false)} style={{ padding: '12px 16px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>ביטול</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 💶 מודל ניהול הוצאות משפחתיות (Expense Splitter) */}
+      {modalType === 'expenses' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '11px' }}>EXPENSES & SPLIT</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>💶 ניהול הוצאות משפחתיות</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
+            </div>
+
+            {/* סיכום כספי כולל */}
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, textAlign: 'center' }}>
+              <span style={{ fontSize: '12px', color: textSub, display: 'block', marginBottom: '4px' }}>סה"כ הוצאות בטיול:</span>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#16a34a', marginBottom: '8px' }}>
+                €{totalExpensesSum.toFixed(2)}
+              </div>
+              <small style={{ fontSize: '11px', color: textSub }}>
+                ממוצע למשתתף ({travelers.length} אנשים): €{sharePerPerson.toFixed(2)}
+              </small>
+            </div>
+
+            {/* מאזן אישי לכל אחד */}
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px', color: textColor }}>📊 מאזן אישי (כמה כל אחד שילם לעומת הממוצע):</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {travelers.map(t => {
+                  const paid = travelerPaidMap[t] || 0;
+                  const diff = paid - sharePerPerson;
+                  return (
+                    <div key={t} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', background: isDark ? '#2c2c2e' : '#f8fafc', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '13px', color: textColor }}>👤 {t}</span>
+                      <div style={{ textAlign: 'left' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', color: textColor }}>שילם: €{paid.toFixed(2)}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: diff >= 0 ? '#16a34a' : '#dc2626' }}>
+                          {diff >= 0 ? `זכאי לקבל: +€${diff.toFixed(2)}` : `חייב לשלם: -€${Math.abs(diff).toFixed(2)}`}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* טופס הוספת הוצאה */}
+            <form onSubmit={handleAddExpense} style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: 0, color: textColor }}>➕ הוסף הוצאה חדשה</h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '2px' }}>מי שילם?</label>
+                  <select value={expPayer} onChange={(e) => setExpPayer(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, outline: 'none' }}>
+                    {travelers.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '2px' }}>סכום (€):</label>
+                  <input type="number" step="0.01" placeholder="0.00" value={expAmount} onChange={(e) => setExpAmount(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '2px' }}>קטגוריה:</label>
+                <select value={expCategory} onChange={(e) => setExpCategory(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, outline: 'none' }}>
+                  <option value="🍔 אוכל ומסעדות">🍔 אוכל ומסעדות</option>
+                  <option value="🛒 סופרמרקט">🛒 סופרמרקט</option>
+                  <option value="🎢 אטרקציות ופארקים">🎢 אטרקציות ופארקים</option>
+                  <option value="⛽ דלק וחניות">⛽ דלק וחניות</option>
+                  <option value="🛍️ שונות וקניות">🛍️ שונות וקניות</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '2px' }}>תיאור ההוצאה:</label>
+                <input type="text" placeholder="לדוגמה: פיצריה בפסקיירה..." value={expDescription} onChange={(e) => setExpDescription(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+
+              <input type="file" id="receiptFile" accept="image/*" style={{ display: 'none' }} onChange={handleReceiptPhotoUpload} />
+              <button type="button" onClick={() => document.getElementById('receiptFile').click()} style={{ padding: '8px', borderRadius: '8px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>
+                📷 {expReceiptUrl ? '✓ צורפה תמונת קבלה' : 'צרף צילום קבלה'}
+              </button>
+
+              <button type="submit" style={{ padding: '12px', borderRadius: '12px', background: '#16a34a', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}>
+                שמור הוצאה ✓
+              </button>
+            </form>
+
+            {/* היסטוריית הוצאות */}
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 8px', color: textColor }}>📜 פירוט ההוצאות:</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {expenses.length === 0 ? (
+                <div style={{ textAlign: 'center', color: textSub, padding: '16px', fontSize: '12px' }}>טרם נוספו הוצאות.</div>
+              ) : (
+                expenses.map(item => (
+                  <div key={item.id} style={{ background: cardBg, borderRadius: '12px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                    <div>
+                      <b style={{ fontSize: '13px', color: textColor, display: 'block' }}>{item.category} · {item.description}</b>
+                      <small style={{ color: textSub, fontSize: '10px' }}>שולם ע"י: <b>{item.payer}</b> ב-{item.time} ({item.date})</small>
+                    </div>
+                    <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#16a34a' }}>€{item.amount.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
           </div>
         </div>
       )}
@@ -3012,7 +3227,7 @@ export default function App() {
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>שיחון איטלקי חכם</h2>
+              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>שיחון איטלקי + תרגום קולי חי</h2>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 {(hebrewInput || italianOutput) && (
                   <button 
@@ -3024,6 +3239,30 @@ export default function App() {
                 )}
                 <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
               </div>
+            </div>
+
+            {/* 🎙️ כפתור תרגום קולי חי (Live Conversation) */}
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, textAlign: 'center' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 6px', color: textColor }}>🎙️ תרגום קולי חי מול מקומיים באיטליה</h3>
+              <p style={{ fontSize: '12px', color: textSub, marginBottom: '12px' }}>לחץ להאזנה לדובר האיטלקי ותרגום אוטומטי לעברית:</p>
+              
+              <button
+                onClick={startLiveConversation}
+                style={{
+                  padding: '12px 20px', background: isLiveTranslatingVoice ? '#dc2626' : '#2563eb', color: '#fff',
+                  border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(37,99,235,0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px'
+                }}
+              >
+                {isLiveTranslatingVoice ? '🔴 מאזין לאיטלקית...' : '🎙️ הפעל תרגום קולי חי'}
+              </button>
+
+              {(liveSpokenText || liveTranslatedText) && (
+                <div style={{ marginTop: '14px', padding: '10px', background: isDark ? '#2c2c2e' : '#f1f5f9', borderRadius: '10px', fontSize: '13px', textAlign: 'right' }}>
+                  <div style={{ color: textSub, marginBottom: '4px' }}>{liveSpokenText}</div>
+                  <div style={{ fontWeight: 'bold', color: textColor }}>{liveTranslatedText}</div>
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', alignItems: 'stretch' }}>
@@ -3226,7 +3465,7 @@ export default function App() {
               </div>
 
               {isCurrentDayCompleted && (
-                <button onClick={() => handleGlobalClick(() => resetSingleChallenge(activeDay))} style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1px solid #fecaca', padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', width: '100%', boxSizing: 'border-box' }}>🔒 אפס משימה זו (מנהל)</button>
+                <button onClick={() => handleGlobalClick(() => resetSingleChallenge(activeDay))} style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', padding: '10px', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', width: '100%', boxSizing: 'border-box' }}>🔒 אפס משימה זו (מנהל)</button>
               )}
             </div>
           </div>
