@@ -492,6 +492,10 @@ export default function App() {
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
+  // מצבי השיחון
+  const [hebrewInput, setHebrewInput] = useState('');
+  const [italianOutput, setItalianOutput] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
   const [phraseSearch, setPhraseSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('הכל');
 
@@ -652,6 +656,41 @@ export default function App() {
       recognition.start();
     } catch (e) {
       setIsAroundListening(false);
+    }
+  };
+
+  // פונקציית תרגום עברית -> איטלקית בשיחון
+  const translateFreeText = async (textToTranslate) => {
+    const query = (textToTranslate || hebrewInput || '').trim();
+    if (!query) return;
+
+    setIsTranslating(true);
+    setItalianOutput('');
+
+    // בדיקה מהירה אם זה ביטוי מוכן בשיחון
+    const cleanQuery = query.toLowerCase();
+    const matched = QUICK_PHRASES.find(p => p.he.toLowerCase() === cleanQuery || cleanQuery.includes(p.he.toLowerCase()) || p.he.toLowerCase().includes(cleanQuery));
+    if (matched) {
+      setItalianOutput(matched.it);
+      setIsTranslating(false);
+      speakItalian(matched.it);
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=he|it`);
+      const data = await res.json();
+      if (data && data.responseData && data.responseData.translatedText) {
+        const translated = data.responseData.translatedText;
+        setItalianOutput(translated);
+        speakItalian(translated);
+      } else {
+        setItalianOutput('Mi dispiace, riprova');
+      }
+    } catch (err) {
+      setItalianOutput('שגיאה בחיבור לרשת');
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -2783,34 +2822,65 @@ export default function App() {
         </div>
       )}
 
-      {/* 🇮🇹 שיחון איטלקי נקי מותאם ל-iOS */}
+      {/* 🇮🇹 שיחון איטלקי יציב, מעוצב ומותאם ל-iOS עם תרגום פעיל */}
       {modalType === 'phrasebook' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '10px' }}>iOS NATIVE PHRASEBOOK</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🇮🇹 שיחון איטלקי חכם</h2>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '10px' }}>IOS NATIVE PHRASEBOOK & TRANSLATOR</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🇮🇹 שיחון ותרגום איטלקי</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
             </div>
 
+            {/* תיבת חופש הקלדה / הכתבה קולית ותרגום */}
             <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
-              <p style={{ margin: '0 0 10px', fontSize: '13px', color: textColor, fontWeight: 'bold' }}>
-                💡 טיפ שימוש באייפון:
-              </p>
-              <p style={{ margin: '0 0 8px', fontSize: '12px', color: textSub, lineHeight: '1.5' }}>
-                • <b>הכתבה קולית:</b> לחץ על שדה החיפוש למטה, ולאחר מכן לחץ על <b>אייקון המיקרופון במקלדת ה-iOS</b> כדי להקליד בדיבור.
-              </p>
-              <p style={{ margin: 0, fontSize: '12px', color: textSub, lineHeight: '1.5' }}>
-                • <b>תרגום מהיר:</b> סמן כל מילה או משפט באיטלקית באפליקציה, ובחר ב"תרגם" (Translate) מתפריט המערכת של ה-iPhone.
-              </p>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', color: textColor, display: 'block', marginBottom: '6px' }}>
+                ✍️ הקלד או דבר בעברית (השתמש במיקרופון במקלדת ה-iOS):
+              </label>
+              
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', width: '100%', boxSizing: 'border-box' }}>
+                <input
+                  type="text"
+                  dir="rtl"
+                  placeholder="לדוגמה: כמה זה עולה?"
+                  value={hebrewInput}
+                  onChange={(e) => setHebrewInput(e.target.value)}
+                  style={{
+                    flex: 1, padding: '12px', borderRadius: '12px',
+                    border: `1.5px solid ${borderColor}`, background: bgMain, color: textColor,
+                    outline: 'none', fontSize: '15px', boxSizing: 'border-box'
+                  }}
+                />
+                <button
+                  onClick={() => translateFreeText(hebrewInput)}
+                  style={{
+                    padding: '0 18px', background: luxuryBlueBg, color: luxuryBlueText,
+                    border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '14px',
+                    cursor: 'pointer', boxShadow: cardShadow, flexShrink: 0
+                  }}
+                >
+                  {isTranslating ? '...' : 'תרגם'}
+                </button>
+              </div>
+
+              {italianOutput && (
+                <div style={{ background: isDark ? '#2c2c2e' : '#f0fdf4', border: `1.5px solid ${isDark ? '#38383a' : '#bbf7d0'}`, borderRadius: '12px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxSizing: 'border-box' }}>
+                  <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
+                    <small style={{ color: textSub, display: 'block', fontSize: '10px', textAlign: 'right' }}>תוצאה באיטלקית:</small>
+                    <strong style={{ fontSize: '16px', color: '#16a34a', direction: 'ltr', display: 'block', fontWeight: '900' }}>{italianOutput}</strong>
+                  </div>
+                  <button onClick={() => speakItalian(italianOutput)} style={{ background: cardBg, border: `1.5px solid ${borderColor}`, borderRadius: '10px', width: '38px', height: '38px', fontSize: '16px', cursor: 'pointer', color: textColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>🔊</button>
+                </div>
+              )}
             </div>
 
-            <div style={{ marginBottom: '16px', width: '100%', boxSizing: 'border-box' }}>
+            {/* חיפוש בביטויים המוכנים */}
+            <div style={{ marginBottom: '14px', width: '100%', boxSizing: 'border-box' }}>
               <input 
                 type="text" 
-                placeholder="🔍 חפש ביטוי בשיחון (או הקלד/הכתב במקלדת)..." 
+                placeholder="🔍 סינון מהיר בביטויים מוכנים..." 
                 value={phraseSearch} 
                 onChange={(e) => setPhraseSearch(e.target.value)} 
                 style={{
