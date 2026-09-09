@@ -47,7 +47,7 @@ const INITIAL_TRIP_DAYS = [
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     aiGuideSnippet: "ברוכים הבאים לאיטליה! שדה התעופה של ורונה נקרא על שם המשורר הרומאי ולריוס קטולוס. מכאן אנחנו מתחילים נסיעה קצרה לאזור אגם גארדה הקסום, המקום שבו האלפים פוגשים את הים התיכון.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -219,14 +219,6 @@ const RAW_BASE_QUESTIONS = [
   { q: "מהי בירת ספרד?", options: ["ברצלונה", "מדריד", "סביליה", "ולנסיה"], correct: 1 },
   { q: "באיזו מדינה נמצאת העיר טוקיו?", options: ["סין", "יפן", "קוריאה", "ויאטנם"], correct: 1 },
   { q: "מהי בירת גרמניה?", options: ["מינכן", "פרנקפורט", "ברלין", "המבורג"], correct: 2 }
-];
-
-const BINGO_ITEMS_POOL = [
-  "🚗 פיאט 500 אדומה", "🛵 וספה / קטנוע", "🍇 כרם ענבים", "⛰️ מנהרה ארוכה", 
-  "🚓 ניידת משטרה", "⛵ סירת מפרש", "🍦 שלט גלידריה", "🚜 טרקטור בכביש", 
-  "🐕 כלב מציץ מחלון", "☕ שלט Autogrill", "🚲 רוכב אופניים", 
-  "🏰 טירה עתיקה", "🏎️ פרארי / ספורט", "🚚 משאית פירות", 
-  "⛽ תחנת דלק ENI", "🌲 עץ ברוש גבוה"
 ];
 
 const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
@@ -550,11 +542,6 @@ export default function App() {
   const [isTriviaPaused, setIsTriviaPaused] = useState(false);
   const triviaTimerRef = useRef(null);
 
-  const [bingoPlayer, setBingoPlayer] = useState('');
-  const [bingoCard, setBingoCard] = useState([]);
-  const [bingoChecked, setBingoChecked] = useState({});
-  const [hasBingoWin, setHasBingoWin] = useState(false);
-
   const [myLocation, setMyLocation] = useState(null);
   const [radarTrackingMode, setRadarTrackingMode] = useState('manual');
   const [familyLocations, setFamilyLocations] = useState(() => {
@@ -593,9 +580,9 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 14) return saved;
+      if (Array.isArray(saved) && saved.length === 13) return saved;
     } catch (e) {}
-    return ['schedule', 'aiGuide', 'radar', 'timer', 'parking', 'challenges', 'bingo', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
+    return ['schedule', 'aiGuide', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'phrasebook', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -613,7 +600,7 @@ export default function App() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.lang = 'he-IL'; // הקראה בעברית טבעית
+      utterance.lang = 'he-IL';
       utterance.rate = 0.95;
       
       utterance.onstart = () => setIsAiGuiding(true);
@@ -1117,9 +1104,6 @@ export default function App() {
           );
         }
       })
-      .on('broadcast', { event: 'bingo_winner' }, ({ payload }) => {
-        alert(`🎉 בינגו! ${payload.winner} השלים/ה שורה ראשון/ה! 🏆`);
-      })
       .on('broadcast', { event: 'family_timer_start' }, ({ payload }) => {
         if (payload && payload.endTime) {
           setActiveTimer(payload);
@@ -1212,39 +1196,6 @@ export default function App() {
     } catch (e) {
       setIsListeningVoice(false);
     }
-  };
-
-  const initBingoGame = (playerName) => {
-    setBingoPlayer(playerName);
-    const shuffled = [...BINGO_ITEMS_POOL].sort(() => 0.5 - Math.random()).slice(0, 9);
-    setBingoCard(shuffled);
-    setBingoChecked({});
-    setHasBingoWin(false);
-  };
-
-  const toggleBingoItem = (idx) => {
-    playClickSound();
-    if (hasBingoWin) return;
-    
-    setBingoChecked(prev => {
-      const updated = { ...prev, [idx]: !prev[idx] };
-      const lines = [
-        [0,1,2], [3,4,5], [6,7,8],
-        [0,3,6], [1,4,7], [2,5,8],
-        [0,4,8], [2,4,6]
-      ];
-
-      const isWin = lines.some(line => line.every(pos => updated[pos]));
-      if (isWin) {
-        setHasBingoWin(true);
-        supabase.channel('realtime-radar').send({
-          type: 'broadcast',
-          event: 'bingo_winner',
-          payload: { winner: bingoPlayer }
-        }).catch(() => {});
-      }
-      return updated;
-    });
   };
 
   useEffect(() => {
@@ -1947,7 +1898,6 @@ export default function App() {
       radar: { label: 'רדאר משפחתי חי', icon: '🧭', action: () => { setSidebarOpen(false); setModalType('radar'); } },
       parking: { label: 'שמירת מיקום רכב חכם', icon: '🚗', action: () => { setSidebarOpen(false); setModalType('parking'); } },
       challenges: { label: 'יומן אתגרים ובדיחות', icon: '🏆', action: () => { setSidebarOpen(false); setModalType('challengesLog'); } },
-      bingo: { label: 'בינגו דרכים לאוטו', icon: '🎯', action: () => { setSidebarOpen(false); setModalType('bingo'); } },
       trivia: { label: 'טריויה חכמה לדרך', icon: '🧠', action: () => { setSidebarOpen(false); setModalType('trivia'); } },
       phrasebook: { label: 'שיחון איטלקי + תרגום קולי חי', icon: '🇮🇹', action: () => { setSidebarOpen(false); setModalType('phrasebook'); } },
       gallery: { label: 'יומן ואלבום תמונות משפחתי', icon: '📸', action: () => { setSidebarOpen(false); setModalType('gallery'); } },
@@ -2992,87 +2942,6 @@ export default function App() {
                 >
                   📍 שמור מיקום GPS מדויק עכשיו
                 </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {modalType === 'bingo' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎯 בינגו דרכים לאוטו</h2>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
-            </div>
-
-            {!bingoPlayer ? (
-              <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: textColor, marginBottom: '14px' }}>מי משחק עכשיו? (בחר שם ללוח אישי):</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  {travelers.map((name, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleGlobalClick(() => initBingoGame(name))}
-                      style={{ padding: '14px', borderRadius: '14px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
-                    >
-                      👤 {name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', background: cardBg, padding: '10px 14px', borderRadius: '12px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                  <span style={{ fontSize: '13px', fontWeight: 'bold', color: textColor }}>לוח של: {bingoPlayer} 🎲</span>
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <button onClick={() => initBingoGame(bingoPlayer)} style={{ background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}>🔀 ערבב</button>
-                    <button onClick={() => setBingoPlayer('')} style={{ background: cardBg, border: `1.5px solid ${borderColor}`, color: textColor, padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}>שחקן</button>
-                  </div>
-                </div>
-
-                {hasBingoWin && (
-                  <div style={{ background: '#22c55e', color: '#fff', padding: '14px', borderRadius: '14px', textAlign: 'center', marginBottom: '14px', boxShadow: '0 4px 10px rgba(34,197,94,0.3)' }}>
-                    <h3 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 'bold' }}>🏆 בינגו! כל הכבוד {bingoPlayer}! 🎉</h3>
-                    <p style={{ margin: 0, fontSize: '11px' }}>השלמת רצף מנצח! שודרה התראה לכולם</p>
-                  </div>
-                )}
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                  {bingoCard.map((item, idx) => {
-                    const isChecked = !!bingoChecked[idx];
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => toggleBingoItem(idx)}
-                        style={{
-                          aspectRatio: '1',
-                          padding: '8px 4px',
-                          borderRadius: '12px',
-                          border: `1.5px solid ${borderColor}`,
-                          background: isChecked ? '#22c55e' : cardBg,
-                          color: isChecked ? '#ffffff' : textColor,
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          textAlign: 'center',
-                          boxShadow: cardShadow
-                        }}
-                      >
-                        <span style={{ lineHeight: '1.2' }}>{item}</span>
-                        {isChecked && (
-                          <span style={{ marginTop: '2px', fontSize: '10px', background: 'rgba(0,0,0,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
-                            ✓ נתפס
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
             )}
           </div>
