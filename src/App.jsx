@@ -479,6 +479,7 @@ export default function App() {
   const [galleryItems, setGalleryItems] = useState([]);
   const [showGalleryUpload, setShowGalleryUpload] = useState(false);
   const [galleryCaption, setGalleryCaption] = useState('');
+  const [galleryUploaderName, setGalleryUploaderName] = useState('אריק');
   const [selectedGalleryPhoto, setSelectedGalleryPhoto] = useState(null);
 
   const [completedChallenges, setCompletedChallenges] = useState({});
@@ -597,7 +598,7 @@ export default function App() {
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
 
-  // 🎙️ פונקציית תרגום קולי חי (Live Conversation)
+  // 🎙️ תרגום קולי חי (Live Conversation)
   const startLiveConversation = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
@@ -1549,44 +1550,44 @@ export default function App() {
     try {
       const filePath = `gallery_${Date.now()}_${photoFile.name}`;
       const aiTag = runLocalAITagger(photoFile.name, galleryCaption);
-      await supabase.storage.from('trip-photos').upload(filePath, photoFile);
-      const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+      
+      let publicUrl = null;
+      try {
+        const { error: uploadErr } = await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+        if (!uploadErr) {
+          const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+          publicUrl = publicUrlData?.publicUrl;
+        }
+      } catch (err) {}
 
-      if (publicUrlData?.publicUrl) {
-        await cacheMediaOffline(publicUrlData.publicUrl);
-        await supabase.from('gallery').insert([{
-          name: photoFile.name,
-          type: photoFile.type,
-          size: photoFile.size,
-          day_index: activeDay,
-          caption: `${aiTag} | ${galleryCaption || `יום ${activeDay + 1}`}`,
-          author: challengeAuthor || 'משפחה',
-          created: Date.now(),
-          media_url: publicUrlData.publicUrl
-        }]);
-      }
+      if (!publicUrl) publicUrl = URL.createObjectURL(photoFile);
+
+      await cacheMediaOffline(publicUrl);
+      const newItem = {
+        id: Date.now(),
+        name: photoFile.name,
+        type: photoFile.type,
+        size: photoFile.size,
+        day_index: activeDay,
+        caption: `${aiTag} | ${galleryCaption || `יום ${activeDay + 1}`}`,
+        author: galleryUploaderName || 'אריק',
+        created: Date.now(),
+        media_url: publicUrl
+      };
+
+      setGalleryItems(prev => [newItem, ...prev]);
+      localStorage.setItem('garda-gallery-cache', JSON.stringify([newItem, ...galleryItems]));
+
+      try {
+        await supabase.from('gallery').insert([newItem]);
+      } catch (e) {}
+
       setGalleryCaption('');
       setShowGalleryUpload(false);
-      loadGalleryFromCloud();
+      alert('📸 התמונה הועלתה בהצלחה לאלבום!');
     } catch (e) {
-      alert('העלאה נכשלה - זמין במצב מקוון');
+      alert('שגיאה בשמירת התמונה');
     }
-  };
-
-  const deleteGalleryItem = async (id, e) => {
-    e.stopPropagation();
-    const pass = window.prompt('הזן קוד מנהל למחיקת התמונה מהאלבום:');
-    if (pass !== '1967') {
-      alert('קוד שגוי!');
-      return;
-    }
-    const updated = galleryItems.filter(item => item.id !== id);
-    setGalleryItems(updated);
-    localStorage.setItem('garda-gallery-cache', JSON.stringify(updated));
-
-    try {
-      await supabase.from('gallery').delete().eq('id', id);
-    } catch (err) {}
   };
 
   const saveDailyChallenge = async (photoFile = null) => {
@@ -1622,23 +1623,31 @@ export default function App() {
     if (photoFile) {
       try {
         const filePath = `challenge_${Date.now()}_${photoFile.name}`;
-        await supabase.storage.from('trip-photos').upload(filePath, photoFile);
-        const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+        let publicUrl = null;
+        try {
+          await supabase.storage.from('trip-photos').upload(filePath, photoFile);
+          const { data: publicUrlData } = supabase.storage.from('trip-photos').getPublicUrl(filePath);
+          publicUrl = publicUrlData?.publicUrl;
+        } catch (err) {}
 
-        if (publicUrlData?.publicUrl) {
-          await cacheMediaOffline(publicUrlData.publicUrl);
-          await supabase.from('gallery').insert([{
-            name: `אתגר: ${currentDayObj?.title}`,
-            type: photoFile.type,
-            size: photoFile.size,
-            day_index: activeDay,
-            caption: `🎯 אתגר היום: ${textNote}`,
-            author: authorName,
-            created: Date.now(),
-            media_url: publicUrlData.publicUrl
-          }]);
-        }
-        loadGalleryFromCloud();
+        if (!publicUrl) publicUrl = URL.createObjectURL(photoFile);
+
+        await cacheMediaOffline(publicUrl);
+        const newItem = {
+          id: Date.now(),
+          name: `אתגר: ${currentDayObj?.title}`,
+          type: photoFile.type,
+          size: photoFile.size,
+          day_index: activeDay,
+          caption: `🎯 אתגר: ${textNote}`,
+          author: authorName,
+          created: Date.now(),
+          media_url: publicUrl
+        };
+        setGalleryItems(prev => [newItem, ...prev]);
+        try {
+          await supabase.from('gallery').insert([newItem]);
+        } catch (e) {}
       } catch (e) {}
     }
 
@@ -1648,7 +1657,7 @@ export default function App() {
   };
 
   const resetSingleChallenge = async (dayIdx) => {
-    const pass = window.prompt('הזן קוד מנהל לאיפוס המשימה:');
+    const pass = window.prompt('הזן קוד מנהל לאפוס המשימה:');
     if (pass !== '1967') {
       alert('קוד שגוי!');
       return;
@@ -1885,8 +1894,8 @@ export default function App() {
   const blockText = textColor; 
   const cardShadow = customTheme ? '0 6px 20px rgba(0,0,0,0.3)' : currentShadow;
 
-  const metallicGreyBg = '#4b5563';
-  const metallicGreyText = '#ffffff';
+  const brandBlueBg = '#2563eb';
+  const brandBlueText = '#ffffff';
 
   const saveCustomTheme = () => {
     const newTheme = { bgMain: tempBgMain, cardBg: tempCardBg, textColor: tempTextColor, borderColor: tempBorderColor };
@@ -2140,7 +2149,8 @@ export default function App() {
           </div>
         </div>
       )}
-      {/* 🌟 באנר מסך פתיחה יוקרתי ומעוצב */}
+
+      {/* 🌟 באנר מסך פתיחה יוקרתי ומקצועי הכולל את כפתורי SOS ומפת המשפחה בתוכו */}
       <div style={{
         margin: '14px 16px 6px 16px',
         borderRadius: '24px',
@@ -2180,28 +2190,27 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-          <a
-            href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
-            onClick={(e) => { e.stopPropagation(); playClickSound(); }}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+          <button
+            onClick={triggerSosLostAlert}
             style={{
-              flex: 1,
-              background: '#ffffff',
-              color: '#1d4ed8',
-              padding: '12px',
-              borderRadius: '14px',
-              fontSize: '13px',
-              fontWeight: '900',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              padding: '11px', borderRadius: '12px', background: 'rgba(220,38,38,0.95)', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
             }}
           >
-            {WAZE_SVG} נווט למלון Bio Vojon ב-Waze
-          </a>
+            🚨 הלכתי לאיבוד! (SOS)
+          </button>
+          <button
+            onClick={() => handleGlobalClick(() => setModalType('radar'))}
+            style={{
+              padding: '11px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', backdropFilter: 'blur(4px)'
+            }}
+          >
+            🧭 מפת המשפחה
+          </button>
         </div>
       </div>
 
@@ -2470,7 +2479,6 @@ export default function App() {
         </div>
       )}
 
-
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
         <div style={{ 
@@ -2491,9 +2499,9 @@ export default function App() {
                 flex: '1 0 auto',
                 padding: '10px 14px',
                 borderRadius: '14px',
-                background: activeDay === i ? metallicGreyBg : cardBg,
-                color: activeDay === i ? metallicGreyText : textColor,
-                border: `1.5px solid ${activeDay === i ? metallicGreyBg : borderColor}`,
+                background: activeDay === i ? brandBlueBg : cardBg,
+                color: activeDay === i ? brandBlueText : textColor,
+                border: `1.5px solid ${activeDay === i ? brandBlueBg : borderColor}`,
                 fontSize: '13px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
@@ -2510,29 +2518,6 @@ export default function App() {
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
           <div style={{ marginBottom: '16px' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
-            <button
-              onClick={triggerSosLostAlert}
-              style={{
-                padding: '12px', borderRadius: '14px', background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626',
-                border: '1px solid #fecaca', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: cardShadow
-              }}
-            >
-              🚨 הלכתי לאיבוד! (SOS)
-            </button>
-            <button
-              onClick={() => handleGlobalClick(() => setModalType('radar'))}
-              style={{
-                padding: '12px', borderRadius: '14px', background: cardBg, color: textColor,
-                border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: cardShadow
-              }}
-            >
-              🧭 מפת המשפחה
-            </button>
           </div>
 
           <div 
@@ -2707,8 +2692,8 @@ export default function App() {
                         onClick={() => setCustomTimerMinutes(mins)}
                         style={{
                           padding: '8px 4px', borderRadius: '8px',
-                          background: customTimerMinutes === mins ? metallicGreyBg : cardBg,
-                          color: customTimerMinutes === mins ? metallicGreyText : textColor,
+                          background: customTimerMinutes === mins ? brandBlueBg : cardBg,
+                          color: customTimerMinutes === mins ? brandBlueText : textColor,
                           border: `1.5px solid ${borderColor}`,
                           fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow
                         }}
@@ -3196,7 +3181,7 @@ export default function App() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', marginBottom: '14px' }}>
                   {travelers.map((name, idx) => (
-                    <div key={idx} style={{ background: travelerIndex === idx ? metallicGreyBg : cardBg, color: travelerIndex === idx ? metallicGreyText : textColor, borderRadius: '10px', padding: '6px 2px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                    <div key={idx} style={{ background: travelerIndex === idx ? brandBlueBg : cardBg, color: travelerIndex === idx ? brandBlueText : textColor, borderRadius: '10px', padding: '6px 2px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
                       <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
                       <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#16a34a' }}>{travelerScores[name] || 0} נק'</div>
                     </div>
@@ -3291,7 +3276,7 @@ export default function App() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <button onClick={() => handleGlobalClick(() => document.getElementById('questPhotoInput').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}>📸 צלם לאלבום</button>
-                <button onClick={() => handleGlobalClick(() => saveDailyChallenge(null))} style={{ padding: '12px', borderRadius: '12px', background: metallicGreyBg, color: metallicGreyText, border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}>✅ סמן כהושלם</button>
+                <button onClick={() => handleGlobalClick(() => saveDailyChallenge(null))} style={{ padding: '12px', borderRadius: '12px', background: brandBlueBg, color: brandBlueText, border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}>✅ סמן כהושלם</button>
               </div>
 
               {isCurrentDayCompleted && (
@@ -3349,7 +3334,94 @@ export default function App() {
         </div>
       )}
 
-      
+      {/* 📸 אלבום המסע המשפחתי המעוצב והמקצועי מחדש */}
+      {modalType === 'gallery' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>FAMILY CLOUD ALBUM</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '20px', fontWeight: '900', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '38px', height: '38px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
+            </div>
+
+            <div style={{ background: cardBg, borderRadius: '20px', padding: '18px', marginBottom: '20px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+              <button 
+                onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} 
+                style={{ width: '100%', padding: '14px', borderRadius: '14px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', boxShadow: '0 6px 20px rgba(37,99,235,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              >
+                <span>📷</span> צלם והעלה זיכרון חדש למשפחה
+              </button>
+              
+              {showGalleryUpload && (
+                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: `1.5px solid ${borderColor}`, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>👤 מי צילם/ה?</label>
+                    <select value={galleryUploaderName} onChange={(e) => setGalleryUploaderName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: bgMain, color: textColor, fontWeight: 'bold', outline: 'none' }}>
+                      {travelers.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>💬 תיאור או כותרת:</label>
+                    <input 
+                      type="text" 
+                      placeholder="לדוגמה: נוף עוצר נשק במלצ'סינה 🏔️" 
+                      value={galleryCaption} 
+                      onChange={(e) => setGalleryCaption(e.target.value)} 
+                      style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: bgMain, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
+                    />
+                  </div>
+
+                  <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
+                  <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '12px', borderRadius: '10px', background: bgMain, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>📸 צלם כעת</button>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '12px', borderRadius: '10px', background: bgMain, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>📁 בחר מהמכשיר</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {galleryItems.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '50px 20px', background: cardBg, borderRadius: '20px', border: `1.5px solid ${borderColor}`, color: textSub, boxShadow: cardShadow }}>
+                <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>✨</span>
+                <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 6px', color: textColor }}>האלבום המשפחתי מחכה לתמונות הראשונות</p>
+                <p style={{ fontSize: '13px', margin: 0 }}>השתמש בכפתור למעלה כדי לצלם ולהעלות תמונות שיופיעו מיד אצל כולם!</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                {galleryItems.map((item, i) => (
+                  <div 
+                    key={item.id || i} 
+                    onClick={() => setSelectedGalleryPhoto(item)}
+                    style={{ background: cardBg, borderRadius: '18px', padding: '10px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, cursor: 'pointer', transition: 'transform 0.2s ease' }}
+                  >
+                    {item.media_url && (
+                      <img 
+                        src={item.media_url} 
+                        alt={item.caption || item.name} 
+                        style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '14px', display: 'block' }} 
+                      />
+                    )}
+                    <div style={{ padding: '10px 4px 4px 4px' }}>
+                      <b style={{ fontSize: '13px', color: textColor, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        👤 {item.author || 'משפחה'}
+                      </b>
+                      <small style={{ fontSize: '12px', color: textSub, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {item.caption || item.name}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 🔍 תצוגת מסך מלא יוקרתית לתמונות באלבום */}
       {selectedGalleryPhoto && (
         <div 
@@ -3384,61 +3456,6 @@ export default function App() {
         </div>
       )}
 
-      {modalType === 'gallery' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
-            </div>
-
-            <button onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', background: metallicGreyBg, color: metallicGreyText, border: 'none', marginBottom: '16px', boxShadow: cardShadow }}>📷 הוסף תמונה / סרטון</button>
-            
-            {showGalleryUpload && (
-              <div style={{ background: cardBg, padding: '14px', borderRadius: '14px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                <input 
-                  type="text" 
-                  placeholder="תיאור התמונה..." 
-                  value={galleryCaption} 
-                  onChange={(e) => setGalleryCaption(e.target.value)} 
-                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
-                />
-                <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
-                <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '10px', borderRadius: '10px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}>📸 צלם עכשיו</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '10px', borderRadius: '10px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}>📁 בחר מהמכשיר</button>
-                </div>
-              </div>
-            )}
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '8px' }}>
-              {galleryItems.map((item, i) => (
-                <div key={item.id || i} style={{ background: cardBg, borderRadius: '12px', padding: '6px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                  {item.media_url && (
-                    <img 
-                      src={item.media_url} 
-                      alt={item.caption || item.name} 
-                      style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '8px', display: 'block' }} 
-                    />
-                  )}
-                  <small style={{ fontSize: '11px', color: textColor, display: 'block', marginTop: '4px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {item.author || 'משפחה'}: {item.caption || item.name}
-                  </small>
-                  {item.id && (
-                    <button 
-                      onClick={(e) => deleteGalleryItem(item.id, e)} 
-                      style={{ position: 'absolute', top: '10px', left: '10px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '22px', height: '22px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeDocumentViewer)} style={{ ...modalStyle, background: bgMain }}>
@@ -3485,7 +3502,7 @@ export default function App() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
-              <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: 'none', background: metallicGreyBg, color: metallicGreyText, boxShadow: cardShadow }}>
+              <button onClick={() => handleGlobalClick(() => setShowUploadBox(!showUploadBox))} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: 'none', background: brandBlueBg, color: brandBlueText, boxShadow: cardShadow }}>
                 ➕ הוסף כרטיס
               </button>
               <button onClick={() => handleGlobalClick(addNewFolder)} style={{ padding: '10px', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxShadow: cardShadow }}>
@@ -3522,9 +3539,9 @@ export default function App() {
                   onClick={() => handleGlobalClick(() => setActiveFolder(f))}
                   style={{
                     padding: '10px', borderRadius: '12px',
-                    background: activeFolder === f ? metallicGreyBg : cardBg,
-                    color: activeFolder === f ? metallicGreyText : textColor,
-                    border: `1.5px solid ${activeFolder === f ? metallicGreyBg : borderColor}`,
+                    background: activeFolder === f ? brandBlueBg : cardBg,
+                    color: activeFolder === f ? brandBlueText : textColor,
+                    border: `1.5px solid ${activeFolder === f ? brandBlueBg : borderColor}`,
                     cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box',
                     boxShadow: cardShadow
                   }}
