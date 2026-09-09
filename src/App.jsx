@@ -1559,12 +1559,10 @@ export default function App() {
         }
       } catch (err) {}
 
-      if (!publicUrl) {
-        publicUrl = URL.createObjectURL(photoFile);
-      }
+      if (!publicUrl) publicUrl = URL.createObjectURL(photoFile);
 
       await cacheMediaOffline(publicUrl);
-      const newGalleryItem = {
+      const newItem = {
         id: Date.now(),
         name: photoFile.name,
         type: photoFile.type,
@@ -1576,16 +1574,16 @@ export default function App() {
         media_url: publicUrl
       };
 
-      setGalleryItems(prev => [newGalleryItem, ...prev]);
-      localStorage.setItem('garda-gallery-cache', JSON.stringify([newGalleryItem, ...galleryItems]));
+      setGalleryItems(prev => [newItem, ...prev]);
+      localStorage.setItem('garda-gallery-cache', JSON.stringify([newItem, ...galleryItems]));
 
       try {
-        await supabase.from('gallery').insert([newGalleryItem]);
+        await supabase.from('gallery').insert([newItem]);
       } catch (e) {}
 
       setGalleryCaption('');
       setShowGalleryUpload(false);
-      alert('📸 התמונה נוספה בהצלחה לאלבום המשפחתי!');
+      alert('📸 התמונה הועלתה בהצלחה לאלבום!');
     } catch (e) {
       alert('שגיאה בשמירת התמונה');
     }
@@ -2167,7 +2165,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר מסך פתיחה יוקרתי ומקורי (עם כפתורי SOS ומפה בריבוע הכחול) */}
+      {/* 🌟 באנר מסך פתיחה יוקרתי ומעוצב עם כפתורי SOS ומפה בחלק העליון */}
       <div style={{
         margin: '14px 16px 6px 16px',
         borderRadius: '24px',
@@ -2207,28 +2205,27 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-          <a
-            href="https://www.waze.com/ul?q=Bio%20Agriturismo%20Vojon,%20Ponti%20sul%20Mincio,%20Italy&navigate=yes"
-            onClick={(e) => { e.stopPropagation(); playClickSound(); }}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+          <button
+            onClick={triggerSosLostAlert}
             style={{
-              flex: 1,
-              background: '#ffffff',
-              color: '#1d4ed8',
-              padding: '12px',
-              borderRadius: '14px',
-              fontSize: '13px',
-              fontWeight: '900',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              padding: '10px', borderRadius: '12px', background: 'rgba(220,38,38,0.9)', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
             }}
           >
-            {WAZE_SVG} נווט למלון Bio Vojon
-          </a>
+            🚨 הלכתי לאיבוד! (SOS)
+          </button>
+          <button
+            onClick={() => handleGlobalClick(() => setModalType('radar'))}
+            style={{
+              padding: '10px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.3)', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', backdropFilter: 'blur(4px)'
+            }}
+          >
+            🧭 מפת המשפחה
+          </button>
         </div>
       </div>
 
@@ -2536,29 +2533,6 @@ export default function App() {
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
           <div style={{ marginBottom: '16px' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
-            <button
-              onClick={triggerSosLostAlert}
-              style={{
-                padding: '12px', borderRadius: '14px', background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626',
-                border: '1px solid #fecaca', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: cardShadow
-              }}
-            >
-              🚨 הלכתי לאיבוד! (SOS)
-            </button>
-            <button
-              onClick={() => handleGlobalClick(() => setModalType('radar'))}
-              style={{
-                padding: '12px', borderRadius: '14px', background: cardBg, color: textColor,
-                border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: cardShadow
-              }}
-            >
-              🧭 מפת המשפחה
-            </button>
           </div>
 
           <div 
@@ -3375,84 +3349,86 @@ export default function App() {
         </div>
       )}
 
-      {/* 📸 מודל אלבום משפחתי מעוצב ומקצועי מחדש */}
+      {/* 📸 אלבום משפחתי מעוצב מחדש ברמת פרימיום */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>FAMILY CLOUD ALBUM</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px', letterSpacing: '0.05em' }}>FAMILY CLOUD ALBUM</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '20px', fontWeight: '900', color: textColor }}>📸 אלבום המסע המשפחתי</h2>
               </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '38px', height: '38px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow }}>✕</button>
             </div>
 
-            <button 
-              onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} 
-              style={{ width: '100%', padding: '14px', borderRadius: '16px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', marginBottom: '20px', boxShadow: '0 6px 20px rgba(37,99,235,0.35)' }}
-            >
-              📷 צלם והעלה זיכרון חדש למשפחה
-            </button>
-            
-            {showGalleryUpload && (
-              <div style={{ background: cardBg, padding: '18px', borderRadius: '20px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>👤 מי צילם/ה?</label>
-                  <select value={galleryUploaderName} onChange={(e) => setGalleryUploaderName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontWeight: 'bold', outline: 'none' }}>
-                    {travelers.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
+            <div style={{ background: cardBg, borderRadius: '20px', padding: '16px', marginBottom: '20px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+              <button 
+                onClick={() => handleGlobalClick(() => setShowGalleryUpload(!showGalleryUpload))} 
+                style={{ width: '100%', padding: '14px', borderRadius: '14px', fontWeight: '900', fontSize: '14px', cursor: 'pointer', background: brandBlueBg, color: brandBlueText, border: 'none', boxShadow: '0 6px 20px rgba(37,99,235,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              >
+                <span>📷</span> הוסף תמונה חדשה לאלבום המשפחתי
+              </button>
+              
+              {showGalleryUpload && (
+                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: `1.5px solid ${borderColor}`, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>👤 מי מעלה?</label>
+                    <select value={galleryUploaderName} onChange={(e) => setGalleryUploaderName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: bgMain, color: textColor, fontWeight: 'bold', outline: 'none' }}>
+                      {travelers.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
 
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>💬 תיאור או כותרת לתמונה:</label>
-                  <input 
-                    type="text" 
-                    placeholder="לדוגמה: נוף עוצר נשצר במלצ'סינה 🏔️" 
-                    value={galleryCaption} 
-                    onChange={(e) => setGalleryCaption(e.target.value)} 
-                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
-                  />
-                </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: textSub, display: 'block', marginBottom: '4px' }}>💬 תיאור או כותרת:</label>
+                    <input 
+                      type="text" 
+                      placeholder="לדוגמה: נוף עוצר נשק במלצ'סינה..." 
+                      value={galleryCaption} 
+                      onChange={(e) => setGalleryCaption(e.target.value)} 
+                      style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: bgMain, color: textColor, boxSizing: 'border-box', outline: 'none' }} 
+                    />
+                  </div>
 
-                <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
-                <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
-                
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📸 צלם עכשיו</button>
-                  <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow }}>📁 בחר מהמכשיר</button>
+                  <input type="file" id="directGalleryCamera" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
+                  <input type="file" id="directGalleryFile" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if (e.target.files && e.target.files[0]) handleDirectGalleryUpload(e.target.files[0]); }} />
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryCamera').click())} style={{ padding: '12px', borderRadius: '10px', background: bgMain, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>📸 צלם כעת</button>
+                    <button onClick={() => handleGlobalClick(() => document.getElementById('directGalleryFile').click())} style={{ padding: '12px', borderRadius: '10px', background: bgMain, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>📁 בחר מהגלריה</button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             {galleryItems.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '50px 20px', background: cardBg, borderRadius: '20px', border: `1.5px solid ${borderColor}`, color: textSub, boxShadow: cardShadow }}>
                 <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>✨</span>
-                <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 6px', color: textColor }}>האלבום מחכה לתמונות הראשונות שלכם</p>
-                <p style={{ fontSize: '13px', margin: 0 }}>השתמש בכפתור הכחול למעלה כדי לצלם תמונה. היא תסונכרן מיידית לכל בני המשפחה!</p>
+                <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 6px', color: textColor }}>האלבום המשפחתי מחכה לתמונות הראשונות</p>
+                <p style={{ fontSize: '13px', margin: 0 }}>השתמש בכפתור למעלה כדי לצלם ולהעלות תמונות שיופיעו מיד אצל כולם!</p>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {galleryItems.map((item, i) => (
-                  <div key={item.id || i} style={{ background: cardBg, borderRadius: '18px', padding: '10px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                  <div key={item.id || i} style={{ background: cardBg, borderRadius: '16px', padding: '8px', boxSizing: 'border-box', position: 'relative', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
                     {item.media_url && (
                       <img 
                         src={item.media_url} 
                         alt={item.caption || item.name} 
-                        style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '14px', display: 'block' }} 
+                        style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '12px', display: 'block' }} 
                       />
                     )}
                     <div style={{ padding: '10px 4px 4px 4px' }}>
                       <b style={{ fontSize: '13px', color: textColor, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         👤 {item.author || 'משפחה'}
                       </b>
-                      <small style={{ fontSize: '12px', color: textSub, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <small style={{ fontSize: '11px', color: textSub, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.caption || item.name}
                       </small>
                     </div>
                     {item.id && (
                       <button 
                         onClick={(e) => deleteGalleryItem(item.id, e)} 
-                        style={{ position: 'absolute', top: '16px', left: '16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '28px', height: '28px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}
+                        style={{ position: 'absolute', top: '14px', left: '14px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '50%', width: '26px', height: '26px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}
                         title="מחק תמונה"
                       >
                         ✕
@@ -3467,7 +3443,7 @@ export default function App() {
       )}
 
       {modalType === 'viewer' && viewerItem && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeDocumentViewer)} style={{ ...modalStyle, background: bgMain }}>
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: textColor }}>{viewerItem.title || viewerItem.name}</h3>
