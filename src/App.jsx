@@ -36,6 +36,8 @@ const TIMER_SVG = (
   </svg>
 );
 
+const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
+
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -113,13 +115,13 @@ const INITIAL_TRIP_DAYS = [
     date: "2026-10-05",
     label: "שני · 05/10",
     fullLabel: "יום שני · 05 באוקטובר 2026",
-    title: "Borghetto sul Mincio + Valeggio",
-    icon: "🏘️",
-    challenge: "לצלם תמונת בת מצווה מיוחדת בין טחנות המים העתיקות!",
-    challengeDesc: "תמונה חגיגית על הגשר של בורגטו + טעימה של הטורטליני המפורסם ('קשר האהבה').",
+    title: "X Rafting בבוקר + Borghetto בצהריים",
+    icon: "🚣",
+    challenge: "לצלם תמונה משפחתית מטורפת מהראפטינג ותמונה חגיגית בבורגטו!",
+    challengeDesc: "מתחילים את הבוקר באקשן מים מסעיר ב-X Rafting, וממשיכים לצהריים רומנטיים בכפר הטחנות בורגטו.",
     stops: [
-      { time: "10:00", name: "Borghetto – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות." },
-      { time: "12:30", name: "ארוחת צהריים – הטורטליני המפורסם", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy", note: "הבית המקורי של כיסוני הטורטליני המכונים 'קשר האהבה'.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי)", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
+      { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועי." },
+      { time: "12:30", name: "Borghetto sul Mincio – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות העתיקות.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי 'קשר האהבה')", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
     ]
   },
   {
@@ -138,7 +140,7 @@ const INITIAL_TRIP_DAYS = [
   }
 ];
 
-const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚠 מונטה באלדו וסירמיונה', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
+const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 X Rafting ומונטה באלדו', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
 const DEFAULT_DOCUMENTS = [
   { id: 'flight-arik', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - אריק כהן (8180011314102)', name: 'Israir_Arik_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1005, isFlightInfo: true, passenger: 'COHEN/ARIK MR', ticketNo: '8180011314102' },
@@ -2407,6 +2409,33 @@ export default function App() {
 
               </div>
             ))}
+
+            {/* כפתור חזרה למלון ב-Waze בסוף כל יום */}
+            <div style={{ marginTop: '10px' }}>
+              <a 
+                href={`https://www.waze.com/ul?q=${encodeURIComponent(HOTEL_ADDRESS)}&navigate=yes`}
+                onClick={() => playClickSound()}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  width: '100%',
+                  padding: '14px',
+                  background: '#33ccff',
+                  color: '#000000',
+                  borderRadius: '16px',
+                  textDecoration: 'none',
+                  fontWeight: '900',
+                  fontSize: '14px',
+                  boxShadow: cardShadow,
+                  boxSizing: 'border-box'
+                }}
+              >
+                {WAZE_SVG} חזור למלון (Bio Agriturismo Vojon) ב-Waze
+              </a>
+            </div>
+
           </div>
         </section>
       </main>
