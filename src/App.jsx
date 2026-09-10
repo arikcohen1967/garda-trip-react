@@ -96,13 +96,16 @@ const INITIAL_TRIP_DAYS = [
     date: "2026-10-04",
     label: "ראשון · 04/10",
     fullLabel: "יום ראשון · 04 באוקטובר 2026",
-    title: "ונציה – יום מלא",
+    title: "ונציה – יום סיור קסום בעיר המים",
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
     challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
-      { time: "12:30", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים של סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso", dest: "Calle Larga dei Bari, 1223, Venezia" } }
+      { time: "09:30", name: "כיכר סן מרקו והבזיליקה", dest: "St. Mark's Square, Venice, Italy", note: "הלב הפועם של ונציה, כיכר מרהיבה, יונים וארמון הדוג'ה." },
+      { time: "11:00", name: "גשר ריאלטו והשוק המפורסם", dest: "Rialto Bridge, Venice, Italy", note: "תצפית עוצרת נשק על התעלה הגדולה ושיטוט בשוק הססגוני." },
+      { time: "13:00", name: "ארוחת צהריים בוונציה", dest: "Pizzeria L'Anfora, Venezia", note: "פיצרייה שכונתית מעולה הרחק מההמונים סביב סן מרקו.", food: { name: "🍕 Pizzeria L'Anfora + גלידת Suso המפורסמת", dest: "Calle Larga dei Bari, 1223, Venezia" } },
+      { time: "15:00", name: "רובע דורסודור וגשר האקדמיה", dest: "Accademia Bridge, Venice, Italy", note: "אווירה אותנטית ושקטה יותר, גלריות אָמָּנוּת ונופים מדהימים של התעלה." }
     ]
   },
   {
@@ -3110,6 +3113,8 @@ export default function App() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
               <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
               <a href="tel:118" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚑 אמבולנס: 118</a>
+              <a href="tel:113" style={{ ...gridModalBtn, background: isDark ? '#1e293b' : '#f1f5f9', color: textColor, textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>👮 משטרה (Polizia): 113</a>
+              <a href="tel:+390636911" style={{ ...gridModalBtn, background: isDark ? '#1e293b' : '#f1f5f9', color: textColor, textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, gridColumn: 'span 2' }}>🇮🇱 שגרירות ישראל ברומא: +39 06 361 911</a>
             </div>
           </div>
         </div>
