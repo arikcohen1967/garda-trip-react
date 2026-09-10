@@ -673,7 +673,7 @@ export default function App() {
     }
   };
 
-  // --- תוקן: ניהול חכם ויציב של AudioContext לצלילי הקליק ---
+  // --- פונקציית סאונד קליק מתוקנת, מוגברת ופעילה ---
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -691,14 +691,16 @@ export default function App() {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(520, ctx.currentTime);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+      osc.frequency.setValueAtTime(580, ctx.currentTime);
+      
+      // ווליום מוגבר לבקשתך
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
       
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.06);
+      osc.stop(ctx.currentTime + 0.08);
     } catch (e) {}
   };
 
