@@ -567,7 +567,7 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
 
-  // --- Siri Voice Assistant Handler ---
+  // --- Siri Voice Assistant Handler with Fixed Audio Output ---
   const triggerSiriAssistant = () => {
     playClickSound();
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -588,7 +588,6 @@ export default function App() {
         const text = event.results[0][0].transcript;
         setSiriTranscript(`אמרת: "${text}"`);
         
-        // Analyze command
         const lower = text.toLowerCase();
         let reply = "הבנתי אותך אריק!";
         
@@ -616,7 +615,17 @@ export default function App() {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(reply);
           utterance.lang = 'he-IL';
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          
+          // Try to pick a Hebrew voice explicitly if available
+          const voices = window.speechSynthesis.getVoices();
+          const hebVoice = voices.find(v => v.lang && (v.lang.includes('he') || v.lang.includes('HE')));
+          if (hebVoice) utterance.voice = hebVoice;
+
           utterance.onend = () => setSiriSpeaking(false);
+          utterance.onerror = () => setSiriSpeaking(false);
+
           window.speechSynthesis.speak(utterance);
         } else {
           setTimeout(() => setSiriSpeaking(false), 2000);
@@ -626,10 +635,6 @@ export default function App() {
       recognition.onerror = () => {
         setIsSiriActive(false);
         setSiriTranscript('לא הצלחתי לשמוע, נסה שוב.');
-      };
-
-      recognition.onend = () => {
-        // keep modal open briefly or close
       };
 
       recognition.start();
@@ -1849,7 +1854,7 @@ export default function App() {
       position: 'relative' 
     }}>
       
-      {/* 🌟 כפתור צף חדש בסגנון סירי (Siri Floating Orb) */}
+      {/* 🌟 כפתור צף מרהיב בסגנון Siri */}
       <button
         onClick={triggerSiriAssistant}
         style={{
@@ -1857,20 +1862,19 @@ export default function App() {
           bottom: '24px',
           left: '24px',
           zIndex: 3000,
-          width: '60px',
-          height: '60px',
+          width: '62px',
+          height: '62px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #9333ea 100%)',
+          background: 'radial-gradient(circle, #3b82f6 0%, #1d4ed8 60%, #7e22ce 100%)',
           color: '#ffffff',
-          border: '3px solid rgba(255,255,255,0.8)',
-          boxShadow: '0 8px 25px rgba(59, 130, 246, 0.6), 0 0 15px rgba(147, 51, 234, 0.4)',
+          border: '3px solid rgba(255,255,255,0.9)',
+          boxShadow: '0 10px 30px rgba(59, 130, 246, 0.6), 0 0 20px rgba(126, 34, 206, 0.5)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '26px',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-          animation: 'pulse 2s infinite'
+          fontSize: '28px',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease'
         }}
         title="עוזרת קולית Siri"
       >
@@ -1885,17 +1889,17 @@ export default function App() {
           padding: '20px', direction: 'rtl', backdropFilter: 'blur(15px)', WebkitBackdropFilter: 'blur(15px)', boxSizing: 'border-box'
         }}>
           <div style={{
-            width: '120px', height: '120px', borderRadius: '50%',
-            background: siriSpeaking ? 'radial-gradient(circle, #22c55e 0%, #15803d 70%)' : 'radial-gradient(circle, #3b82f6 0%, #9333ea 70%)',
-            boxShadow: '0 0 50px rgba(59,130,246,0.8), 0 0 100px rgba(147,51,234,0.5)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px',
-            marginBottom: '24px', animation: 'pulse 1.5s infinite'
+            width: '130px', height: '130px', borderRadius: '50%',
+            background: siriSpeaking ? 'radial-gradient(circle, #22c55e 0%, #15803d 70%)' : 'radial-gradient(circle, #3b82f6 0%, #7e22ce 70%)',
+            boxShadow: '0 0 60px rgba(59,130,246,0.9), 0 0 120px rgba(126,34,206,0.6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '52px',
+            marginBottom: '24px'
           }}>
             {siriSpeaking ? '🗣️' : '🎙️'}
           </div>
           
           <h2 style={{ color: '#ffffff', fontSize: '22px', fontWeight: '900', margin: '0 0 10px', textAlign: 'center' }}>
-            {siriSpeaking ? 'העוזרת עונה...' : 'מקשיב לפקודה...'}
+            {siriSpeaking ? 'העוזרת עונה בקול...' : 'מקשיב לפקודה...'}
           </h2>
           <p style={{ color: '#93c5fd', fontSize: '16px', fontWeight: 'bold', margin: '0 0 30px', textAlign: 'center', maxWidth: '350px' }}>
             {siriTranscript}
