@@ -250,7 +250,6 @@ const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
         const myLocData = ${JSON.stringify(myLoc)};
         const markers = [];
 
-        // סיכה אדומה למיקום שלי על גבי המפה
         if (myLocData && myLocData.lat && myLocData.lng) {
           const redIcon = L.divIcon({
             className: 'custom-red-pin',
@@ -1930,7 +1929,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🌟 באנר פרימיום כחול כהה יוקרתי - לחיצה עליו פותחת את המפה עם המיקום שלך */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
@@ -2270,7 +2268,6 @@ export default function App() {
 
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
-        {/* כפתורי בחירת ימים - מעוצבים באותו כחול כהה יוקרתי */}
         <div style={{ 
           display: 'flex', 
           gap: '8px', 
@@ -2941,7 +2938,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 📸 אלבום המסע המשפחתי */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3029,7 +3025,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🔍 תצוגת מסך מלא לתמונות באלבום */}
       {selectedGalleryPhoto && (
         <div 
           onClick={() => setSelectedGalleryPhoto(null)}
