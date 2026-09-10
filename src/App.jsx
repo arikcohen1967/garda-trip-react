@@ -673,7 +673,7 @@ export default function App() {
     }
   };
 
-  // --- פונקציית סאונד קליק מתוקנת, מוגברת ופעילה ---
+  // --- פונקציית סאונד קליק מתוקנת, יציבה ומוגברת ---
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
