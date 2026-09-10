@@ -38,6 +38,17 @@ const TIMER_SVG = (
 
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
+// תמונות אמיתיות לכל יום / אתר בטיול
+const DAY_PREVIEW_IMAGES = [
+  "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80", // נחיתה / אגם גארדה
+  "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80", // Gardaland פארק שעשועים
+  "https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=800&q=80", // מונטה באלדו / הרים ורכבל
+  "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80", // Movieland / קולנוע ואקשן
+  "https://images.unsplash.com/photo-1514896856501-6fce2e012bc9?auto=format&fit=crop&w=800&q=80", // ונציה / גונדולות ותעלות
+  "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80", // בורגטו / כפר טחנות מים
+  "https://images.unsplash.com/photo-1529260830199-42c24126f198?auto=format&fit=crop&w=800&q=80"  // ורונה / איטליה
+];
+
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -442,6 +453,9 @@ export default function App() {
   const [viewerItem, setViewerItem] = useState(null);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   
+  // --- מצב להצגת תמונת האתר/היום בגדול ---
+  const [previewImageModal, setPreviewImageModal] = useState(null);
+  
   const [themeMode, setThemeMode] = useState('light');
   const [weatherData, setWeatherData] = useState({ temp: '25°C', condition: '☀️ שמש נעימה באגם', location: 'אגם Garda' });
 
@@ -673,7 +687,7 @@ export default function App() {
     }
   };
 
-  // --- פונקציית סאונד קליק מתוקנת, יציבה ומוגברת ---
+  // --- סאונד קליק מעודכן, מוגבר ויציב ---
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -693,7 +707,6 @@ export default function App() {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(580, ctx.currentTime);
       
-      // ווליום מוגבר לבקשתך
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
       
@@ -1097,12 +1110,12 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (modalType || sidebarOpen || isArActive) {
+    if (modalType || sidebarOpen || isArActive || previewImageModal) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [modalType, sidebarOpen, isArActive]);
+  }, [modalType, sidebarOpen, isArActive, previewImageModal]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -1110,11 +1123,12 @@ export default function App() {
         if (sidebarOpen) setSidebarOpen(false);
         if (modalType) closeModal();
         if (isArActive) setIsArActive(false);
+        if (previewImageModal) setPreviewImageModal(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [sidebarOpen, modalType, isArActive]);
+  }, [sidebarOpen, modalType, isArActive, previewImageModal]);
 
   const handleGlobalClick = (callback) => {
     playClickSound();
@@ -1785,6 +1799,40 @@ export default function App() {
       position: 'relative' 
     }}>
       
+      {/* 🌟 מודל תצוגה מוגדלת לתמונת האתר/היום */}
+      {previewImageModal && (
+        <div 
+          onClick={() => setPreviewImageModal(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 7000, background: 'rgba(0,0,0,0.9)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            padding: '20px', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxSizing: 'border-box'
+          }}
+        >
+          <button 
+            onClick={() => setPreviewImageModal(null)}
+            style={{
+              position: 'absolute', top: '20px', left: '20px', background: 'rgba(255,255,255,0.2)',
+              color: '#fff', border: 'none', borderRadius: '50%', width: '44px', height: '44px',
+              fontSize: '20px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}
+          >
+            ✕
+          </button>
+          
+          <img 
+            src={previewImageModal.imgUrl} 
+            alt={previewImageModal.title} 
+            style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'cover', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)', marginBottom: '16px', boxSizing: 'border-box', border: '2px solid rgba(255,255,255,0.2)' }} 
+          />
+          
+          <div style={{ textAlign: 'center', color: '#fff', maxWidth: '500px' }}>
+            <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: 'bold' }}>{previewImageModal.title}</h3>
+            <p style={{ margin: 0, fontSize: '14px', opacity: 0.85 }}>לחץ בכל מקום או על ה-X לסגירה</p>
+          </div>
+        </div>
+      )}
+
       {incomingSoundAlert && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.85)',
@@ -2324,8 +2372,26 @@ export default function App() {
         </div>
 
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
+          
+          {/* כותרת היום הנוכחי יחד עם תמונת תקריב קטנה שבלחיצה נפתחת בגדול */}
+          <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', background: cardBg, padding: '12px 16px', borderRadius: '18px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+              <span style={{ fontSize: '24px' }}>{day.icon}</span>
+              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{day.title}</h2>
+            </div>
+            
+            <button
+              onClick={() => handleGlobalClick(() => setPreviewImageModal({ title: day.title, imgUrl: DAY_PREVIEW_IMAGES[activeDay] }))}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px', background: isDark ? '#2c2c2e' : '#f1f5f9',
+                border: `1.5px solid ${borderColor}`, padding: '6px 10px', borderRadius: '12px', cursor: 'pointer',
+                fontSize: '12px', fontWeight: 'bold', color: textColor, flexShrink: 0
+              }}
+              title="הצג תמונה של האתר"
+            >
+              <img src={DAY_PREVIEW_IMAGES[activeDay]} alt="thumb" style={{ width: '28px', height: '28px', borderRadius: '8px', objectFit: 'cover' }} />
+              <span>תמונה 🖼️</span>
+            </button>
           </div>
 
           <div 
