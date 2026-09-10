@@ -119,7 +119,7 @@ const INITIAL_TRIP_DAYS = [
     title: "X Rafting בבוקר + Borghetto בצהריים",
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מטורפת מהראפטינג ותמונה חגיגית בבורגטו!",
-    challengeDesc: "מתחילים את הבוקר באקשן מים מסעיר ב-X Rafting, וממשיכים לצהריים רומנטיים בכפר הטחנות בורגטו.",
+    challengeDesc: "מתחילים את הבוקר באקשן מים מסעיר ב-X Rafting, וממשיכים לצהריים רומנטיים בכפר הטחנות בבורגטו.",
     stops: [
       { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועי." },
       { time: "12:30", name: "Borghetto sul Mincio – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות העתיקות.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי 'קשר האהבה')", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
@@ -540,6 +540,8 @@ export default function App() {
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
   const [compassTarget, setCompassTarget] = useState('parking'); // 'parking' או 'hotel'
   const [deviceHeading, setDeviceHeading] = useState(0);
+  const [compassPermissionGranted, setCompassPermissionGranted] = useState(false);
+  const parkingWatchIdRef = useRef(null);
 
   const [activeTimer, setActiveTimer] = useState(() => {
     try {
@@ -568,10 +570,11 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
 
-  // האזנה לחיישן המצפן המגנטי (עובד בספארי iOS ואנדרואיד)
-  useEffect(() => {
+  // האזנה לחיישן המצפן המגנטי עם תמיכה מלאה ב-iOS Safari ובקשת הרשאה
+  const setupOrientationListener = () => {
     const handleOrientation = (e) => {
       let alpha = e.alpha;
+      // באייפון/iOS זה המשתנה המדויק לכיוון המגנטי האמיתי
       if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
         alpha = e.webkitCompassHeading;
       }
@@ -584,12 +587,61 @@ export default function App() {
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', handleOrientation, true);
     }
+  };
+
+  const requestCompassPermission = async () => {
+    playClickSound();
+    try {
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        const response = await DeviceOrientationEvent.requestPermission();
+        if (response === 'granted') {
+          setCompassPermissionGranted(true);
+          setupOrientationListener();
+        } else {
+          alert('הרשאת המצפן נדחתה בהגדרות הטלפון.');
+        }
+      } else {
+        // מכשירי אנדרואיד ומחשבים שאינם דורשים הרשאה מפורשת
+        setCompassPermissionGranted(true);
+        setupOrientationListener();
+      }
+    } catch (err) {
+      setupOrientationListener();
+    }
+  };
+
+  useEffect(() => {
+    // הפעלה ראשונית עבור מכשירים ללא דרישת אישור בלחיצה
+    if (typeof DeviceOrientationEvent === 'undefined' || typeof DeviceOrientationEvent.requestPermission !== 'function') {
+      setCompassPermissionGranted(true);
+      setupOrientationListener();
+    }
+  }, []);
+
+  // דגימת GPS חיה רציפה בזמן שמודאל החניה/מצפן פתוח
+  useEffect(() => {
+    if (modalType === 'parking' && navigator.geolocation) {
+      parkingWatchIdRef.current = navigator.geolocation.watchPosition(
+        (pos) => {
+          setMyLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        (err) => console.warn('Compass GPS watch error', err),
+        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+      );
+    } else {
+      if (parkingWatchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(parkingWatchIdRef.current);
+        parkingWatchIdRef.current = null;
+      }
+    }
+
     return () => {
-      if (window.DeviceOrientationEvent) {
-        window.removeEventListener('deviceorientation', handleOrientation, true);
+      if (parkingWatchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(parkingWatchIdRef.current);
+        parkingWatchIdRef.current = null;
       }
     };
-  }, []);
+  }, [modalType]);
 
   // ניהול מצלמת AR
   useEffect(() => {
@@ -2772,6 +2824,19 @@ export default function App() {
               <div style={{ fontSize: '24px', fontWeight: '900', color: '#16a34a', margin: '4px 0 12px' }}>
                 {activeCompassDistance}
               </div>
+
+              {/* כפתור הפעלת מצפן אם טרם אושר (במיוחד לאייפון/iOS) */}
+              {!compassPermissionGranted && (
+                <button
+                  onClick={requestCompassPermission}
+                  style={{
+                    padding: '8px 16px', borderRadius: '10px', background: luxuryBlueBg, color: luxuryBlueText,
+                    border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', marginBottom: '12px', boxShadow: cardShadow
+                  }}
+                >
+                  🧭 אשר גישה למצפן המכשיר (iOS)
+                </button>
+              )}
 
               {/* חוגת מצפן נקייה ומסתובבת חיה */}
               <div style={{ width: '140px', height: '140px', margin: '0 auto 12px', borderRadius: '50%', border: `3px solid ${borderColor}`, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1)' }}>
