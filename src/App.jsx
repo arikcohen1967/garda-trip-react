@@ -477,6 +477,11 @@ export default function App() {
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
 
+  // --- Siri Voice Assistant States ---
+  const [isSiriActive, setIsSiriActive] = useState(false);
+  const [siriTranscript, setSiriTranscript] = useState('לחץ על המיקרופון ודבר אליי...');
+  const [siriSpeaking, setSiriSpeaking] = useState(false);
+
   const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
   const [listeningStream, setListeningStream] = useState(null);
   const audioCtxRef = useRef(null);
@@ -561,6 +566,78 @@ export default function App() {
   const currentUtteranceRef = useRef(null);
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
+
+  // --- Siri Voice Assistant Handler ---
+  const triggerSiriAssistant = () => {
+    playClickSound();
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert('זיהוי קולי אינו נתמך בדפדפן זה.');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRec();
+      recognition.lang = 'he-IL';
+      recognition.interimResults = false;
+      
+      setIsSiriActive(true);
+      setSiriTranscript('מקשיב לך... שאל שאלה או אמור פקודה');
+
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        setSiriTranscript(`אמרת: "${text}"`);
+        
+        // Analyze command
+        const lower = text.toLowerCase();
+        let reply = "הבנתי אותך אריק!";
+        
+        if (lower.includes('מלון') || lower.includes('חזרה')) {
+          reply = "מנווט אליך בחזרה למלון ב-Waze!";
+          setTimeout(() => {
+            window.location.href = `https://www.waze.com/ul?q=${encodeURIComponent(HOTEL_ADDRESS)}&navigate=yes`;
+          }, 1500);
+        } else if (lower.includes('גארדלנד') || lower.includes('פארק')) {
+          reply = "פותח ניווט לגארדלנד!";
+          setTimeout(() => {
+            window.location.href = `https://www.waze.com/ul?q=${encodeURIComponent('Gardaland Resort')}&navigate=yes`;
+          }, 1500);
+        } else if (lower.includes('אוכל') || lower.includes('פיצה') || lower.includes('מסעדה')) {
+          reply = "מחפש פיצות ומסעדות באזורך במפה!";
+          setTimeout(() => {
+            window.location.href = `https://maps.apple.com/?q=pizza`;
+          }, 1500);
+        } else {
+          reply = `הקשבתי לשאלתך: ${text}. נסיעה מצוינת באגם גארדה!`;
+        }
+
+        setSiriSpeaking(true);
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(reply);
+          utterance.lang = 'he-IL';
+          utterance.onend = () => setSiriSpeaking(false);
+          window.speechSynthesis.speak(utterance);
+        } else {
+          setTimeout(() => setSiriSpeaking(false), 2000);
+        }
+      };
+
+      recognition.onerror = () => {
+        setIsSiriActive(false);
+        setSiriTranscript('לא הצלחתי לשמוע, נסה שוב.');
+      };
+
+      recognition.onend = () => {
+        // keep modal open briefly or close
+      };
+
+      recognition.start();
+    } catch (err) {
+      setIsSiriActive(false);
+      alert('שגיאה בהפעלת זיהוי קולי.');
+    }
+  };
 
   useEffect(() => {
     if (!isArActive) return;
@@ -1096,11 +1173,12 @@ export default function App() {
         if (sidebarOpen) setSidebarOpen(false);
         if (modalType) closeModal();
         if (isArActive) setIsArActive(false);
+        if (isSiriActive) setIsSiriActive(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [sidebarOpen, modalType, isArActive]);
+  }, [sidebarOpen, modalType, isArActive, isSiriActive]);
 
   const handleGlobalClick = (callback) => {
     playClickSound();
@@ -1771,6 +1849,71 @@ export default function App() {
       position: 'relative' 
     }}>
       
+      {/* 🌟 כפתור צף חדש בסגנון סירי (Siri Floating Orb) */}
+      <button
+        onClick={triggerSiriAssistant}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '24px',
+          zIndex: 3000,
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #9333ea 100%)',
+          color: '#ffffff',
+          border: '3px solid rgba(255,255,255,0.8)',
+          boxShadow: '0 8px 25px rgba(59, 130, 246, 0.6), 0 0 15px rgba(147, 51, 234, 0.4)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '26px',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          animation: 'pulse 2s infinite'
+        }}
+        title="עוזרת קולית Siri"
+      >
+        🎙️
+      </button>
+
+      {/* מודל הפעלה של סירי */}
+      {isSiriActive && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(0,0,0,0.88)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: '20px', direction: 'rtl', backdropFilter: 'blur(15px)', WebkitBackdropFilter: 'blur(15px)', boxSizing: 'border-box'
+        }}>
+          <div style={{
+            width: '120px', height: '120px', borderRadius: '50%',
+            background: siriSpeaking ? 'radial-gradient(circle, #22c55e 0%, #15803d 70%)' : 'radial-gradient(circle, #3b82f6 0%, #9333ea 70%)',
+            boxShadow: '0 0 50px rgba(59,130,246,0.8), 0 0 100px rgba(147,51,234,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px',
+            marginBottom: '24px', animation: 'pulse 1.5s infinite'
+          }}>
+            {siriSpeaking ? '🗣️' : '🎙️'}
+          </div>
+          
+          <h2 style={{ color: '#ffffff', fontSize: '22px', fontWeight: '900', margin: '0 0 10px', textAlign: 'center' }}>
+            {siriSpeaking ? 'העוזרת עונה...' : 'מקשיב לפקודה...'}
+          </h2>
+          <p style={{ color: '#93c5fd', fontSize: '16px', fontWeight: 'bold', margin: '0 0 30px', textAlign: 'center', maxWidth: '350px' }}>
+            {siriTranscript}
+          </p>
+
+          <button
+            onClick={() => setIsSiriActive(false)}
+            style={{
+              padding: '12px 28px', background: '#dc2626', color: '#fff', border: 'none',
+              borderRadius: '16px', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(220,38,38,0.5)'
+            }}
+          >
+            סגור עוזרת ✕
+          </button>
+        </div>
+      )}
+
       {incomingSoundAlert && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.85)',
