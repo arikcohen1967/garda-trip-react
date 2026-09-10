@@ -69,14 +69,14 @@ const INITIAL_TRIP_DAYS = [
     date: "2026-10-02",
     label: "שישי · 02/10",
     fullLabel: "יום שישי · 02 באוקטובר 2026",
-    title: "סובב אגם Garda + ראפטינג",
+    title: "סובב אגם Garda + X Rafting",
     icon: "🚣",
-    challenge: "לצלם תמונה משפחתית מהראפטינג ותמונה עם גלידת לימון!",
-    challengeDesc: "משימת אקשן ומים! צלמו את הסירה לפני הירידה למים, וכתבו בדיחה או משפט קורע שקרה במהלך השיט.",
+    challenge: "לצלם תמונה משפחתית מטורפת מתוך הראפטינג ותמונה עם גלידת לימון!",
+    challengeDesc: "משימת אקשן ומים! צלמו את כולם עם חגורות ההצלה, וכתבו את הצעקה הכי מצחיקה שנשמעה בזרם המים.",
     stops: [
       { time: "08:00", name: "יציאה צפונה לאורך החוף המזרחי", dest: "Malcesine, Italy", note: "נסיעה נופית יפהפייה ועצירה במלצ׳סינה." },
-      { time: "12:00", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
-      { time: "14:30", name: "יציאה לראפטינג ב-Valdadige", dest: "Visit Valdadige, Via San Martino, Volargne, Italy", note: "ראפטינג משפחתי חווייתי על נהר האדיג׳ה." }
+      { time: "11:30", name: "ארוחת צהריים בלימונה", dest: "Limone sul Garda, Italy", note: "עצירה בלימונה לספוג נוף ואוכל טוב.", food: { name: "🍕 Ristorante Pizzeria La Terrazza + גלידת לימון", dest: "Limone sul Garda, Italy" } },
+      { time: "14:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועי.", food: { name: "☕ עצירת קפה ומנוחה לאחר הראפטינג", dest: "Rivoli Veronese, Italy" } }
     ]
   },
   {
@@ -134,7 +134,7 @@ const INITIAL_TRIP_DAYS = [
   }
 ];
 
-const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 ראפטינג', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
+const TICKET_DEFAULT_FOLDERS = ['✈️ טיסות ורכב', '🏡 מלון', '🎢 Gardaland', '🚣 X Rafting', '🎬 Movieland', '🏰 Medieval Times', '🚤 ונציה'];
 
 const DEFAULT_DOCUMENTS = [
   { id: 'flight-arik', folder: '✈️ טיסות ורכב', title: 'כרטיס טיסה - אריק כהן (8180011314102)', name: 'Israir_Arik_Cohen.pdf', type: 'text/flight-info', size: 15400, created: 1005, isFlightInfo: true, passenger: 'COHEN/ARIK MR', ticketNo: '8180011314102' },
