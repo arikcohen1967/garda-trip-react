@@ -479,6 +479,7 @@ export default function App() {
 
   const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
   const [listeningStream, setListeningStream] = useState(null);
+  
   const audioCtxRef = useRef(null);
   const oscillatorRef = useRef(null);
   const alarmGainRef = useRef(null);
@@ -672,21 +673,32 @@ export default function App() {
     }
   };
 
+  // --- תוקן: ניהול חכם ויציב של AudioContext לצלילי הקליק ---
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
-      const ctx = new AudioCtx();
+      
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioCtx();
+      }
+      const ctx = audioCtxRef.current;
+      
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      gain.gain.setValueAtTime(0.05, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+      osc.frequency.setValueAtTime(520, ctx.currentTime);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+      
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.05);
+      osc.stop(ctx.currentTime + 0.06);
     } catch (e) {}
   };
 
