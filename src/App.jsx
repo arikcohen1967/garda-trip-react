@@ -48,7 +48,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -197,6 +197,7 @@ const RAW_BASE_QUESTIONS = [
   { q: "מהי בירת גרמניה?", options: ["מינכן", "פרנקפורט", "ברלין", "המבורג"], correct: 2 }
 ];
 
+// פונקציית חישוב מרחק מדויקת ויחידה בקובץ
 const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lon2 || !lat2) return null;
   const R = 6371;
@@ -407,7 +408,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
           <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה وרונה (VRN)</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
         </>
       )}
 
@@ -472,6 +473,13 @@ export default function App() {
   const [completedChallenges, setCompletedChallenges] = useState({});
   const [challengeNote, setChallengeNote] = useState('');
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
+  
+  // Ref לשמירת ה-Author ללא צורך באתחול מחדש של ה-Realtime channel
+  const challengeAuthorRef = useRef(challengeAuthor);
+  useEffect(() => {
+    challengeAuthorRef.current = challengeAuthor;
+  }, [challengeAuthor]);
+
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
@@ -644,7 +652,7 @@ export default function App() {
         type: 'broadcast',
         event: 'sound_alert_with_msg',
         payload: {
-          senderName: challengeAuthor || 'אריק',
+          senderName: challengeAuthorRef.current || 'אריק',
           targetName: memberName,
           message: msg,
           time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
@@ -663,7 +671,7 @@ export default function App() {
         type: 'broadcast',
         event: 'mic_listen_request',
         payload: {
-          requester: challengeAuthor || 'אריק',
+          requester: challengeAuthorRef.current || 'אריק',
           targetName: memberName
         }
       });
@@ -673,7 +681,7 @@ export default function App() {
     }
   };
 
-  // --- פונקציית סאונד קליק מתוקנת, יציבה ומוגברת ---
+  // פונקציית סאונד קליק מתוקנת, יציבה ומוגברת
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -693,7 +701,6 @@ export default function App() {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(580, ctx.currentTime);
       
-      // ווליום מוגבר לבקשתך
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
       
@@ -705,7 +712,7 @@ export default function App() {
   };
 
   const broadcastMyLocation = async (coords) => {
-    const currentName = challengeAuthor || 'אריק';
+    const currentName = challengeAuthorRef.current || 'אריק';
     const locObj = {
       name: currentName,
       lat: coords.latitude,
@@ -727,7 +734,7 @@ export default function App() {
   };
 
   const triggerSosLostAlert = () => {
-    const currentName = challengeAuthor || 'אריק';
+    const currentName = challengeAuthorRef.current || 'אריק';
     if (!navigator.geolocation) {
       alert('שירותי מיקום אינם נתמכים');
       return;
@@ -761,7 +768,7 @@ export default function App() {
         setModalType('radar');
       },
       () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון.'),
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
     );
   };
 
@@ -813,12 +820,12 @@ export default function App() {
         alert('📍 מיקומך עודכן ונשמר במפה לכל המשפחה!');
       },
       () => alert('שגיאה בקבלת מיקום GPS.'),
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
     );
   };
 
   const adminForceRefreshAllLocations = async () => {
-    if (challengeAuthor !== 'אריק' && !isAdminUnlocked) {
+    if (challengeAuthorRef.current !== 'אריק' && !isAdminUnlocked) {
       const pass = window.prompt('הזן קוד מנהל לפעולה זו:');
       if (pass !== '1967') {
         alert('קוד שגוי!');
@@ -870,12 +877,16 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTimer]);
 
+  // תיקון יצירת AudioCtx מרובים ב-iOS
   const startEscalatingAlarm = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      audioCtxRef.current = ctx;
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioCtx();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -911,15 +922,11 @@ export default function App() {
         oscillatorRef.current.disconnect();
         oscillatorRef.current = null;
       }
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
-        audioCtxRef.current = null;
-      }
     } catch (e) {}
   };
 
   const verifyAdminAccess = () => {
-    if (isAdminUnlocked || challengeAuthor === 'אריק') return true;
+    if (isAdminUnlocked || challengeAuthorRef.current === 'אריק') return true;
     const pass = window.prompt('הזן קוד מנהל לשליטה בטיימר המשפחתי:');
     if (pass === '1967') {
       setIsAdminUnlocked(true);
@@ -982,6 +989,7 @@ export default function App() {
     } catch (e) {}
   };
 
+  // ייצוב ערוץ הסוקט ללא ניתוקים בעת החלפת שמות
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar')
@@ -1007,13 +1015,13 @@ export default function App() {
         localStorage.removeItem('garda-active-sos');
       })
       .on('broadcast', { event: 'sound_alert_with_msg' }, ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
+        if (payload && payload.targetName === (challengeAuthorRef.current || 'אריק')) {
           setIncomingSoundAlert(payload);
           startEscalatingAlarm();
         }
       })
       .on('broadcast', { event: 'mic_listen_request' }, async ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
+        if (payload && payload.targetName === (challengeAuthorRef.current || 'אריק')) {
           try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             setListeningStream(stream);
@@ -1028,7 +1036,7 @@ export default function App() {
           navigator.geolocation.getCurrentPosition(
             (pos) => broadcastMyLocation(pos.coords),
             () => {},
-            { enableHighAccuracy: true }
+            { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
           );
         }
       })
@@ -1050,7 +1058,7 @@ export default function App() {
     return () => {
       supabase.removeChannel(radarChannel);
     };
-  }, [challengeAuthor]);
+  }, []);
 
   const saveSmartParkingLocation = () => {
     if (!navigator.geolocation) {
@@ -1072,7 +1080,7 @@ export default function App() {
         alert('🚗 מיקום הרכב נשמר בהצלחה (עובד גם Offline)!');
       },
       () => alert('שגיאה בדגימת מיקום ה-GPS של הרכב'),
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
     );
   };
 
@@ -1096,12 +1104,16 @@ export default function App() {
     localStorage.removeItem('garda-saved-parking');
   };
 
+  // תיקון נעילת גלילה ב-body
   useEffect(() => {
     if (modalType || sidebarOpen || isArActive) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [modalType, sidebarOpen, isArActive]);
 
   useEffect(() => {
