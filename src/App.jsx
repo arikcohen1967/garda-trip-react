@@ -673,7 +673,7 @@ export default function App() {
     }
   };
 
-  // --- סאונד קליק מוגבר ויציב ---
+  // --- פונקציית סאונד קליק מתוקנת, יציבה ומוגברת ---
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -693,6 +693,7 @@ export default function App() {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(580, ctx.currentTime);
       
+      // ווליום מוגבר לבקשתך
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
       
@@ -2323,25 +2324,8 @@ export default function App() {
         </div>
 
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
-          
-          <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', background: cardBg, padding: '12px 16px', borderRadius: '18px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: '24px' }}>{day.icon}</span>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{day.title}</h2>
-            </div>
-            
-            <button
-              onClick={() => handleGlobalClick(() => setPreviewImageModal({ title: day.title, imgUrl: DAY_PREVIEW_IMAGES[activeDay] }))}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '6px', background: isDark ? '#2c2c2e' : '#f1f5f9',
-                border: `1.5px solid ${borderColor}`, padding: '6px 10px', borderRadius: '12px', cursor: 'pointer',
-                fontSize: '12px', fontWeight: 'bold', color: textColor, flexShrink: 0
-              }}
-              title="הצג תמונה של האתר"
-            >
-              <img src={DAY_PREVIEW_IMAGES[activeDay]} alt="thumb" style={{ width: '28px', height: '28px', borderRadius: '8px', objectFit: 'cover' }} />
-              <span>תמונה 🖼️</span>
-            </button>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
           </div>
 
           <div 
