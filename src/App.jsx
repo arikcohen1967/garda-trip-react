@@ -3114,8 +3114,8 @@ export default function App() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
               <a href="tel:112" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚨 חירום כללי: 112</a>
               <a href="tel:118" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🚑 אמבולנס: 118</a>
-              <a href="tel:113" style={{ ...gridModalBtn, background: isDark ? '#1e293b' : '#f1f5f9', color: textColor, textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>👮 משטרה (Polizia): 113</a>
-              <a href="tel:+390636911" style={{ ...gridModalBtn, background: isDark ? '#1e293b' : '#f1f5f9', color: textColor, textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, gridColumn: 'span 2' }}>🇮🇱 שגרירות ישראל ברומא: +39 06 361 911</a>
+              <a href="tel:113" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>👮 משטרה: 113</a>
+              <a href="tel:+390636911" style={{ ...gridModalBtn, background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', textDecoration: 'none', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, gridColumn: 'span 2' }}>🇮🇱 שגרירות ישראל ברומא: +39 06 361 911</a>
             </div>
           </div>
         </div>
