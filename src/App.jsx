@@ -39,7 +39,6 @@ const TIMER_SVG = (
 const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
-// מסלול מלא הכולל מידע כתוב מורחב, שעות פתיחה, חניונים מומלצים ותשובות AI
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -128,7 +127,7 @@ const INITIAL_TRIP_DAYS = [
     aiTitle: "ונציה – שעות פעילות וחניוני ענק 🛶",
     aiOverview: "עיר תעלות מרהיבה ללא מכוניות. מרכז התיירות העולמי עם כיכר סן מרקו וגשר ריאלטו.",
     aiHours: "<b>שעות פעילות:</b> העיר פתוחה תמיד. ארמון הדוג'ה פתוח 09:00–19:00.",
-    aiParking: "<b>חניונים מומלצים בכניסה לוונציה:</b> Venezia Tronchetto Parking או חניוני פאצקוביס (לפני הגέשור).",
+    aiParking: "<b>חניונים מומלצים בכניסה לוונציה:</b> Venezia Tronchetto Parking או חניוני פאצקוביס (לפני הגשור).",
     aiFoodStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> פיצרייה שקטה 'L'Anfora' וגלידת Suso.",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
@@ -152,7 +151,7 @@ const INITIAL_TRIP_DAYS = [
     aiParking: "<b>חנייה:</b> חניון חינמי/בתשלום בכניסה לכפר בורגטו (Parcheggio Borghetto).",
     aiFoodStop: "<b>המלצה לאוכל:</b> טורטליני 'קשר האהבה' במסעדת Alla Borsa.",
     stops: [
-      { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועي." },
+      { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועי." },
       { time: "12:30", name: "Borghetto sul Mincio – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות העתיקות.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי 'קשר האהבה')", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
     ]
   },
@@ -513,18 +512,12 @@ export default function App() {
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
   const [isAroundListening, setIsAroundListening] = useState(false);
 
-  const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
-  const [listeningStream, setListeningStream] = useState(null);
-  
-  // States עבור צ'אט שאלות ותשובות עם ה-AI
   const [aiQuestion, setAiQuestion] = useState('');
   const [aiChatHistory, setAiChatHistory] = useState([
     { sender: 'ai', text: 'הי! אני המדריך החכם שלך לטיול. שאל אותי כל מה שתרצה על היום הנוכחי (שעות פתיחה, חניונים, המלצות או טיפים).' }
   ]);
 
   const audioCtxRef = useRef(null);
-  const oscillatorRef = useRef(null);
-  const alarmGainRef = useRef(null);
 
   const travelers = ['אריק', 'עמית', 'יולי', 'ליאן', 'הראל'];
   
@@ -595,7 +588,21 @@ export default function App() {
   const [arHeading, setArHeading] = useState(0);
   const [arBearing, setArBearing] = useState(0);
 
-  // תפריט צד מנוקה לחלוטין מ-aiGuide (11 פריטים תקינים)
+  // חישובים עבור המצפן הממוזג במודאל החניה
+  const activeCompassCoords = compassTarget === 'hotel' 
+    ? { lat: HOTEL_COORDINATES.lat, lng: HOTEL_COORDINATES.lng, name: HOTEL_COORDINATES.name }
+    : (savedParking ? { lat: savedParking.lat, lng: savedParking.lng, name: savedParking.note || 'רכב חונה' } : { lat: HOTEL_COORDINATES.lat, lng: HOTEL_COORDINATES.lng, name: 'טרם נשמר רכב (מכוון למלון)' });
+
+  const activeCompassDistance = myLocation && activeCompassCoords.lat
+    ? calculateDistanceKm(myLocation.lat, myLocation.lng, activeCompassCoords.lat, activeCompassCoords.lng)
+    : 'מרחק לא זמין';
+
+  const compassBearingToTarget = myLocation && activeCompassCoords.lat
+    ? calculateBearing(myLocation.lat, myLocation.lng, activeCompassCoords.lat, activeCompassCoords.lng)
+    : 0;
+
+  const compassArrowRotation = (compassBearingToTarget - deviceHeading + 360) % 360;
+
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
@@ -603,9 +610,7 @@ export default function App() {
     } catch (e) {}
     return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
-
-  const [isEditingMenu, setIsEditingMenu] = useState(false);
-  
+      
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -676,58 +681,6 @@ export default function App() {
       }
     };
   }, [modalType]);
-
-  useEffect(() => {
-    if (!isArActive) return;
-    navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } })
-      .then(stream => {
-        if (videoRef.current) videoRef.current.srcObject = stream;
-      })
-      .catch(err => console.log('Camera error', err));
-
-    if (savedParking && myLocation) {
-      const brng = calculateBearing(myLocation.lat, myLocation.lng, savedParking.lat, savedParking.lng);
-      setArBearing(brng);
-    }
-
-    return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach(t => t.stop());
-      }
-    };
-  }, [isArActive, savedParking, myLocation]);
-
-  const handleAroundCustomSearch = (e) => {
-    e.preventDefault();
-    if (!aroundSearchQuery.trim()) return;
-    window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(aroundSearchQuery)}`;
-  };
-
-  const startAroundVoiceSearch = () => {
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) {
-      alert('זיהוי קולי אינו נתמך בדפדפן זה.');
-      return;
-    }
-    try {
-      const recognition = new SpeechRec();
-      recognition.lang = 'he-IL';
-      recognition.interimResults = false;
-      recognition.onstart = () => setIsAroundListening(true);
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setAroundSearchQuery(transcript);
-          window.location.href = `https://maps.apple.com/?q=${encodeURIComponent(transcript)}`;
-        }
-      };
-      recognition.onerror = () => setIsAroundListening(false);
-      recognition.onend = () => setIsAroundListening(false);
-      recognition.start();
-    } catch (e) {
-      setIsAroundListening(false);
-    }
-  };
 
   const playClickSound = () => {
     try {
@@ -890,14 +843,6 @@ export default function App() {
       alert('שגיאה בשליחת הפקודה');
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (watchPositionIdRef.current !== null) {
-        navigator.geolocation.clearWatch(watchPositionIdRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (!activeTimer || !activeTimer.endTime) {
@@ -1117,17 +1062,6 @@ export default function App() {
     playClickSound();
     setViewerItem(null);
     setModalType('tickets');
-  };
-
-  const moveMenuItem = (index, direction) => {
-    const newOrder = [...menuOrder];
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= newOrder.length) return;
-    const temp = newOrder[index];
-    newOrder[index] = newOrder[targetIndex];
-    newOrder[targetIndex] = temp;
-    setMenuOrder(newOrder);
-    localStorage.setItem('garda-menu-order', JSON.stringify(newOrder));
   };
 
   const touchStartXRef = useRef(0);
@@ -1629,7 +1563,6 @@ export default function App() {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  // פונקציית מענה לשאלות משתמש בתוך מודאל ה-AI
   const handleAskAi = (e) => {
     e.preventDefault();
     if (!aiQuestion.trim()) return;
@@ -1638,16 +1571,15 @@ export default function App() {
     const newHistory = [...aiChatHistory, { sender: 'user', text: userText }];
     setAiQuestion('');
 
-    // מענה חכם לפי תוכן היום הנוכחי ושאלת המשתמש
-    let reply = `שאלה מעולה! לגבי ${day.title}: מומלץ לוודא הגעה בזמן לפי הלו״ז, להיעזר בחניונים המומלצים שמופיעים בהרחבה כאן למעלה, ולהנות מהאווירה. אם תרצו לנווט ישירות, השתמשו בכפתורי הווייז המצורפים במסלול.`;
+    let reply = `שאלה מעולה! לגבי ${tripDays[activeDay]?.title}: מומלץ לוודא הגעה בזמן לפי הלו״ז, להיעזר בחניונים המומלצים שמופיעים בהרחבה כאן למעלה, ולהנות מהאווירה.`;
     
     const qLower = userText.toLowerCase();
     if (qLower.includes('חניון') || qLower.includes('חניה')) {
-      reply = `🚗 מידע חניה ליום זה: ${day.aiParking || 'מומלץ לחנות בחניונים המסודרים הסמוכים ליעד לפי השילוט המקומי.'}`;
+      reply = `🚗 מידע חניה ליום זה: ${tripDays[activeDay]?.aiParking || 'מומלץ לחנות בחניונים המסודרים הסמוכים ליעד לפי השילוט המקומי.'}`;
     } else if (qLower.includes('שעות') || qLower.includes('פתוח') || qLower.includes('זמן')) {
-      reply = `⏰ זמנים ושעות: ${day.aiHours || 'שעות הפעילות מעודכנות לפי זמני הפארקים והאתרים בלו״ז המרכזי.'}`;
+      reply = `⏰ זמנים ושעות: ${tripDays[activeDay]?.aiHours || 'שעות הפעילות מעודכנות לפי זמני הפארקים והאתרים בלו״ז המרכזי.'}`;
     } else if (qLower.includes('אוכל') || qLower.includes('מסעדה') || qLower.includes('גלידה')) {
-      reply = `🍴 המלצה קולינרית: ${day.aiFoodStop}`;
+      reply = `🍴 המלצה קולינרית: ${tripDays[activeDay]?.aiFoodStop}`;
     }
 
     setTimeout(() => {
@@ -1817,7 +1749,6 @@ export default function App() {
         </div>
       )}
 
-      {/* ריבוע כחול ראשי נקי עם מזג האוויר והכפתורים המקוריים בלבד */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
@@ -1918,17 +1849,21 @@ export default function App() {
             >
               {isDark ? '☀️ בהיר' : '🌙 כהה'}
             </button>
-            <button 
-              onClick={() => handleGlobalClick(() => setShowThemeBuilder(true))}
-              style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
-            >
-              🎨 עיצוב
-            </button>
             <button onClick={() => handleGlobalClick(() => setSidebarOpen(false))} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
           </div>
         </div>
 
-        {menuOrder.map((id, index) => renderMenuItem(id, index))}
+        {/* קיצורי תפריט צד */}
+        <button onClick={() => { setSidebarOpen(false); setModalType('aiGuideModal'); }} style={sidebarBtnStyle}>🤖 מדריך AI וצ'אט</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('radar'); }} style={sidebarBtnStyle}>📡 רדאר ומפת משפחה</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('timer'); }} style={sidebarBtnStyle}>⏱️ טיימר משפחתי</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}>🚗 איתור חניה / מלון ומצפן</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('challengesLog'); }} style={sidebarBtnStyle}>🏆 יומן האתגרים</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('trivia'); }} style={sidebarBtnStyle}>🚗 טריויה לדרך</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('gallery'); }} style={sidebarBtnStyle}>📸 אלבום תמונות משפחתי</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}>🎟️ ארנק כרטיסים ומסמכים</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={sidebarBtnStyle}>🆘 מספרי חירום</button>
+        <button onClick={() => { setSidebarOpen(false); setModalType('appleMusicModal'); }} style={sidebarBtnStyle}>🎵 Apple Music</button>
       </aside>
 
       {/* מודאל הרחבת מידע AI ואפשרות לשאול שאלות */}
@@ -2135,7 +2070,6 @@ export default function App() {
             }}>
               {isCurrentDayCompleted ? 'צפה ✏️' : 'פתח 🚀'}
             </span>
-
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', boxSizing: 'border-box' }}>
@@ -2450,7 +2384,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודאל חניה */}
+      {/* מודאל חניה ומצפן */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3133,16 +3067,16 @@ export default function App() {
   );
 }
 
-const arrowBtnStyle = {
-  background: '#57585a', color: '#ffffff', border: 'none', borderRadius: '6px',
-  width: '24px', height: '22px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-};
-
 const navBtnStyle = {
   fontSize: '12px', fontWeight: 'bold',
   padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center',
   justifyContent: 'center', gap: '6px', cursor: 'pointer', textDecoration: 'none', boxSizing: 'border-box'
+};
+
+const sidebarBtnStyle = {
+  width: '100%', textAlign: 'right', padding: '12px 14px', borderRadius: '12px',
+  background: 'transparent', border: 'none', fontSize: '14px', fontWeight: 'bold',
+  cursor: 'pointer', color: 'inherit'
 };
 
 const modalStyle = {
