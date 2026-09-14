@@ -1352,7 +1352,7 @@ export default function App() {
       const db = await openDb();
       const tx = db.transaction('files', 'readwrite');
       const store = tx.objectStore('files');
-      files.files.forEach(file => {
+      files.forEach(file => {
         store.add({
           folder: selectedUploadFolder || activeFolder,
           title: newTicketTitle || file.name,
@@ -1845,6 +1845,7 @@ export default function App() {
         </div>
       )}
 
+      {/* ריבוע כחול ראשי הכולל את מזג האוויר וחציו המקורי */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
@@ -1869,24 +1870,26 @@ export default function App() {
           </div>
           
           <div 
-            onClick={() => handleGlobalClick(() => setModalType('aiGuideModal'))}
+            onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
             style={{
-              background: 'rgba(255, 255, 255, 0.25)',
-              padding: '8px 14px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              padding: '8px 16px',
               borderRadius: '14px',
               textAlign: 'center',
               cursor: 'pointer',
-              border: '1.5px solid rgba(255, 255, 255, 0.4)',
+              border: '1.5px solid rgba(255, 255, 255, 0.3)',
               display: 'flex',
+              flexDirection: 'row',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px',
               boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
               flexShrink: 0
             }}
-            title="פתח הרחבת מידע AI"
+            title="תחזית מזג אוויר"
           >
-            <span style={{ fontSize: '16px' }}>🤖</span>
-            <span style={{ fontSize: '13px', fontWeight: 'bold' }}>הרחבת AI</span>
+            <div style={{ fontSize: '17px', fontWeight: '900', lineHeight: '1.2', color: '#ffffff' }}>25°C</div>
+            <div style={{ fontSize: '15px', lineHeight: '1.2' }}>☀️</div>
           </div>
         </div>
 
@@ -1987,6 +1990,55 @@ export default function App() {
               style={{ width: '100%', padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}
             >
               סגור וחזור למסלול
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* מודאל תחזית מזג אוויר */}
+      {modalType === 'weatherModal' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>METEO LIVE & LOCATION</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>☀️ תחזית ומזג אוויר עדכני</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
+            </div>
+
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6', boxSizing: 'border-box' }}>
+              <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
+                <b>מידע בזמן אמת עבור האזור שלך באגם גארדה:</b>
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>טמפרטורה</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.temp}</strong>
+                </div>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>לחות יחסית</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.humidity || '58%'}</strong>
+                </div>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>מהירות רוח</small>
+                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.wind || '12 קמ"ש'}</strong>
+                </div>
+                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
+                  <small style={{ color: textSub, display: 'block' }}>עדכון אחרון</small>
+                  <strong style={{ fontSize: '14px', color: textColor }}>{weatherData.updated || 'כעת'}</strong>
+                </div>
+              </div>
+              <p style={{ margin: 0, fontSize: '12px', color: textSub }}>
+                💡 <b>טיפ לדרך:</b> מזג האוויר בספטמבר-אוקטובר באגם גארדה אידיאלי לפארקי שעשועים וטיולי טבע, אך מומלץ להצטייד בלבוש קל לשעות הערב.
+              </p>
+            </div>
+
+            <button
+              onClick={() => handleGlobalClick(closeModal)}
+              style={{ width: '100%', padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}
+            >
+              הבנתי, חזור למסלול
             </button>
           </div>
         </div>
