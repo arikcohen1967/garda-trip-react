@@ -39,7 +39,7 @@ const TIMER_SVG = (
 const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
-// מסלול מלא הכולל מידע כתוב מורחב ומעמיק לכל יום בטיול
+// מסלול מלא הכולל מידע כתוב מורחב ומעמיק לכל יום בטיול (שמור בלשונית ה-AI בלבד)
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -86,7 +86,6 @@ const INITIAL_TRIP_DAYS = [
     aiTitle: "מונטה באלדו וסירמיונה – עומק היסטורי וגאוגרפי 🚠🏰",
     aiOverview: "מונטה באלדו (Monte Baldo) מכונה 'הגן של אירופה' בשל מגוון הצומח הייחודי שבו, והרכבל המסתובב שלו מעניק חוויה של ריחוף באוויר מעל האגם. סירמיונה (Sirmione), השוכנת בקצה לשון יבשה דרומית, מפורסמת במצודת סקאליג'ר המבוצרת ובהיסטוריה של מרחצאות רומיים עתיקים.",
     aiFoodStop: "<b>המלצה מורחבת לעצירת מנוחה:</b> בפסגת מונטה באלדו כדאי לשבת לקפה מול האופק. בסירמיונה, חובה לעצור בגלידריה המפורסמת 'תירס' (Gelateria Ice Paradise) או בכל גלידריה מקומית שמוכרת גלידת פיסטוק אמיתית.",
-    imageUrl: "",
     stops: [
       { time: "08:30", name: "עלייה לרכבל מונטה באלדו (מלצ׳סינה)", dest: "Funivia Malcesine-Monte Baldo", note: "רכבל מסתובב עוצר נשק אל פסגת הר האלדו. מומלץ להזמין מקום מראש!" },
       { time: "11:00", name: "תצפית מפסגת מונטה באלדו", dest: "Monte Baldo Summit, Italy", note: "הליכה קצרה, תצפיות פנורמיות על כל אגם גארדה, ואולי פגישה עם פרות הרריות." },
@@ -1353,7 +1352,7 @@ export default function App() {
       const db = await openDb();
       const tx = db.transaction('files', 'readwrite');
       const store = tx.objectStore('files');
-      files.forEach(file => {
+      files.files.forEach(file => {
         store.add({
           folder: selectedUploadFolder || activeFolder,
           title: newTicketTitle || file.name,
@@ -2039,13 +2038,6 @@ export default function App() {
             >
               🤖 קרא הרחבת AI
             </button>
-          </div>
-
-          {/* כרטיסייה כתובה נקייה ומורחבת המצורפת ישירות למסלול היומי */}
-          <div style={{ background: cardBg, borderRadius: '18px', padding: '18px', marginBottom: '20px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#2563eb', margin: '0 0 8px' }}>{day.aiTitle}</h3>
-            <p style={{ fontSize: '13px', lineHeight: '1.6', color: textColor, margin: '0 0 12px' }}>{day.aiOverview}</p>
-            <div style={{ background: isDark ? '#111827' : '#f0fdf4', border: '1.5px solid #22c55e', padding: '12px', borderRadius: '12px', color: textColor, fontSize: '12px', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: day.aiFoodStop }} />
           </div>
 
           <div 
