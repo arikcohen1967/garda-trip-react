@@ -593,6 +593,7 @@ export default function App() {
 
   const compassArrowRotation = (compassBearingToTarget - deviceHeading + 360) % 360;
 
+  // רשימת פריטי התפריט המקורית בדיוק כפי שהייתה במקור (ללא תוספות)
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
@@ -1600,28 +1601,75 @@ export default function App() {
   const luxuryBlueBg = '#1e3a8a'; 
   const luxuryBlueText = '#ffffff';
 
+  // רנדור פריטי התפריט המקוריים בלבד (11 פריטים)
   const renderMenuItem = (id) => {
     switch (id) {
       case 'schedule':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('aiGuideModal'); }} style={sidebarBtnStyle}>🤖 מדריך AI וצ'אט</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setActiveDay(0); }} style={sidebarBtnStyle}>
+            📅 לוח זמנים ומסלול
+          </button>
+        );
       case 'radar':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('radar'); }} style={sidebarBtnStyle}>📡 רדאר ומפת משפחה</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('radar'); }} style={sidebarBtnStyle}>
+            📡 רדאר משפחתי חי
+          </button>
+        );
       case 'timer':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('timer'); }} style={sidebarBtnStyle}>⏱️ טיימר משפחתי</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('timer'); }} style={sidebarBtnStyle}>
+            ⏱️ טיימר משפחתי
+          </button>
+        );
       case 'parking':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}>🚗 איתור חניה / מלון ומצפן</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('parking'); }} style={sidebarBtnStyle}>
+            🚗 איתור חניה / מלון ומצפן
+          </button>
+        );
       case 'challenges':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('challengesLog'); }} style={sidebarBtnStyle}>🏆 יומן האתגרים</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('challengesLog'); }} style={sidebarBtnStyle}>
+            🏆 יומן האתגרים והבדיחות
+          </button>
+        );
       case 'trivia':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('trivia'); }} style={sidebarBtnStyle}>🚗 טריויה לדרך</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('trivia'); }} style={sidebarBtnStyle}>
+            🚗 טריויה חכמה לדרך
+          </button>
+        );
       case 'gallery':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('gallery'); }} style={sidebarBtnStyle}>📸 אלבום תמונות משפחתי</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('gallery'); }} style={sidebarBtnStyle}>
+            📸 אלבום המסע המשפחתי
+          </button>
+        );
+      case 'around':
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); window.location.href = 'https://maps.apple.com/?q=restaurants'; }} style={sidebarBtnStyle}>
+            🔍 מסעדות ואטרקציות סביבי
+          </button>
+        );
       case 'tickets':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}>🎟️ ארנק כרטיסים ומסמכים</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('tickets'); }} style={sidebarBtnStyle}>
+            🎟️ כרטיסים ומסמכים
+          </button>
+        );
       case 'emergency':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={sidebarBtnStyle}>🆘 מספרי חירום</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('emergency'); }} style={sidebarBtnStyle}>
+            🆘 מספרי חירום
+          </button>
+        );
       case 'appleMusic':
-        return <button key={id} onClick={() => { setSidebarOpen(false); setModalType('appleMusicModal'); }} style={sidebarBtnStyle}>🎵 Apple Music</button>;
+        return (
+          <button key={id} onClick={() => { setSidebarOpen(false); setModalType('appleMusicModal'); }} style={sidebarBtnStyle}>
+            🎵 פלייליסט נסיעה (Apple Music)
+          </button>
+        );
       default:
         return null;
     }
@@ -2999,6 +3047,56 @@ export default function App() {
               )}
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* מודאל Apple Music */}
+      {modalType === 'appleMusicModal' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>APPLE MUSIC INTEGRATION</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎵 פלייליסט נסיעה (Apple Music)</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
+            </div>
+
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6', textAlign: 'center', boxSizing: 'border-box' }}>
+              <span style={{ fontSize: '42px', display: 'block', marginBottom: '10px' }}>🎧</span>
+              <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
+                <b>חיבור לחשבון Apple Music ליצירת פלייליסט משפחתי לדרך:</b>
+              </p>
+              <a
+                href="https://music.apple.com"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  background: '#fa233b',
+                  color: '#ffffff',
+                  borderRadius: '12px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  boxShadow: '0 4px 12px rgba(250,35,59,0.3)'
+                }}
+              >
+                פתח את Apple Music והתחבר 🎵
+              </a>
+            </div>
+
+            <button
+              onClick={() => handleGlobalClick(closeModal)}
+              style={{ width: '100%', padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}
+            >
+              סגור וחזור למסלול
+            </button>
           </div>
         </div>
       )}
