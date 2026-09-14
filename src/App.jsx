@@ -180,7 +180,6 @@ const RAW_BASE_QUESTIONS = [
   { q: "איזה חומר נחשב לקשה ביותר בטבע?", options: ["ברזל", "זהב", "יהלום", "טיטניום"], correct: 2 }
 ];
 
-// פונקציית חישוב מרחק מדויקת
 const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lon2 || !lat2) return null;
   const R = 6371;
@@ -196,7 +195,6 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
-// חישוב זווית כיוון (Bearing) יחסית לצפון
 const calculateBearing = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
   const φ1 = lat1 * Math.PI / 180;
@@ -530,7 +528,6 @@ export default function App() {
   });
   const watchPositionIdRef = useRef(null);
 
-  // שמירת רכב + מצפן GPS חי מובנה
   const [savedParking, setSavedParking] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
@@ -538,7 +535,7 @@ export default function App() {
   });
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
-  const [compassTarget, setCompassTarget] = useState('parking'); // 'parking' או 'hotel'
+  const [compassTarget, setCompassTarget] = useState('parking');
   const [deviceHeading, setDeviceHeading] = useState(0);
   const [compassPermissionGranted, setCompassPermissionGranted] = useState(false);
   const parkingWatchIdRef = useRef(null);
@@ -570,11 +567,9 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
 
-  // האזנה לחיישן המצפן המגנטי עם תמיכה מלאה ב-iOS Safari ובקשת הרשאה
   const setupOrientationListener = () => {
     const handleOrientation = (e) => {
       let alpha = e.alpha;
-      // באייפון/iOS זה המשתנה המדויק לכיוון המגנטי האמיתי
       if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
         alpha = e.webkitCompassHeading;
       }
@@ -601,7 +596,6 @@ export default function App() {
           alert('הרשאת המצפן נדחתה בהגדרות הטלפון.');
         }
       } else {
-        // מכשירי אנדרואיד ומחשבים שאינם דורשים הרשאה מפורשת
         setCompassPermissionGranted(true);
         setupOrientationListener();
       }
@@ -611,14 +605,12 @@ export default function App() {
   };
 
   useEffect(() => {
-    // הפעלה ראשונית עבור מכשירים ללא דרישת אישור בלחיצה
     if (typeof DeviceOrientationEvent === 'undefined' || typeof DeviceOrientationEvent.requestPermission !== 'function') {
       setCompassPermissionGranted(true);
       setupOrientationListener();
     }
   }, []);
 
-  // דגימת GPS חיה רציפה בזמן שמודאל החניה/מצפן פתוח
   useEffect(() => {
     if (modalType === 'parking' && navigator.geolocation) {
       parkingWatchIdRef.current = navigator.geolocation.watchPosition(
@@ -643,7 +635,6 @@ export default function App() {
     };
   }, [modalType]);
 
-  // ניהול מצלמת AR
   useEffect(() => {
     if (!isArActive) return;
     navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } })
@@ -701,7 +692,7 @@ export default function App() {
     if (!msg) return;
 
     try {
-      await supabase.channel('realtime-radar').send({
+      await supabase.channel('realtime-radar-alerts').send({
         type: 'broadcast',
         event: 'sound_alert_with_msg',
         payload: {
@@ -720,7 +711,7 @@ export default function App() {
   const requestRemoteListening = async (memberName) => {
     if (!window.confirm(`האם לבקש להאזין למיקרופון של ${memberName}?`)) return;
     try {
-      await supabase.channel('realtime-radar').send({
+      await supabase.channel('realtime-radar-alerts').send({
         type: 'broadcast',
         event: 'mic_listen_request',
         payload: {
@@ -810,7 +801,7 @@ export default function App() {
         startEscalatingAlarm();
 
         try {
-          await supabase.channel('realtime-radar').send({
+          await supabase.channel('realtime-radar-alerts').send({
             type: 'broadcast',
             event: 'sos_alert',
             payload: sosData
@@ -829,7 +820,7 @@ export default function App() {
     stopEscalatingAlarm();
     localStorage.removeItem('garda-active-sos');
     try {
-      await supabase.channel('realtime-radar').send({
+      await supabase.channel('realtime-radar-alerts').send({
         type: 'broadcast',
         event: 'sos_clear',
         payload: {}
@@ -887,7 +878,7 @@ export default function App() {
     }
 
     try {
-      await supabase.channel('realtime-radar').send({
+      await supabase.channel('realtime-radar-alerts').send({
         type: 'broadcast',
         event: 'admin_request_location',
         payload: { requestedBy: 'אריק' }
@@ -1012,7 +1003,7 @@ export default function App() {
     localStorage.setItem('garda-active-timer', JSON.stringify(timerData));
 
     try {
-      await supabase.channel('realtime-radar').send({
+      await supabase.channel('realtime-radar-alerts').send({
         type: 'broadcast',
         event: 'family_timer_start',
         payload: timerData
@@ -1032,7 +1023,7 @@ export default function App() {
     localStorage.removeItem('garda-active-timer');
 
     try {
-      await supabase.channel('realtime-radar').send({
+      await supabase.channel('realtime-radar-alerts').send({
         type: 'broadcast',
         event: 'family_timer_cancel',
         payload: {}
@@ -1040,9 +1031,10 @@ export default function App() {
     } catch (e) {}
   };
 
+  // מניעת התנגשויות ערוצים באמצעות ערוצי Supabase נפרדים ממוקדים
   useEffect(() => {
     const radarChannel = supabase
-      .channel('realtime-radar')
+      .channel('realtime-radar-db')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'family_radar' }, payload => {
         if (payload.new && payload.new.name) {
           setFamilyLocations(prev => {
@@ -1052,6 +1044,10 @@ export default function App() {
           });
         }
       })
+      .subscribe();
+
+    const alertsChannel = supabase
+      .channel('realtime-radar-alerts')
       .on('broadcast', { event: 'sos_alert' }, ({ payload }) => {
         if (payload) {
           setActiveSosAlert(payload);
@@ -1107,6 +1103,7 @@ export default function App() {
 
     return () => {
       supabase.removeChannel(radarChannel);
+      supabase.removeChannel(alertsChannel);
     };
   }, []);
 
@@ -1207,10 +1204,12 @@ export default function App() {
   };
 
   const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
   const touchCurrentXRef = useRef(0);
 
   const handleTouchStart = (e) => {
     touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
     touchCurrentXRef.current = e.touches[0].clientX;
   };
 
@@ -1218,9 +1217,13 @@ export default function App() {
     touchCurrentXRef.current = e.touches[0].clientX;
   };
 
+  // בדיקת החלקה אופקית מובהקת בלבד למניעת התנגשות עם גלילת טקסט אנכית
   const handleTouchEnd = (onCloseCallback) => {
-    const diff = touchCurrentXRef.current - touchStartXRef.current;
-    if (diff > 120) onCloseCallback();
+    const diffX = touchCurrentXRef.current - touchStartXRef.current;
+    const diffY = Math.abs(e => e.touches?.[0]?.clientY - touchStartYRef.current);
+    if (diffX > 120 && diffY < 80) {
+      onCloseCallback();
+    }
   };
 
   useEffect(() => {
@@ -1289,7 +1292,7 @@ export default function App() {
     fetchChallengesFromCloud();
 
     const galleryChannel = supabase
-      .channel('realtime-gallery')
+      .channel('realtime-gallery-changes')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gallery' }, payload => {
         setGalleryItems(prev => {
           if (prev.some(item => item.id === payload.new.id)) return prev;
@@ -1303,7 +1306,7 @@ export default function App() {
       .subscribe();
 
     const challengesChannel = supabase
-      .channel('realtime-challenges')
+      .channel('realtime-challenges-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'challenges_log' }, () => {
         fetchChallengesFromCloud();
       })
@@ -1405,7 +1408,6 @@ export default function App() {
   const loadFiles = async (folder) => {
     try {
       const db = await openDb();
-      const tx = db.transaction('files', 'readonly');
       const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
       req.onsuccess = () => {
         const dbFiles = req.result || [];
@@ -1831,7 +1833,6 @@ export default function App() {
     );
   };
 
-  // חישוב יעד המצפן הפעיל (חניה או מלון)
   const activeCompassCoords = compassTarget === 'parking' && savedParking
     ? { lat: savedParking.lat, lng: savedParking.lng, name: savedParking.note }
     : HOTEL_COORDINATES;
@@ -2500,7 +2501,6 @@ export default function App() {
               </div>
             ))}
 
-            {/* כפתור חזרה למלון ב-Waze בסוף כל יום */}
             <div style={{ marginTop: '10px' }}>
               <a 
                 href={`https://www.waze.com/ul?q=${encodeURIComponent(HOTEL_ADDRESS)}&navigate=yes`}
@@ -2550,7 +2550,7 @@ export default function App() {
                   {formatTimerClock(timerRemainingSec)}
                 </div>
                 <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '16px' }}>
-                  מוגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
+                  מווגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
                 </small>
 
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -2790,7 +2790,6 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
             </div>
 
-            {/* בורר יעד למצפן: רכב חונה מול מלון Vojon */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               <button
                 onClick={() => setCompassTarget('parking')}
@@ -2816,7 +2815,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* ווידג'ט מצפן חי מעוצב */}
             <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, textAlign: 'center', boxSizing: 'border-box' }}>
               <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '4px' }}>
                 מכוון אל: <b>{activeCompassCoords.name}</b>
@@ -2825,7 +2823,6 @@ export default function App() {
                 {activeCompassDistance}
               </div>
 
-              {/* כפתור הפעלת מצפן אם טרם אושר (במיוחד לאייפון/iOS) */}
               {!compassPermissionGranted && (
                 <button
                   onClick={requestCompassPermission}
@@ -2838,7 +2835,6 @@ export default function App() {
                 </button>
               )}
 
-              {/* חוגת מצפן נקייה ומסתובבת חיה */}
               <div style={{ width: '140px', height: '140px', margin: '0 auto 12px', borderRadius: '50%', border: `3px solid ${borderColor}`, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <span style={{ position: 'absolute', top: '6px', fontWeight: '900', fontSize: '11px', color: '#dc2626' }}>N</span>
                 <span style={{ position: 'absolute', bottom: '6px', fontWeight: '900', fontSize: '11px', color: textSub }}>S</span>
