@@ -39,7 +39,7 @@ const TIMER_SVG = (
 const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
-// מסלול מלא הכולל מידע כתוב מורחב ומעמיק לכל יום בטיול (שמור בלשונית ה-AI בלבד)
+// מסלול מלא הכולל מידע כתוב מורחב ומעמיק לכל יום בטיול
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -1845,7 +1845,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ריבוע כחול ראשי הכולל את מזג האוויר וחציו המקורי */}
+      {/* ריבוע כחול ראשי המכיל אך ורק את מזג האוויר והכפתורים המקוריים */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
@@ -1995,7 +1995,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודאל תחזית מזג אוויר */}
+      {/* מודאל מזג אוויר */}
       {modalType === 'weatherModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
