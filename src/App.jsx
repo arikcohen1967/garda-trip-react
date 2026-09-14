@@ -39,7 +39,7 @@ const TIMER_SVG = (
 const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
-// מסלול מלא הכולל מידע כתוב מורחב ומעמיק לכל יום בטיול
+// מסלול מלא הכולל מידע כתוב מורחב, שעות פתיחה, חניונים מומלצים ותשובות AI
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -49,9 +49,11 @@ const INITIAL_TRIP_DAYS = [
     icon: "✈️",
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
-    aiTitle: "ורונה ופסקיירה דל גארדה – סקירת עומק 🇮🇹",
-    aiOverview: "ורונה (Verona) משלבת רומנטיקה עם היסטוריה רומית בת אלפי שנים. העיר ידועה בזכות הארנה העתיקה שלה (האמפיתאטרון השמור ביותר בעולם) וכמובן כזירת ההתרחשות של רומיאו ויוליה. פסקיירה דל גארדה, שבה שוכן האזור שלכם, היא עיירת מבצר בצורת כוכב המוקפת תעלות מים ומתפקדת כשער הכניסה הדרומי לאגם גארדה.",
-    aiFoodStop: "<b>המלצה מורחבת לעצירת מנוחה ואוכל:</b> בערב הראשון מומלץ לא להתעמק במסעדות מורכבות, אלא לשבת בפיצרייה שכונתית חמה בפסקיירה (כמו Osteria Sottoportego) ולהזמין פיצה מאפה טאבון פריכה לצד גלידת פתיחה במסעדה מול המים.",
+    aiTitle: "ורונה ופסקיירה דל גארדה – סקירת עומק, שעות וחניונים 🇮🇹",
+    aiOverview: "ורונה משלבת רומנטיקה עם היסטוריה רומית בת אלפי שנים. פסקיירה דל גארדה השכנה בנויה כמבצר כוכב בתוך המים.",
+    aiHours: "<b>שעות פעילות ואתרים:</b> הארנה בוורונה פתוחה בימים שלישי-ראשון 09:00–19:00. טיילת פסקיירה פתוחה חופשי 24/7.",
+    aiParking: "<b>חניונים סמוכים מומלצים:</b> Parcheggio Cittadella (ורונה), חניית תחנת הרכבת פסקיירה (Parcheggio Stazione).",
+    aiFoodStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> פיצרייה משפחתית חמה ממש ליד תעלות המים בפסקיירה + עצירת גלידה ראשונה.",
     stops: [
       { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
@@ -65,9 +67,11 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎢",
     challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
-    aiTitle: "Gardaland – מדריך מורחב לפארק השעשועים 🎢",
-    aiOverview: "גארדלנד הוא פארק השעשועים הגדול באיטליה והשלישי בגודלו באירופה. הפארק מחולק למתחמים נושאיים שונים (הרפתקאות, פנטזיה ואקסטרים) וכולל רכבות הרים איקוניות כמו Blue Tornado, Oblivion (רכבת צניחה חופשית) ומתקני מים רטובים במיוחד כמו Fuga da Atlantide.",
-    aiFoodStop: "<b>המלצה מורחבת למנוחה ואוכל:</b> באמצע היום כשיש עומס תורים, מומלץ לתפוס הפסקה ממוזגת במתחם 'Aladino Pizza & Burger' או לקחת כריך פאניני איטלקי ולאכול אותו על ספסל מול נוף האגם הפתוח של הפארק.",
+    aiTitle: "Gardaland – מדריך, שעות וחניונים 🎢",
+    aiOverview: "גארדלנד הוא פארק השעשועים הגדול באיטליה עם מתחמי אקסטרים אגדיים כמו Oblivion ו-Blue Tornado.",
+    aiHours: "<b>שעות פעילות:</b> הפארק פתוח בדרך כלל בין השעות 10:00 עד 18:00 או 23:00 בימי שיא (מומלץ לבדוק באתר הרשמי).",
+    aiParking: "<b>חניון מרכזי:</b> Gardaland Official Parking (עלות יומית מסודרת, זכרו לשמור את מספר שורת החניה באפליקציה!).",
+    aiFoodStop: "<b>המלצה למנוחה ואוכל:</b> מתחם 'Aladino Pizza & Burger' או עצירת קפה מול האגם בפארק.",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
       { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
@@ -83,9 +87,11 @@ const INITIAL_TRIP_DAYS = [
     icon: "🚠",
     challenge: "לצלם תמונת פנורמה משפחתית מפסגת הרכבל ותמונה רומנטית/משפחתית בסירמיונה!",
     challengeDesc: "תצפית מרהיבה מגובה של כמעט 1,800 מטר באלדו, ולאחר מכן שיטוט בסמטאות הקסומות של סירמיונה.",
-    aiTitle: "מונטה באלדו וסירמיונה – עומק היסטורי וגאוגרפי 🚠🏰",
-    aiOverview: "מונטה באלדו (Monte Baldo) מכונה 'הגן של אירופה' בשל מגוון הצומח הייחודי שבו, והרכבל המסתובב שלו מעניק חוויה של ריחוף באוויר מעל האגם. סירמיונה (Sirmione), השוכנת בקצה לשון יבשה דרומית, מפורסמת במצודת סקאליג'ר המבוצרת ובהיסטוריה של מרחצאות רומיים עתיקים.",
-    aiFoodStop: "<b>המלצה מורחבת לעצירת מנוחה:</b> בפסגת מונטה באלדו כדאי לשבת לקפה מול האופק. בסירמיונה, חובה לעצור בגלידריה המפורסמת 'תירס' (Gelateria Ice Paradise) או בכל גלידריה מקומית שמוכרת גלידת פיסטוק אמיתית.",
+    aiTitle: "מונטה באלדו וסירמיונה – שעות וחניונים 🚠🏰",
+    aiOverview: "מונטה באלדו מעניק פנורמה על האגם. סירמיונה מפורסמת במצודת סקאליג'ר ומרחצאות רומיים.",
+    aiHours: "<b>שעות רכבל מונטה באלדו:</b> 08:00–18:00 (יוצא רכבל כל 30 דקות). טירת סירמיונה פתוחה 08:30–19:30.",
+    aiParking: "<b>חניונים סמוכים:</b> חניון הרכבל במלצ'סינה (Funivia Parking), ובסירמיונה חניון Parcheggio Monte Baldo החיצוני לפני כניסת הרכבים לעיירה העתיקה.",
+    aiFoodStop: "<b>המלצה לעצירת מנוחה:</b> קפה פנורמי בפסגת ההר וגלידריה מעולה בסירמיונה.",
     stops: [
       { time: "08:30", name: "עלייה לרכבל מונטה באלדו (מלצ׳סינה)", dest: "Funivia Malcesine-Monte Baldo", note: "רכבל מסתובב עוצר נשק אל פסגת הר האלדו. מומלץ להזמין מקום מראש!" },
       { time: "11:00", name: "תצפית מפסגת מונטה באלדו", dest: "Monte Baldo Summit, Italy", note: "הליכה קצרה, תצפיות פנורמיות על כל אגם גארדה, ואולי פגישה עם פרות הרריות." },
@@ -101,9 +107,11 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎬",
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
-    aiTitle: "Movieland ומופע האבירים – עולם הקולנוע והשחיתות 🎬",
-    aiOverview: "Movieland הוא פארק שעשועים קונספטואלי המבוסס כולו על סרטי הוליווד המפורסמים ביותר, עם פעלולנים אמיתיים שמופיעים בלייב. בערב, המעבר ל-Medieval Times לוקח אתכם אל ימי הביניים למופע סוסים וקרבות חרבות מרהיב בשילוב ארוחת ערב מסורתית שאוכלים אך ורק בעזרת הידיים.",
-    aiFoodStop: "<b>המלצה מורחבת למנוחה ואוכל:</b> ביום שכולו אקשן ומופעים, מומלץ לתפוס פינה מוצלת לאכול המבורגר קולנועי בצהריים, ובערב ליהנות מארוחת האבירים ללא סכו״ם – חוויה משפחתית קורעת מצחוק.",
+    aiTitle: "Movieland ומופע האבירים – שעות וחניונים 🎬",
+    aiOverview: "Movieland הוא פארק קולנוע ופעלולים, ובערב מופע אבירים סוחף עם ארוחת שחיתות ללא סכו״ם.",
+    aiHours: "<b>שעות פעילות:</b> Movieland פתוח 10:00–18:00. מופע Medieval Times מתחיל בדרך כלל ב-20:00.",
+    aiParking: "<b>חניון:</b> חניית Movieland / Caneva הרשמית סמוך לכניסה לפארק.",
+    aiFoodStop: "<b>המלצה לאוכל:</b> המבורגר קולנועי בצהריים וארוחת אבירים בידיים בערב.",
     stops: [
       { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
@@ -117,9 +125,11 @@ const INITIAL_TRIP_DAYS = [
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
     challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
-    aiTitle: "ונציה – עיר התעלות והארמונות ההיסטוריים 🛶",
-    aiOverview: "ונציה (Venice) היא יצירת מופת אדריכלית עולמית. העיר בנויה על קבוצת איים בלגונת ונציה ומחוברת על ידי מאות גשרים ותעלות המשמשות כרחובות. אין בה כלי רכב ממונעים, וההתנהלות בה מתבצעת ברגל או באמצעות סירות (Vaporetto וגונדולות).",
-    aiFoodStop: "<b>המלצה מורחבת לעצירת מנוחה ואוכל:</b> כדי לברוח מההמונים סביב כיכר סן מרקו, מומלץ להיכנס לסמטאות רובע דורסודור או לשבת לפיצרייה המשפחתית השקטה 'L'Anfora' ולהתענג על גלידת Suso המיתולוגית.",
+    aiTitle: "ונציה – שעות פעילות וחניוני ענק 🛶",
+    aiOverview: "עיר תעלות מרהיבה ללא מכוניות. מרכז התיירות העולמי עם כיכר סן מרקו וגשר ריאלטו.",
+    aiHours: "<b>שעות פעילות:</b> העיר פתוחה תמיד. ארמון הדוג'ה פתוח 09:00–19:00.",
+    aiParking: "<b>חניונים מומלצים בכניסה לוונציה:</b> Venezia Tronchetto Parking או חניוני פאצקוביס (לפני הגέשור).",
+    aiFoodStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> פיצרייה שקטה 'L'Anfora' וגלידת Suso.",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
       { time: "09:30", name: "כיכר סן מרקו והבזיליקה", dest: "St. Mark's Square, Venice, Italy", note: "הלב הפועם של ונציה, כיכר מרהיבה, יונים וארמון הדוג'ה." },
@@ -136,11 +146,13 @@ const INITIAL_TRIP_DAYS = [
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מטורפת מהראפטינג ותמונה חגיגית בבורגטו!",
     challengeDesc: "מתחילים את הבוקר באקשן מים מסעיר ב-X Rafting, וממשיכים לצהריים רומנטיים בכפר הטחנות בבורגטו.",
-    aiTitle: "אקסטרים מים וכפר הטחנות בורגטו 🚣🌾",
-    aiOverview: "הבוקר נפתח באדרנלין טהור עם שיט ראפטינג משפחתי בנהרות האזור, וממשיך אל בורגטו סול מינצ'ו (Borghetto) – כפר טחנות קמח היסטורי ציורי שנבחר כאחד הכפרים היפים באיטליה ומפורסם בגשר הברזל העמוס במנעולי אהבה.",
-    aiFoodStop: "<b>המלצה מורחבת לעצירת מנוחה ואוכל:</b> בבורגטו חובה לשבת במסעדת 'Alla Borsa' ולאכול את ה'טורטליני די ולג'ו' המקורי (פסטה בצורת קשר אהבה ממולאת בבשר/גבינות).",
+    aiTitle: "אקסטרים מים וכפר הטחנות בורגטו – שעות וחניונים 🚣🌾",
+    aiOverview: "שיט ראפטינג משפחתי בנהר וביקור בכפר טחנות הקמח ההיסטורי בורגטו.",
+    aiHours: "<b>שעות פעילות:</b> מרכזי הראפטינג פעילים לרוב בתיאום מראש בין 09:00 ל-17:00. בורגטו פתוח חופשי בכל שעה.",
+    aiParking: "<b>חנייה:</b> חניון חינמי/בתשלום בכניסה לכפר בורגטו (Parcheggio Borghetto).",
+    aiFoodStop: "<b>המלצה לאוכל:</b> טורטליני 'קשר האהבה' במסעדת Alla Borsa.",
     stops: [
-      { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועי." },
+      { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועي." },
       { time: "12:30", name: "Borghetto sul Mincio – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות העתיקות.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי 'קשר האהבה')", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
     ]
   },
@@ -152,9 +164,11 @@ const INITIAL_TRIP_DAYS = [
     icon: "❤️",
     challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
-    aiTitle: "ורונה – סיום מסע ופרידה מאיטליה ❤️",
-    aiOverview: "היום האחרון של הטיול מוקדש לחזרה קצרה לוורונה, סיור רגלי אחרון סביב כיכר ברה (Piazza Bra), הארנה הרומית המרשימה ורחוב שופינג אחרון לפני ששמים פעמינו לשדה התעופה.",
-    aiFoodStop: "<b>המלצה מורחבת לעצירת פרידה:</b> ארוחת צהריים מפנקת במסעדת 'Pizzeria Saporè Downtown' כדי לסגור את הטיול בטעם של פיצת גורמה איטלקית אמיתית.",
+    aiTitle: "ורונה סיום ושדה התעופה – שעות וחניונים ❤️",
+    aiOverview: "חזרה לוורונה לסיור אחרון ומשם לשדה התעופה ורונה וילפרנקה לטיסה חזרה.",
+    aiHours: "<b>שעות שדה תעופה:</b> דלפקי הצ'ק-אין של ישראייר נפתחים כ-3 שעות לפני הטיסה.",
+    aiParking: "<b>חניון בוורונה:</b> Parcheggio Cittadella. <b>חניון בשדה התעופה:</b> Verona Airport Short/Long Stay Parking.",
+    aiFoodStop: "<b>המלצה לעצירת פרידה:</b> פיצת גורמה במסעדת Saporè Downtown.",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
@@ -502,6 +516,12 @@ export default function App() {
   const [incomingSoundAlert, setIncomingSoundAlert] = useState(null);
   const [listeningStream, setListeningStream] = useState(null);
   
+  // States עבור צ'אט שאלות ותשובות עם ה-AI
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiChatHistory, setAiChatHistory] = useState([
+    { sender: 'ai', text: 'הי! אני המדריך החכם שלך לטיול. שאל אותי כל מה שתרצה על היום הנוכחי (שעות פתיחה, חניונים, המלצות או טיפים).' }
+  ]);
+
   const audioCtxRef = useRef(null);
   const oscillatorRef = useRef(null);
   const alarmGainRef = useRef(null);
@@ -575,7 +595,7 @@ export default function App() {
   const [arHeading, setArHeading] = useState(0);
   const [arBearing, setArBearing] = useState(0);
 
-  // תפריט צד נקי ומדויק מבוסס 11 פריטים מקוריים (ללא aiGuide)
+  // תפריט צד מנוקה לחלוטין מ-aiGuide (11 פריטים תקינים)
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
@@ -1609,6 +1629,32 @@ export default function App() {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
+  // פונקציית מענה לשאלות משתמש בתוך מודאל ה-AI
+  const handleAskAi = (e) => {
+    e.preventDefault();
+    if (!aiQuestion.trim()) return;
+
+    const userText = aiQuestion.trim();
+    const newHistory = [...aiChatHistory, { sender: 'user', text: userText }];
+    setAiQuestion('');
+
+    // מענה חכם לפי תוכן היום הנוכחי ושאלת המשתמש
+    let reply = `שאלה מעולה! לגבי ${day.title}: מומלץ לוודא הגעה בזמן לפי הלו״ז, להיעזר בחניונים המומלצים שמופיעים בהרחבה כאן למעלה, ולהנות מהאווירה. אם תרצו לנווט ישירות, השתמשו בכפתורי הווייז המצורפים במסלול.`;
+    
+    const qLower = userText.toLowerCase();
+    if (qLower.includes('חניון') || qLower.includes('חניה')) {
+      reply = `🚗 מידע חניה ליום זה: ${day.aiParking || 'מומלץ לחנות בחניונים המסודרים הסמוכים ליעד לפי השילוט המקומי.'}`;
+    } else if (qLower.includes('שעות') || qLower.includes('פתוח') || qLower.includes('זמן')) {
+      reply = `⏰ זמנים ושעות: ${day.aiHours || 'שעות הפעילות מעודכנות לפי זמני הפארקים והאתרים בלו״ז המרכזי.'}`;
+    } else if (qLower.includes('אוכל') || qLower.includes('מסעדה') || qLower.includes('גלידה')) {
+      reply = `🍴 המלצה קולינרית: ${day.aiFoodStop}`;
+    }
+
+    setTimeout(() => {
+      setAiChatHistory([...newHistory, { sender: 'ai', text: reply }]);
+    }, 400);
+  };
+
   const day = tripDays[activeDay] || tripDays[0];
   const isCurrentDayCompleted = completedChallenges[day?.date]?.completed || completedChallenges[String(activeDay)]?.completed;
 
@@ -1648,80 +1694,6 @@ export default function App() {
     setShowThemeBuilder(false);
     alert('איפוס בוצע בהצלחה.');
   };
-
-  const renderMenuItem = (id, index) => {
-    const menuConfigs = {
-      schedule: { label: 'מסלול ימי הטיול', icon: '📅', action: () => { setSidebarOpen(false); closeModal(); } },
-      timer: { label: `טיימר משפחתי ${activeTimer ? `(${formatTimerClock(timerRemainingSec)})` : ''}`, icon: TIMER_SVG, action: () => { setSidebarOpen(false); setModalType('timer'); } },
-      radar: { label: 'רדאר משפחתי חי', icon: '🧭', action: () => { setSidebarOpen(false); setModalType('radar'); } },
-      parking: { label: 'שמירת מיקום רכב חכם', icon: '🚗', action: () => { setSidebarOpen(false); setModalType('parking'); } },
-      challenges: { label: 'יומן אתגרים ובדיחות', icon: '🏆', action: () => { setSidebarOpen(false); setModalType('challengesLog'); } },
-      trivia: { label: 'טריויה חכמה לדרך', icon: '🧠', action: () => { setSidebarOpen(false); setModalType('trivia'); } },
-      gallery: { label: 'יומן ואלבום תמונות משפחתי', icon: '📸', action: () => { setSidebarOpen(false); setModalType('gallery'); } },
-      around: { label: 'סביבי (Around Me)', icon: '📍', action: () => { setSidebarOpen(false); setModalType('around'); } },
-      tickets: { label: 'ארנק כרטיסים ומסמכים', icon: '🎟️', action: () => { setSidebarOpen(false); setModalType('tickets'); } },
-      emergency: { label: 'מספרי חירום', icon: '🆘', action: () => { setSidebarOpen(false); setModalType('emergency'); } },
-      appleMusic: { label: 'פלייליסט נסיעה (Apple Music)', icon: '🎵', action: () => { setSidebarOpen(false); setModalType('appleMusicModal'); } }
-    };
-
-    const cfg = menuConfigs[id];
-    if (!cfg) return null;
-
-    return (
-      <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
-        <button 
-          onClick={() => handleGlobalClick(cfg.action)} 
-          style={{ 
-            background: cardBg,
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: `1.5px solid ${borderColor}`,
-            color: textColor,
-            borderRadius: '16px',
-            padding: '14px 18px',
-            fontWeight: '600',
-            fontSize: '15px',
-            textAlign: 'right',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '14px',
-            boxSizing: 'border-box',
-            width: '100%',
-            boxShadow: cardShadow,
-            transition: 'transform 0.15s ease, background 0.15s ease'
-          }}
-        >
-          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', borderRadius: '8px', border: `1.5px solid ${borderColor}`, flexShrink: 0 }}>
-            {cfg.icon}
-          </span>
-          <span style={{ flex: 1, letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cfg.label}</span>
-          <span style={{ color: textSub, fontSize: '12px' }}>‹</span>
-        </button>
-
-        {isEditingMenu && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0 }}>
-            <button onClick={() => moveMenuItem(index, 'up')} style={arrowBtnStyle}>▲</button>
-            <button onClick={() => moveMenuItem(index, 'down')} style={arrowBtnStyle}>▼</button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const activeCompassCoords = compassTarget === 'parking' && savedParking
-    ? { lat: savedParking.lat, lng: savedParking.lng, name: savedParking.note }
-    : HOTEL_COORDINATES;
-
-  const activeCompassBearing = myLocation && activeCompassCoords
-    ? calculateBearing(myLocation.lat, myLocation.lng, activeCompassCoords.lat, activeCompassCoords.lng)
-    : 0;
-
-  const activeCompassDistance = myLocation && activeCompassCoords
-    ? calculateDistanceKm(myLocation.lat, myLocation.lng, activeCompassCoords.lat, activeCompassCoords.lng)
-    : 'דוגם GPS...';
-
-  const compassArrowRotation = (activeCompassBearing - deviceHeading + 360) % 360;
 
   return (
     <div style={{ 
@@ -1845,7 +1817,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ריבוע כחול ראשי המכיל אך ורק את מזג האוויר והכפתורים המקוריים */}
+      {/* ריבוע כחול ראשי נקי עם מזג האוויר והכפתורים המקוריים בלבד */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
@@ -1959,30 +1931,62 @@ export default function App() {
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
 
-      {/* מודאל הרחבת מידע AI כתוב */}
+      {/* מודאל הרחבת מידע AI ואפשרות לשאול שאלות */}
       {modalType === 'aiGuideModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <div>
-                <small style={{ color: '#2563eb', fontWeight: 'bold', fontSize: '11px' }}>AI DETAILED GUIDE</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🤖 הרחבת מידע AI ליום זה</h2>
+                <small style={{ color: '#2563eb', fontWeight: 'bold', fontSize: '11px' }}>AI EXPERT GUIDE & Q&A</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🤖 מדריך AI וצ'אט שאלות ותשובות</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
             </div>
 
-            <div style={{ background: cardBg, borderRadius: '20px', padding: '20px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ background: cardBg, borderRadius: '20px', padding: '18px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <span style={{ fontSize: '18px' }}>📍</span>
                 <span style={{ fontSize: '14px', fontWeight: 'bold', color: textColor }}>{day.label} · {day.title}</span>
               </div>
 
-              <h3 style={{ fontSize: '17px', fontWeight: 'bold', color: '#2563eb', margin: '0 0 10px' }}>{day.aiTitle}</h3>
-              <p style={{ fontSize: '14px', lineHeight: '1.7', color: textColor, margin: '0 0 16px' }}>
-                {day.aiOverview}
-              </p>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#2563eb', margin: '0 0 8px' }}>{day.aiTitle}</h3>
+              <p style={{ fontSize: '13px', lineHeight: '1.6', color: textColor, margin: '0 0 12px' }}>{day.aiOverview}</p>
 
-              <div style={{ background: isDark ? '#111827' : '#f0fdf4', border: '1.5px solid #22c55e', padding: '14px', borderRadius: '14px', color: textColor, fontSize: '13px', lineHeight: '1.6' }} dangerouslySetInnerHTML={{ __html: day.aiFoodStop }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+                <div style={{ fontSize: '12px', background: isDark ? '#1f2937' : '#eff6ff', padding: '10px', borderRadius: '10px', border: '1px solid #bfdbfe', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: day.aiHours }} />
+                <div style={{ fontSize: '12px', background: isDark ? '#1f2937' : '#fef3c7', padding: '10px', borderRadius: '10px', border: '1px solid #fde68a', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: day.aiParking }} />
+              </div>
+
+              <div style={{ background: isDark ? '#111827' : '#f0fdf4', border: '1.5px solid #22c55e', padding: '10px', borderRadius: '10px', color: textColor, fontSize: '12px', lineHeight: '1.4', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: day.aiFoodStop }} />
+
+              <hr style={{ border: 'none', borderTop: `1px solid ${borderColor}`, margin: '16px 0' }} />
+
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px', color: textColor }}>💬 שאל את ה-AI על האתר או היום:</h4>
+              <div style={{ maxHeight: '160px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px', padding: '4px' }}>
+                {aiChatHistory.map((msg, idx) => (
+                  <div key={idx} style={{
+                    alignSelf: msg.sender === 'user' ? 'flex-start' : 'flex-end',
+                    background: msg.sender === 'user' ? luxuryBlueBg : (isDark ? '#2c2c2e' : '#f1f5f9'),
+                    color: msg.sender === 'user' ? luxuryBlueText : textColor,
+                    padding: '8px 12px', borderRadius: '10px', fontSize: '12px', maxWidth: '85%', lineHeight: '1.4'
+                  }}>
+                    {msg.text}
+                  </div>
+                ))}
+              </div>
+
+              <form onSubmit={handleAskAi} style={{ display: 'flex', gap: '6px' }}>
+                <input
+                  type="text"
+                  placeholder="הקלד שאלה (לדוגמה: היכן לחנות?)..."
+                  value={aiQuestion}
+                  onChange={(e) => setAiQuestion(e.target.value)}
+                  style={{ flex: 1, padding: '10px', borderRadius: '10px', border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor, fontSize: '13px', outline: 'none' }}
+                />
+                <button type="submit" style={{ padding: '0 14px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>
+                  שאל 🔍
+                </button>
+              </form>
             </div>
 
             <button
