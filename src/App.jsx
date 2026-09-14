@@ -575,7 +575,7 @@ export default function App() {
   const [arHeading, setArHeading] = useState(0);
   const [arBearing, setArBearing] = useState(0);
 
-  // סדר תפריטים ללא aiGuide המיותר
+  // תפריט צד נקי ומדויק מבוסס 11 פריטים מקוריים (ללא aiGuide)
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
@@ -1845,7 +1845,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ריבוע כחול ראשי עם מזג האוויר והכפתורים המקוריים בלבד */}
+      {/* ריבוע כחול ראשי המכיל אך ורק את מזג האוויר והכפתורים המקוריים */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
