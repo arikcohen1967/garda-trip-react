@@ -39,56 +39,56 @@ const TIMER_SVG = (
 const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
-// מאגר ידע עשיר של AI מקומי לאתרים בטיול עם המלצות עצירה קסומות
+// מאגר תוכן ותמונות מוקפד ואמיתי לכל יום בטיול
 const AI_TOURIST_DATABASE = {
   "2026-09-30": {
     siteName: "ורונה ופסקיירה דל גארדה",
     aiTitle: "ברוכים הבאים לאיטליה! 🇮🇹",
     overview: "ורונה היא עירם של רומיאו ויוליה, עשירה בארכיטקטורה רומית עצומה וסמטאות ימי-ביניימיות. פסקיירה דל גארדה השכנה בנויה כמבצר כוכב בתוך המים ומציעה שקיעות עוצרות נשק.",
     restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> פיצרייה משפחתית חמה ממש ליד תעלות המים בפסקיירה + עצירת גלידה ראשונה בגלריה מקומית מומלצת בסמטה צדדית שקטה.",
-    imagePromptUrl: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80"
   },
   "2026-10-01": {
     siteName: "Gardaland Resort",
-    aiTitle: "ממלכת האקסטרים של גארדה 🎢",
-    overview: "גארדלנד הוא אחד הפארקים המובילים באירופה. מעבר לרכבות ההרים האדירות, האזור מוקף בעצי זית ונוף מרהיב לאגם.",
-    restStop: "<b>המלצה לעצירת רגעה:</b> מתחם המוצל ליד האגם המלאכותי בפארק, או עצירת קפה איטלקי חזק בבית הקפה המרכזי לפני העלייה לרכבת הרים הבאה.",
-    imagePromptUrl: "https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=800&q=80"
+    aiTitle: "ממלכת האקסטרים של גארדלנד 🎢",
+    overview: "גארדלנד הוא פארק השעשועים הגדול והמפורסם באיטליה, השוכן ממש על גדות אגם גארדה. הפארק כולל מתחמי אקסטרים אגדיים כמו Oblivion, Blue Tornado ורכבות הרים עולמיות.",
+    restStop: "<b>המלצה לעצירת רגעה:</b> מתחם האוכל המרכזי 'Aladino Pizza & Burger' או עצירת קפה איטלקי מול האגם בתוך הפארק.",
+    imageUrl: "https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=800&q=80"
   },
   "2026-10-02": {
     siteName: "מונטה באלדו וסירמיונה",
     aiTitle: "פסגת העולם ועיר המצודה 🚠🏰",
     overview: "מונטה באלדו מתנשא לגובה של כמעט 1,800 מטר עם רכבל מסתובב שמציע פנורמה של 360 מעלות על כל אגם גארדה. סירמיונה היא לשון יבשה ציורית עם טירת מים עתיקה מהמאה ה-13.",
     restStop: "<b>המלצה לעצירת מנוחה:</b> קפה פנורמי מול העננים בפסגת ההר, ולאחר מכן עצירה לגלידת שקד מיוחדת בכיכר המרכזית בסירמיונה.",
-    imagePromptUrl: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80"
   },
   "2026-10-03": {
     siteName: "Movieland & Medieval Times",
     aiTitle: "הוליווד של אגם גארדה 🎬",
     overview: "פארק קולנועי מטורף עם אפקטים מיוחדים ופעלולנים חיים, שמתחבר בערב למופע סחוף של אבירים וארוחת שחיתות מסורתית.",
-    restStop: "<b>המלצה לעצירת רגיעה:</b> ישיבה בצל האורנים במתחם האפקטים של המערב הפרוע לצеייה בפעלולים עם שתייה קרה.",
-    imagePromptUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80"
+    restStop: "<b>המלצה לעצירת רגיעה:</b> ישיבה בצל האורנים במתחם האפקטים של המערב הפרוע לצפייה בפעלולים עם שתייה קרה.",
+    imageUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80"
   },
   "2026-10-04": {
     siteName: "ונציה – עיר המים הקסומה",
     aiTitle: "גונדולות, תעלות וסמטאות נסתרות 🛶",
     overview: "ונציה בנויה על פני למעלה מ-100 איים קטנים המחוברים ב-400 גשרים. אין בה מכוניות, והכל מתנהל על גבי תעלות מים מרהיבות.",
     restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> עצירה בפיצרייה השכונתית 'L'Anfora' הרחק מההמון של כיכר סן מרקו, וקינוח גלידת Suso המיתולוגית.",
-    imagePromptUrl: "https://images.unsplash.com/photo-1514896856555-1f274c4314c9?auto=format&fit=crop&w=800&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1514896856555-1f274c4314c9?auto=format&fit=crop&w=800&q=80"
   },
   "2026-10-05": {
     siteName: "X Rafting ו-Borghetto sul Mincio",
     aiTitle: "אקסטרים מים וכפר הטחנות הקסום 🚣🌾",
     overview: "מסע ראפטינג מרגש בנהר ולאחר מכן ביקור בבורגטו - אחד הכפרים היפים באיטליה הבנוי סביב טחנות קמח עתיקות שעדיין פועלות על המים.",
     restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> ארוחת צהריים רומנטית במסעדת 'Alla Borsa' לטעימת הטורטליני המפורסם 'קשר האהבה'.",
-    imagePromptUrl: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80"
   },
   "2026-10-06": {
     siteName: "ורונה הסיום והטיסה חזרה",
     aiTitle: "רגע השיא והפרידה מאיטליה ❤️",
     overview: "סיום מרגש בוורונה הרומית, ביקור בארנה העתיקה, סיכום הטיול המשפחתי ונסיעה חזרה לשדה התעופה.",
     restStop: "<b>המלצה לעצירת פרידה:</b> פיצת גורמה במסעדת Saporè Downtown לפני שיוצאים לשדה.",
-    imagePromptUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80"
   }
 };
 
@@ -1754,7 +1754,6 @@ export default function App() {
 
   const compassArrowRotation = (activeCompassBearing - deviceHeading + 360) % 360;
 
-  // נתונים ללשונית ה-AI החכמה לפי היום הנבחר או התאריך הנוכחי
   const currentAiData = AI_TOURIST_DATABASE[day?.date] || AI_TOURIST_DATABASE["2026-09-30"];
 
   return (
@@ -2009,7 +2008,7 @@ export default function App() {
               </div>
 
               <div style={{ width: '100%', height: '180px', borderRadius: '14px', overflow: 'hidden', marginBottom: '14px', border: `1px solid ${borderColor}` }}>
-                <img src={currentAiData.imagePromptUrl} alt={currentAiData.siteName} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <img src={currentAiData.imageUrl} alt={currentAiData.siteName} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               </div>
 
               <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#2563eb', margin: '0 0 8px' }}>{currentAiData.aiTitle}</h3>
@@ -2432,7 +2431,7 @@ export default function App() {
         </div>
       )}
 
-      {/* מודאל חניה ומצפן */}
+      {/* מודאל חניה */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
