@@ -575,12 +575,13 @@ export default function App() {
   const [arHeading, setArHeading] = useState(0);
   const [arBearing, setArBearing] = useState(0);
 
+  // סדר תפריטים ללא aiGuide המיותר
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 12) return saved;
+      if (Array.isArray(saved) && saved.length === 11) return saved;
     } catch (e) {}
-    return ['schedule', 'aiGuide', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
+    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
@@ -1651,7 +1652,6 @@ export default function App() {
   const renderMenuItem = (id, index) => {
     const menuConfigs = {
       schedule: { label: 'מסלול ימי הטיול', icon: '📅', action: () => { setSidebarOpen(false); closeModal(); } },
-      aiGuide: { label: 'AI מדריך מקומי והרחבות', icon: '🤖', action: () => { setSidebarOpen(false); setModalType('aiGuideModal'); } },
       timer: { label: `טיימר משפחתי ${activeTimer ? `(${formatTimerClock(timerRemainingSec)})` : ''}`, icon: TIMER_SVG, action: () => { setSidebarOpen(false); setModalType('timer'); } },
       radar: { label: 'רדאר משפחתי חי', icon: '🧭', action: () => { setSidebarOpen(false); setModalType('radar'); } },
       parking: { label: 'שמירת מיקום רכב חכם', icon: '🚗', action: () => { setSidebarOpen(false); setModalType('parking'); } },
@@ -1845,7 +1845,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ריבוע כחול ראשי המכיל אך ורק את מזג האוויר והכפתורים המקוריים */}
+      {/* ריבוע כחול ראשי עם מזג האוויר והכפתורים המקוריים בלבד */}
       <div style={{
         margin: '14px 16px 8px 16px',
         borderRadius: '24px',
