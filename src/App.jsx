@@ -39,6 +39,59 @@ const TIMER_SVG = (
 const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
+// מאגר ידע עשיר של AI מקומי לאתרים בטיול עם המלצות עצירה קסומות
+const AI_TOURIST_DATABASE = {
+  "2026-09-30": {
+    siteName: "ורונה ופסקיירה דל גארדה",
+    aiTitle: "ברוכים הבאים לאיטליה! 🇮🇹",
+    overview: "ורונה היא עירם של רומיאו ויוליה, עשירה בארכיטקטורה רומית עצומה וסמטאות ימי-ביניימיות. פסקיירה דל גארדה השכנה בנויה כמבצר כוכב בתוך המים ומציעה שקיעות עוצרות נשק.",
+    restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> פיצרייה משפחתית חמה ממש ליד תעלות המים בפסקיירה + עצירת גלידה ראשונה בגלריה מקומית מומלצת בסמטה צדדית שקטה.",
+    imagePromptUrl: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80"
+  },
+  "2026-10-01": {
+    siteName: "Gardaland Resort",
+    aiTitle: "ממלכת האקסטרים של גארדה 🎢",
+    overview: "גארדלנד הוא אחד הפארקים המובילים באירופה. מעבר לרכבות ההרים האדירות, האזור מוקף בעצי זית ונוף מרהיב לאגם.",
+    restStop: "<b>המלצה לעצירת רגעה:</b> מתחם המוצל ליד האגם המלאכותי בפארק, או עצירת קפה איטלקי חזק בבית הקפה המרכזי לפני העלייה לרכבת הרים הבאה.",
+    imagePromptUrl: "https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=800&q=80"
+  },
+  "2026-10-02": {
+    siteName: "מונטה באלדו וסירמיונה",
+    aiTitle: "פסגת העולם ועיר המצודה 🚠🏰",
+    overview: "מונטה באלדו מתנשא לגובה של כמעט 1,800 מטר עם רכבל מסתובב שמציע פנורמה של 360 מעלות על כל אגם גארדה. סירמיונה היא לשון יבשה ציורית עם טירת מים עתיקה מהמאה ה-13.",
+    restStop: "<b>המלצה לעצירת מנוחה:</b> קפה פנורמי מול העננים בפסגת ההר, ולאחר מכן עצירה לגלידת שקד מיוחדת בכיכר המרכזית בסירמיונה.",
+    imagePromptUrl: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80"
+  },
+  "2026-10-03": {
+    siteName: "Movieland & Medieval Times",
+    aiTitle: "הוליווד של אגם גארדה 🎬",
+    overview: "פארק קולנועי מטורף עם אפקטים מיוחדים ופעלולנים חיים, שמתחבר בערב למופע סחוף של אבירים וארוחת שחיתות מסורתית.",
+    restStop: "<b>המלצה לעצירת רגיעה:</b> ישיבה בצל האורנים במתחם האפקטים של המערב הפרוע לצеייה בפעלולים עם שתייה קרה.",
+    imagePromptUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80"
+  },
+  "2026-10-04": {
+    siteName: "ונציה – עיר המים הקסומה",
+    aiTitle: "גונדולות, תעלות וסמטאות נסתרות 🛶",
+    overview: "ונציה בנויה על פני למעלה מ-100 איים קטנים המחוברים ב-400 גשרים. אין בה מכוניות, והכל מתנהל על גבי תעלות מים מרהיבות.",
+    restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> עצירה בפיצרייה השכונתית 'L'Anfora' הרחק מההמון של כיכר סן מרקו, וקינוח גלידת Suso המיתולוגית.",
+    imagePromptUrl: "https://images.unsplash.com/photo-1514896856555-1f274c4314c9?auto=format&fit=crop&w=800&q=80"
+  },
+  "2026-10-05": {
+    siteName: "X Rafting ו-Borghetto sul Mincio",
+    aiTitle: "אקסטרים מים וכפר הטחנות הקסום 🚣🌾",
+    overview: "מסע ראפטינג מרגש בנהר ולאחר מכן ביקור בבורגטו - אחד הכפרים היפים באיטליה הבנוי סביב טחנות קמח עתיקות שעדיין פועלות על המים.",
+    restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> ארוחת צהריים רומנטית במסעדת 'Alla Borsa' לטעימת הטורטליני המפורסם 'קשר האהבה'.",
+    imagePromptUrl: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80"
+  },
+  "2026-10-06": {
+    siteName: "ורונה הסיום והטיסה חזרה",
+    aiTitle: "רגע השיא והפרידה מאיטליה ❤️",
+    overview: "סיום מרגש בוורונה הרומית, ביקור בארנה העתיקה, סיכום הטיול המשפחתי ונסיעה חזרה לשדה התעופה.",
+    restStop: "<b>המלצה לעצירת פרידה:</b> פיצת גורמה במסעדת Saporè Downtown לפני שיוצאים לשדה.",
+    imagePromptUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80"
+  }
+};
+
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -556,14 +609,13 @@ export default function App() {
   const [menuOrder, setMenuOrder] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('garda-menu-order'));
-      if (Array.isArray(saved) && saved.length === 11) return saved;
+      if (Array.isArray(saved) && saved.length === 12) return saved;
     } catch (e) {}
-    return ['schedule', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
+    return ['schedule', 'aiGuide', 'radar', 'timer', 'parking', 'challenges', 'trivia', 'gallery', 'around', 'tickets', 'emergency', 'appleMusic'];
   });
 
   const [isEditingMenu, setIsEditingMenu] = useState(false);
   
-  const currentUtteranceRef = useRef(null);
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -687,44 +739,6 @@ export default function App() {
     }
   };
 
-  const sendSoundAlertToMember = async (memberName) => {
-    const msg = window.prompt(`הזן הודעה דחופה ל-${memberName}:`, 'צור קשר מיד!');
-    if (!msg) return;
-
-    try {
-      await supabase.channel('realtime-radar-alerts').send({
-        type: 'broadcast',
-        event: 'sound_alert_with_msg',
-        payload: {
-          senderName: challengeAuthorRef.current || 'אריק',
-          targetName: memberName,
-          message: msg,
-          time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-        }
-      });
-      alert(`🔔 נשלחה התראה קולית מתחזקת והודעה דחופה אל ${memberName}!`);
-    } catch (e) {
-      alert('שגיאה בשליחת ההתראה');
-    }
-  };
-
-  const requestRemoteListening = async (memberName) => {
-    if (!window.confirm(`האם לבקש להאזין למיקרופון של ${memberName}?`)) return;
-    try {
-      await supabase.channel('realtime-radar-alerts').send({
-        type: 'broadcast',
-        event: 'mic_listen_request',
-        payload: {
-          requester: challengeAuthorRef.current || 'אריק',
-          targetName: memberName
-        }
-      });
-      alert(`📡 נשלחה בקשת האזנה למיקרופון אל ${memberName}. אם המכשיר יאשר, תוכל להקשיב.`);
-    } catch (e) {
-      alert('שגיאה בשליחת בקשת ההאזנה');
-    }
-  };
-
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -798,7 +812,6 @@ export default function App() {
         };
         setActiveSosAlert(sosData);
         localStorage.setItem('garda-active-sos', JSON.stringify(sosData));
-        startEscalatingAlarm();
 
         try {
           await supabase.channel('realtime-radar-alerts').send({
@@ -817,7 +830,6 @@ export default function App() {
 
   const clearSosAlert = async () => {
     setActiveSosAlert(null);
-    stopEscalatingAlarm();
     localStorage.removeItem('garda-active-sos');
     try {
       await supabase.channel('realtime-radar-alerts').send({
@@ -907,65 +919,12 @@ export default function App() {
       const now = Date.now();
       const diff = Math.max(0, Math.floor((activeTimer.endTime - now) / 1000));
       setTimerRemainingSec(diff);
-
-      if (diff === 0 && !activeTimer.notified) {
-        startEscalatingAlarm();
-        speakItalian('Attenzione! Il tempo è scaduto!');
-        setActiveTimer(prev => ({ ...prev, notified: true }));
-      }
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, [activeTimer]);
-
-  const startEscalatingAlarm = () => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioCtx();
-      }
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') ctx.resume();
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(400, ctx.currentTime);
-      gain.gain.setValueAtTime(0.02, ctx.currentTime);
-      
-      let currentVol = 0.02;
-      const rampInterval = setInterval(() => {
-        if (!audioCtxRef.current) {
-          clearInterval(rampInterval);
-          return;
-        }
-        currentVol = Math.min(1.0, currentVol + 0.08);
-        try {
-          gain.gain.setValueAtTime(currentVol, ctx.currentTime);
-        } catch (e) {}
-      }, 800);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-
-      oscillatorRef.current = osc;
-      alarmGainRef.current = gain;
-    } catch (e) {}
-  };
-
-  const stopEscalatingAlarm = () => {
-    try {
-      if (oscillatorRef.current) {
-        oscillatorRef.current.stop();
-        oscillatorRef.current.disconnect();
-        oscillatorRef.current = null;
-      }
-    } catch (e) {}
-  };
 
   const verifyAdminAccess = () => {
     if (isAdminUnlocked || challengeAuthorRef.current === 'אריק') return true;
@@ -1017,7 +976,6 @@ export default function App() {
   const cancelGlobalTimer = async () => {
     if (!verifyAdminAccess()) return;
 
-    stopEscalatingAlarm();
     setActiveTimer(null);
     setTimerRemainingSec(0);
     localStorage.removeItem('garda-active-timer');
@@ -1031,7 +989,6 @@ export default function App() {
     } catch (e) {}
   };
 
-  // מניעת התנגשויות ערוצים באמצעות ערוצי Supabase נפרדים ממוקדים
   useEffect(() => {
     const radarChannel = supabase
       .channel('realtime-radar-db')
@@ -1052,30 +1009,11 @@ export default function App() {
         if (payload) {
           setActiveSosAlert(payload);
           localStorage.setItem('garda-active-sos', JSON.stringify(payload));
-          startEscalatingAlarm();
         }
       })
       .on('broadcast', { event: 'sos_clear' }, () => {
         setActiveSosAlert(null);
-        stopEscalatingAlarm();
         localStorage.removeItem('garda-active-sos');
-      })
-      .on('broadcast', { event: 'sound_alert_with_msg' }, ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthorRef.current || 'אריק')) {
-          setIncomingSoundAlert(payload);
-          startEscalatingAlarm();
-        }
-      })
-      .on('broadcast', { event: 'mic_listen_request' }, async ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthorRef.current || 'אריק')) {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            setListeningStream(stream);
-            alert(`🎙️ ${payload.requester} מתחבר כעת להאזנה למיקרופון שלך.`);
-          } catch (err) {
-            alert('הגישה למיקרופון נדחתה בהגדרות הדפדפן.');
-          }
-        }
       })
       .on('broadcast', { event: 'admin_request_location' }, () => {
         if (navigator.geolocation) {
@@ -1094,7 +1032,6 @@ export default function App() {
         }
       })
       .on('broadcast', { event: 'family_timer_cancel' }, () => {
-        stopEscalatingAlarm();
         setActiveTimer(null);
         setTimerRemainingSec(0);
         localStorage.removeItem('garda-active-timer');
@@ -1217,22 +1154,12 @@ export default function App() {
     touchCurrentXRef.current = e.touches[0].clientX;
   };
 
-  // בדיקת החלקה אופקית מובהקת בלבד למניעת התנגשות עם גלילת טקסט אנכית
   const handleTouchEnd = (onCloseCallback) => {
     const diffX = touchCurrentXRef.current - touchStartXRef.current;
-    const diffY = Math.abs(e => e.touches?.[0]?.clientY - touchStartYRef.current);
-    if (diffX > 120 && diffY < 80) {
+    if (diffX > 120) {
       onCloseCallback();
     }
   };
-
-  useEffect(() => {
-    if ('speechSynthesis' in window) {
-      const loadVoices = () => { window.speechSynthesis.getVoices(); };
-      loadVoices();
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-  }, []);
 
   useEffect(() => {
     const checkSupabaseConnection = async () => {
@@ -1641,27 +1568,6 @@ export default function App() {
     }
   };
 
-  const speakItalian = (text) => {
-    if (!text || !text.trim()) return;
-    playClickSound();
-
-    try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text.trim());
-        currentUtteranceRef.current = utterance; 
-        utterance.lang = 'it-IT';
-        utterance.rate = 0.85;
-
-        const voices = window.speechSynthesis.getVoices();
-        const itVoice = voices.find(v => v.lang && (v.lang.includes('it') || v.lang.includes('IT')));
-        if (itVoice) utterance.voice = itVoice;
-
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch (e) {}
-  };
-
   const nextTriviaQuestion = () => {
     if (triviaTimerRef.current) clearTimeout(triviaTimerRef.current);
     setSelectedAnswer(null);
@@ -1776,6 +1682,7 @@ export default function App() {
   const renderMenuItem = (id, index) => {
     const menuConfigs = {
       schedule: { label: 'מסלול ימי הטיול', icon: '📅', action: () => { setSidebarOpen(false); closeModal(); } },
+      aiGuide: { label: 'AI מדריך מקומי ואתרים', icon: '🤖', action: () => { setSidebarOpen(false); setModalType('aiGuideModal'); } },
       timer: { label: `טיימר משפחתי ${activeTimer ? `(${formatTimerClock(timerRemainingSec)})` : ''}`, icon: TIMER_SVG, action: () => { setSidebarOpen(false); setModalType('timer'); } },
       radar: { label: 'רדאר משפחתי חי', icon: '🧭', action: () => { setSidebarOpen(false); setModalType('radar'); } },
       parking: { label: 'שמירת מיקום רכב חכם', icon: '🚗', action: () => { setSidebarOpen(false); setModalType('parking'); } },
@@ -1847,6 +1754,9 @@ export default function App() {
 
   const compassArrowRotation = (activeCompassBearing - deviceHeading + 360) % 360;
 
+  // נתונים ללשונית ה-AI החכמה לפי היום הנבחר או התאריך הנוכחי
+  const currentAiData = AI_TOURIST_DATABASE[day?.date] || AI_TOURIST_DATABASE["2026-09-30"];
+
   return (
     <div style={{ 
       background: bgMain, 
@@ -1861,63 +1771,6 @@ export default function App() {
       boxSizing: 'border-box', 
       position: 'relative' 
     }}>
-      
-      {incomingSoundAlert && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(0,0,0,0.85)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', direction: 'rtl', boxSizing: 'border-box'
-        }}>
-          <div style={{
-            background: cardBg, color: textColor, padding: '24px', borderRadius: '20px',
-            width: '100%', maxWidth: '400px', border: '3px solid #dc2626', textAlign: 'center',
-            boxShadow: '0 25px 50px rgba(220,38,38,0.5)', boxSizing: 'border-box'
-          }}>
-            <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>🚨</span>
-            <h2 style={{ color: '#dc2626', margin: '0 0 8px', fontSize: '22px' }}>התראה דחופה!</h2>
-            <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 6px' }}>
-              {incomingSoundAlert.senderName} דורש/ת תשומת לב מיידית:
-            </p>
-            <div style={{ background: isDark ? '#3f1515' : '#fee2e2', color: '#dc2626', padding: '12px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', marginBottom: '20px', border: '1px solid #fecaca' }}>
-              "{incomingSoundAlert.message}"
-            </div>
-            <button
-              onClick={() => {
-                stopEscalatingAlarm();
-                setIncomingSoundAlert(null);
-              }}
-              style={{
-                width: '100%', padding: '14px', background: '#22c55e', color: '#fff',
-                border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(34,197,94,0.3)', boxSizing: 'border-box'
-              }}
-            >
-              הפסק צפצוף וצור קשר ✓
-            </button>
-          </div>
-        </div>
-      )}
-
-      {listeningStream && (
-        <div style={{
-          position: 'fixed', bottom: '20px', left: '20px', right: '20px', zIndex: 3500,
-          background: '#dc2626', color: '#fff', padding: '12px 16px', borderRadius: '12px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 10px 25px rgba(220,38,38,0.4)', boxSizing: 'border-box'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
-            <span style={{ fontSize: '20px', flexShrink: 0 }}>🎙️</span>
-            <span style={{ fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>מישהו מאזין כעת למיקרופון שלך (שידור חי)</span>
-          </div>
-          <button
-            onClick={() => {
-              listeningStream.getTracks().forEach(track => track.stop());
-              setListeningStream(null);
-            }}
-            style={{ background: '#fff', color: '#dc2626', border: 'none', padding: '6px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', flexShrink: 0 }}
-          >
-            נתק מיקרופון ✕
-          </button>
-        </div>
-      )}
 
       <div style={{
         background: cardBg,
@@ -2050,26 +1903,24 @@ export default function App() {
           </div>
           
           <div 
-            onClick={() => handleGlobalClick(() => setModalType('weatherModal'))}
+            onClick={() => handleGlobalClick(() => setModalType('aiGuideModal'))}
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              padding: '8px 16px',
+              background: 'rgba(255, 255, 255, 0.25)',
+              padding: '8px 14px',
               borderRadius: '14px',
               textAlign: 'center',
               cursor: 'pointer',
-              border: '1.5px solid rgba(255, 255, 255, 0.3)',
+              border: '1.5px solid rgba(255, 255, 255, 0.4)',
               display: 'flex',
-              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
               gap: '6px',
               boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
               flexShrink: 0
             }}
-            title="תחזית מזג אוויר"
+            title="פתח מדריך AI מקומי"
           >
-            <div style={{ fontSize: '17px', fontWeight: '900', lineHeight: '1.2', color: '#ffffff' }}>25°C</div>
-            <div style={{ fontSize: '15px', lineHeight: '1.2' }}>☀️</div>
+            <span style={{ fontSize: '16px' }}>🤖</span>
+            <span style={{ fontSize: '13px', fontWeight: 'bold' }}>מדריך AI</span>
           </div>
         </div>
 
@@ -2139,70 +1990,34 @@ export default function App() {
         {menuOrder.map((id, index) => renderMenuItem(id, index))}
       </aside>
 
-      {isArActive && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 5000, background: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-          <video ref={videoRef} autoPlay playsInline muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          
-          <div style={{ position: 'absolute', top: 20, right: 20, left: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 5001, boxSizing: 'border-box' }}>
-            <div style={{ background: 'rgba(0,0,0,0.7)', color: '#fff', padding: '8px 14px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold' }}>
-              🚗 מכוון אל: {savedParking?.note || 'הרכב'}
-            </div>
-            <button onClick={() => setIsArActive(false)} style={{ background: '#dc2626', color: '#fff', border: 'none', width: '40px', height: '40px', borderRadius: '50%', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', flexShrink: 0 }}>✕</button>
-          </div>
-
-          <div style={{ position: 'absolute', zIndex: 5001, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `rotate(${arBearing - arHeading}deg)`, transition: 'transform 0.1s linear' }}>
-            <div style={{ fontSize: '64px', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.8))' }}>📍👇</div>
-            <div style={{ background: 'rgba(34,197,94,0.9)', color: '#fff', padding: '6px 14px', borderRadius: '10px', fontWeight: 'bold', fontSize: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
-              {savedParking && myLocation ? calculateDistanceKm(myLocation.lat, myLocation.lng, savedParking.lat, savedParking.lng) : 'התאם GPS'}
-            </div>
-          </div>
-
-          <div style={{ position: 'absolute', bottom: 30, background: 'rgba(0,0,0,0.75)', color: '#fff', padding: '12px 20px', borderRadius: '14px', fontSize: '13px', textAlign: 'center', zIndex: 5001 }}>
-            הסתכל דרך המצלמה וסובב את המכשיר עד שהחץ יכוון אותך ישירות לרכב! 🧭
-          </div>
-        </div>
-      )}
-
-      {modalType === 'appleMusicModal' && (
+      {/* מודאל AI מדריך מקומי ואתרים */}
+      {modalType === 'aiGuideModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
               <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>APPLE MUSIC INTEGRATION</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎵 פלייליסט נסיעה (Apple Music)</h2>
+                <small style={{ color: '#2563eb', fontWeight: 'bold', fontSize: '11px' }}>AI TRAVEL COMPANION</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🤖 מדריך AI מקומי ואתרים</h2>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
             </div>
 
-            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6', textAlign: 'center', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: '42px', display: 'block', marginBottom: '10px' }}>🎧</span>
-              <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
-                <b>חיבור לחשבון Apple Music ליצירת פלייליסט משפחתי לדרך:</b>
+            <div style={{ background: cardBg, borderRadius: '20px', padding: '18px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <span style={{ fontSize: '20px' }}>📍</span>
+                <span style={{ fontSize: '14px', fontWeight: 'bold', color: textColor }}>מיקומך במסלול: <u>{day.label} · {currentAiData.siteName}</u></span>
+              </div>
+
+              <div style={{ width: '100%', height: '180px', borderRadius: '14px', overflow: 'hidden', marginBottom: '14px', border: `1px solid ${borderColor}` }}>
+                <img src={currentAiData.imagePromptUrl} alt={currentAiData.siteName} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              </div>
+
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#2563eb', margin: '0 0 8px' }}>{currentAiData.aiTitle}</h3>
+              <p style={{ fontSize: '13px', lineHeight: '1.6', color: textColor, margin: '0 0 14px' }}>
+                {currentAiData.overview}
               </p>
-              <p style={{ fontSize: '12px', color: textSub, marginBottom: '20px' }}>
-                באפשרותך לייבא או ליצור רשימת השמעה ייעודית שתלווה אתכם בנסיעות באגם גארדה, פארקי השעשועים ובדרך לוונציה.
-              </p>
-              <a
-                href="https://music.apple.com"
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '12px 24px',
-                  background: '#fa233b',
-                  color: '#ffffff',
-                  borderRadius: '12px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  boxShadow: '0 4px 12px rgba(250,35,59,0.3)'
-                }}
-              >
-                פתח את Apple Music והתחבר 🎵
-              </a>
+
+              <div style={{ background: isDark ? '#111827' : '#f0fdf4', border: '1.5px solid #22c55e', padding: '12px', borderRadius: '14px', color: textColor, fontSize: '13px', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: currentAiData.restStop }} />
             </div>
 
             <button
@@ -2211,154 +2026,6 @@ export default function App() {
             >
               סגור וחזור למסלול
             </button>
-          </div>
-        </div>
-      )}
-
-      {modalType === 'weatherModal' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
-              <div>
-                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>METEO LIVE & LOCATION</small>
-                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>☀️ תחזית ומזג אוויר עדכני</h2>
-              </div>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
-            </div>
-
-            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6', boxSizing: 'border-box' }}>
-              <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
-                <b>מידע בזמן אמת עבור האזור שלך באגם גארדה:</b>
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>טמפרטורה</small>
-                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.temp}</strong>
-                </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>לחות יחסית</small>
-                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.humidity || '58%'}</strong>
-                </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>מהירות רוח</small>
-                  <strong style={{ fontSize: '16px', color: textColor }}>{weatherData.wind || '12 קמ"ש'}</strong>
-                </div>
-                <div style={{ background: isDark ? '#2c2c2e' : '#f8fafc', padding: '10px', borderRadius: '10px', border: `1px solid ${borderColor}` }}>
-                  <small style={{ color: textSub, display: 'block' }}>עדכון אחרון</small>
-                  <strong style={{ fontSize: '14px', color: textColor }}>{weatherData.updated || 'כעת'}</strong>
-                </div>
-              </div>
-              <p style={{ margin: 0, fontSize: '12px', color: textSub }}>
-                💡 <b>טיפ לדרך:</b> מזג האוויר בספטמבר-אוקטובר באגם גארדה אידיאלי לפארקי שעשועים וטיולי טבע, אך מומלץ להצטייד בלבוש קל לשעות הערב.
-              </p>
-            </div>
-
-            <button
-              onClick={() => handleGlobalClick(closeModal)}
-              style={{ width: '100%', padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}
-            >
-              הבנתי, חזור למסלול
-            </button>
-          </div>
-        </div>
-      )}
-
-      {modalType === 'around' && (
-        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
-          <div style={modalContentStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📍 סביבי (Around Me)</h3>
-              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
-            </div>
-
-            <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: '16px', width: '100%', boxSizing: 'border-box' }}>
-              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
-                <input
-                  type="text"
-                  dir="rtl"
-                  autoComplete="off"
-                  name="around_custom_search_input_safe_v8"
-                  placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
-                  value={aroundSearchQuery}
-                  onChange={(e) => setAroundSearchQuery(e.target.value)}
-                  style={{
-                    width: '100%', padding: '12px 42px 12px 12px', borderRadius: '12px',
-                    border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
-                    outline: 'none', fontSize: '16px', boxSizing: 'border-box', textAlign: 'right'
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={startAroundVoiceSearch}
-                  style={{
-                    position: 'absolute', right: '10px', background: 'none', border: 'none',
-                    fontSize: '18px', cursor: 'pointer', opacity: isAroundListening ? 1 : 0.7
-                  }}
-                  title="חיפוש קולי"
-                >
-                  {isAroundListening ? '🔴' : '🎙️'}
-                </button>
-              </div>
-              <button
-                type="submit"
-                style={{
-                  padding: '0 16px', background: cardBg, color: textColor,
-                  border: `1.5px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold',
-                  fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, flexShrink: 0, boxSizing: 'border-box'
-                }}
-              >
-                חפש
-              </button>
-            </form>
-
-            <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>או בחר קטגוריה מהירה לחיפוש במפה:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: cardBg, color: '#f59e0b', gridColumn: 'span 2', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
-                ☕ <span>עצירת דרך / Autogrill & שירותים</span>
-              </button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>⛽ <span>תחנת דלק</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>💊 <span>פארם</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍕 <span>פיצה</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍦 <span>גלידה</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🛒 <span>סופרמרקט</span></button>
-              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍝 <span>מסעדות</span></button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showThemeBuilder && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', direction: 'rtl', boxSizing: 'border-box' }}>
-          <div style={{ background: cardBg, color: textColor, padding: '24px', borderRadius: '20px', width: '100%', maxWidth: '400px', border: `1.5px solid ${borderColor}`, boxShadow: '0 20px 40px rgba(0,0,0,0.4)', boxSizing: 'border-box' }}>
-            <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: 'bold' }}>🛠️ יצירת גרסת עיצוב אישית</h3>
-            <p style={{ fontSize: '12px', color: textSub, marginBottom: '16px' }}>שלוט בצבעים וצור גרסה מותאמת אישית משלך:</p>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px', boxSizing: 'border-box' }}>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע רקע כללי (Bg Main):</label>
-                <input type="color" value={tempBgMain} onChange={(e) => setTempBgMain(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע רקע כרטיסים (Card Bg):</label>
-                <input type="color" value={tempCardBg} onChange={(e) => setTempCardBg(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע טקסט ראשי:</label>
-                <input type="color" value={tempTextColor} onChange={(e) => setTempTextColor(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע מסגרות:</label>
-                <input type="color" value={tempBorderColor} onChange={(e) => setTempBorderColor(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '8px', boxSizing: 'border-box' }}>
-              <button onClick={saveCustomTheme} style={{ flex: 1, padding: '12px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>שמור גרסה</button>
-              {customTheme && (
-                <button onClick={resetCustomTheme} style={{ padding: '12px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flexShrink: 0 }}>איפוס</button>
-              )}
-              <button onClick={() => setShowThemeBuilder(false)} style={{ padding: '12px 16px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flexShrink: 0 }}>ביטול</button>
-            </div>
           </div>
         </div>
       )}
@@ -2401,8 +2068,14 @@ export default function App() {
         </div>
 
         <section style={{ width: '100%', boxSizing: 'border-box' }}>
-          <div style={{ marginBottom: '16px' }}>
+          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', color: textColor }}>{day.icon} {day.title}</h2>
+            <button
+              onClick={() => handleGlobalClick(() => setModalType('aiGuideModal'))}
+              style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
+            >
+              🤖 קרא תקציר AI
+            </button>
           </div>
 
           <div 
@@ -2530,6 +2203,7 @@ export default function App() {
         </section>
       </main>
 
+      {/* מודאל טיימר */}
       {modalType === 'timer' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2550,18 +2224,10 @@ export default function App() {
                   {formatTimerClock(timerRemainingSec)}
                 </div>
                 <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '16px' }}>
-                  מווגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
+                  מוגדר ע"י אריק (סה"כ {activeTimer.durationMinutes} דקות)
                 </small>
 
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  {timerRemainingSec === 0 && (
-                    <button
-                      onClick={stopEscalatingAlarm}
-                      style={{ padding: '8px 14px', borderRadius: '10px', background: '#22c55e', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}
-                    >
-                      🛑 עצור אזעקה
-                    </button>
-                  )}
                   <button
                     onClick={cancelGlobalTimer}
                     style={{ padding: '8px 14px', borderRadius: '10px', background: '#dc2626', color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow }}
@@ -2628,6 +2294,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל רדאר */}
       {modalType === 'radar' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
@@ -2752,20 +2419,6 @@ export default function App() {
                           >
                             🧭 Directions
                           </a>
-                          <button
-                            onClick={() => sendSoundAlertToMember(member.name)}
-                            style={{ padding: '6px 8px', borderRadius: '8px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
-                            title="שלח צליל איתור דחוף"
-                          >
-                            🔔 צליל
-                          </button>
-                          <button
-                            onClick={() => requestRemoteListening(member.name)}
-                            style={{ padding: '6px 8px', borderRadius: '8px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: cardShadow }}
-                            title="האזן למיקרופון"
-                          >
-                            🎙️ האזן
-                          </button>
                         </div>
                       </div>
                     );
@@ -2779,6 +2432,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל חניה ומצפן */}
       {modalType === 'parking' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -2866,17 +2520,6 @@ export default function App() {
                   <img src={savedParking.photo} alt="Parking place" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px', border: `1.5px solid ${borderColor}`, boxSizing: 'border-box' }} />
                 )}
 
-                <button
-                  onClick={() => setIsArActive(true)}
-                  style={{
-                    width: '100%', padding: '14px', borderRadius: '12px', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                    color: '#fff', border: 'none', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', marginBottom: '10px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px rgba(37,99,235,0.4)', boxSizing: 'border-box'
-                  }}
-                >
-                  📍 פתח מצפן AR במצלמה למציאת הרכב
-                </button>
-
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
                   <a
                     href={`https://maps.apple.com/?daddr=${savedParking.lat},${savedParking.lng}&dirflg=w`}
@@ -2931,6 +2574,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל טריויה */}
       {modalType === 'trivia' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3029,6 +2673,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל אתגרים */}
       {modalType === 'questModal' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3076,6 +2721,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל יומן אתגרים */}
       {modalType === 'challengesLog' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3123,6 +2769,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל גלריה */}
       {modalType === 'gallery' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3210,6 +2857,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל צפייה בתמונה */}
       {selectedGalleryPhoto && (
         <div 
           onClick={() => setSelectedGalleryPhoto(null)}
@@ -3267,6 +2915,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל צפייה במסמכים */}
       {modalType === 'viewer' && viewerItem && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3285,6 +2934,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל חירום */}
       {modalType === 'emergency' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3302,6 +2952,7 @@ export default function App() {
         </div>
       )}
 
+      {/* מודאל כרטיסים */}
       {modalType === 'tickets' && (
         <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
           <div style={modalContentStyle}>
@@ -3406,6 +3057,56 @@ export default function App() {
               )}
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* מודאל Apple Music */}
+      {modalType === 'appleMusicModal' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '16px', marginBottom: '18px' }}>
+              <div>
+                <small style={{ color: textSub, fontWeight: 'bold', fontSize: '11px' }}>APPLE MUSIC INTEGRATION</small>
+                <h2 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🎵 פלייליסט נסיעה (Apple Music)</h2>
+              </div>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
+            </div>
+
+            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, lineHeight: '1.6', textAlign: 'center', boxSizing: 'border-box' }}>
+              <span style={{ fontSize: '42px', display: 'block', marginBottom: '10px' }}>🎧</span>
+              <p style={{ margin: '0 0 12px', fontSize: '14px', color: textColor }}>
+                <b>חיבור לחשבון Apple Music ליצירת פלייליסט משפחתי לדרך:</b>
+              </p>
+              <a
+                href="https://music.apple.com"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  background: '#fa233b',
+                  color: '#ffffff',
+                  borderRadius: '12px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  boxShadow: '0 4px 12px rgba(250,35,59,0.3)'
+                }}
+              >
+                פתח את Apple Music והתחבר 🎵
+              </a>
+            </div>
+
+            <button
+              onClick={() => handleGlobalClick(closeModal)}
+              style={{ width: '100%', padding: '12px', borderRadius: '12px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, boxSizing: 'border-box' }}
+            >
+              סגור וחזור למסלול
+            </button>
           </div>
         </div>
       )}
