@@ -39,59 +39,7 @@ const TIMER_SVG = (
 const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
-// מאגר תוכן ותמונות מוקפד ואמיתי לכל יום בטיול
-const AI_TOURIST_DATABASE = {
-  "2026-09-30": {
-    siteName: "ורונה ופסקיירה דל גארדה",
-    aiTitle: "ברוכים הבאים לאיטליה! 🇮🇹",
-    overview: "ורונה היא עירם של רומיאו ויוליה, עשירה בארכיטקטורה רומית עצומה וסמטאות ימי-ביניימיות. פסקיירה דל גארדה השכנה בנויה כמבצר כוכב בתוך המים ומציעה שקיעות עוצרות נשק.",
-    restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> פיצרייה משפחתית חמה ממש ליד תעלות המים בפסקיירה + עצירת גלידה ראשונה בגלריה מקומית מומלצת בסמטה צדדית שקטה.",
-    imageUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80"
-  },
-  "2026-10-01": {
-    siteName: "Gardaland Resort",
-    aiTitle: "ממלכת האקסטרים של גארדלנד 🎢",
-    overview: "גארדלנד הוא פארק השעשועים הגדול והמפורסם באיטליה, השוכן ממש על גדות אגם גארדה. הפארק כולל מתחמי אקסטרים אגדיים כמו Oblivion, Blue Tornado ורכבות הרים עולמיות.",
-    restStop: "<b>המלצה לעצירת רגעה:</b> מתחם האוכל המרכזי 'Aladino Pizza & Burger' או עצירת קפה איטלקי מול האגם בתוך הפארק.",
-    imageUrl: "https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=800&q=80"
-  },
-  "2026-10-02": {
-    siteName: "מונטה באלדו וסירמיונה",
-    aiTitle: "פסגת העולם ועיר המצודה 🚠🏰",
-    overview: "מונטה באלדו מתנשא לגובה של כמעט 1,800 מטר עם רכבל מסתובב שמציע פנורמה של 360 מעלות על כל אגם גארדה. סירמיונה היא לשון יבשה ציורית עם טירת מים עתיקה מהמאה ה-13.",
-    restStop: "<b>המלצה לעצירת מנוחה:</b> קפה פנורמי מול העננים בפסגת ההר, ולאחר מכן עצירה לגלידת שקד מיוחדת בכיכר המרכזית בסירמיונה.",
-    imageUrl: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80"
-  },
-  "2026-10-03": {
-    siteName: "Movieland & Medieval Times",
-    aiTitle: "הוליווד של אגם גארדה 🎬",
-    overview: "פארק קולנועי מטורף עם אפקטים מיוחדים ופעלולנים חיים, שמתחבר בערב למופע סחוף של אבירים וארוחת שחיתות מסורתית.",
-    restStop: "<b>המלצה לעצירת רגיעה:</b> ישיבה בצל האורנים במתחם האפקטים של המערב הפרוע לצפייה בפעלולים עם שתייה קרה.",
-    imageUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80"
-  },
-  "2026-10-04": {
-    siteName: "ונציה – עיר המים הקסומה",
-    aiTitle: "גונדולות, תעלות וסמטאות נסתרות 🛶",
-    overview: "ונציה בנויה על פני למעלה מ-100 איים קטנים המחוברים ב-400 גשרים. אין בה מכוניות, והכל מתנהל על גבי תעלות מים מרהיבות.",
-    restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> עצירה בפיצרייה השכונתית 'L'Anfora' הרחק מההמון של כיכר סן מרקו, וקינוח גלידת Suso המיתולוגית.",
-    imageUrl: "https://images.unsplash.com/photo-1514896856555-1f274c4314c9?auto=format&fit=crop&w=800&q=80"
-  },
-  "2026-10-05": {
-    siteName: "X Rafting ו-Borghetto sul Mincio",
-    aiTitle: "אקסטרים מים וכפר הטחנות הקסום 🚣🌾",
-    overview: "מסע ראפטינג מרגש בנהר ולאחר מכן ביקור בבורגטו - אחד הכפרים היפים באיטליה הבנוי סביב טחנות קמח עתיקות שעדיין פועלות על המים.",
-    restStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> ארוחת צהריים רומנטית במסעדת 'Alla Borsa' לטעימת הטורטליני המפורסם 'קשר האהבה'.",
-    imageUrl: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80"
-  },
-  "2026-10-06": {
-    siteName: "ורונה הסיום והטיסה חזרה",
-    aiTitle: "רגע השיא והפרידה מאיטליה ❤️",
-    overview: "סיום מרגש בוורונה הרומית, ביקור בארנה העתיקה, סיכום הטיול המשפחתי ונסיעה חזרה לשדה התעופה.",
-    restStop: "<b>המלצה לעצירת פרידה:</b> פיצת גורמה במסעדת Saporè Downtown לפני שיוצאים לשדה.",
-    imageUrl: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80"
-  }
-};
-
+// מסלול מלא הכולל מידע כתוב עשיר, הסברים בא AI, ותמונות אמיתיות לכל יום
 const INITIAL_TRIP_DAYS = [
   {
     date: "2026-09-30",
@@ -101,6 +49,10 @@ const INITIAL_TRIP_DAYS = [
     icon: "✈️",
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
+    aiTitle: "ברוכים הבאים לאיטליה! 🇮🇹",
+    aiOverview: "ורונה היא עירם המפורסמת של רומיאו ויוליה, עשירה בארכיטקטורה רומית עצומה וסמטאות ימי-ביניימיות קסומות. פסקיירה דל גארדה השכנה בנויה כמבצר כוכב בתוך המים ומציעה שקיעות עוצרות נשק.",
+    aiFoodStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> פיצרייה משפחתית חמה ממש ליד תעלות המים בפסקיירה + עצירת גלידה ראשונה בגלריה מקומית מומלצת בסמטה צדדית שקטה.",
+    imageUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
     stops: [
       { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
@@ -114,6 +66,10 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎢",
     challenge: "לבחור יחד את שלושת המתקנים הכי אקסטרימיים של היום!",
     challengeDesc: "צלמו תמונה צועקים על אחד המתקנים, וכתבו מי צעק הכי חזק ברכבת הרים.",
+    aiTitle: "ממלכת האקסטרים של גארדלנד 🎢",
+    aiOverview: "גארדלנד הוא פארק השעשועים הגדול והמפורסם באיטליה, השוכן ממש על גדות אגם גארדה. הפארק כולל מתחמי אקסטרים אגדיים כמו Oblivion, Blue Tornado ורכבות הרים עולמיות.",
+    aiFoodStop: "<b>המלצה לעצירת רגעה:</b> מתחם האוכל המרכזי 'Aladino Pizza & Burger' או עצירת קפה איטלקי מול האגם בתוך הפארק.",
+    imageUrl: "https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=800&q=80",
     stops: [
       { time: "08:30", name: "יציאה מהמלון ל-Gardaland", dest: "Gardaland Resort, Via Derna 4, Castelnuovo del Garda", note: "לצאת מוקדם ולהגיע בנחת לפני פתיחת השערים." },
       { time: "09:00", name: "חניה וכניסה ל-Gardaland", dest: "Gardaland Parking, Castelnuovo del Garda", note: "מומלץ לשמור את מיקום הרכב בחניה כדי לחזור אליו בקלות בסוף היום." },
@@ -129,6 +85,10 @@ const INITIAL_TRIP_DAYS = [
     icon: "🚠",
     challenge: "לצלם תמונת פנורמה משפחתית מפסגת הרכבל ותמונה רומנטית/משפחתית בסירמיונה!",
     challengeDesc: "תצפית מרהיבה מגובה של כמעט 1,800 מטר באלדו, ולאחר מכן שיטוט בסמטאות הקסומות של סירמיונה.",
+    aiTitle: "פסגת העולם ועיר המצודה 🚠🏰",
+    aiOverview: "מונטה באלדו מתנשא לגובה של כמעט 1,800 מטר עם רכבל מסתובב שמציע פנורמה של 360 מעלות על כל אגם גארדה. סירמיונה היא לשון יבשה ציורית עם טירת מים עתיקה מהמאה ה-13.",
+    aiFoodStop: "<b>המלצה לעצירת מנוחה:</b> קפה פנורמי מול העננים בפסגת ההר, ולאחר מכן עצירה לגלידת שקד מיוחדת בכיכר המרכזית בסירמיונה.",
+    imageUrl: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80",
     stops: [
       { time: "08:30", name: "עלייה לרכבל מונטה באלדו (מלצ׳סינה)", dest: "Funivia Malcesine-Monte Baldo", note: "רכבל מסתובב עוצר נשק אל פסגת הר האלדו. מומלץ להזמין מקום מראש!" },
       { time: "11:00", name: "תצפית מפסגת מונטה באלדו", dest: "Monte Baldo Summit, Italy", note: "הליכה קצרה, תצפיות פנורמיות על כל אגם גארדה, ואולי פגישה עם פרות הרריות." },
@@ -144,6 +104,10 @@ const INITIAL_TRIP_DAYS = [
     icon: "🎬",
     challenge: "לצלם סלפי משפחתי שנראה כמו פוסטר של סרט הוליוודי!",
     challengeDesc: "פוזה דרמטית ליד תפאורת סרט ב-Movieland או תמונה של כולם אוכלים עוף בידיים במופע האבירים.",
+    aiTitle: "הוליווד של אגם גארדה 🎬",
+    aiOverview: "פארק קולנועי מטורף עם אפקטים מיוחדים ופעלולנים חיים, שמתחבר בערב למופע סחוף של אבירים וארוחת שחיתות מסורתית.",
+    aiFoodStop: "<b>המלצה לעצירת רגיעה:</b> ישיבה בצל האורנים במתחם האפקטים של המערב הפרוע לצפייה בפעלולים עם שתייה קרה.",
+    imageUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80",
     stops: [
       { time: "09:00", name: "יציאה ל-Movieland", dest: "Movieland The Hollywood Park, Via Fossalta 58, Lazise", note: "יום של אקשן וחוויות קולנועיות." },
       { time: "20:00", name: "Medieval Times – מופע האבירים", dest: "Medieval Times, Via Fossalta 58, Lazise", note: "מופע ערב סוחף וארוחה שחיתות בלי סכו״ם (עם הידיים!).", food: { name: "🍗 Medieval Times (אכילה בידיים!)", dest: "Medieval Times, Via Fossalta 58, Lazise" } }
@@ -157,6 +121,10 @@ const INITIAL_TRIP_DAYS = [
     icon: "🛶",
     challenge: "למצוא גשר קטן ויפה מחוץ למסלול הראשי ולספור 3 גונדולות!",
     challengeDesc: "צלמו את הגשר הכי מיוחד שמצאתם בסמטאות ונציה, וכתבו את הדבר הכי מוזר או יפה שראיתם בעיר המים.",
+    aiTitle: "ונציה – עיר המים הקסומה 🛶",
+    aiOverview: "ונציה בנויה על פני למעלה מ-100 איים קטנים המחוברים ב-400 גשרים. אין בה מכוניות, והכל מתנהל על גבי תעלות מים מרהיבות.",
+    aiFoodStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> עצירה בפיצרייה השכונתית 'L'Anfora' הרחק מההמון של כיכר סן מרקו, וקינוח גלידת Suso המיתולוגית.",
+    imageUrl: "https://images.unsplash.com/photo-1514896856555-1f274c4314c9?auto=format&fit=crop&w=800&q=80",
     stops: [
       { time: "07:30", name: "יציאה מוקדמת מהמלון לוונציה", dest: "Venezia Tronchetto Parking, Isola Nova del Tronchetto, Venezia", note: "חניית טרונקטו ומעבר בסירה/רכבת קלה למרכז." },
       { time: "09:30", name: "כיכר סן מרקו והבזיליקה", dest: "St. Mark's Square, Venice, Italy", note: "הלב הפועם של ונציה, כיכר מרהיבה, יונים וארמון הדוג'ה." },
@@ -173,6 +141,10 @@ const INITIAL_TRIP_DAYS = [
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מטורפת מהראפטינג ותמונה חגיגית בבורגטו!",
     challengeDesc: "מתחילים את הבוקר באקשן מים מסעיר ב-X Rafting, וממשיכים לצהריים רומנטיים בכפר הטחנות בבורגטו.",
+    aiTitle: "אקסטרים מים וכפר הטחנות הקסום 🚣🌾",
+    aiOverview: "מסע ראפטינג מרגש בנהר ולאחר מכן ביקור בבורגטו - אחד הכפרים היפים באיטליה הבנוי סביב טחנות קמח עתיקות שעדיין פועלות על המים.",
+    aiFoodStop: "<b>המלצה לעצירת מנוחה ואוכל:</b> ארוחת צהריים רומנטית במסעדת 'Alla Borsa' לטעימת הטורטליני המפורסם 'קשר האהבה'.",
+    imageUrl: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
     stops: [
       { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועי." },
       { time: "12:30", name: "Borghetto sul Mincio – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות העתיקות.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי 'קשר האהבה')", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
@@ -186,6 +158,10 @@ const INITIAL_TRIP_DAYS = [
     icon: "❤️",
     challenge: "לבחור יחד את רגע השיא (הטופ 1) של כל הטיול!",
     challengeDesc: "כל אחד כותב את הרגע שהוא לעולם לא ישכח מהטיול לאיטליה, ומצטלמים יחד פעם אחרונה בוורונה.",
+    aiTitle: "רגע השיא והפרידה מאיטליה ❤️",
+    aiOverview: "סיום מרגש בוורונה הרומית, ביקור בארנה העתיקה, סיכום הטיול המשפחתי ונסיעה חזרה לשדה התעופה.",
+    aiFoodStop: "<b>המלצה לעצירת פרידה:</b> פיצת גורמה במסעדת Saporè Downtown לפני שיוצאים לשדה.",
+    imageUrl: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80",
     stops: [
       { time: "09:00", name: "צ׳ק-אאוט ויציאה לוורונה", dest: "Parcheggio Cittadella, Piazza Cittadella, Verona", note: "סיור קצר בוורונה, הארנה והמרפסת של יוליה." },
       { time: "13:00", name: "ארוחת צהריים מסכמת בוורונה", dest: "Pizzeria Saporè Downtown, Verona", note: "ארוחת פרידה מעולה מאיטליה עם פיצות גורמה ופסטות.", food: { name: "🍕 Pizzeria Saporè Downtown", dest: "Pizzeria Saporè, Verona" } },
@@ -1754,7 +1730,7 @@ export default function App() {
 
   const compassArrowRotation = (activeCompassBearing - deviceHeading + 360) % 360;
 
-  const currentAiData = AI_TOURIST_DATABASE[day?.date] || AI_TOURIST_DATABASE["2026-09-30"];
+  const currentAiData = day;
 
   return (
     <div style={{ 
@@ -2004,19 +1980,19 @@ export default function App() {
             <div style={{ background: cardBg, borderRadius: '20px', padding: '18px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <span style={{ fontSize: '20px' }}>📍</span>
-                <span style={{ fontSize: '14px', fontWeight: 'bold', color: textColor }}>מיקומך במסלול: <u>{day.label} · {currentAiData.siteName}</u></span>
+                <span style={{ fontSize: '14px', fontWeight: 'bold', color: textColor }}>מיקומך במסלול: <u>{currentAiData.label} · {currentAiData.title}</u></span>
               </div>
 
               <div style={{ width: '100%', height: '180px', borderRadius: '14px', overflow: 'hidden', marginBottom: '14px', border: `1px solid ${borderColor}` }}>
-                <img src={currentAiData.imageUrl} alt={currentAiData.siteName} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <img src={currentAiData.imageUrl} alt={currentAiData.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               </div>
 
               <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#2563eb', margin: '0 0 8px' }}>{currentAiData.aiTitle}</h3>
               <p style={{ fontSize: '13px', lineHeight: '1.6', color: textColor, margin: '0 0 14px' }}>
-                {currentAiData.overview}
+                {currentAiData.aiOverview}
               </p>
 
-              <div style={{ background: isDark ? '#111827' : '#f0fdf4', border: '1.5px solid #22c55e', padding: '12px', borderRadius: '14px', color: textColor, fontSize: '13px', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: currentAiData.restStop }} />
+              <div style={{ background: isDark ? '#111827' : '#f0fdf4', border: '1.5px solid #22c55e', padding: '12px', borderRadius: '14px', color: textColor, fontSize: '13px', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: currentAiData.aiFoodStop }} />
             </div>
 
             <button
@@ -2075,6 +2051,16 @@ export default function App() {
             >
               🤖 קרא תקציר AI
             </button>
+          </div>
+
+          {/* כרטיסיית תוכן ותמונה ויזואלית אמיתית המצורפת ישירות למסלול היומי */}
+          <div style={{ background: cardBg, borderRadius: '18px', padding: '16px', marginBottom: '20px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', marginBottom: '12px', border: `1px solid ${borderColor}` }}>
+              <img src={currentAiData.imageUrl} alt={currentAiData.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#2563eb', margin: '0 0 6px' }}>{currentAiData.aiTitle}</h3>
+            <p style={{ fontSize: '13px', lineHeight: '1.5', color: textColor, margin: '0 0 10px' }}>{currentAiData.aiOverview}</p>
+            <div style={{ background: isDark ? '#111827' : '#f0fdf4', border: '1.5px solid #22c55e', padding: '10px', borderRadius: '10px', color: textColor, fontSize: '12px', lineHeight: '1.4' }} dangerouslySetInnerHTML={{ __html: currentAiData.aiFoodStop }} />
           </div>
 
           <div 
