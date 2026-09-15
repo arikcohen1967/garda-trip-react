@@ -36,7 +36,6 @@ const TIMER_SVG = (
   </svg>
 );
 
-const HOTEL_COORDINATES = { lat: 45.4057, lng: 10.7022, name: "Bio Agriturismo Vojon" };
 const HOTEL_ADDRESS = "Bio Agriturismo Vojon, Ponti sul Mincio, Italy";
 
 const INITIAL_TRIP_DAYS = [
@@ -49,7 +48,7 @@ const INITIAL_TRIP_DAYS = [
     challenge: "לצלם את התמונה המשפחתית הראשונה באיטליה.",
     challengeDesc: "הרגע נחתנו! המשימה שלכם: סלפי משפחתי ראשון בשדה או עם הרכב השכור החדש.",
     stops: [
-      { time: "16:00", name: "נחיתה בנמל התעופה ורונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
+      { time: "16:00", name: "נחיתה בנמל התעופה وרונה", dest: "Verona Villafranca Airport", note: "איסוף מזוודות ואיסוף הרכב השכור." },
       { time: "18:00", name: "נסיעה למלון וארוחת ערב", dest: "Bio Agriturismo Vojon, Ponti sul Mincio, Italy", note: "צ׳ק-אין, התארגנות בחדרים וארוחת ערב פיצה/פסטה משפחתית במסעדה מקומית סמוכה + גלידה ראשונה בפסקיירה.", food: { name: "🍕 פיצריה מקומית + גלידה בפסקיירה", dest: "Peschiera del Garda, Italy" } }
     ]
   },
@@ -119,7 +118,7 @@ const INITIAL_TRIP_DAYS = [
     title: "X Rafting בבוקר + Borghetto בצהריים",
     icon: "🚣",
     challenge: "לצלם תמונה משפחתית מטורפת מהראפטינג ותמונה חגיגית בבורגטו!",
-    challengeDesc: "מתחילים את הבוקר באקשן מים מסעיר ב-X Rafting, וממשיכים לצהריים רומנטיים בכפר הטחנות בבורגטו.",
+    challengeDesc: "מתחילים את הבוקר באקשן מים מסעיר ב-X Rafting, וממשיכים לצהריים רומנטיים בכפר הטחנות בורגטו.",
     stops: [
       { time: "09:00", name: "X Rafting – חוויית אקסטרים במים", dest: "X Rafting, Centri Rafting, Italy", note: "שיט ראפטינג משפחתי ומרגש בנהר עם צוות מדריכים מקצועי." },
       { time: "12:30", name: "Borghetto sul Mincio – הכפר והטחנות", dest: "Borghetto sul Mincio, Italy", note: "טיול רגלי ציורי בין הנהר, הגשרים והטחנות העתיקות.", food: { name: "🍝 Ristorante Alla Borsa (טורטליני מקורי 'קשר האהבה')", dest: "Ristorante Alla Borsa, Valeggio sul Mincio, Italy" } }
@@ -177,10 +176,27 @@ const RAW_BASE_QUESTIONS = [
   { q: "מהי היבשה הקטנה ביותר בעולם?", options: ["אפריקה", "אוסטרליה", "אירופה", "אמריקה"], correct: 1 },
   { q: "באיזו מדינה נמצאים המפלים הגבוהים בעולם (מפלי אנג'ל)?", options: ["ונצואלה", "ברזיל", "ארצות הברית", "קנדה"], correct: 0 },
   { q: "כמה שיניים יש לבן אדם מבוגר בדרך כלל (כולל שיני בינה)?", options: ["28", "32", "36", "24"], correct: 1 },
-  { q: "איזה חומר נחשב לקשה ביותר בטבע?", options: ["ברזל", "זהב", "יהלום", "טיטניום"], correct: 2 }
+  { q: "איזה חומר נחשב לקשה ביותר בטבע?", options: ["ברזל", "זהב", "יהלום", "טיטניום"], correct: 2 },
+  { q: "איזו חיה מפורסמת ידועה כישנה כמעט כל היום (כ-20 שעות ביממה)?", options: ["קואלה", "אריה", "פנדה", "דוב קוטב"], correct: 0 },
+  { q: "באיזו שנה נחת האדם הראשון על הירח?", options: ["1959", "1969", "1979", "1989"], correct: 1 },
+  { q: "מי היה האדם הראשון שהלך על הירח?", options: ["באז אולדרין", "ניל ארמסטרונג", "יוורי גגארין", "ג'ון גלן"], correct: 1 },
+  { q: "מהו כוכב הלכת הקרוב ביותר לשמש?", options: ["נוגה", "מרקורי (חמה)", "מאדים", "ארץ"], correct: 1 },
+  { q: "איזה בעל חיים הוא הגדול ביותר בעולם כיום?", options: ["פיל אפריקאי", "לווייתן כחול", "תנין הים", "ג'ירפה"], correct: 1 },
+  { q: "מהי השפה המדוברת ביותר בעולם מבחינת מספר דוברים ילידים?", options: ["אנגלית", "ספרדית", "מנדרינית (סינית)", "הינדי"], correct: 2 },
+  { q: "איזה יסוד כימי מסומן באותיות H?", options: ["הליום", "מימן (Hydrogen)", "חמצן", "זהב"], correct: 1 },
+  { q: "מהו כיוון הזריחה של השמש?", options: ["מערב", "מזרח", "צפון", "דרום"], correct: 1 },
+  { q: "מי כתב את ספרי 'הארי פוטר'?", options: ["ג'י. קיי. רולינג", "סטיבן קינג", "ג'. ר. ר. טולקין", "דן בראון"], correct: 0 },
+  { q: "איזה מהמשחקים הבאים אינו משחק וידאו?", options: ["Minecraft", "Fortnite", "Monopoly", "Roblox"], correct: 2 },
+  { q: "מה שמה של בובת הספוג הצהובה שגר באננס מתחת לים?", options: ["פטריק", "ספוגובב קבוע", "ספוגבוב מכנסמרובע", "סקווידוויד"], correct: 2 },
+  { q: "מה שמו של גיבור העל שנושך על ידי עכביש רדיואקטיבי?", options: ["באטמן", "ספיידרמן", "סופרמן", "איירון מן"], correct: 1 },
+  { q: "מהי בירת צרפת?", options: ["לונדון", "פריז", "ברלין", "רומא"], correct: 1 },
+  { q: "מהי בירת אנגליה (בריטניה)?", options: ["פריז", "לונדון", "דבלין", "אדינבורו"], correct: 1 },
+  { q: "באיזו מדינה נמצאת העיר ברצלונה?", options: ["פורטוגל", "איטליה", "ספרד", "צרפת"], correct: 2 },
+  { q: "מהי בירת ספרד?", options: ["ברצלונה", "מדריד", "סביליה", "ולנסיה"], correct: 1 },
+  { q: "באיזו מדינה נמצאת העיר טוקיו?", options: ["סין", "יפן", "קוריאה", "ויאטנם"], correct: 1 },
+  { q: "מהי בירת גרמניה?", options: ["מינכן", "פרנקפורט", "ברלין", "המבורג"], correct: 2 }
 ];
 
-// פונקציית חישוב מרחק מדויקת
 const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lon2 || !lat2) return null;
   const R = 6371;
@@ -194,18 +210,6 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   const d = R * c;
   if (d < 1) return `${Math.round(d * 1000)} מטר`;
   return `${d.toFixed(1)} ק"מ`;
-};
-
-// חישוב זווית כיוון (Bearing) יחסית לצפון
-const calculateBearing = (lat1, lon1, lat2, lon2) => {
-  if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
-  const y = Math.sin(Δλ) * Math.cos(φ2);
-  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-  const θ = Math.atan2(y, x);
-  return (θ * 180 / Math.PI + 360) % 360;
 };
 
 const generateMapHTML = (familyLocs, myLoc, sosState, isDark) => {
@@ -343,7 +347,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
           <p><b>טלפון ליצירת קשר:</b> <a href="tel:+393792027060" style={{ color: isDark ? '#60a5fa' : '#1e3a8a', fontWeight: '800' }} dir="ltr">+39 379 202 7060</a></p>
           
           <a 
-            href={`https://www.waze.com/ul?q=${encodeURIComponent(HOTEL_ADDRESS)}&navigate=yes`} 
+            href={`https://www.waze.com/ul?q=${encodeURIComponent('Bio Agriturismo Vojon, Ponti sul Mincio, Italy')}&navigate=yes`} 
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: '#33ccff', color: '#000000', borderRadius: '14px', textDecoration: 'none', fontWeight: '900', marginTop: '20px', boxShadow: cardShadow }}
           >
             {WAZE_SVG} נווט למלון ב-Waze לפי הכתובת
@@ -403,7 +407,7 @@ function DocumentViewer({ item, isDark, blockText, cardShadow }) {
         <>
           <p><b>חברת השכרה:</b> Ecovia Car Rental</p>
           <p><b>מספר שובר:</b> 724715780</p>
-          <p><b>איסוף והחזרה:</b> נמל התעופה ורונה (VRN)</p>
+          <p><b>איסוף והחזרה:</b> נמל התעופה وרונה (VRN)</p>
         </>
       )}
 
@@ -468,12 +472,6 @@ export default function App() {
   const [completedChallenges, setCompletedChallenges] = useState({});
   const [challengeNote, setChallengeNote] = useState('');
   const [challengeAuthor, setChallengeAuthor] = useState('אריק');
-  
-  const challengeAuthorRef = useRef(challengeAuthor);
-  useEffect(() => {
-    challengeAuthorRef.current = challengeAuthor;
-  }, [challengeAuthor]);
-
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
 
   const [aroundSearchQuery, setAroundSearchQuery] = useState('');
@@ -530,7 +528,6 @@ export default function App() {
   });
   const watchPositionIdRef = useRef(null);
 
-  // שמירת רכב + מצפן GPS חי מובנה
   const [savedParking, setSavedParking] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
@@ -538,10 +535,6 @@ export default function App() {
   });
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
-  const [compassTarget, setCompassTarget] = useState('parking'); // 'parking' או 'hotel'
-  const [deviceHeading, setDeviceHeading] = useState(0);
-  const [compassPermissionGranted, setCompassPermissionGranted] = useState(false);
-  const parkingWatchIdRef = useRef(null);
 
   const [activeTimer, setActiveTimer] = useState(() => {
     try {
@@ -570,80 +563,6 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
 
-  // האזנה לחיישן המצפן המגנטי עם תמיכה מלאה ב-iOS Safari ובקשת הרשאה
-  const setupOrientationListener = () => {
-    const handleOrientation = (e) => {
-      let alpha = e.alpha;
-      // באייפון/iOS זה המשתנה המדויק לכיוון המגנטי האמיתי
-      if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
-        alpha = e.webkitCompassHeading;
-      }
-      if (alpha !== undefined && alpha !== null) {
-        setDeviceHeading(alpha);
-        setArHeading(alpha);
-      }
-    };
-
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', handleOrientation, true);
-    }
-  };
-
-  const requestCompassPermission = async () => {
-    playClickSound();
-    try {
-      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        const response = await DeviceOrientationEvent.requestPermission();
-        if (response === 'granted') {
-          setCompassPermissionGranted(true);
-          setupOrientationListener();
-        } else {
-          alert('הרשאת המצפן נדחתה בהגדרות הטלפון.');
-        }
-      } else {
-        // מכשירי אנדרואיד ומחשבים שאינם דורשים הרשאה מפורשת
-        setCompassPermissionGranted(true);
-        setupOrientationListener();
-      }
-    } catch (err) {
-      setupOrientationListener();
-    }
-  };
-
-  useEffect(() => {
-    // הפעלה ראשונית עבור מכשירים ללא דרישת אישור בלחיצה
-    if (typeof DeviceOrientationEvent === 'undefined' || typeof DeviceOrientationEvent.requestPermission !== 'function') {
-      setCompassPermissionGranted(true);
-      setupOrientationListener();
-    }
-  }, []);
-
-  // דגימת GPS חיה רציפה בזמן שמודאל החניה/מצפן פתוח
-  useEffect(() => {
-    if (modalType === 'parking' && navigator.geolocation) {
-      parkingWatchIdRef.current = navigator.geolocation.watchPosition(
-        (pos) => {
-          setMyLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        },
-        (err) => console.warn('Compass GPS watch error', err),
-        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
-      );
-    } else {
-      if (parkingWatchIdRef.current !== null) {
-        navigator.geolocation.clearWatch(parkingWatchIdRef.current);
-        parkingWatchIdRef.current = null;
-      }
-    }
-
-    return () => {
-      if (parkingWatchIdRef.current !== null) {
-        navigator.geolocation.clearWatch(parkingWatchIdRef.current);
-        parkingWatchIdRef.current = null;
-      }
-    };
-  }, [modalType]);
-
-  // ניהול מצלמת AR
   useEffect(() => {
     if (!isArActive) return;
     navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } })
@@ -652,12 +571,32 @@ export default function App() {
       })
       .catch(err => console.log('Camera error', err));
 
+    const handleOrientation = (e) => {
+      let alpha = e.alpha || e.webkitCompassHeading;
+      if (alpha !== undefined && alpha !== null) {
+        setArHeading(alpha);
+      }
+    };
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
+
     if (savedParking && myLocation) {
-      const brng = calculateBearing(myLocation.lat, myLocation.lng, savedParking.lat, savedParking.lng);
+      const lat1 = myLocation.lat * Math.PI / 180;
+      const lat2 = savedParking.lat * Math.PI / 180;
+      const dLon = (savedParking.lng - myLocation.lng) * Math.PI / 180;
+      const y = Math.sin(dLon) * Math.cos(lat2);
+      const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+      let brng = Math.atan2(y, x) * 180 / Math.PI;
+      brng = (brng + 360) % 360;
       setArBearing(brng);
     }
 
     return () => {
+      if (window.DeviceOrientationEvent) {
+        window.removeEventListener('deviceorientation', handleOrientation, true);
+      }
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach(t => t.stop());
       }
@@ -705,7 +644,7 @@ export default function App() {
         type: 'broadcast',
         event: 'sound_alert_with_msg',
         payload: {
-          senderName: challengeAuthorRef.current || 'אריק',
+          senderName: challengeAuthor || 'אריק',
           targetName: memberName,
           message: msg,
           time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
@@ -724,7 +663,7 @@ export default function App() {
         type: 'broadcast',
         event: 'mic_listen_request',
         payload: {
-          requester: challengeAuthorRef.current || 'אריק',
+          requester: challengeAuthor || 'אריק',
           targetName: memberName
         }
       });
@@ -734,6 +673,7 @@ export default function App() {
     }
   };
 
+  // --- פונקציית סאונד קליק מתוקנת, יציבה ומוגברת ---
   const playClickSound = () => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -753,6 +693,7 @@ export default function App() {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(580, ctx.currentTime);
       
+      // ווליום מוגבר לבקשתך
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
       
@@ -764,7 +705,7 @@ export default function App() {
   };
 
   const broadcastMyLocation = async (coords) => {
-    const currentName = challengeAuthorRef.current || 'אריק';
+    const currentName = challengeAuthor || 'אריק';
     const locObj = {
       name: currentName,
       lat: coords.latitude,
@@ -786,7 +727,7 @@ export default function App() {
   };
 
   const triggerSosLostAlert = () => {
-    const currentName = challengeAuthorRef.current || 'אריק';
+    const currentName = challengeAuthor || 'אריק';
     if (!navigator.geolocation) {
       alert('שירותי מיקום אינם נתמכים');
       return;
@@ -820,7 +761,7 @@ export default function App() {
         setModalType('radar');
       },
       () => alert('שגיאה בדגימת מיקום ה-GPS. בדוק שה-GPS מופעל בהגדרות הטלפון.'),
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      { enableHighAccuracy: true }
     );
   };
 
@@ -872,12 +813,12 @@ export default function App() {
         alert('📍 מיקומך עודכן ונשמר במפה לכל המשפחה!');
       },
       () => alert('שגיאה בקבלת מיקום GPS.'),
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      { enableHighAccuracy: true }
     );
   };
 
   const adminForceRefreshAllLocations = async () => {
-    if (challengeAuthorRef.current !== 'אריק' && !isAdminUnlocked) {
+    if (challengeAuthor !== 'אריק' && !isAdminUnlocked) {
       const pass = window.prompt('הזן קוד מנהל לפעולה זו:');
       if (pass !== '1967') {
         alert('קוד שגוי!');
@@ -933,11 +874,8 @@ export default function App() {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioCtx();
-      }
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') ctx.resume();
+      const ctx = new AudioCtx();
+      audioCtxRef.current = ctx;
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -973,11 +911,15 @@ export default function App() {
         oscillatorRef.current.disconnect();
         oscillatorRef.current = null;
       }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+        audioCtxRef.current = null;
+      }
     } catch (e) {}
   };
 
   const verifyAdminAccess = () => {
-    if (isAdminUnlocked || challengeAuthorRef.current === 'אריק') return true;
+    if (isAdminUnlocked || challengeAuthor === 'אריק') return true;
     const pass = window.prompt('הזן קוד מנהל לשליטה בטיימר המשפחתי:');
     if (pass === '1967') {
       setIsAdminUnlocked(true);
@@ -1065,13 +1007,13 @@ export default function App() {
         localStorage.removeItem('garda-active-sos');
       })
       .on('broadcast', { event: 'sound_alert_with_msg' }, ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthorRef.current || 'אריק')) {
+        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
           setIncomingSoundAlert(payload);
           startEscalatingAlarm();
         }
       })
       .on('broadcast', { event: 'mic_listen_request' }, async ({ payload }) => {
-        if (payload && payload.targetName === (challengeAuthorRef.current || 'אריק')) {
+        if (payload && payload.targetName === (challengeAuthor || 'אריק')) {
           try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             setListeningStream(stream);
@@ -1086,7 +1028,7 @@ export default function App() {
           navigator.geolocation.getCurrentPosition(
             (pos) => broadcastMyLocation(pos.coords),
             () => {},
-            { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+            { enableHighAccuracy: true }
           );
         }
       })
@@ -1108,7 +1050,7 @@ export default function App() {
     return () => {
       supabase.removeChannel(radarChannel);
     };
-  }, []);
+  }, [challengeAuthor]);
 
   const saveSmartParkingLocation = () => {
     if (!navigator.geolocation) {
@@ -1130,7 +1072,7 @@ export default function App() {
         alert('🚗 מיקום הרכב נשמר בהצלחה (עובד גם Offline)!');
       },
       () => alert('שגיאה בדגימת מיקום ה-GPS של הרכב'),
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      { enableHighAccuracy: true }
     );
   };
 
@@ -1160,9 +1102,6 @@ export default function App() {
     } else {
       document.body.style.overflow = 'unset';
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
   }, [modalType, sidebarOpen, isArActive]);
 
   useEffect(() => {
@@ -1814,7 +1753,7 @@ export default function App() {
             transition: 'transform 0.15s ease, background 0.15s ease'
           }}
         >
-          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', borderRadius: '8px', border: `1.5px solid ${borderColor}`, flexShrink: 0 }}>
+          <span style={{ fontSize: '18px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', borderRadius: '8px', border: `1px solid ${borderColor}`, flexShrink: 0 }}>
             {cfg.icon}
           </span>
           <span style={{ flex: 1, letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cfg.label}</span>
@@ -1830,21 +1769,6 @@ export default function App() {
       </div>
     );
   };
-
-  // חישוב יעד המצפן הפעיל (חניה או מלון)
-  const activeCompassCoords = compassTarget === 'parking' && savedParking
-    ? { lat: savedParking.lat, lng: savedParking.lng, name: savedParking.note }
-    : HOTEL_COORDINATES;
-
-  const activeCompassBearing = myLocation && activeCompassCoords
-    ? calculateBearing(myLocation.lat, myLocation.lng, activeCompassCoords.lat, activeCompassCoords.lng)
-    : 0;
-
-  const activeCompassDistance = myLocation && activeCompassCoords
-    ? calculateDistanceKm(myLocation.lat, myLocation.lng, activeCompassCoords.lat, activeCompassCoords.lng)
-    : 'דוגם GPS...';
-
-  const compassArrowRotation = (activeCompassBearing - deviceHeading + 360) % 360;
 
   return (
     <div style={{ 
@@ -2784,76 +2708,10 @@ export default function App() {
           <div style={modalContentStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
               <div>
-                <small style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '11px' }}>CAR FINDER & COMPASS</small>
-                <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🚗 מציאת רכב / מלון ומצפן חי</h3>
+                <small style={{ color: '#16a34a', fontWeight: 'bold', fontSize: '11px' }}>CAR FINDER & AR</small>
+                <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 'bold', color: textColor }}>🚗 שמירת מיקום רכב חכם</h3>
               </div>
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
-            </div>
-
-            {/* בורר יעד למצפן: רכב חונה מול מלון Vojon */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-              <button
-                onClick={() => setCompassTarget('parking')}
-                style={{
-                  flex: 1, padding: '10px', borderRadius: '12px',
-                  background: compassTarget === 'parking' ? luxuryBlueBg : cardBg,
-                  color: compassTarget === 'parking' ? luxuryBlueText : textColor,
-                  border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow
-                }}
-              >
-                🚗 לרכב החונה
-              </button>
-              <button
-                onClick={() => setCompassTarget('hotel')}
-                style={{
-                  flex: 1, padding: '10px', borderRadius: '12px',
-                  background: compassTarget === 'hotel' ? luxuryBlueBg : cardBg,
-                  color: compassTarget === 'hotel' ? luxuryBlueText : textColor,
-                  border: `1.5px solid ${borderColor}`, fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: cardShadow
-                }}
-              >
-                🏡 למלון Vojon
-              </button>
-            </div>
-
-            {/* ווידג'ט מצפן חי מעוצב */}
-            <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, textAlign: 'center', boxSizing: 'border-box' }}>
-              <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '4px' }}>
-                מכוון אל: <b>{activeCompassCoords.name}</b>
-              </small>
-              <div style={{ fontSize: '24px', fontWeight: '900', color: '#16a34a', margin: '4px 0 12px' }}>
-                {activeCompassDistance}
-              </div>
-
-              {/* כפתור הפעלת מצפן אם טרם אושר (במיוחד לאייפון/iOS) */}
-              {!compassPermissionGranted && (
-                <button
-                  onClick={requestCompassPermission}
-                  style={{
-                    padding: '8px 16px', borderRadius: '10px', background: luxuryBlueBg, color: luxuryBlueText,
-                    border: 'none', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', marginBottom: '12px', boxShadow: cardShadow
-                  }}
-                >
-                  🧭 אשר גישה למצפן המכשיר (iOS)
-                </button>
-              )}
-
-              {/* חוגת מצפן נקייה ומסתובבת חיה */}
-              <div style={{ width: '140px', height: '140px', margin: '0 auto 12px', borderRadius: '50%', border: `3px solid ${borderColor}`, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1)' }}>
-                <span style={{ position: 'absolute', top: '6px', fontWeight: '900', fontSize: '11px', color: '#dc2626' }}>N</span>
-                <span style={{ position: 'absolute', bottom: '6px', fontWeight: '900', fontSize: '11px', color: textSub }}>S</span>
-                <span style={{ position: 'absolute', right: '6px', fontWeight: '900', fontSize: '11px', color: textSub }}>E</span>
-                <span style={{ position: 'absolute', left: '6px', fontWeight: '900', fontSize: '11px', color: textSub }}>W</span>
-
-                <div style={{ transform: `rotate(${compassArrowRotation}deg)`, transition: 'transform 0.12s ease-out', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '36px solid #2563eb' }}></div>
-                  <div style={{ width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '36px solid #94a3b8' }}></div>
-                </div>
-              </div>
-
-              <small style={{ color: textSub, fontSize: '11px', display: 'block' }}>
-                כוון את ראש הטלפון לפי החץ הכחול כדי ללכת ישר ליעד
-              </small>
             </div>
 
             {savedParking ? (
