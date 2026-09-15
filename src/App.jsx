@@ -180,6 +180,7 @@ const RAW_BASE_QUESTIONS = [
   { q: "איזה חומר נחשב לקשה ביותר בטבע?", options: ["ברזל", "זהב", "יהלום", "טיטניום"], correct: 2 }
 ];
 
+// פונקציית חישוב מרחק מדויקת
 const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lon2 || !lat2) return null;
   const R = 6371;
@@ -195,6 +196,7 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return `${d.toFixed(1)} ק"מ`;
 };
 
+// חישוב זווית כיוון (Bearing) יחסית לצפון
 const calculateBearing = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
   const φ1 = lat1 * Math.PI / 180;
@@ -528,6 +530,7 @@ export default function App() {
   });
   const watchPositionIdRef = useRef(null);
 
+  // שמירת רכב + מצפן GPS חי מובנה
   const [savedParking, setSavedParking] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('garda-saved-parking')) || null;
@@ -535,7 +538,7 @@ export default function App() {
   });
   const [parkingNote, setParkingNote] = useState('');
   const [parkingPhotoUrl, setParkingPhotoUrl] = useState('');
-  const [compassTarget, setCompassTarget] = useState('parking');
+  const [compassTarget, setCompassTarget] = useState('parking'); // 'parking' או 'hotel'
   const [deviceHeading, setDeviceHeading] = useState(0);
   const [compassPermissionGranted, setCompassPermissionGranted] = useState(false);
   const parkingWatchIdRef = useRef(null);
@@ -567,9 +570,11 @@ export default function App() {
   const dbInstanceRef = useRef(null);
   const videoRef = useRef(null);
 
+  // האזנה לחיישן המצפן המגנטי עם תמיכה מלאה ב-iOS Safari ובקשת הרשאה
   const setupOrientationListener = () => {
     const handleOrientation = (e) => {
       let alpha = e.alpha;
+      // באייפון/iOS זה המשתנה המדויק לכיוון המגנטי האמיתי
       if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
         alpha = e.webkitCompassHeading;
       }
@@ -596,6 +601,7 @@ export default function App() {
           alert('הרשאת המצפן נדחתה בהגדרות הטלפון.');
         }
       } else {
+        // מכשירי אנדרואיד ומחשבים שאינם דורשים הרשאה מפורשת
         setCompassPermissionGranted(true);
         setupOrientationListener();
       }
@@ -605,12 +611,14 @@ export default function App() {
   };
 
   useEffect(() => {
+    // הפעלה ראשונית עבור מכשירים ללא דרישת אישור בלחיצה
     if (typeof DeviceOrientationEvent === 'undefined' || typeof DeviceOrientationEvent.requestPermission !== 'function') {
       setCompassPermissionGranted(true);
       setupOrientationListener();
     }
   }, []);
 
+  // דגימת GPS חיה רציפה בזמן שמודאל החניה/מצפן פתוח
   useEffect(() => {
     if (modalType === 'parking' && navigator.geolocation) {
       parkingWatchIdRef.current = navigator.geolocation.watchPosition(
@@ -635,6 +643,7 @@ export default function App() {
     };
   }, [modalType]);
 
+  // ניהול מצלמת AR
   useEffect(() => {
     if (!isArActive) return;
     navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } })
@@ -692,7 +701,7 @@ export default function App() {
     if (!msg) return;
 
     try {
-      await supabase.channel('realtime-radar-alerts').send({
+      await supabase.channel('realtime-radar').send({
         type: 'broadcast',
         event: 'sound_alert_with_msg',
         payload: {
@@ -711,7 +720,7 @@ export default function App() {
   const requestRemoteListening = async (memberName) => {
     if (!window.confirm(`האם לבקש להאזין למיקרופון של ${memberName}?`)) return;
     try {
-      await supabase.channel('realtime-radar-alerts').send({
+      await supabase.channel('realtime-radar').send({
         type: 'broadcast',
         event: 'mic_listen_request',
         payload: {
@@ -801,7 +810,7 @@ export default function App() {
         startEscalatingAlarm();
 
         try {
-          await supabase.channel('realtime-radar-alerts').send({
+          await supabase.channel('realtime-radar').send({
             type: 'broadcast',
             event: 'sos_alert',
             payload: sosData
@@ -820,7 +829,7 @@ export default function App() {
     stopEscalatingAlarm();
     localStorage.removeItem('garda-active-sos');
     try {
-      await supabase.channel('realtime-radar-alerts').send({
+      await supabase.channel('realtime-radar').send({
         type: 'broadcast',
         event: 'sos_clear',
         payload: {}
@@ -878,7 +887,7 @@ export default function App() {
     }
 
     try {
-      await supabase.channel('realtime-radar-alerts').send({
+      await supabase.channel('realtime-radar').send({
         type: 'broadcast',
         event: 'admin_request_location',
         payload: { requestedBy: 'אריק' }
@@ -1003,7 +1012,7 @@ export default function App() {
     localStorage.setItem('garda-active-timer', JSON.stringify(timerData));
 
     try {
-      await supabase.channel('realtime-radar-alerts').send({
+      await supabase.channel('realtime-radar').send({
         type: 'broadcast',
         event: 'family_timer_start',
         payload: timerData
@@ -1023,7 +1032,7 @@ export default function App() {
     localStorage.removeItem('garda-active-timer');
 
     try {
-      await supabase.channel('realtime-radar-alerts').send({
+      await supabase.channel('realtime-radar').send({
         type: 'broadcast',
         event: 'family_timer_cancel',
         payload: {}
@@ -1033,7 +1042,7 @@ export default function App() {
 
   useEffect(() => {
     const radarChannel = supabase
-      .channel('realtime-radar-db')
+      .channel('realtime-radar')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'family_radar' }, payload => {
         if (payload.new && payload.new.name) {
           setFamilyLocations(prev => {
@@ -1043,10 +1052,6 @@ export default function App() {
           });
         }
       })
-      .subscribe();
-
-    const alertsChannel = supabase
-      .channel('realtime-radar-alerts')
       .on('broadcast', { event: 'sos_alert' }, ({ payload }) => {
         if (payload) {
           setActiveSosAlert(payload);
@@ -1102,7 +1107,6 @@ export default function App() {
 
     return () => {
       supabase.removeChannel(radarChannel);
-      supabase.removeChannel(alertsChannel);
     };
   }, []);
 
@@ -1203,12 +1207,10 @@ export default function App() {
   };
 
   const touchStartXRef = useRef(0);
-  const touchStartYRef = useRef(0);
   const touchCurrentXRef = useRef(0);
 
   const handleTouchStart = (e) => {
     touchStartXRef.current = e.touches[0].clientX;
-    touchStartYRef.current = e.touches[0].clientY;
     touchCurrentXRef.current = e.touches[0].clientX;
   };
 
@@ -1217,10 +1219,8 @@ export default function App() {
   };
 
   const handleTouchEnd = (onCloseCallback) => {
-    const diffX = touchCurrentXRef.current - touchStartXRef.current;
-    if (diffX > 120) {
-      onCloseCallback();
-    }
+    const diff = touchCurrentXRef.current - touchStartXRef.current;
+    if (diff > 120) onCloseCallback();
   };
 
   useEffect(() => {
@@ -1289,7 +1289,7 @@ export default function App() {
     fetchChallengesFromCloud();
 
     const galleryChannel = supabase
-      .channel('realtime-gallery-changes')
+      .channel('realtime-gallery')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gallery' }, payload => {
         setGalleryItems(prev => {
           if (prev.some(item => item.id === payload.new.id)) return prev;
@@ -1303,7 +1303,7 @@ export default function App() {
       .subscribe();
 
     const challengesChannel = supabase
-      .channel('realtime-challenges-changes')
+      .channel('realtime-challenges')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'challenges_log' }, () => {
         fetchChallengesFromCloud();
       })
@@ -1405,6 +1405,7 @@ export default function App() {
   const loadFiles = async (folder) => {
     try {
       const db = await openDb();
+      const tx = db.transaction('files', 'readonly');
       const req = db.transaction('files', 'readonly').objectStore('files').index('folder').getAll(folder);
       req.onsuccess = () => {
         const dbFiles = req.result || [];
@@ -1830,6 +1831,7 @@ export default function App() {
     );
   };
 
+  // חישוב יעד המצפן הפעיל (חניה או מלון)
   const activeCompassCoords = compassTarget === 'parking' && savedParking
     ? { lat: savedParking.lat, lng: savedParking.lng, name: savedParking.note }
     : HOTEL_COORDINATES;
@@ -2260,6 +2262,106 @@ export default function App() {
         </div>
       )}
 
+      {modalType === 'around' && (
+        <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => handleTouchEnd(closeModal)} style={{ ...modalStyle, background: bgMain }}>
+          <div style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1.5px solid ${borderColor}`, paddingBottom: '14px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: textColor }}>📍 סביבי (Around Me)</h3>
+              <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
+            </div>
+
+            <form onSubmit={handleAroundCustomSearch} style={{ position: 'relative', display: 'flex', gap: '8px', marginBottom: '16px', width: '100%', boxSizing: 'border-box' }}>
+              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
+                <input
+                  type="text"
+                  dir="rtl"
+                  autoComplete="off"
+                  name="around_custom_search_input_safe_v8"
+                  placeholder="הקלד או חפש כל דבר (לדוגמה: פארק)..."
+                  value={aroundSearchQuery}
+                  onChange={(e) => setAroundSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%', padding: '12px 42px 12px 12px', borderRadius: '12px',
+                    border: `1.5px solid ${borderColor}`, background: cardBg, color: textColor,
+                    outline: 'none', fontSize: '16px', boxSizing: 'border-box', textAlign: 'right'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={startAroundVoiceSearch}
+                  style={{
+                    position: 'absolute', right: '10px', background: 'none', border: 'none',
+                    fontSize: '18px', cursor: 'pointer', opacity: isAroundListening ? 1 : 0.7
+                  }}
+                  title="חיפוש קולי"
+                >
+                  {isAroundListening ? '🔴' : '🎙️'}
+                </button>
+              </div>
+              <button
+                type="submit"
+                style={{
+                  padding: '0 16px', background: cardBg, color: textColor,
+                  border: `1.5px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold',
+                  fontSize: '13px', cursor: 'pointer', boxShadow: cardShadow, flexShrink: 0, boxSizing: 'border-box'
+                }}
+              >
+                חפש
+              </button>
+            </form>
+
+            <p style={{ fontSize: '12px', color: textSub, marginBottom: '14px' }}>או בחר קטגוריה מהירה לחיפוש במפה:</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=Autogrill'} style={{ ...gridModalBtn, background: cardBg, color: '#f59e0b', gridColumn: 'span 2', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>
+                ☕ <span>עצירת דרך / Autogrill & שירותים</span>
+              </button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gas station'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>⛽ <span>תחנת דלק</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pharmacy'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>💊 <span>פארם</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=pizza'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍕 <span>פיצה</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=gelato'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍦 <span>גלידה</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=supermarket'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🛒 <span>סופרמרקט</span></button>
+              <button onClick={() => window.location.href = 'https://maps.apple.com/?q=restaurants'} style={{ ...gridModalBtn, background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, boxShadow: cardShadow }}>🍝 <span>מסעדות</span></button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showThemeBuilder && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', direction: 'rtl', boxSizing: 'border-box' }}>
+          <div style={{ background: cardBg, color: textColor, padding: '24px', borderRadius: '20px', width: '100%', maxWidth: '400px', border: `1.5px solid ${borderColor}`, boxShadow: '0 20px 40px rgba(0,0,0,0.4)', boxSizing: 'border-box' }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: 'bold' }}>🛠️ יצירת גרסת עיצוב אישית</h3>
+            <p style={{ fontSize: '12px', color: textSub, marginBottom: '16px' }}>שלוט בצבעים וצור גרסה מותאמת אישית משלך:</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px', boxSizing: 'border-box' }}>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע רקע כללי (Bg Main):</label>
+                <input type="color" value={tempBgMain} onChange={(e) => setTempBgMain(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע רקע כרטיסים (Card Bg):</label>
+                <input type="color" value={tempCardBg} onChange={(e) => setTempCardBg(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע טקסט ראשי:</label>
+                <input type="color" value={tempTextColor} onChange={(e) => setTempTextColor(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>צבע מסגרות:</label>
+                <input type="color" value={tempBorderColor} onChange={(e) => setTempBorderColor(e.target.value)} style={{ width: '100%', height: '36px', border: 'none', borderRadius: '8px', cursor: 'pointer', boxSizing: 'border-box' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', boxSizing: 'border-box' }}>
+              <button onClick={saveCustomTheme} style={{ flex: 1, padding: '12px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>שמור גרסה</button>
+              {customTheme && (
+                <button onClick={resetCustomTheme} style={{ padding: '12px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flexShrink: 0 }}>איפוס</button>
+              )}
+              <button onClick={() => setShowThemeBuilder(false)} style={{ padding: '12px 16px', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flexShrink: 0 }}>ביטול</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main style={{ padding: '20px 16px', maxWidth: '600px', width: '100%', margin: 'auto', boxSizing: 'border-box' }}>
         
         <div style={{ 
@@ -2398,6 +2500,7 @@ export default function App() {
               </div>
             ))}
 
+            {/* כפתור חזרה למלון ב-Waze בסוף כל יום */}
             <div style={{ marginTop: '10px' }}>
               <a 
                 href={`https://www.waze.com/ul?q=${encodeURIComponent(HOTEL_ADDRESS)}&navigate=yes`}
@@ -2687,6 +2790,7 @@ export default function App() {
               <button onClick={() => handleGlobalClick(closeModal)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: cardBg, color: textColor, border: `1.5px solid ${borderColor}`, fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: cardShadow, flexShrink: 0 }}>✕</button>
             </div>
 
+            {/* בורר יעד למצפן: רכב חונה מול מלון Vojon */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               <button
                 onClick={() => setCompassTarget('parking')}
@@ -2712,6 +2816,7 @@ export default function App() {
               </button>
             </div>
 
+            {/* ווידג'ט מצפן חי מעוצב */}
             <div style={{ background: cardBg, borderRadius: '16px', padding: '16px', marginBottom: '16px', border: `1.5px solid ${borderColor}`, boxShadow: cardShadow, textAlign: 'center', boxSizing: 'border-box' }}>
               <small style={{ color: textSub, fontSize: '11px', display: 'block', marginBottom: '4px' }}>
                 מכוון אל: <b>{activeCompassCoords.name}</b>
@@ -2720,6 +2825,7 @@ export default function App() {
                 {activeCompassDistance}
               </div>
 
+              {/* כפתור הפעלת מצפן אם טרם אושר (במיוחד לאייפון/iOS) */}
               {!compassPermissionGranted && (
                 <button
                   onClick={requestCompassPermission}
@@ -2732,6 +2838,7 @@ export default function App() {
                 </button>
               )}
 
+              {/* חוגת מצפן נקייה ומסתובבת חיה */}
               <div style={{ width: '140px', height: '140px', margin: '0 auto 12px', borderRadius: '50%', border: `3px solid ${borderColor}`, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#2c2c2e' : '#f8fafc', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <span style={{ position: 'absolute', top: '6px', fontWeight: '900', fontSize: '11px', color: '#dc2626' }}>N</span>
                 <span style={{ position: 'absolute', bottom: '6px', fontWeight: '900', fontSize: '11px', color: textSub }}>S</span>
